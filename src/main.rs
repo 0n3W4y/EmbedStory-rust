@@ -105,8 +105,8 @@ const CHARACTER_PLAYER_COLOR:Color = Color::rgb( 0.0, 1.0, 0.0 );
 const CHARACTER_ENEMY_COLOR:Color = Color::rgb( 1.0, 0.0, 0.0 );
 const CHARACTER_ALLY_COLOR:Color = Color::rgb( 0.0, 0.0, 1.0 );
 const SPRITE_SIZE:u8 = 128;
-const GRID_WIDTH:u8 = 50;
-const GRID_HEIGHT:u8 = 50;
+const GRID_WIDTH:u8 = 200;
+const GRID_HEIGHT:u8 = 200;
 const MAX_LR_GRID: i8 = ( GRID_WIDTH / 2 ) as i8;
 const MAX_UD_GRID: i8 = ( GRID_HEIGHT / 2 ) as i8;
 
@@ -114,7 +114,7 @@ fn main() {
     App::new()
         .insert_resource(WindowDescriptor { 
             title: "test".to_string(), 
-            width: 1024.0,                 
+            width: 1280.0,                 
             height: 768.0,
             present_mode: PresentMode::Immediate,
             resizable: true,             
@@ -467,7 +467,7 @@ fn camera_zoom( mut wheel_input: EventReader<MouseWheel>, mut camera: Query< &mu
             scaling = event.y;
         }
         if scaling != 0.0{
-            scaling = scaling / ( -6.0 );
+            scaling = scaling / ( -4.0 );
             for mut projection in camera.iter_mut(){
                 let mut log_scale = projection.scale.ln();
                 log_scale += scaling;
