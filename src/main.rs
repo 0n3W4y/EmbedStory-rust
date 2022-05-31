@@ -18,6 +18,9 @@ enum Fraction{
     Ally,
 }
 
+#[derive( Component )]
+struct ToggledBy( MouseButton );
+
 #[derive(Component)]
 struct MainCamera{
     move_detection:u8,
@@ -27,6 +30,7 @@ struct MainCamera{
 #[derive(Component)]
 struct Tile{
     position: Position,
+    selected: bool,
 }
 
 struct TimerOneSecond( Timer );
@@ -104,11 +108,15 @@ impl Move {
 const CHARACTER_PLAYER_COLOR:Color = Color::rgb( 0.0, 1.0, 0.0 );
 const CHARACTER_ENEMY_COLOR:Color = Color::rgb( 1.0, 0.0, 0.0 );
 const CHARACTER_ALLY_COLOR:Color = Color::rgb( 0.0, 0.0, 1.0 );
+const SELECTED_TILE_COLOR:Color = Color::hsla( 250.0, 1.0, 1.0, 1.0 );
+const DESELECTED_TILE_COLOR:Color = Color::hsla( 50.0, 0.1, 0.1, 0.5 );
 const SPRITE_SIZE:u8 = 128;
-const GRID_WIDTH:u8 = 200;
-const GRID_HEIGHT:u8 = 200;
+const GRID_WIDTH:u8 = 10;
+const GRID_HEIGHT:u8 = 10;
 const MAX_LR_GRID: i8 = ( GRID_WIDTH / 2 ) as i8;
 const MAX_UD_GRID: i8 = ( GRID_HEIGHT / 2 ) as i8;
+const HALF_WINDOW_HEIGHT:i32 = 768 / 2;
+const HALF_WINDOW_WIDTH:i32 = 1280 / 2;
 
 fn main() {
     App::new()
@@ -126,9 +134,9 @@ fn main() {
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system( spawn_grid )
         .add_startup_system( add_camera )
-        .add_startup_system( spawn_player )
-        .add_startup_system( spawn_enemy)
-        .add_startup_system( spawn_ally )
+        //.add_startup_system( spawn_player )
+        //.add_startup_system( spawn_enemy)
+        //.add_startup_system( spawn_ally )
         .add_startup_system( spawn_text_bundl )
         .insert_resource(BevyCounter {
             count: 0,
@@ -136,8 +144,8 @@ fn main() {
         })
         .add_system( print_mouse_events_system )
         .add_system( mouse_click_system_for_player )
-        .add_system( generate_move_point_for_characters )
-        .add_system( move_character )
+        //.add_system( generate_move_point_for_characters )
+        //.add_system( move_character )
         .add_system( camera_zoom )
         .add_system( camera_move_by_mouse )
         .add_system(counter_system)
@@ -166,13 +174,16 @@ fn spawn_grid( mut commands: Commands, asset_server: Res<AssetServer> ){
         let mut pos_x:i8 = -MAX_LR_GRID;
         for _ in 0..GRID_WIDTH {
             commands.spawn_bundle( SpriteBundle {
+                sprite: Sprite{ 
+                    color: DESELECTED_TILE_COLOR, 
+                    ..default() },
                 texture: grid_texture.clone(),
                 transform: Transform { translation: Vec3::new( x , y , 0.0 ),
                 scale: Vec3::new(1.0, 1.0, 0.0),
                 ..default() },
             ..default()
             })
-            .insert( Tile{ position: Position{ x: pos_x ,y: pos_y }});
+            .insert( Tile{ position: Position{ x: pos_x ,y: pos_y }, selected: false });
             x += SPRITE_SIZE as f32;
             pos_x += 1;
         }
@@ -301,9 +312,12 @@ fn generate_move_point_for_characters( time: Res<Time>, mut timer: ResMut<TimerO
                     }
                 },
                 MovingStatus::Moving => {
-                    return;
-                    //let char_fraction = &character.fraction;
-                    //info!( "Character: {} on move", char_fraction );
+                    let cha_fra = match character.fraction {
+                        Fraction::Player => "Player".to_string(),
+                        Fraction::Enemy => "Enemy".to_string(),
+                        Fraction::Ally => "Ally".to_string(),
+                    };
+                    info!( "Character: {} on move", cha_fra );
                 }
             }
         }
@@ -427,37 +441,57 @@ fn print_mouse_events_system(
     }
 }
 
-fn mouse_click_system_for_player( windows: Res<Windows>, mouse_button_input: Res<Input<MouseButton>>, tile: Query<&Position, With<Tile>>, camera: Query< (&Transform, &OrthographicProjection), With<MainCamera>>) {
+fn mouse_click_system_for_player( windows: Res<Windows>, mouse_button_input: Res<Input<MouseButton>>, mut tile: Query< (&mut Sprite, &mut Tile ), With<Tile>>, camera: Query< (&Transform, &OrthographicProjection), With<MainCamera>>) {
     let window = windows.get_primary().unwrap();
     let mut x:f32 = 0.0;
     let mut y:f32 = 0.0;
     let mut cam_x:f32 = 0.0;
     let mut cam_y:f32 = 0.0;
     let mut camera_scale: f32 = 0.0;
+    let mut mouse_pressed:bool = false;
     if mouse_button_input.pressed(MouseButton::Left) {
         //info!("left mouse currently pressed");
+        mouse_pressed = true;
+    }
+
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        //info!("left mouse just pressed");
+        
+    }
+    
+
+    if mouse_button_input.just_released(MouseButton::Left) {
+        //info!("left mouse just released");
+        if mouse_pressed {
+            return;
+        }
         if let Some(_position) = window.cursor_position() {
             x = _position.x;
             y = _position.y;
-            info!( "x:{}, y:{}", x, y );
             for ( transform, projection ) in camera.iter(){
                 cam_x = transform.translation.x;
                 cam_y = transform.translation.y;
                 camera_scale = projection.scale.ln();
             }
-            info!( "cam x:{}, cam y:{}, cam scale:{}", cam_x, cam_y, camera_scale );
-            //TODO: camera position, camera scale, 
+            let position_x:i8 = ((( x - HALF_WINDOW_WIDTH as f32 - cam_x )  / SPRITE_SIZE as f32 ) / camera_scale ).floor() as i8;
+            let position_y:i8 = ((( y - HALF_WINDOW_HEIGHT as f32 -cam_y )  / SPRITE_SIZE as f32 ) / camera_scale ).floor() as i8;
+
+            for ( mut tile_sprite, mut new_tile ) in tile.iter_mut(){
+                info!( "Cursor x:{}, y:{}; Camera x:{}, y:{}; Calculated pos x:{}, y:{}", x, y, cam_x, cam_y, position_x, position_y );
+                if new_tile.position.x == position_x && new_tile.position.y == position_y{
+                    if new_tile.selected{
+                        tile_sprite.color = DESELECTED_TILE_COLOR;
+                        new_tile.selected = false;                        
+                    }else{
+                        tile_sprite.color = SELECTED_TILE_COLOR;
+                        new_tile.selected = true;
+                    }
+                }
+            }
+
         } else {
             // cursor is not inside the window
         }
-    }
-
-    if mouse_button_input.just_pressed(MouseButton::Left) {
-        //info!("left mouse just pressed");
-    }
-
-    if mouse_button_input.just_released(MouseButton::Left) {
-        //info!("left mouse just released");
     }
 }
 
