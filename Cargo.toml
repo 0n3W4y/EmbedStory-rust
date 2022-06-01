@@ -8,8 +8,9 @@ edition = "2021"
 
 [dependencies]
 rand = "*"
+#bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", features = ["dynamic", "render" ] }
 bevy = { version = "0.7.0", features = ["dynamic"] }
-#bevy = "0.7"
+bevy_mod_raycast = { git = "https://github.com/aevyrie/bevy_mod_raycast", branch = "main" }
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]

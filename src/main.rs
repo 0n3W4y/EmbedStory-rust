@@ -4,8 +4,10 @@ use bevy::{
     prelude::*,
     window::{CursorMoved, PresentMode,},
     diagnostic::{ Diagnostics, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin },
-    core::FixedTimestep,
 };
+
+
+struct MyRaycastSet;
 
 #[derive( Component )]
 struct Character{
@@ -132,7 +134,7 @@ fn main() {
         .insert_resource( TimerOneSecond( Timer::from_seconds( 5.0, true )))
         //.add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
-        .add_startup_system( spawn_grid )
+        .add_startup_system( spawn_grid_2 )
         .add_startup_system( add_camera )
         //.add_startup_system( spawn_player )
         //.add_startup_system( spawn_enemy)
@@ -159,10 +161,38 @@ fn main() {
 }
 
 fn add_camera( mut commands: Commands ){
+    let mut camera = OrthographicCameraBundle::new_2d();
+    camera.orthographic_projection.scale = 1.6;
+    //camera.transform.translation.x = HALF_WINDOW_WIDTH as f32;
+    //camera.transform.translation.y = HALF_WINDOW_HEIGHT as f32;
     commands.spawn()
-            .insert_bundle( OrthographicCameraBundle::new_2d() )
+            .insert_bundle( camera )
             .insert( MainCamera{ move_detection: 0, cursor_position: Vec2::new( 0.0, 0.0 )});
     commands.spawn_bundle(UiCameraBundle::default());
+}
+
+fn spawn_grid_2( mut commands: Commands, assest_server: Res<AssetServer> ){
+    let grid_texture = assest_server.load( "images/grid_tile_128.png" );   
+    
+    for i in 0..GRID_HEIGHT{
+        let sprite_y:f32 = i as f32 * SPRITE_SIZE as f32;
+        for j in 0..GRID_WIDTH{
+            let sprite_x:f32 = j as f32 * SPRITE_SIZE as f32;
+            commands.spawn_bundle( SpriteBundle{ 
+                sprite: Sprite{
+                    color: DESELECTED_TILE_COLOR,
+                    ..default()
+                },
+                texture: grid_texture.clone(),
+                transform: Transform{ 
+                    translation: Vec3::new( sprite_x, sprite_y, 0.0 ),
+                    ..default()
+                },
+                ..default()       
+            })
+            .insert( Tile{ position: Position{ x: j as i8, y: i as i8 }, selected: false });
+        }
+    }
 }
 
 fn spawn_grid( mut commands: Commands, asset_server: Res<AssetServer> ){
@@ -471,13 +501,15 @@ fn mouse_click_system_for_player( windows: Res<Windows>, mouse_button_input: Res
             for ( transform, projection ) in camera.iter(){
                 cam_x = transform.translation.x;
                 cam_y = transform.translation.y;
-                camera_scale = projection.scale.ln();
+                camera_scale = projection.scale;
             }
-            let position_x:i8 = ((( x - HALF_WINDOW_WIDTH as f32 - cam_x )  / SPRITE_SIZE as f32 ) / camera_scale ).floor() as i8;
-            let position_y:i8 = ((( y - HALF_WINDOW_HEIGHT as f32 -cam_y )  / SPRITE_SIZE as f32 ) / camera_scale ).floor() as i8;
+            //let position_x:i8 = ((( x - HALF_WINDOW_WIDTH as f32 + cam_x ) * camera_scale )  / SPRITE_SIZE as f32 ).round() as i8;
+            //let position_y:i8 = ((( y - HALF_WINDOW_HEIGHT as f32 + cam_y ) * camera_scale )  / SPRITE_SIZE as f32 ).round() as i8;
+            let position_x:i8 = (( x  + cam_x / camera_scale - HALF_WINDOW_WIDTH as f32 )  / ( SPRITE_SIZE as f32 / camera_scale )   ).round() as i8;
+            let position_y:i8 = (( y  + cam_y / camera_scale - HALF_WINDOW_HEIGHT as f32  )  /  ( SPRITE_SIZE as f32 / camera_scale )  ).round() as i8;
 
             for ( mut tile_sprite, mut new_tile ) in tile.iter_mut(){
-                info!( "Cursor x:{}, y:{}; Camera x:{}, y:{}; Calculated pos x:{}, y:{}", x, y, cam_x, cam_y, position_x, position_y );
+                info!( "Cursor x:{}, y:{}; Camera x:{}, y:{}, SCALE:{}; Calculated pos x:{}, y:{}", x, y, cam_x, cam_y, camera_scale, position_x, position_y );
                 if new_tile.position.x == position_x && new_tile.position.y == position_y{
                     if new_tile.selected{
                         tile_sprite.color = DESELECTED_TILE_COLOR;
@@ -501,14 +533,17 @@ fn camera_zoom( mut wheel_input: EventReader<MouseWheel>, mut camera: Query< &mu
             scaling = event.y;
         }
         if scaling != 0.0{
-            scaling = scaling / ( -4.0 );
             for mut projection in camera.iter_mut(){
-                let mut log_scale = projection.scale.ln();
-                log_scale += scaling;
-                if log_scale >= 2.0 || log_scale <= 0.2 {
-                    return;
+                if scaling < 0.0 {
+                    projection.scale += 0.4;
+                }else if scaling > 0.0 {
+                    projection.scale -= 0.4;
                 }
-                projection.scale = log_scale.exp();    
+                if projection.scale >= 3.0 {
+                    projection.scale = 3.0;
+                }else if projection.scale <= 1.0 {
+                    projection.scale = 1.0;                    
+                }  
             }
         }else{
             return;
