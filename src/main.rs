@@ -7,13 +7,12 @@ use bevy::{
 };
 
 
-struct MyRaycastSet;
-
-#[derive( Component )]
+#[derive( Component, Clone, Copy )]
 struct Character{
     fraction: Fraction,
 }
 
+#[derive( Clone, Copy )]
 enum Fraction{
     Player,
     Enemy,
@@ -37,7 +36,7 @@ struct Tile{
 
 struct TimerOneSecond( Timer );
 
-#[derive(Component, Clone, Copy, PartialEq, Eq)]
+#[derive(Component, Clone, Copy, PartialEq, Eq, Debug )]
 struct Position {
     x: i8,
     y: i8,
@@ -66,7 +65,7 @@ impl Size {
     }
 }
 
-#[derive( Component )]
+#[derive( Component, Debug, Clone, Copy )]
 struct Move{
     speed: u16,
     direction_x:i8,
@@ -75,6 +74,7 @@ struct Move{
     point: Position,
 }
 
+#[derive( Clone, Copy, Debug )]
 enum MovingStatus{
     Standing,
     Moving,
@@ -83,17 +83,21 @@ enum MovingStatus{
 impl Move {
     pub fn calculate_movement( &mut self, x:i8, y:i8 ){
         let mut dir_x = self.point.x - x;
-        let mut dir_y = self.point.x - y;
+        let mut dir_y = self.point.y - y;
         if dir_x < 0 {
             dir_x = -1;
         }else if dir_x > 0{
             dir_x = 1;
+        }else{
+            dir_x = 0;
         }
 
         if dir_y < 0 {
             dir_y = -1;
         }else if dir_y > 0{
             dir_y = 1;
+        }else{ 
+            dir_y = 0;
         }
         self.direction_x = dir_x as i8;
         self.direction_y = dir_y as i8;
@@ -113,10 +117,10 @@ const CHARACTER_ALLY_COLOR:Color = Color::rgb( 0.0, 0.0, 1.0 );
 const SELECTED_TILE_COLOR:Color = Color::hsla( 250.0, 1.0, 1.0, 1.0 );
 const DESELECTED_TILE_COLOR:Color = Color::hsla( 50.0, 0.1, 0.1, 0.5 );
 const SPRITE_SIZE:u8 = 128;
-const GRID_WIDTH:u8 = 10;
-const GRID_HEIGHT:u8 = 10;
-const MAX_LR_GRID: i8 = ( GRID_WIDTH / 2 ) as i8;
-const MAX_UD_GRID: i8 = ( GRID_HEIGHT / 2 ) as i8;
+const GRID_WIDTH:u8 = 100;
+const GRID_HEIGHT:u8 = 100;
+const HALF_GRID_WIDTH: u8 = ( GRID_WIDTH / 2 ) as u8;
+const HALF_GRID_HEIGHT: u8 = ( GRID_HEIGHT / 2 ) as u8;
 const HALF_WINDOW_HEIGHT:i32 = 768 / 2;
 const HALF_WINDOW_WIDTH:i32 = 1280 / 2;
 
@@ -136,9 +140,9 @@ fn main() {
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system( spawn_grid_2 )
         .add_startup_system( add_camera )
-        //.add_startup_system( spawn_player )
-        //.add_startup_system( spawn_enemy)
-        //.add_startup_system( spawn_ally )
+        .add_startup_system( spawn_player )
+        .add_startup_system( spawn_enemy)
+        .add_startup_system( spawn_ally )
         .add_startup_system( spawn_text_bundl )
         .insert_resource(BevyCounter {
             count: 0,
@@ -147,10 +151,11 @@ fn main() {
         .add_system( print_mouse_events_system )
         .add_system( mouse_click_system_for_player )
         //.add_system( generate_move_point_for_characters )
-        //.add_system( move_character )
+        .add_system( move_character )
         .add_system( camera_zoom )
         .add_system( camera_move_by_mouse )
         .add_system(counter_system)
+        //.add_startup_stage()
         //.add_system( trace_info )
         .add_system_set_to_stage(
             CoreStage::PostUpdate,
@@ -162,9 +167,9 @@ fn main() {
 
 fn add_camera( mut commands: Commands ){
     let mut camera = OrthographicCameraBundle::new_2d();
-    camera.orthographic_projection.scale = 1.6;
-    //camera.transform.translation.x = HALF_WINDOW_WIDTH as f32;
-    //camera.transform.translation.y = HALF_WINDOW_HEIGHT as f32;
+    camera.orthographic_projection.scale = 2.0;
+    camera.transform.translation.x = HALF_WINDOW_WIDTH as f32 + HALF_GRID_WIDTH as f32;
+    camera.transform.translation.y = HALF_WINDOW_HEIGHT as f32 + HALF_GRID_HEIGHT as f32;
     commands.spawn()
             .insert_bundle( camera )
             .insert( MainCamera{ move_detection: 0, cursor_position: Vec2::new( 0.0, 0.0 )});
@@ -195,34 +200,6 @@ fn spawn_grid_2( mut commands: Commands, assest_server: Res<AssetServer> ){
     }
 }
 
-fn spawn_grid( mut commands: Commands, asset_server: Res<AssetServer> ){
-    let grid_texture = asset_server.load("images/grid_tile_128.png");
-    let mut y:f32 = -MAX_UD_GRID as f32 * SPRITE_SIZE as f32;
-    let mut pos_y:i8 = -MAX_UD_GRID;
-    for _ in 0..GRID_HEIGHT {
-        let mut x:f32 = -MAX_LR_GRID as f32 * SPRITE_SIZE as f32;
-        let mut pos_x:i8 = -MAX_LR_GRID;
-        for _ in 0..GRID_WIDTH {
-            commands.spawn_bundle( SpriteBundle {
-                sprite: Sprite{ 
-                    color: DESELECTED_TILE_COLOR, 
-                    ..default() },
-                texture: grid_texture.clone(),
-                transform: Transform { translation: Vec3::new( x , y , 0.0 ),
-                scale: Vec3::new(1.0, 1.0, 0.0),
-                ..default() },
-            ..default()
-            })
-            .insert( Tile{ position: Position{ x: pos_x ,y: pos_y }, selected: false });
-            x += SPRITE_SIZE as f32;
-            pos_x += 1;
-        }
-        y += SPRITE_SIZE as f32;
-        pos_y += 1;
-    }    
-}
-
-
 
 fn spawn_player( mut commands: Commands ){
     //let mut rnd = thread_rng();
@@ -242,8 +219,8 @@ fn spawn_player( mut commands: Commands ){
 
 fn spawn_enemy( mut commands: Commands ){
     let mut rnd = thread_rng();
-    let pos_x:i8 = rnd.gen_range( -MAX_LR_GRID..MAX_LR_GRID );
-    let pos_y:i8 = rnd.gen_range( -MAX_UD_GRID..MAX_UD_GRID );
+    let pos_x:i8 = rnd.gen_range( 0..GRID_WIDTH as i8 );
+    let pos_y:i8 = rnd.gen_range( 0..GRID_HEIGHT as i8 );
     let sprite_pos_x:f32 = pos_x as f32 * SPRITE_SIZE as f32;
     let sprite_pos_y:f32 = pos_y as f32 * SPRITE_SIZE as f32;
     commands
@@ -260,8 +237,8 @@ fn spawn_enemy( mut commands: Commands ){
 
 fn spawn_ally( mut commands: Commands ){
     let mut rnd = thread_rng();
-    let pos_x:i8 = rnd.gen_range( -MAX_LR_GRID..MAX_LR_GRID );
-    let pos_y:i8 = rnd.gen_range( -MAX_UD_GRID..MAX_UD_GRID );
+    let pos_x:i8 = rnd.gen_range( 0..GRID_WIDTH as i8 );
+    let pos_y:i8 = rnd.gen_range( 0..GRID_HEIGHT as i8 );
     let sprite_pos_x:f32 = pos_x as f32 * SPRITE_SIZE as f32;
     let sprite_pos_y:f32 = pos_y as f32 * SPRITE_SIZE as f32;
     commands
@@ -356,8 +333,8 @@ fn generate_move_point_for_characters( time: Res<Time>, mut timer: ResMut<TimerO
 
 fn generate_move_point( pos: &mut Mut<Move>, string:String ) {
         let mut rnd = thread_rng();
-        let x:i8 = rnd.gen_range( -MAX_LR_GRID..=MAX_LR_GRID );
-        let y:i8 = rnd.gen_range( -MAX_UD_GRID..=MAX_UD_GRID );
+        let x:i8 = rnd.gen_range( 0..GRID_WIDTH as i8 );
+        let y:i8 = rnd.gen_range( 0..GRID_HEIGHT as i8 );
         pos.point.x = x;
         pos.point.y = y;
         pos.status = MovingStatus::Moving;
@@ -389,44 +366,36 @@ fn trace_info( character: Query<( &Position, &Transform, &Character ), With<Char
     }
 }
 */
-fn move_character( mut enemy: Query<( &mut Move, &mut Transform, &mut Position ), With<Character>> ){
-    for ( mut move_direction, mut transform, mut position ) in enemy.iter_mut(){
+fn move_character( mut character: Query<( &mut Move, &mut Transform, &mut Position ), With<Character>> ){
+    for ( mut move_direction, mut transform, mut position ) in character.iter_mut(){
         match move_direction.status {
             MovingStatus::Standing => {
                 return;
             },
             MovingStatus::Moving => {
                 move_direction.calculate_movement( position.x, position.y );
-                if transform.translation.x < MAX_LR_GRID as f32 || transform.translation.x > -MAX_LR_GRID as f32 {
+                if ( position.x < GRID_WIDTH as i8 || position.x > 0 ) && move_direction.direction_x != 0 {
                     transform.translation.x += move_direction.direction_x as f32 * ( move_direction.speed / 1000 ) as f32;
-                    if move_direction.direction_x > 0{
-                        let x:i8 = ( transform.translation.x / SPRITE_SIZE as f32 ).floor() as i8;
-                        if x > position.x {
-                            position.x += 1;
-                            //info!( "x: {}; Sprite_x: {} ",position.x, transform.translation.x );
-                        }
-                    }else if move_direction.direction_x < 0{
-                        let x:i8 = ( transform.translation.x / SPRITE_SIZE as f32 ).ceil() as i8;
-                        if x < position.x {
-                            position.x -= 1;
-                            //info!( "y: {}; Sprite_y: {} ",position.y, transform.translation.y );
-                        }
-                    }                    
+                    let mut x:i8 = (( transform.translation.x - SPRITE_SIZE as f32 / 2.0 ) / SPRITE_SIZE as f32 ).round() as i8;
+                    if x != position.x {
+                        info!( "Pos_x = {}; calculated x = {} ", position.x, x );
+                        position.x = x;
+                    }                  
                 }
                 
-                if transform.translation.y < MAX_UD_GRID as f32 || transform.translation.y > -MAX_UD_GRID as f32 {
+                if ( position.y < GRID_WIDTH as i8 || position.y > 0 ) && move_direction.direction_y != 0 {
                     transform.translation.y += move_direction.direction_y as f32 * ( move_direction.speed / 1000 ) as f32;
+                    let mut y:i8;
                     if move_direction.direction_y > 0{
-                        let y:i8 = ( transform.translation.y / SPRITE_SIZE as f32 ).floor() as i8;
-                        if y > position.y {
-                            position.y += 1;
-                        }
-                    }else if move_direction.direction_x < 0{
-                        let y:i8 = ( transform.translation.y / SPRITE_SIZE as f32 ).ceil() as i8;
-                        if y < position.y {
-                            position.y -= 1;
-                        }
-                    } 
+                        y = ( transform.translation.y / SPRITE_SIZE as f32 ).floor() as i8;
+                    }else{
+                        y = ( transform.translation.y / SPRITE_SIZE as f32 ).ceil() as i8;
+                    }
+
+                    if y != position.y {
+                        info!( "Pos_y = {}; calculated y = {} ", position.y, y );
+                        position.y = y;
+                    }
                 }
             },
         }        
@@ -471,7 +440,13 @@ fn print_mouse_events_system(
     }
 }
 
-fn mouse_click_system_for_player( windows: Res<Windows>, mouse_button_input: Res<Input<MouseButton>>, mut tile: Query< (&mut Sprite, &mut Tile ), With<Tile>>, camera: Query< (&Transform, &OrthographicProjection), With<MainCamera>>) {
+fn mouse_click_system_for_player( 
+    windows: Res<Windows>, 
+    mouse_button_input: Res<Input<MouseButton>>, 
+    mut tile: Query<( &mut Sprite, &mut Tile ), With<Tile>>, 
+    camera: Query<( &Transform, &OrthographicProjection), With<MainCamera>>,
+    mut player: Query<( &mut Move, &Character ), With<Character>>
+) {
     let window = windows.get_primary().unwrap();
     let mut x:f32 = 0.0;
     let mut y:f32 = 0.0;
@@ -507,9 +482,23 @@ fn mouse_click_system_for_player( windows: Res<Windows>, mouse_button_input: Res
             //let position_y:i8 = ((( y - HALF_WINDOW_HEIGHT as f32 + cam_y ) * camera_scale )  / SPRITE_SIZE as f32 ).round() as i8;
             let position_x:i8 = (( x  + cam_x / camera_scale - HALF_WINDOW_WIDTH as f32 )  / ( SPRITE_SIZE as f32 / camera_scale )   ).round() as i8;
             let position_y:i8 = (( y  + cam_y / camera_scale - HALF_WINDOW_HEIGHT as f32  )  /  ( SPRITE_SIZE as f32 / camera_scale )  ).round() as i8;
+            for ( mut position, character ) in player.iter_mut(){
+                match character.fraction {
+                    Fraction::Player => {
+                        if position_x >= 0 && position_y >= 0{
+                            position.point.x = position_x;
+                            position.point.y = position_y;
+                            position.status = MovingStatus::Moving;
+                            info!( "Moving to: x{}, y{}", position_x, position_y );
+                            info!( "{:?}", position.status );
+                        }
+                    },
+                    _ => {},
+                }
+            }
 
             for ( mut tile_sprite, mut new_tile ) in tile.iter_mut(){
-                info!( "Cursor x:{}, y:{}; Camera x:{}, y:{}, SCALE:{}; Calculated pos x:{}, y:{}", x, y, cam_x, cam_y, camera_scale, position_x, position_y );
+                //info!( "Cursor x:{}, y:{}; Camera x:{}, y:{}, SCALE:{}; Calculated pos x:{}, y:{}", x, y, cam_x, cam_y, camera_scale, position_x, position_y );
                 if new_tile.position.x == position_x && new_tile.position.y == position_y{
                     if new_tile.selected{
                         tile_sprite.color = DESELECTED_TILE_COLOR;
@@ -539,8 +528,8 @@ fn camera_zoom( mut wheel_input: EventReader<MouseWheel>, mut camera: Query< &mu
                 }else if scaling > 0.0 {
                     projection.scale -= 0.4;
                 }
-                if projection.scale >= 3.0 {
-                    projection.scale = 3.0;
+                if projection.scale >= 6.0 {
+                    projection.scale = 6.0;
                 }else if projection.scale <= 1.0 {
                     projection.scale = 1.0;                    
                 }  

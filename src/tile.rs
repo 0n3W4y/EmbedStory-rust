@@ -42,7 +42,7 @@ pub mod tile{
 
 
 
-    pub fn new( pos:Position, walable:bool, ground:GroundType, cover: CoverType ) -> Tile{
+    pub fn new( pos:Position, walkable:bool, ground:GroundType, cover: CoverType ) -> Tile{
         Tile{
 
         }            
