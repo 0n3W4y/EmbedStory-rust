@@ -7,12 +7,11 @@ use bevy::{
 };
 
 
-#[derive( Component, Clone, Copy )]
+#[derive( Component )]
 struct Character{
     fraction: Fraction,
 }
 
-#[derive( Clone, Copy )]
 enum Fraction{
     Player,
     Enemy,
@@ -65,7 +64,7 @@ impl Size {
     }
 }
 
-#[derive( Component, Debug, Clone, Copy )]
+#[derive( Component, Debug )]
 struct Move{
     speed: u16,
     direction_x:i8,
@@ -74,7 +73,7 @@ struct Move{
     point: Position,
 }
 
-#[derive( Clone, Copy, Debug )]
+#[derive( Debug )]
 enum MovingStatus{
     Standing,
     Moving,
@@ -148,28 +147,28 @@ fn main() {
             count: 0,
             color: Color::WHITE,
         })
-        .add_system( print_mouse_events_system )
+        //.add_system( print_mouse_events_system )
         .add_system( mouse_click_system_for_player )
         //.add_system( generate_move_point_for_characters )
         .add_system( move_character )
         .add_system( camera_zoom )
         .add_system( camera_move_by_mouse )
-        .add_system(counter_system)
+        .add_system( counter_system )
         //.add_startup_stage()
         //.add_system( trace_info )
-        .add_system_set_to_stage(
-            CoreStage::PostUpdate,
-            SystemSet::new()
-               .with_system(size_scaling),
-        )
+        //.add_system_set_to_stage(
+        //    CoreStage::PostUpdate,
+        //    SystemSet::new()
+        //       .with_system(size_scaling),
+        //)
         .run();
 }
 
 fn add_camera( mut commands: Commands ){
     let mut camera = OrthographicCameraBundle::new_2d();
     camera.orthographic_projection.scale = 2.0;
-    camera.transform.translation.x = HALF_WINDOW_WIDTH as f32 + HALF_GRID_WIDTH as f32;
-    camera.transform.translation.y = HALF_WINDOW_HEIGHT as f32 + HALF_GRID_HEIGHT as f32;
+    camera.transform.translation.x = HALF_WINDOW_WIDTH as f32 + HALF_GRID_WIDTH as f32 * SPRITE_SIZE as f32;
+    camera.transform.translation.y = HALF_WINDOW_HEIGHT as f32 + HALF_GRID_HEIGHT as f32 * SPRITE_SIZE as f32;
     commands.spawn()
             .insert_bundle( camera )
             .insert( MainCamera{ move_detection: 0, cursor_position: Vec2::new( 0.0, 0.0 )});
@@ -201,13 +200,17 @@ fn spawn_grid_2( mut commands: Commands, assest_server: Res<AssetServer> ){
 }
 
 
-fn spawn_player( mut commands: Commands ){
-    //let mut rnd = thread_rng();
-    //let pos_x:i32 = rnd.gen_range( 0..=10 );
-    //let pos_y:i32 = rnd.gen_range( 0..=10 );
+fn spawn_player( 
+    mut commands: Commands,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    asset_server: Res<AssetServer>,
+){
+    let texture_handle = asset_server.load("images/characters/player/p1.png");
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(92.0, 92.0), 3, 1);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
     commands
-        .spawn_bundle( SpriteBundle { 
-            sprite: Sprite{ color: CHARACTER_PLAYER_COLOR, ..default() },
+        .spawn_bundle( SpriteSheetBundle { 
+            texture_atlas: texture_atlas_handle,
             transform: Transform { translation: Vec3::new(0.0, 0.0, 3.0),..default() },
             ..default()
         })
@@ -366,8 +369,8 @@ fn trace_info( character: Query<( &Position, &Transform, &Character ), With<Char
     }
 }
 */
-fn move_character( mut character: Query<( &mut Move, &mut Transform, &mut Position ), With<Character>> ){
-    for ( mut move_direction, mut transform, mut position ) in character.iter_mut(){
+fn move_character( mut character: Query<( &mut Move, &mut Transform, &mut Position, &mut TextureAtlasSprite ), With<Character>> ){
+    for ( mut move_direction, mut transform, mut position, mut sprite ) in character.iter_mut(){
         match move_direction.status {
             MovingStatus::Standing => {
                 return;
@@ -376,10 +379,16 @@ fn move_character( mut character: Query<( &mut Move, &mut Transform, &mut Positi
                 move_direction.calculate_movement( position.x, position.y );
                 if ( position.x < GRID_WIDTH as i8 || position.x > 0 ) && move_direction.direction_x != 0 {
                     transform.translation.x += move_direction.direction_x as f32 * ( move_direction.speed / 1000 ) as f32;
-                    let mut x:i8 = (( transform.translation.x - SPRITE_SIZE as f32 / 2.0 ) / SPRITE_SIZE as f32 ).round() as i8;
-                    if x != position.x {
+                    let mut x:f32 = transform.translation.x / SPRITE_SIZE as f32;
+                    if move_direction.direction_x > 0{
+                        x = x.floor();
+                    }else{
+                        x = x.ceil();
+                    }
+
+                    if x as i8 != position.x {
                         info!( "Pos_x = {}; calculated x = {} ", position.x, x );
-                        position.x = x;
+                        position.x = x as i8;
                     }                  
                 }
                 
@@ -397,12 +406,34 @@ fn move_character( mut character: Query<( &mut Move, &mut Transform, &mut Positi
                         position.y = y;
                     }
                 }
+                calculate_sprite_index( &mut sprite, &mut transform, move_direction.direction_x, move_direction.direction_y );
             },
         }        
     }    
 }
 
+fn calculate_sprite_index( sprite: &mut TextureAtlasSprite, transform: &mut Transform, dir_x: i8, dir_y: i8){
+    if dir_y < 0{
+        sprite.index = 1;
+        let rotation = Quat::from_rotation_y( 0.0 );
+        transform.rotation = rotation;
+    }else if dir_y > 0{
+        sprite.index = 0;
+        let rotation = Quat::from_rotation_y( 0.0 );
+        transform.rotation = rotation;     
+    }
 
+    if dir_x >0 {
+        sprite.index = 2;
+        let rotation = Quat::from_rotation_y( 0.0 );
+        transform.rotation = rotation;
+    } else if dir_x < 0 {
+        sprite.index = 2;
+        let rotation = Quat::from_rotation_y( 3.1 );
+        transform.rotation = rotation;
+    }
+}
+/*
 fn size_scaling( mut query: Query<(&Size, &mut Transform )>){
     for( sprite_size, mut transform ) in query.iter_mut() {
         transform.scale = Vec3::new(
@@ -412,7 +443,7 @@ fn size_scaling( mut query: Query<(&Size, &mut Transform )>){
         );
     }
 }
-
+*/
 fn print_mouse_events_system(
     mut mouse_button_input_events: EventReader<MouseButtonInput>,
     mut mouse_motion_events: EventReader<MouseMotion>,
