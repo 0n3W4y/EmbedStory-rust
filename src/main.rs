@@ -1,4 +1,4 @@
-mod scene;
+pub mod scene;
 
 use rand::{ thread_rng, Rng};
 use bevy::{

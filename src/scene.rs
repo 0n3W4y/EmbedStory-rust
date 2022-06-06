@@ -1,3 +1,1 @@
-pub mod scene{
-    mod tilemap;
-}
+pub mod tilemap;
