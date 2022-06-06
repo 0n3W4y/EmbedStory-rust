@@ -1,3 +1,5 @@
+mod scene;
+
 use rand::{ thread_rng, Rng};
 use bevy::{
     input::mouse::{MouseButtonInput, MouseMotion, MouseWheel},
@@ -5,6 +7,8 @@ use bevy::{
     window::{CursorMoved, PresentMode,},
     diagnostic::{ Diagnostics, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin },
 };
+
+use scene::*;
 
 
 #[derive( Component )]
