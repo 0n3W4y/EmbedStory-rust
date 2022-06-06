@@ -115,6 +115,7 @@ pub mod tilemap{
             can_remove_cover: config.remove_cover,
             can_place_object: config.place_object,
             can_remove_object: config.remove_object,
+            index: config.index,
         }            
     }
 }
