@@ -2,15 +2,22 @@ use bevy::{
     prelude::*,
 };
 
+#[derive( Clone, Reflect, Debug, PartialEq )]
 pub enum GroundType{
+    None,
     Earth,
     Rock,
+    Sandrock,
     DryEarth,
-    Dirt,    
+    Dirt,
+    RockEnvirounment,
+    SandrockEnvirounment, 
 }
 
+#[derive( Clone, Reflect, Debug, PartialEq )]
 pub enum CoverType{
-    None,
+    Nothing,
+    Grass,
     Snow,
     Water,
     Sand,
@@ -19,27 +26,43 @@ pub enum CoverType{
     Shallow,
 }
 
-pub struct Position{
-    x: u16,
-    y: u16,
+#[derive( Clone )]
+pub struct TileDeployConfig{
+    pub walkable:bool,
+    pub ground:GroundType,
+    pub cover:CoverType,
+    pub movement_ratio:u16,
+    pub place_cover:bool,
+    pub place_object:bool,
+    pub remove_cover:bool,
+    pub remove_object:bool,
 }
+
+
+#[derive( Clone, Copy, PartialEq, Eq )]
+pub struct Position{
+    pub x: u16,
+    pub y: u16,
+}
+
 
 pub struct TileConfig{
-    pos_x:u16,
-    pos_y:u16,
-    tile_size:u16,
-    walkable:bool,
-    ground:GroundType,
-    cover:CoverType,
-    movement_ratio:u16,
-    place_cover:bool,
-    place_object:bool,
-    remove_cover:bool,
-    remove_object:bool,
-    index:u32,
+    pub pos_x:u16,
+    pub pos_y:u16,
+    pub tile_size:u16,
+    pub walkable:bool,
+    pub ground:GroundType,
+    pub cover:CoverType,
+    pub movement_ratio:u16,
+    pub place_cover:bool,
+    pub place_object:bool,
+    pub remove_cover:bool,
+    pub remove_object:bool,
+    pub index:u32,
+    pub cover_graphics_index: u8,
 }
 
-#[derive( Component )]
+#[derive( Component, Clone, Reflect )]
 pub struct Tile{
     pub x:u16,
     pub y:u16,
@@ -53,6 +76,7 @@ pub struct Tile{
     pub can_remove_object:bool,
     pub tile_size:u16,
     pub index:u32,
+    pub cover_graphics_index: u8,
 }
 
 impl Tile{
@@ -67,7 +91,7 @@ impl Tile{
 
 
 pub fn new( 
-    config:TileConfig
+    config: TileConfig
 ) -> Tile{
     return Tile{
         x: config.pos_x,
@@ -82,5 +106,6 @@ pub fn new(
         can_place_object: config.place_object,
         can_remove_object: config.remove_object,
         index: config.index,
+        cover_graphics_index: config.cover_graphics_index,
     }            
 }

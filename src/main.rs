@@ -1,4 +1,5 @@
 pub mod scene;
+pub mod deploy;
 
 use rand::{ thread_rng, Rng};
 use bevy::{
@@ -6,9 +7,11 @@ use bevy::{
     prelude::*,
     window::{CursorMoved, PresentMode,},
     diagnostic::{ Diagnostics, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin },
+    reflect::TypeRegistry,
 };
 
 use scene::*;
+use deploy::*;
 
 
 #[derive( Component )]
@@ -138,6 +141,7 @@ fn main() {
             ..default()
         })
         .add_plugins( DefaultPlugins )
+        .register_type::< Scene >()
         .insert_resource( TimerOneSecond( Timer::from_seconds( 5.0, true )))
         //.add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
