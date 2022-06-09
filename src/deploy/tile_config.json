@@ -2,7 +2,6 @@
     "100":{ 
         "walkable": true,
         "ground": "Earth",
-        "cover": "Nothing",
         "movement_ratio": 900,
         "place_cover": true,
         "place_object": true,
@@ -13,7 +12,6 @@
     "101":{
         "walkable": 900,
         "ground": "DryEarth",
-        "cover": "Nothing",
         "movement_ratio": 1000,
         "place_cover": true,
         "place_object": true,
@@ -24,7 +22,6 @@
     "102":{
         "walkable": true,
         "ground": "Dirt",
-        "cover": "Nothing",
         "movement_ratio": 850,
         "place_cover": true,
         "place_object": true,
@@ -35,7 +32,6 @@
     "103":{
         "walkable": true,
         "ground": "Rock",
-        "cover": "Nothing",
         "movement_ratio": 950,
         "place_cover": true,
         "place_object": true,
@@ -46,7 +42,6 @@
     "104":{
         "walkable": true,
         "ground": "Sandrock",
-        "cover": "Nothing",
         "movement_ratio": 950,
         "place_cover": true,
         "place_object": true,
@@ -57,7 +52,6 @@
     "105":{
         "walkable": true,
         "ground": "RockEnvirounment",
-        "cover": "Nothing",
         "movement_ratio": 950,
         "place_cover": true,
         "place_object": true,
@@ -68,7 +62,6 @@
     "106":{
         "walkable": true,
         "ground": "SandrockEnvirounment",
-        "cover": "Nothing",
         "movement_ratio": 950,
         "place_cover": true,
         "place_object": true,
@@ -84,7 +77,6 @@
 
     "120":{
         "walkable": true,
-        "ground": "None",
         "cover": "Nothing",
         "movement_ratio": 0,
         "place_cover": true,
@@ -95,7 +87,6 @@
 
     "121":{
         "walkable": true,
-        "ground": "None",
         "cover": "Grass",
         "movement_ratio": 850,
         "place_cover": true,
@@ -106,7 +97,6 @@
 
     "122":{
         "walkable": true,
-        "ground": "None",
         "cover": "Sand",
         "movement_ratio": 800,
         "place_cover": false,
@@ -117,7 +107,6 @@
 
     "123":{
         "walkable": true,
-        "ground": "None",
         "cover": "Snow",
         "movement_ratio": 700,
         "place_cover": false,
@@ -128,7 +117,6 @@
 
     "124":{
         "walkable": true,
-        "ground": "None",
         "cover": "Water",
         "movement_ratio": 300,
         "place_cover": false,
@@ -139,7 +127,6 @@
 
     "125":{
         "walkable": true,
-        "ground": "None",
         "cover": "Ice",
         "movement_ratio": 600,
         "place_cover": false,
@@ -150,7 +137,6 @@
 
     "126":{
         "walkable": true,
-        "ground": "None",
         "cover": "Shallow",
         "movement_ratio": 500,
         "place_cover": false,
@@ -161,7 +147,6 @@
 
     "127":{
         "walkable": true,
-        "ground": "None",
         "cover": "WoodenFloor",
         "movement_ratio": 1000,
         "place_cover": false,

@@ -10,6 +10,16 @@ pub enum RiverType{
     Generate,
 }
 
+pub enum Biome{
+    Plain,
+    Desert,
+    Forest,
+    Swamp,
+    Winter,
+    Rocks,
+    Tropics,
+}
+
 pub struct AdditionalGround( tile::GroundType, u8 );
 pub struct AdditionalCover( tile::CoverType, u8 );
 pub struct River( u8, RiverConfig );
@@ -77,5 +87,5 @@ pub struct BiomeConfig{
 #[reflect(Component)]
 pub struct Scene{
     pub tilemap:Tilemap,
-    pub biome: 
+    pub biome: Biome,
 }
