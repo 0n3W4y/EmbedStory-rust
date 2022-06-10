@@ -1,0 +1,21 @@
+{
+    "400":{
+        "sceneType": "Loader"
+    },
+
+    "401":{
+        "sceneType": "GameStartScene"
+    },
+
+    "402":{
+        "sceneType": "GlobalMap"
+    },
+
+    "403":{
+        "sceneType": "GroundMap",
+        "biome": "Plain",
+        "height": 200,
+        "width": 200,
+        "tileSize": 128 
+    }
+}

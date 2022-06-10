@@ -1,6 +1,7 @@
 
 use serde::Deserialize;
 use crate::tilemap::tile::TileDeployConfig;
+use crate::scene::BiomeConfig;
 use std::collections::HashMap;
 
 pub struct Deploy{

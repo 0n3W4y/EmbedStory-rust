@@ -216,6 +216,13 @@ fn spawn_player(
     let texture_handle = asset_server.load("images/characters/player/p1.png");
     let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(92.0, 92.0), 3, 1);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    let player = vec![( SpriteSheetBundle { 
+        texture_atlas: texture_atlas_handle,
+        transform: Transform { translation: Vec3::new(0.0, 0.0, 3.0),..default() },
+        ..default()
+    }, Character{ fraction: Fraction::Player }, Position{ x: 0, y: 0 }, Size::square( 1.0 ), Move{ speed: 1150, direction_x: 0, direction_y: 0, status: MovingStatus::Standing, point: Position{ x: 0, y: 0 }} )];
+    commands.spawn_bundle( player[ 0 ]);
+    /*
     commands
         .spawn_bundle( SpriteSheetBundle { 
             texture_atlas: texture_atlas_handle,
@@ -226,6 +233,8 @@ fn spawn_player(
         .insert( Position{ x: 0, y: 0 })
         .insert( Size::square( 1.0 ))
         .insert( Move{ speed: 1150, direction_x: 0, direction_y: 0, status: MovingStatus::Standing, point: Position{ x: 0, y: 0 }});
+    */
+    
 }
 
 fn spawn_enemy( mut commands: Commands ){

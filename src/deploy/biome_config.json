@@ -1,0 +1,89 @@
+{
+    "100":{
+        "biome": "Desert"
+
+    },
+
+    "101":{
+        "biome": "Forest"
+
+    },
+
+    "102":{
+        "biome": "Plain",
+        "ground": "earth",
+        "additionalGround": { "dirt": 3, "rockEnvironment": 1 },
+        "cover": "grass",
+        "additionalCover": { "rockRoad": 1 },
+        "liquids": {
+            "river": { 
+                "river1":{
+                    "emerging": 10,
+                    "widthMax": 8,
+                    "widthMin": 2,
+                    "offset": 1,
+                    "widthOffset": 1,
+                    "type": null,
+                    "cover": "Water"
+                }                
+            },
+            "lake": {
+                "lake1":{
+                    "emerging":15,
+                    "amount": 1,
+                    "widthMax": 20,
+                    "widthMin": 10,
+                    "heightMax": 20,
+                    "heightMin": 10,
+                    "offsetX": 3,
+                    "offsetY": 3,
+                    "widthOffset": 2,
+                    "heightOffset": 2,
+                    "cover": "Water"
+                }                
+            }
+        },
+        "solids":{
+            "rock": {
+                "rock1": {
+                    "emerging":50,
+                    "amount": 2,
+                    "widthMax": 20,
+                    "widthMin": 5,
+                    "heightMax": 20,
+                    "heightMin": 5,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "widthOffset": 2,
+                    "heightOffset": 2,
+                    "ground": "Rock"
+                }                
+            }
+        }, 
+        "resources": {
+            "tree": 30,
+            "fertileTree": 1,
+            "bush": 5,
+            "fertileBush": 1, 
+            "log": 6,
+            "stone": 10, 
+            "steelStone": 5, 
+            "copperStone": 5,
+            "copperOre": 3
+        }
+
+    },
+
+    "103":{
+        "biome": "Rocky"
+    },
+
+    "104":{
+        "biome": "Tropics"
+    },
+    
+    "105":{
+        "biome": "Winter"
+    }
+
+}

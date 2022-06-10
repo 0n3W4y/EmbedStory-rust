@@ -4,12 +4,14 @@ use bevy::{
     prelude::*,
 };
 
+#[derive( Copy, Clone, PartialEq, Eq )]
 pub enum RiverType{
     Horizontal,
     Vertical,
     Generate,
 }
 
+#[derive( Clone )]
 pub enum Biome{
     Plain,
     Desert,
@@ -24,68 +26,76 @@ pub struct AdditionalGround( tile::GroundType, u8 );
 pub struct AdditionalCover( tile::CoverType, u8 );
 pub struct River( u8, RiverConfig );
 pub struct Lake( u8, LakeConfig );
-pub struct Solid( u8, SolidConfig );
+pub struct SolidRock( u8, SolidConfig );
 
 pub struct RiverConfig{
     pub emerging: u8,
-    pub widthMax: u8,
-    pub widthMin: u8,
-    pub offset: u8,
-    pub widthOffset: u8,
+    pub widthMax: u16,
+    pub widthMin: u16,
+    pub offset: u16,
+    pub widthOffset: u16,
     pub river_type: RiverType,
     pub cover: tile::CoverType,
 }
 
 pub struct LakeConfig{
     pub emerging: u8,
-    pub amount: u8,
-    pub widthMax: u8,
-    pub widthMin: u8,
-    pub heightMax: u8,
-    pub heightMin: u8,
-    pub offsetX: u8,
-    pub offsetY: u8,
-    pub widthOffset: u8,
-    pub heightOffset: u8,
-    pub floorType: tile::CoverType,
+    pub amount: u16,
+    pub widthMax: u16,
+    pub widthMin: u16,
+    pub heightMax: u16,
+    pub heightMin: u16,
+    pub offsetX: u16,
+    pub offsetY: u16,
+    pub widthOffset: u16,
+    pub heightOffset: u16,
+    pub cover: tile::CoverType,
 }
 
 pub struct SolidConfig{
-    emerging: u8,
-    amount: u8,
-    widthMax: u8,
-    widthMin: u8,
-    heightMax: u8,
-    heightMin: u8,
-    offsetX: u8,
-    offsetY: u8,
-    widthOffset: u8,
-    heightOffset: u8,
-    groundType: tile::GroundType,
+    pub emerging: u8,
+    pub amount: u16,
+    pub widthMax: u16,
+    pub widthMin: u16,
+    pub heightMax: u16,
+    pub heightMin: u16,
+    pub offsetX: u16,
+    pub offsetY: u16,
+    pub widthOffset: u16,
+    pub heightOffset: u16,
+    pub ground: tile::GroundType,
 }
 
-pub struct BiomeConfigLiquids{
+pub struct BiomeConfigLiquids {
     pub river: Vec<River>,
     pub lake: Vec<Lake>,
 }
 
-pub struct BiomeConfigSolids{
-    pub solids: Vec<Solid>,
+pub struct BiomeConfigSolids {
+    pub rock: Vec<SolidRock>,
 }
 pub struct BiomeConfig{
-    groud_type:tile::GroundType,
-    ground_type_additional:Vec<AdditionalGround>,
-    cover_type:tile::CoverType,
-    cover_type_additional:Vec<AdditionalCover>,
-    liquids: BiomeConfigLiquids,
-    solids: BiomeConfigSolids,
+    pub groud_type:tile::GroundType,
+    pub ground_type_additional:Vec<AdditionalGround>,
+    pub cover_type:tile::CoverType,
+    pub cover_type_additional:Vec<AdditionalCover>,
+    pub liquids: BiomeConfigLiquids,
+    pub solids: BiomeConfigSolids,
 }
 
 
 
-#[derive( Component, Reflect)]
-#[reflect(Component)]
 pub struct Scene{
-    pub tilemap:Tilemap,
-    pub biome: Biome,
+    pub tilemap: Option,
+    pub biome: Option,
+}
+
+impl Scene{
+    
+}
+
+pub fn new() ->Scene{
+    return Scene {
+        tilemap: tilemap,
+    }
 }
