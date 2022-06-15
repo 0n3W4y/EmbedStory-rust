@@ -1,5 +1,6 @@
 pub mod scene;
 pub mod deploy;
+pub mod texture_manager;
 
 use rand::{ thread_rng, Rng};
 use bevy::{
@@ -12,6 +13,7 @@ use bevy::{
 
 use scene::*;
 use deploy::*;
+use texture_manager::*;
 
 
 #[derive( Component )]
@@ -141,7 +143,8 @@ fn main() {
             ..default()
         })
         .add_plugins( DefaultPlugins )
-        .register_type::< Scene >()
+        //.register_type::< GameScene >()
+        .register_type::<TextureManager>()
         .insert_resource( TimerOneSecond( Timer::from_seconds( 5.0, true )))
         //.add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())

@@ -12,6 +12,7 @@ rand = "*"
 bevy = { version = "0.7.0", features = ["dynamic"] }
 #bevy_mod_raycast = { git = "https://github.com/aevyrie/bevy_mod_raycast", branch = "main" }
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.81"
 
 # Enable only a small amount of optimization in debug mode
 [profile.dev]

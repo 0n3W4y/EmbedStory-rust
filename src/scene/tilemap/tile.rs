@@ -2,6 +2,8 @@ use bevy::{
     prelude::*,
 };
 
+use serde::Deserialize;
+
 #[derive( Clone, Reflect, Debug, PartialEq )]
 pub enum GroundType {
     None,
@@ -26,7 +28,7 @@ pub enum CoverType {
     Shallow,
 }
 
-#[derive( Clone )]
+#[derive( Clone, Deserialize )]
 pub struct TileDeployConfig{
     pub walkable:bool,
     pub movement_ratio:u16,

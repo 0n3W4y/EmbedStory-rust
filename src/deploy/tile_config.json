@@ -1,5 +1,5 @@
 {
-    "100":{ 
+    "100":{
         "walkable": true,
         "ground": "Earth",
         "movement_ratio": 900,

@@ -74,7 +74,8 @@ pub struct BiomeConfigLiquids {
 pub struct BiomeConfigSolids {
     pub rock: Vec<SolidRock>,
 }
-pub struct BiomeConfig{
+
+pub struct BiomeDeployConfig{
     pub groud_type:tile::GroundType,
     pub ground_type_additional:Vec<AdditionalGround>,
     pub cover_type:tile::CoverType,
