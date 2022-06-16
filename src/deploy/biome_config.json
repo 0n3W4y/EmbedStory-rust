@@ -84,6 +84,10 @@
     
     "105":{
         "biome": "Winter"
+    },
+
+    "106":{
+        "biome": "Swamp"
     }
 
 }

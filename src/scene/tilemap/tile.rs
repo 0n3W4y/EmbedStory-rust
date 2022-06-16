@@ -2,9 +2,9 @@ use bevy::{
     prelude::*,
 };
 
-use serde::Deserialize;
+use serde::{ Deserialize, Serialize };
 
-#[derive( Clone, Reflect, Debug, PartialEq )]
+#[derive( Clone, Reflect, Debug, PartialEq, Deserialize, Serialize )]
 pub enum GroundType {
     None,
     Earth,
@@ -16,7 +16,7 @@ pub enum GroundType {
     SandrockEnvirounment, 
 }
 
-#[derive( Clone, Reflect, Debug, PartialEq )]
+#[derive( Clone, Reflect, Debug, PartialEq, Deserialize, Serialize )]
 pub enum CoverType {
     Nothing,
     Grass,
@@ -28,7 +28,7 @@ pub enum CoverType {
     Shallow,
 }
 
-#[derive( Clone, Deserialize )]
+#[derive( Clone, Deserialize, Serialize )]
 pub struct TileDeployConfig{
     pub walkable:bool,
     pub movement_ratio:u16,
@@ -63,7 +63,7 @@ pub struct TileConfig{
     pub cover_graphics_index: u8,
 }
 
-#[derive( Clone, Reflect )]
+#[derive( Clone, Reflect, Serialize )]
 pub struct Tile{
     pub ground_type:GroundType,
     pub cover_type:CoverType,

@@ -1,9 +1,10 @@
 pub mod tile;
 
-use std::collections::HashMap;
 use tile::*;
 use rand::{ thread_rng, Rng};
 use crate::scene::*;
+use crate::deploy::*;
+use serde::Serialize;
 
 #[derive( Copy, Clone )]
 pub struct LiquidSolidConfig{
@@ -34,22 +35,23 @@ pub struct LiquidSolidRiverConfig {
 
 #[derive( Clone )]
 pub struct TilemapConfig{
-    width:u16,
-    height:u16,
-    tile_size:u16,
-    tile_deploy: HashMap<u16, TileDeployConfig>,
+    pub width:u16,
+    pub height:u16,
+    pub tile_size:u16,
 }
 
+#[derive( Serialize )]
 pub struct Tilemap {
     pub tiles: Vec<Tile>,
     pub width: u16,
     pub height: u16,
     pub tile_size: u16,
-    pub tile_deploy: HashMap<u16, TileDeployConfig>,
+    #[serde(skip_serializing)]
+    deploy: &'static Deploy,
 }
 
 impl Tilemap{
-    pub fn generate_tilemap( &self, biome: &BiomeConfig ){
+    pub fn generate_tilemap( &self, biome: &BiomeDeployConfig ){
         self.generate_ground( &biome.groud_type  );
         self.generate_additional_ground( &biome.ground_type_additional );
         self.generate_rocks( &biome.solids.rock );
@@ -457,28 +459,12 @@ impl Tilemap{
     }
 
     fn get_tile_ground_config( &self, ground_type: &GroundType ) -> &TileDeployConfig{
-        match ground_type {
-            Earth => return &self.tile_deploy[ &100 ],
-            Rock => return &self.tile_deploy[ &103 ],
-            DryEarth => return &self.tile_deploy[ &101 ],
-            Dirt => return &self.tile_deploy[ &102 ],
-            Sandrock => return &self.tile_deploy[ &104 ],
-            RockEnvirounment => return &self.tile_deploy[ &105 ],
-            SandrockEnvironment =>  return &self.tile_deploy[ &106 ],
-        };
+        return self.deploy.get_tile_ground_config( ground_type );
+        
     }
 
     fn get_tile_cover_config( &self, cover_type: &CoverType ) -> &TileDeployConfig{
-        match cover_type {
-            Nothing => return &self.tile_deploy[ &120 ],
-            Grass => return &self.tile_deploy[ &121 ],
-            Snow => return &self.tile_deploy[ &123 ],
-            Water => return &self.tile_deploy[ &124 ],
-            Sand => return &self.tile_deploy[ &122 ],
-            WoodenFloor => return &self.tile_deploy[ &127 ],
-            Ice => return &self.tile_deploy[ &125 ],
-            Shallow => return &self.tile_deploy[ &126 ],
-        };
+        return self.deploy.get_tile_cover_config( cover_type );
     }
 
     fn error_message( &self ) -> String{
@@ -486,12 +472,12 @@ impl Tilemap{
     }
 }
 
-pub fn new( config: TilemapConfig ) -> Tilemap{
+pub fn new( config: TilemapConfig, deploy: &'static Deploy ) -> Tilemap{
     return Tilemap{
         tiles: vec![],
         width: config.width,
         height: config.height,
         tile_size: config.tile_size,
-        tile_deploy: config.tile_deploy,
+        deploy: deploy,
     }
 }
