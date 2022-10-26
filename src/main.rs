@@ -1,28 +1,7 @@
-mod scene_manager;
-mod entity_manager;
-mod texture_manager;
-mod deploy;
-
-
 use bevy::{
-    input::mouse::{MouseButtonInput, MouseMotion, MouseWheel},
     prelude::*,
-    window::{CursorMoved, PresentMode,},
-    diagnostic::{ Diagnostics, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin },
-    reflect::TypeRegistry,
+    window::{ PresentMode, WindowMode },
 };
-use entity_manager::EntityManager;
-use texture_manager::TextureManager;
-use scene_manager::SceneManager;
-use deploy::Deploy;
-
-
-struct Game{
-    scene_manager: SceneManager,
-    entity_manager: EntityManager,
-    texture_manager: TextureManager,
-    deploy: Deploy,
-}
 
 fn main(){
     App::new()
@@ -31,13 +10,16 @@ fn main(){
             width: 1280.0,                 
             height: 768.0,
             present_mode: PresentMode::Immediate,
-            resizable: true,             
+            resizable: true,
+            mode: WindowMode::Windowed,  
             ..default()
         })
-        .add_plugins( DefaultPlugins )
-        .register_type::<TextureManager>()
-        .register_type::<EntityManager>()
-        .register_type::<SceneManager>()
-        .register_type::<Deploy>()
+        //.init_resource::<resources::setting::Setting>()
+        //.init_resource::<resources::dictionary::Dictionary>()
+        //.add_state(scenes::SceneState::LoadingScene)
+        //.add_startup_system(plugins::music::background_audio_channel_setup)
+        //.add_system(plugins::music::play_background_music)
+        //.add_plugins(DefaultPlugins)
+        //.add_plugin(AudioPlugin)
         .run();
 }

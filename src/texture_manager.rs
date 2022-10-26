@@ -2,18 +2,44 @@ use bevy::prelude::*;
 
 #[derive( Clone, Default, Reflect )]
 pub struct GroundTiles{
-    earth: Handle<Image>,
-    dry_earth: Handle<Image>,
-    dirt: Handle<Image>,
-    rock: Handle<Image>,
-    sandrock: Handle<Image>,
-    rock_envirounment: Handle<Image>,
-    sandrock_envirounment: Handle<Image>,
+    pub earth: Handle<Image>,
+    pub dry_earth: Handle<Image>,
+    pub dirt: Handle<Image>,
+    pub rock: Handle<Image>,
+    pub sandrock: Handle<Image>,
+    pub rock_envirounment: Handle<Image>,
+    pub sandrock_envirounment: Handle<Image>,
+}
+
+#[derive( Clone, Default )]
+pub struct CoverTiles{
+
+}
+#[derive( Clone, Default )]
+pub struct Characters{
+
+}
+#[derive( Clone, Default )]
+pub struct Objects{
+
+}
+#[derive( Clone, Default )]
+pub struct Stuffs{
+
+}
+#[derive( Clone, Default )]
+pub struct Effects{
+
 }
 
 #[derive( Default , Reflect )]
 pub struct TextureManager {
     pub ground_tile_textures: GroundTiles,
+    pub cover_tile_texture: CoverTiles,
+    pub character_texture: Characters,
+    pub object_texture: Objects,
+    pub stuff_texture: Stuffs,
+    pub effect_texture: Effects,
 }
 
 pub fn new( assest_server: Res<AssetServer>, mut texture_atlases: ResMut<Assets<TextureAtlas>> ) -> TextureManager {
