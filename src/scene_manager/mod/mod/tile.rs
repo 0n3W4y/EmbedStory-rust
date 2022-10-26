@@ -6,7 +6,7 @@ use serde::{ Deserialize, Serialize };
 
 #[derive( Clone, Reflect, Debug, PartialEq, Deserialize, Serialize )]
 pub enum GroundType {
-    None,
+    Nothing,
     Earth,
     Rock,
     Sandrock,
@@ -26,16 +26,6 @@ pub enum CoverType {
     WoodenFloor,
     Ice,
     Shallow,
-}
-
-#[derive( Clone, Deserialize, Serialize )]
-pub struct TileDeployConfig{
-    pub walkable:bool,
-    pub movement_ratio:u16,
-    pub place_cover:bool,
-    pub place_object:bool,
-    pub remove_cover:bool,
-    pub remove_object:bool,
 }
 
 
@@ -63,7 +53,7 @@ pub struct TileConfig{
     pub cover_graphics_index: u8,
 }
 
-#[derive( Clone, Reflect, Serialize )]
+#[derive( Clone, Reflect, Serialize, Deserialize )]
 pub struct Tile{
     pub ground_type:GroundType,
     pub cover_type:CoverType,
@@ -83,9 +73,7 @@ pub struct Tile{
 }
 
 
-pub fn new( 
-    config: TileConfig
-) -> Tile{
+pub fn new( config: TileConfig ) -> Tile{
     return Tile{
         x: config.pos_x,
         y: config.pos_y,

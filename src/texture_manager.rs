@@ -3,7 +3,7 @@ use bevy::prelude::*;
 #[derive( Clone, Default, Reflect )]
 pub struct GroundTiles{
     earth: Handle<Image>,
-    dryearth: Handle<Image>,
+    dry_earth: Handle<Image>,
     dirt: Handle<Image>,
     rock: Handle<Image>,
     sandrock: Handle<Image>,
@@ -36,7 +36,7 @@ fn load_ground_tile_textures(
     let texture_sandrock_envirounment_handle: Handle<Image> = asset_server.load( "textures/tiles/rock_01.png" ); //change 
     return GroundTiles{ 
         earth: texture_eart_handle,
-        dryearth: texture_dryearth_handle,
+        dry_earth: texture_dryearth_handle,
         dirt: texture_dirt_handle,
         rock: texture_rock_handle,
         sandrock: texture_sandrock_handle,

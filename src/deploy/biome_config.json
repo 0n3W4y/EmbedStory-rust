@@ -11,10 +11,15 @@
 
     "102":{
         "biome": "Plain",
-        "ground": "earth",
-        "additionalGround": { "dirt": 3, "rockEnvironment": 1 },
-        "cover": "grass",
-        "additionalCover": { "rockRoad": 1 },
+        "ground": "Earth",
+        "additionalGround": { 
+            "Dirt": 3, 
+            "RockEnvironment": 1 
+        },
+        "cover": "Grass",
+        "additionalCover": { 
+            "RockRoad": 1 
+        },
         "liquids": {
             "river": { 
                 "river1":{

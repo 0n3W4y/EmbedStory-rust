@@ -1,10 +1,27 @@
-pub mod tile;
+#[path = "mod/tile.rs"] mod tile;
 
+use bevy::utils::HashMap;
 use tile::*;
 use rand::{ thread_rng, Rng};
-use crate::scene::*;
-use crate::deploy::*;
-use serde::Serialize;
+use serde::{ Deserialize, Serialize};
+
+#[derive( PartialEq, Eq, Clone, Copy )]
+pub enum RiverType{
+    Horizontal,
+    Vertical,
+    Generate,
+}
+
+#[derive( Deserialize, Serialize )]
+pub struct TilemapGeneratorConfig{
+    ground: GroundType,
+    cover: CoverType,
+    additional_cover: HashMap< CoverType, u8>,
+    additional_ground: HashMap< GroundType, u8>,
+    rock:,
+    lake:,
+    river:,
+}
 
 #[derive( Copy, Clone )]
 pub struct LiquidSolidConfig{
@@ -30,9 +47,6 @@ pub struct LiquidSolidRiverConfig {
     pub river_type: RiverType,
 }
 
-
-
-
 #[derive( Clone )]
 pub struct TilemapConfig{
     pub width:u16,
@@ -40,26 +54,29 @@ pub struct TilemapConfig{
     pub tile_size:u16,
 }
 
-#[derive( Serialize )]
+#[derive( Deserialize, Serialize )]
 pub struct Tilemap {
     pub tiles: Vec<Tile>,
     pub width: u16,
     pub height: u16,
     pub tile_size: u16,
-    #[serde(skip_serializing)]
-    deploy: &'static Deploy,
 }
 
 impl Tilemap{
-    pub fn generate_tilemap( &self, biome: &BiomeDeployConfig ){
-        self.generate_ground( &biome.groud_type  );
-        self.generate_additional_ground( &biome.ground_type_additional );
-        self.generate_rocks( &biome.solids.rock );
-        self.generate_cover( &biome.cover_type );
-        self.generate_additional_cover( &biome.cover_type_additional );
-        self.generate_lakes( &biome.liquids.lake );
-        self.generate_rivers( &biome.liquids.river );
+    pub fn init( &mut self, config: TilemapConfig ){
+        self.width = config.width;
+        self.height = config.height;
+        self.tile_size = config.tile_size;
+    }
 
+    pub fn generate_tilemap( &self, config: TilemapGeneratorConfig ){
+        self.generate_ground( config.ground );
+        self.generate_additional_ground( config.additional_ground );
+        self.generate_rocks( config.rock );
+        self.generate_cover( config.cover );
+        self.generate_additional_cover( config.additional_cover );
+        self.generate_lakes( config.lake );
+        self.generate_rivers( config.river );
     }
 
     pub fn change_tile_ground( &self, index: u32, ground: &GroundType ){
@@ -129,7 +146,7 @@ impl Tilemap{
                 widthOffset: lake_config.widthOffset,
                 heightOffset: lake_config.heightOffset,
             };
-            self.generate_liquid_solid( liquid_solid_config, GroundType::None, cover );
+            self.generate_liquid_solid( liquid_solid_config, GroundType::Nothing, cover );
         }
     }
 
@@ -194,7 +211,7 @@ impl Tilemap{
                     widthOffset: 1,
                     heightOffset: 1,
                 };
-                self.generate_liquid_solid( config, tile::GroundType::None, cover );
+                self.generate_liquid_solid( config, GroundType::Nothing, cover );
 
                 total_tiles -= (( max_width as u32 + min_width as u32 ) / 2 ) * (( max_height as u32 + min_height as u32 ) / 2 );
                 if total_tiles <= 20 {
@@ -230,7 +247,7 @@ impl Tilemap{
                     widthOffset: 1,
                     heightOffset: 1,
                 };
-                self.generate_liquid_solid( config, ground, tile::CoverType::Nothing );
+                self.generate_liquid_solid( config, ground, CoverType::Nothing );
 
                 total_tiles -= (( max_width as u32 + min_width as u32 ) / 2 ) * (( max_height as u32 + min_height as u32 ) / 2 );
                 if total_tiles <= 20 {
@@ -444,7 +461,7 @@ impl Tilemap{
             tile_size: self.tile_size,
             walkable: tile_deploy_config.walkable,
             ground: ground_type.clone(),
-            cover: tile::CoverType::Nothing,
+            cover: CoverType::Nothing,
             movement_ratio: tile_deploy_config.movement_ratio,
             place_cover: tile_deploy_config.place_cover,
             place_object: tile_deploy_config.place_object,
@@ -472,12 +489,11 @@ impl Tilemap{
     }
 }
 
-pub fn new( config: TilemapConfig, deploy: &'static Deploy ) -> Tilemap{
+pub fn new() -> Tilemap{
     return Tilemap{
         tiles: vec![],
-        width: config.width,
-        height: config.height,
-        tile_size: config.tile_size,
-        deploy: deploy,
-    }
+        width: 0,
+        height: 0,
+        tile_size: 0,
+    };
 }
