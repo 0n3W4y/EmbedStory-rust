@@ -1,7 +1,7 @@
 //window settings
 pub const TITLE: &str = "Embed Story";
 pub const RESOLUTION: f32 = 16.0 / 9.0;
-pub const WINDOW_HEIGHT: f32 = 576.0;
+pub const WINDOW_HEIGHT: f32 = 768.0;
 
 
 // Monitor information by default monitor
@@ -13,7 +13,21 @@ pub const SUB_MENU_BACKGROUND_IMAGE: &str = "assets/images/sub_menu_background.p
 
 pub const TILE_SIZE: usize = 128;
 
-pub const ENGLISH_LANGUAGE_FILE: &str = "english.json";
+pub const ENGLISH_LANGUAGE_FILE: &str = "glossary/english.json";
+pub const RUSSIAN_LANGUAGE_FILE: &str = "glossary/russian.json";
 pub const SETTING_FILE: &str = "setting.json";
 
 pub const FIRASANS_BOLD_FONT: &str = "assets/fonts/FiraSans-Bold.ttf";
+
+pub const DEPLOY_CONFIG_TILE: &str = "deploy/tile_config.json";
+
+/*
+pub const VIETNAMESE_LANGUAGE_FILE: &str = "vietnamese.json";
+
+pub const HIGHSCORE_FILE: &str = "highscores.json";
+pub const CREDITS_FILE: &str = "credits.txt";
+pub const DATA_FILE: &str = "data.json";
+pub const LIST_FLOOR_FILE: &str = "list_floor.txt";
+pub const LIST_ROOM_FILE: &str = "list_room.txt";
+pub const UPGRADES_FILE: &str = "upgrades.json";
+*/

@@ -63,12 +63,3 @@ impl SceneManager {
     }
 
 }
-
-pub fn new( ) -> SceneManager{
-    let result = SceneManager{
-        scenes_id: 0,
-        foreground_scenes: vec![],
-    };
-
-    return result;
-}

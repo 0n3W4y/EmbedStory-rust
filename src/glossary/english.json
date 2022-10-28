@@ -1,0 +1,16 @@
+{
+    "main_menu_scene_text": {
+        "play": "Play",
+        "save": "Save",
+        "load": "Load",
+        "options": "Options",
+        "quit": "Quit"
+    },
+    "options_text":{
+        "options": "Options",
+        "enable_music": "Enable music",
+        "enable_sound": "Enable sound",
+        "language": "Language",
+        "back_to_main_menu": "Back"
+    }
+}
