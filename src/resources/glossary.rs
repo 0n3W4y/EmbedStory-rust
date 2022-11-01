@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize } ;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -7,13 +7,19 @@ use crate::config::*;
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
 pub struct Glossary{
+    pub loading_scene_text: LoadingSceneText,
     pub main_menu_text: MainMenuText,
     pub options_text: OptionsText,
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
+pub struct LoadingSceneText{
+    pub loading: String,
+}
+
+#[derive( Serialize, Deserialize, Debug, Clone )]
 pub struct MainMenuText{
-    pub start: String,
+    pub play: String,
     pub save: String,
     pub load: String,
     pub options: String,
@@ -22,8 +28,9 @@ pub struct MainMenuText{
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
 pub struct OptionsText{
+    pub options: String,
+    pub enable_music: String,
     pub enable_sound: String,
-    pub enable_music: String, 
     pub language: String,
     pub back_to_main_menu: String,
 }

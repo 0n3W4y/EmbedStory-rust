@@ -1,0 +1,19 @@
+{
+    "loading_scene_text":{
+        "loading": "Загрузка..."
+    },
+    "main_menu_text": {
+        "play": "Играть",
+        "save": "Сохранить",
+        "load": "Загрузить",
+        "options": "Настройки",
+        "exit": "Выход"
+    },
+    "options_text":{
+        "options": "Настройки",
+        "enable_music": "Включить музыку",
+        "enable_sound": "Включить звук",
+        "language": "Язык",
+        "back_to_main_menu": "Назад"
+    } 
+}

@@ -5,6 +5,9 @@ use bevy::{
 
 mod config;
 mod resources;
+mod scenes;
+mod materials;
+mod plugins;
 
 use config::*;
 
@@ -27,13 +30,13 @@ fn main(){
         })
         .init_resource::<resources::setting::Setting>()
         .init_resource::<resources::dictionary::Dictionary>()
-        //.add_state(scenes::SceneState::LoadingScene)
+        .add_state(scenes::SceneState::LoadingScene)
         //.add_startup_system(plugins::music::background_audio_channel_setup)
         //.add_system(plugins::music::play_background_music)
-        //.add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins)
         //.add_plugin(AudioPlugin)
-        //.add_plugin(plugins::camera::CameraPlugin)
-        //.add_plugin(scenes::loading_scene::LoadingScenePlugin)
+        .add_plugin(plugins::camera::CameraPlugin)
+        .add_plugin(scenes::loading_scene::LoadingScenePlugin)
         //.add_plugin(scenes::main_menu_scene::MainMenuScenePlugin)
         //.add_plugin(scenes::highscore_scene::HighscoreScenePlugin)
         //.add_plugin(scenes::options_scene::OptionsScenePlugin)

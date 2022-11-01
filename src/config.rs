@@ -8,8 +8,8 @@ pub const WINDOW_HEIGHT: f32 = 768.0;
 pub const MONITOR_HEIGHT: f32 = 1080.0;
 pub const MONITOR_WIDTH: f32 = 1920.0;
 
-pub const MAIN_MENU_BACKGROUND_IMAGE: &str = "assets/images/main_menu_background.png";
-pub const SUB_MENU_BACKGROUND_IMAGE: &str = "assets/images/sub_menu_background.png";
+pub const MAIN_MENU_BACKGROUND_IMAGE: &str = "images/main_menu_background.png";
+pub const SUB_MENU_BACKGROUND_IMAGE: &str = "images/sub_menu_background.png";
 
 pub const TILE_SIZE: usize = 128;
 
@@ -17,7 +17,7 @@ pub const ENGLISH_LANGUAGE_FILE: &str = "glossary/english.json";
 pub const RUSSIAN_LANGUAGE_FILE: &str = "glossary/russian.json";
 pub const SETTING_FILE: &str = "setting.json";
 
-pub const FIRASANS_BOLD_FONT: &str = "assets/fonts/FiraSans-Bold.ttf";
+pub const FIRASANS_BOLD_FONT: &str = "fonts/FiraSans-Bold.ttf";
 
 pub const DEPLOY_CONFIG_TILE: &str = "deploy/tile_config.json";
 

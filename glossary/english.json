@@ -1,10 +1,13 @@
 {
-    "main_menu_scene_text": {
+    "loading_scene_text":{
+        "loading": "Loading..."
+    },
+    "main_menu_text": {
         "play": "Play",
         "save": "Save",
         "load": "Load",
         "options": "Options",
-        "quit": "Quit"
+        "exit": "Exit"
     },
     "options_text":{
         "options": "Options",
@@ -12,5 +15,5 @@
         "enable_sound": "Enable sound",
         "language": "Language",
         "back_to_main_menu": "Back"
-    }
+    }    
 }
