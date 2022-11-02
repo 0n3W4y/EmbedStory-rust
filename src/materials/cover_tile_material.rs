@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 #[derive( Debug, Clone )]
-pub struct CoverTiles{
+pub struct CoverTileMaterial{
     pub grass: Handle<Image>,
     pub sand: Handle<Image>,
     pub snow: Handle<Image>,

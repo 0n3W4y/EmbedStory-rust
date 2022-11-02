@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 #[derive( Debug, Clone )]
-pub struct GroundTiles{
+pub struct GroundTileMaterial{
     pub earth: Handle<Image>,
     pub dry_earth: Handle<Image>,
     pub dirt: Handle<Image>,
