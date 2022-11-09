@@ -54,7 +54,7 @@ impl MaterialManager{
 
     fn load_main_menu_scene_material( asset_server: &Res<AssetServer> ) -> MainMenuSceneMaterial{
         return MainMenuSceneMaterial { 
-            main_menu_background_image: asset_server.load( "" ), 
+            main_menu_background_image: asset_server.load( "images/main_menu_scene/main_menu_background.png" ), 
         }
     }
 
