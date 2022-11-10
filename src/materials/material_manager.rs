@@ -42,13 +42,13 @@ impl MaterialManager{
 
     fn load_cover_tile_material( asset_server: &Res<AssetServer> ) -> CoverTileMaterial{
         return CoverTileMaterial{
-            grass: asset_server.load( "" ),
-            sand: asset_server.load( "" ),
-            snow: asset_server.load( "" ),
-            shallow: asset_server.load( "" ),
-            water: asset_server.load( "" ),
-            ice: asset_server.load( "" ),
-            wooden_floor: asset_server.load( "" ),
+            grass: asset_server.load( "textures/tiles/cover/grass_01.png" ),
+            sand: asset_server.load( "texture/tiles/cover/sand_01.png" ),
+            snow: asset_server.load( "textures/tiles/cover/snow_01.png" ),
+            shallow: asset_server.load( "textures/tiles/cover/shallow_01.png" ),
+            water: asset_server.load( "textures/tiles/cover/water_01.png" ),
+            ice: asset_server.load( "textures/tiles/cover/ice_01.png" ),
+            wooden_floor: asset_server.load( "textures/tiles/cover/wooden_floor_01.png" ),
         }
     }
 
