@@ -37,7 +37,7 @@ fn main(){
         //.add_plugin(AudioPlugin)
         .add_plugin(plugins::camera::CameraPlugin)
         .add_plugin(scenes::loading_scene::LoadingScenePlugin)
-        //.add_plugin(scenes::main_menu_scene::MainMenuScenePlugin)
+        .add_plugin(scenes::main_menu_scene::MainMenuScenePlugin)
         //.add_plugin(scenes::highscore_scene::HighscoreScenePlugin)
         //.add_plugin(scenes::options_scene::OptionsScenePlugin)
         //.add_plugin(scenes::help_scene::HelpScenePlugin)

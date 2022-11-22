@@ -23,7 +23,7 @@ pub struct MainMenuText{
     pub save: String,
     pub load: String,
     pub options: String,
-    pub exit: String,
+    pub quit: String,
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
