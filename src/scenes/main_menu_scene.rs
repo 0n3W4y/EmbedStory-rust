@@ -6,10 +6,10 @@ use crate::scenes::SceneState;
 use crate::resources::dictionary::Dictionary;
 use crate::materials::font::FontMaterials;
 use crate::materials::material_manager::MaterialManager;
-use crate::config::{ MAIN_MENU_FONT_SIZE, MONITOR_HEIGHT };
+use crate::config::{ MAIN_MENU_BUTTON_FONT_SIZE, MONITOR_HEIGHT };
 
 const MAIN_MENU_BUTTON_WIDTH: f32 = 150.0;
-const MAIN_MENU_BUTTON_HEIGHT: f32 = MAIN_MENU_FONT_SIZE + 10.0;
+const MAIN_MENU_BUTTON_HEIGHT: f32 = MAIN_MENU_BUTTON_FONT_SIZE + 10.0;
 
 #[derive(Component, Copy, Clone)]
 enum ButtonComponent{
@@ -52,7 +52,7 @@ fn setup( mut commands: Commands, dictionary: Res<Dictionary>, font: Res<FontMat
                 size: Size::new( Val::Percent(100.0), Val::Percent( 100.0 )),
                 ..Default::default()
             },
-            image: UiImage( material_manager.main_menu_scene_material.main_menu_background_image.clone() ),
+            image: UiImage( material_manager.main_menu_scene_material.background_image.clone() ),
             ..Default::default()
         })
         .with_children(|parent|{
@@ -110,7 +110,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                     text,
                     TextStyle {
                         font: font.get_font( dictionary.get_current_language() ),
-                        font_size: MAIN_MENU_FONT_SIZE,
+                        font_size: MAIN_MENU_BUTTON_FONT_SIZE,
                         color: Color::GRAY,
                     },
                     TextAlignment {

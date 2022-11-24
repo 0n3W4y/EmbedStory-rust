@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 #[derive( Debug, Clone )]
 pub struct OptionsSceneMaterial{
+    pub background_image: Handle<Image>,
     pub sound_off: Handle<Image>,
     pub sound_on: Handle<Image>,
     pub sound_hovered: Handle<Image>,

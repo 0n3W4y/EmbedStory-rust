@@ -9,7 +9,7 @@ use crate::materials::options_scene_material::OptionsSceneMaterial;
 #[derive( Debug, Clone )]
 pub struct MaterialManager {
     pub main_menu_scene_material: MainMenuSceneMaterial,
-    pub option_scene_material: OptionsSceneMaterial,
+    pub options_scene_material: OptionsSceneMaterial,
     pub ground_tile_material: GroundTileMaterial,
     pub cover_tile_material: CoverTileMaterial,
     //pub character_texture: Characters,
@@ -23,7 +23,7 @@ impl MaterialManager{
     pub fn new( asset_server: &Res<AssetServer> ) -> Self {
         return MaterialManager { 
             main_menu_scene_material: MaterialManager::load_main_menu_scene_material( asset_server ),
-            option_scene_material: MaterialManager::load_options_scene_material( asset_server ),
+            options_scene_material: MaterialManager::load_options_scene_material( asset_server ),
             ground_tile_material: MaterialManager::load_ground_tile_material( asset_server ),
             cover_tile_material: MaterialManager::load_cover_tile_material( asset_server ),
         }
@@ -54,12 +54,13 @@ impl MaterialManager{
 
     fn load_main_menu_scene_material( asset_server: &Res<AssetServer> ) -> MainMenuSceneMaterial{
         return MainMenuSceneMaterial { 
-            main_menu_background_image: asset_server.load( "images/main_menu_scene/main_menu_background.png" ), 
+            background_image: asset_server.load( "images/main_menu_scene/background_image.png" ), 
         }
     }
 
     fn load_options_scene_material( asset_server: &Res<AssetServer> ) -> OptionsSceneMaterial{
         return OptionsSceneMaterial {
+            background_image: asset_server.load( "images/options_scene/background_image.png" ),
             sound_off: asset_server.load( "images/options_scene/sound_off.png" ),
             sound_on: asset_server.load( "images/options_scene/sound_on.png" ),
             sound_hovered: asset_server.load( "images/options_scene/sound_hovered.png" ),

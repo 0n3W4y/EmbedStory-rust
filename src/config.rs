@@ -18,7 +18,7 @@ pub const FIRASANS_BOLD_FONT: &str = "fonts/FiraSans-Bold.ttf";
 
 pub const DEPLOY_CONFIG_TILE: &str = "deploy/tile_config.json";
 
-pub const MAIN_MENU_FONT_SIZE: f32 = 32.0;
+pub const MAIN_MENU_BUTTON_FONT_SIZE: f32 = 32.0;
 
 /*
 pub const VIETNAMESE_LANGUAGE_FILE: &str = "vietnamese.json";
