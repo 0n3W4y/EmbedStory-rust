@@ -10,6 +10,10 @@ use crate::scenes::SceneState;
 const OPTIONS_SCENE_BUTTON_WIDTH: f32 = 150.0;
 const OPTIONS_SCENE_BUTTON_HEIGHT: f32 = 40.0;
 
+const TEXT_TOP_POSITION: f32 = 300.0;
+const TEXT_LEFT_POSITION: f32 = 200.0;
+const TEXT_SKIP_HEIGHT: f32 = 10.0;
+
 #[derive(Component, Copy, Clone)]
 enum ButtonComponent{
     EnableSound,
@@ -52,7 +56,7 @@ impl Plugin for OptionsScenePlugin{
 fn setup( 
     mut commands: Commands, 
     font: Res<FontMaterials>,
-    scenes_material: Res<MaterialManager>, 
+    material_manager: Res<MaterialManager>, 
     setting: Res<Setting>, 
     dictionary: Res<Dictionary> 
     ){
@@ -62,12 +66,12 @@ fn setup(
                     size: Size::new( Val::Percent( 100.0), Val::Percent( 100.0 )),
                     ..Default::default()
                 },
-                image: UiImage( scenes_material.options_scene_material.background_image.clone() ),
+                image: UiImage( material_manager.options_scene_material.background_image.clone() ),
                 ..Default::default()
             })
             .with_children( |parent|{
                 texts( parent, &font, &dictionary );
-                buttons();
+                buttons( parent, &setting, &material_manager );
                 pair_buttons();
             })
             .id();
@@ -78,8 +82,8 @@ fn setup(
 }
 
 fn cleanup( 
-    mut commands: Commands, 
-    setting: Res<Setting>, 
+    mut commands: Commands,
+    setting: Res<Setting>,
     option_scene_data: Res<OptionsSceneData> 
     ){
         setting.save_setting();
@@ -90,7 +94,67 @@ fn texts( parent: &mut ChildBuilder, font_material: &Res<FontMaterials>, diction
     let font = font_material.get_font( dictionary.get_current_language() );
     let glossary = dictionary.get_glossary();
 
-    parent.spawn_bundle( NodeBundle{
-        ..Default::default()
-    })
+    for( index, prevalue ) in TextComponent::iterator().enumerate(){
+        let value: String = match index{
+            0 => glossary.options_text.options.clone(),
+            1 => glossary.options_text.enable_music.clone(),
+            2 => glossary.options_text.enable_sound.clone(),
+            3 => glossary.options_text.language.clone(),
+            _ => panic!( "Error in options_scene.rs TextComponent not available" ),
+        };
+
+        let component_name = match index {
+            0 => "OptionsText",
+            1 => "EnableMusicText",
+            2 => "EnableSoundText",
+            3 => "LanguageText",
+            _ => "Unknown text",
+        };
+
+        let top_position: f32 = TEXT_TOP_POSITION + index as f32 * TEXT_SKIP_HEIGHT;
+        let left_position: f32 = match index {
+            0 => TEXT_LEFT_POSITION + 100.0,
+            _ => TEXT_LEFT_POSITION,
+        };
+
+        let font_size: f32 = match index {
+            0 => 52.0,
+            _ => 32.0,
+        };
+
+        parent.spawn_bundle( TextBundle{
+            style: Style{
+                position_type: PositionType::Absolute,
+                position: Rect{
+                    left: Val::Px( left_position ),
+                    top: Val::Px( top_position ),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            text: Text::with_section(
+                value, 
+                TextStyle {
+                    font: font.clone(),
+                    font_size,
+                    color: Color::BLACK,
+                },
+                TextAlignment {
+                    vertical: VerticalAlign::Center,
+                    horizontal: HorizontalAlign::Center,
+                },
+            ),
+            ..Default::default()
+        })
+        .insert(Name::new(component_name))
+        .insert(prevalue.clone());
+    };
+}
+
+fn buttons( parent: &mut ChildBuilder, setting: &Setting, scenes_material: &MaterialManager ){
+    for( index, button_component ) in ButtonComponent.iterator().enumerate(){
+        parent.spawn_bundle( ButtonBundle{
+            
+        } )
+    }
 }
