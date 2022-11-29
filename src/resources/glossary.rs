@@ -33,6 +33,8 @@ pub struct OptionsText{
     pub enable_sound: String,
     pub language: String,
     pub back_to_main_menu: String,
+    pub on: String,
+    pub off: String,
 }
 
 impl Glossary{

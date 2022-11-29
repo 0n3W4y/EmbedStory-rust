@@ -14,6 +14,8 @@
         "enable_music": "Включить музыку",
         "enable_sound": "Включить звук",
         "language": "Язык",
-        "back_to_main_menu": "Назад"
+        "back_to_main_menu": "Назад",
+        "on": "Вкл.",
+        "off": "Выкл."
     } 
 }
