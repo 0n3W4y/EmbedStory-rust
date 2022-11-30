@@ -61,12 +61,6 @@ impl MaterialManager{
     fn load_options_scene_material( asset_server: &Res<AssetServer> ) -> OptionsSceneMaterial{
         return OptionsSceneMaterial {
             background_image: asset_server.load( "images/options_scene/background_image.png" ),
-            sound_off: asset_server.load( "images/options_scene/sound_off.png" ),
-            sound_on: asset_server.load( "images/options_scene/sound_on.png" ),
-            sound_hovered: asset_server.load( "images/options_scene/sound_hovered.png" ),
-            music_off: asset_server.load( "images/options_scene/music_off.png" ),
-            music_on: asset_server.load( "images/options_scene/music_on.png" ),
-            music_hovered: asset_server.load( "images/options_scene/music_hovered.png" ),
             language_ru: asset_server.load( "images/options_scene/language_ru.png" ),
             language_en: asset_server.load( "images/options_scene/language_en.png" ),
         }
