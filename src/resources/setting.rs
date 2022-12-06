@@ -26,7 +26,7 @@ impl Setting{
         return self.enable_sound;
     }
 
-    pub fn get_enable_misuc( &self ) -> bool{
+    pub fn get_enable_music( &self ) -> bool{
         return self.enable_music;
     }
 

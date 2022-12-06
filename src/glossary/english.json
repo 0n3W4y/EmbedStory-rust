@@ -14,6 +14,8 @@
         "enable_music": "Enable music",
         "enable_sound": "Enable sound",
         "language": "Language",
-        "back_to_main_menu": "Back"
+        "return_back": "Back",
+        "on": "On",
+        "off": "Off"
     }    
 }

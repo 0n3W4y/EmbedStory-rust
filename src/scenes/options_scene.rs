@@ -11,10 +11,14 @@ use crate::resources::language::Language;
 const OPTIONS_SCENE_RETURN_BUTTON_WIDTH: f32 = 150.0;
 const OPTIONS_SCENE_RETURN_BUTTON_HEIGHT: f32 = 40.0;
 
+const OPTIONS_SCENE_RETURN_BUTTON_LEFT_POSITION: f32 = 100.0;
+const OPTIONS_SCENE_RETURN_BUTTON_BOTTOM_POSITION: f32 = 100.0;
+
 const OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH: f32 = 80.0;
 const OPTIONS_SCENE_ON_OFF_BUTTON_HEIGHT: f32 = 40.0;
 
 const OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED: Color = Color::Rgba{ red:( 200.0 / 255.0 ), green:( 100.0 / 255.0 ) , blue:( 70.0 / 255.0 ) , alpha: 1.0 };
+const OPTIONS_SCENE_ON_OFF_BUTTON_HOVER: Color = Color::Rgba{ red:( 150.0 / 255.0 ), green:( 75.0 / 255.0 ), blue:( 45.0 / 255.0 ), alpha: 1.0 };
 const OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL: Color = Color::Rgba{ red:( 100.0 / 255.0 ), green:( 50.0 / 255.0 ) , blue:( 20.0 / 255.0 ) , alpha: 1.0 };
 
 const OPTIONS_SCENE_LANGUAGE_BUTTON_NORMAL_COLOR: Color = Color::Rgba{ red:( 175.0 / 255.0 ), green:( 0.0 ), blue:( 0.0 ), alpha: 0.5 };
@@ -40,6 +44,12 @@ const TEXT_FONT_SIZE: f32 = 32.0;
 enum ButtonComponent{
     EnableMusic,
     EnableSound,
+}
+
+#[derive( Component, Copy, Clone)]
+enum OnOffButtonComponent{
+    On,
+    Off,
 }
 
 impl ButtonComponent{
@@ -86,6 +96,9 @@ impl TextComponent{
 }
 pub struct OptionsScenePlugin;
 
+#[derive( Component )]
+pub struct ReturnButton;
+
 struct OptionsSceneData{
     user_interface_root: Entity,
 }
@@ -93,7 +106,7 @@ struct OptionsSceneData{
 impl Plugin for OptionsScenePlugin{
     fn build( &self, app: &mut App ){
         app.add_system_set( SystemSet::on_enter( SceneState::OptionsScene ).with_system( setup ));
-        app.add_system_set( SystemSet::on_update( SceneState::OptionsScene ).with_system( update ));
+        app.add_system_set( SystemSet::on_update( SceneState::OptionsScene ).with_system( update_options_button ));
         app.add_system_set( SystemSet::on_exit( SceneState::OptionsScene ).with_system( cleanup ));
     }
 }
@@ -218,16 +231,6 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
             height: Val::Px( OPTIONS_SCENE_ON_OFF_BUTTON_HEIGHT ),
         };
 
-        let component_name_button_on = match button_component{
-            ButtonComponent::EnableMusic => "EnableMusicOn",
-            ButtonComponent::EnableSound => "EnableSoundOn",
-        };
-
-        let component_name_button_off: &str = match button_component{
-            ButtonComponent::EnableMusic => "EnableMusicOff",
-            ButtonComponent::EnableSound => "EnableSoundOff",
-        };
-
         let font = font_material.get_font( dictionary.get_current_language() );
         let text_button_on = dictionary.get_glossary().options_text.on.clone();
         let text_button_off = dictionary.get_glossary().options_text.off.clone();
@@ -290,7 +293,7 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
             });
         })
         .insert( button_component.clone())
-        .insert( Name::new( component_name_button_on ));
+        .insert( OnOffButtonComponent::On.clone() );
 
         parent.spawn_bundle( ButtonBundle{
             style: Style{
@@ -321,7 +324,7 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
             });
         })
         .insert( button_component.clone() )
-        .insert( Name::new( component_name_button_off ));
+        .insert( OnOffButtonComponent::Off.clone() );
     }
 }
 
@@ -377,5 +380,73 @@ fn language_buttons( parent: &mut ChildBuilder, setting: &Setting, material_mana
 }
 
 fn return_button( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: &Dictionary ){
+    let font = font_material.get_font( dictionary.get_current_language() );
+    parent.spawn_bundle( ButtonBundle{
+        style: Style{
+            position: Rect { 
+                left: Val::Px( OPTIONS_SCENE_RETURN_BUTTON_LEFT_POSITION ), 
+                right: Val::Auto, 
+                top: Val::Auto, 
+                bottom: Val::Px( OPTIONS_SCENE_RETURN_BUTTON_BOTTOM_POSITION ) 
+            },
+            size: Size{
+                width: Val::Px( OPTIONS_SCENE_RETURN_BUTTON_WIDTH ),
+                height: Val::Px( OPTIONS_SCENE_RETURN_BUTTON_HEIGHT ),
+            },
+            justify_content: JustifyContent::Center,
+            position_type: PositionType::Absolute,
+            ..Default::default()
+        },
+        color: UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL ),
+        ..Default::default()
+    })
+    .with_children(|root|{
+        root.spawn_bundle( TextBundle{
+            text: Text::with_section(
+                dictionary.get_glossary().options_text.return_back, 
+                TextStyle{
+                    font: font,
+                    font_size: TEXT_OPTIONS_FONT_SIZE,
+                    color: Color::WHITE,
+                }, 
+                TextAlignment {
+                    vertical: VerticalAlign::Center,
+                    horizontal: HorizontalAlign::Center,
+                },
+            ),
+            ..Default::default()
+        });
+    })
+    .insert( Name::new( "Return" ))
+    .insert( ReturnButton );
+}
 
+fn update_options_button(
+    mut button_query: Query<( &Interaction, &ButtonComponent, &mut UiColor, &OnOffButtonComponent ),( Changed<Interaction>, With<Button> )>,
+    mut setting: ResMut<Setting>,
+){
+    for( interaction, button, mut color, on_off_button ) in button_query.iter_mut(){
+        match *button{
+            ButtonComponent::EnableMusic => match *interaction{
+                Interaction::None => {
+                    if setting.get_enable_music(){
+                        match on_off_button {
+                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
+                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
+                        }
+                    }else{
+                        match on_off_button {
+                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
+                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
+                        }
+                    }                    
+                },
+                Interaction::Hovered => {},
+                Interaction::Clicked => {},
+            },
+            ButtonComponent::EnableSound => match *interaction{
+
+            }
+        }
+    }
 }
