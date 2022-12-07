@@ -25,16 +25,16 @@ const OPTIONS_SCENE_LANGUAGE_BUTTON_NORMAL_COLOR: Color = Color::Rgba{ red:( 175
 const OPTIONS_SCENE_LANGUAGE_BUTTON_HOVER_COLOR: Color = Color::Rgba{ red:( 0.0 ), green:( 75.0 / 255.0 ), blue:( 0.0 ), alpha: 0.5 };
 const OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR: Color = Color::Rgba{ red:( 0.0 ), green:( 175.0/ 255.0 ), blue:( 0.0 ), alpha: 0.5 };
 
-const TEXT_OPTIONS_TOP_POSITION: f32 = 300.0;
+const TEXT_OPTIONS_TOP_POSITION: f32 = 100.0;
 const TEXT_OPTIONS_LEFT_POSITION: f32 = 300.0;
 
-const TEXT_ENABLESOUND_TOP_POSITION: f32 = 400.0;
+const TEXT_ENABLESOUND_TOP_POSITION: f32 = 180.0;
 const TEXT_ENABLESOUND_LEFT_POSITION: f32 = 300.0;
 
-const TEXT_ENABLEMUSIC_TOP_POSITION: f32 = 450.0;
+const TEXT_ENABLEMUSIC_TOP_POSITION: f32 = 240.0;
 const TEXT_ENABLEMUSIC_LEFT_POSITION: f32 = 300.0;
 
-const TEXT_LANGUAGE_TOP_POSITION: f32 = 500.0;
+const TEXT_LANGUAGE_TOP_POSITION: f32 = 300.0;
 const TEXT_LANGUAGE_LEFT_POSITION: f32 = 300.0;
 
 const TEXT_OPTIONS_FONT_SIZE: f32 = 52.0;
@@ -96,7 +96,7 @@ impl TextComponent{
 }
 pub struct OptionsScenePlugin;
 
-#[derive( Component )]
+#[derive( Component, PartialEq, Eq )]
 pub struct ReturnButton;
 
 struct OptionsSceneData{
@@ -106,7 +106,12 @@ struct OptionsSceneData{
 impl Plugin for OptionsScenePlugin{
     fn build( &self, app: &mut App ){
         app.add_system_set( SystemSet::on_enter( SceneState::OptionsScene ).with_system( setup ));
-        app.add_system_set( SystemSet::on_update( SceneState::OptionsScene ).with_system( update_options_button ));
+        app.add_system_set( SystemSet::on_update( SceneState::OptionsScene )
+            .with_system( update_options_button )
+            .with_system( update_return_button )
+            .with_system( update_language_button )
+            .with_system( update_text )
+        );
         app.add_system_set( SystemSet::on_exit( SceneState::OptionsScene ).with_system( cleanup ));
     }
 }
@@ -114,8 +119,7 @@ impl Plugin for OptionsScenePlugin{
 fn setup( 
     mut commands: Commands, 
     font: Res<FontMaterials>,
-    material_manager: Res<MaterialManager>, 
-    setting: Res<Setting>, 
+    material_manager: Res<MaterialManager>,
     dictionary: Res<Dictionary> 
     ){
         let user_interface_root = commands
@@ -129,8 +133,8 @@ fn setup(
             })
             .with_children( |parent|{
                 texts( parent, &font, &dictionary );
-                buttons( parent, &setting, &font, &dictionary );
-                language_buttons( parent, &setting, &material_manager, &font, &dictionary );
+                buttons( parent, &font, &dictionary );
+                language_buttons( parent, &material_manager, &dictionary );
                 return_button( parent, &font, &dictionary );
             })
             .id();
@@ -224,7 +228,7 @@ fn texts( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: 
     };
 }
 
-fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMaterials, dictionary: &Dictionary ){
+fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: &Dictionary ){
     for( index, button_component ) in ButtonComponent::iterator().enumerate(){
         let size = Size{
             width: Val::Px( OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
@@ -251,15 +255,15 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
         };
         let position_button_off: Rect<Val> = match button_component{ 
             ButtonComponent::EnableMusic => Rect { 
-                left: Val::Px( TEXT_ENABLEMUSIC_LEFT_POSITION + 300.0 ),
-                right: Val::Px( TEXT_ENABLEMUSIC_TOP_POSITION ), 
-                top: Val::Auto, 
+                left: Val::Px( TEXT_ENABLEMUSIC_LEFT_POSITION + 300.0 + OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
+                top: Val::Px( TEXT_ENABLEMUSIC_TOP_POSITION ), 
+                right: Val::Auto, 
                 bottom: Val::Auto,
             },
             ButtonComponent::EnableSound => Rect {
-                left: Val::Px( TEXT_ENABLESOUND_LEFT_POSITION + 300.0 ),
-                right: Val::Px( TEXT_ENABLESOUND_TOP_POSITION ), 
-                top: Val::Auto, 
+                left: Val::Px( TEXT_ENABLESOUND_LEFT_POSITION + 300.0 + OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
+                top: Val::Px( TEXT_ENABLESOUND_TOP_POSITION ), 
+                right: Val::Auto, 
                 bottom: Val::Auto,
             },
         };
@@ -280,8 +284,8 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
                 text: Text::with_section(
                     text_button_on, 
                     TextStyle{
-                        font: font,
-                        font_size: TEXT_OPTIONS_FONT_SIZE,
+                        font: font.clone(),
+                        font_size: TEXT_FONT_SIZE,
                         color: Color::WHITE,
                     }, 
                     TextAlignment {
@@ -311,8 +315,8 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
                 text: Text::with_section(
                     text_button_off, 
                     TextStyle{
-                        font: font,
-                        font_size: TEXT_OPTIONS_FONT_SIZE,
+                        font: font.clone(),
+                        font_size: TEXT_FONT_SIZE,
                         color: Color::WHITE,
                     }, 
                     TextAlignment {
@@ -328,7 +332,7 @@ fn buttons( parent: &mut ChildBuilder, setting: &Setting, font_material: &FontMa
     }
 }
 
-fn language_buttons( parent: &mut ChildBuilder, setting: &Setting, material_manager: &MaterialManager, font_material: &FontMaterials, dictionary: &Dictionary ){
+fn language_buttons( parent: &mut ChildBuilder, material_manager: &MaterialManager, dictionary: &Dictionary ){
     for( index, button_component ) in LanguageButtonComponent::iterator().enumerate(){
         let position = Rect{ 
                 left: Val::Px( TEXT_LANGUAGE_LEFT_POSITION + 300.0 + index as f32 * OPTIONS_SCENE_ON_OFF_BUTTON_HEIGHT ),
@@ -380,7 +384,7 @@ fn language_buttons( parent: &mut ChildBuilder, setting: &Setting, material_mana
 }
 
 fn return_button( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: &Dictionary ){
-    let font = font_material.get_font( dictionary.get_current_language() );
+    let font = font_material.get_font( dictionary.get_current_language() ).clone();
     parent.spawn_bundle( ButtonBundle{
         style: Style{
             position: Rect { 
@@ -441,12 +445,113 @@ fn update_options_button(
                         }
                     }                    
                 },
-                Interaction::Hovered => {},
-                Interaction::Clicked => {},
+                Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER )},
+                Interaction::Clicked => {
+                    match on_off_button {
+                        OnOffButtonComponent::On => { 
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                            setting.set_enable_music( true ) 
+                        },
+                        OnOffButtonComponent::Off => { 
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
+                            setting.set_enable_music( false )
+                        },
+                    }
+                },
             },
             ButtonComponent::EnableSound => match *interaction{
-
+                Interaction::None =>{
+                    if setting.get_enable_sound(){
+                        match on_off_button{
+                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
+                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
+                        }
+                    }else{
+                        match on_off_button{
+                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
+                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
+                        }
+                    }
+                },
+                Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER )},
+                Interaction::Clicked => {
+                    match on_off_button{
+                        OnOffButtonComponent::On => { 
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                            setting.set_enable_sound( true );
+                        },
+                        OnOffButtonComponent::Off => { 
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
+                            setting.set_enable_sound( false );
+                        },
+                    }
+                },
             }
         }
     }
+}
+
+fn update_return_button( 
+    mut button_query: Query<( &Interaction, &ReturnButton, &mut UiColor), ( Changed<Interaction>, With<Button> )>,
+    mut state: ResMut<State<SceneState>>,
+){
+    for( interaction, button, mut color ) in button_query.iter_mut(){
+        if *button == ReturnButton{
+            match *interaction{
+                Interaction::None => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
+                Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER )},
+                Interaction::Clicked => { 
+                    *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                    state.set( SceneState::MainMenuScene )
+                        .expect( "Couldn't switch state to Main Menu Scene" );
+                },
+            }
+        }        
+    }
+}
+
+fn update_language_button( 
+    mut button_query: Query<( &Interaction, &LanguageButtonComponent, &mut UiColor ), ( Changed<Interaction>, With<Button> )>,
+    mut setting: ResMut<Setting>
+){
+    for( interaction, button, mut color ) in button_query.iter_mut(){
+        match *button{
+            LanguageButtonComponent::LanguageEN => {
+                match *interaction{
+                    Interaction::None => {
+                        if setting.get_language() == Language::EN {
+                            *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR );
+                        }else{
+                            *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_NORMAL_COLOR );
+                        }
+                    },
+                    Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_HOVER_COLOR )},
+                    Interaction::Clicked => { 
+                        *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR );
+                        setting.set_language( Language::EN );
+                    },
+                }
+            },
+            LanguageButtonComponent::LanguageRU => {
+                match *interaction{
+                    Interaction::None => {
+                        if setting.get_language() == Language::RU {
+                            *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR );
+                        }else{
+                            *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_NORMAL_COLOR );
+                        }
+                    },
+                    Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_HOVER_COLOR )},
+                    Interaction::Clicked => { 
+                        *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR );
+                        setting.set_language( Language::RU );
+                    },
+                }
+            },
+        }
+    }
+}
+
+fn update_text( ){
+
 }

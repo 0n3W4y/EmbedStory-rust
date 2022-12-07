@@ -60,7 +60,7 @@ impl Glossary{
                 let glossary = serde_json::from_str( &contents ).unwrap_or_else(|_| { panic!("{}", err_msg )});
                 return glossary;
             }
-            Err( err ) => panic!( "Can not open language file: {}", err ),
+            Err( err ) => panic!( "Can not open language file: {}, {}", err, file_name ),
         }
     }  
 }

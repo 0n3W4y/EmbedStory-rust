@@ -39,7 +39,7 @@ fn main(){
         .add_plugin(scenes::loading_scene::LoadingScenePlugin)
         .add_plugin(scenes::main_menu_scene::MainMenuScenePlugin)
         //.add_plugin(scenes::highscore_scene::HighscoreScenePlugin)
-        //.add_plugin(scenes::options_scene::OptionsScenePlugin)
+        .add_plugin(scenes::options_scene::OptionsScenePlugin)
         //.add_plugin(scenes::help_scene::HelpScenePlugin)
         //.add_plugin(scenes::credits_scene::CreditsScenePlugin)
         //.add_plugin(scenes::game_mode_select_scene::GameModeSelectScenePlugin)

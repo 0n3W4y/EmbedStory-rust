@@ -10,8 +10,8 @@ pub const MONITOR_WIDTH: f32 = 1920.0;
 
 pub const TILE_SIZE: usize = 128;
 
-pub const ENGLISH_LANGUAGE_FILE: &str = "glossary/english.json";
-pub const RUSSIAN_LANGUAGE_FILE: &str = "glossary/russian.json";
+pub const ENGLISH_LANGUAGE_FILE: &str = "src/glossary/english.json";
+pub const RUSSIAN_LANGUAGE_FILE: &str = "src/glossary/russian.json";
 pub const SETTING_FILE: &str = "setting.json";
 
 pub const FIRASANS_BOLD_FONT: &str = "fonts/FiraSans-Bold.ttf";
