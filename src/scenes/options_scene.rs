@@ -17,13 +17,13 @@ const OPTIONS_SCENE_RETURN_BUTTON_BOTTOM_POSITION: f32 = 100.0;
 const OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH: f32 = 80.0;
 const OPTIONS_SCENE_ON_OFF_BUTTON_HEIGHT: f32 = 40.0;
 
-const OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED: Color = Color::Rgba{ red:( 200.0 / 255.0 ), green:( 100.0 / 255.0 ) , blue:( 70.0 / 255.0 ) , alpha: 1.0 };
+const OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED: Color = Color::Rgba{ red:( 10.0 / 255.0 ), green:( 200.0 / 255.0 ) , blue:( 70.0 / 255.0 ) , alpha: 1.0 };
 const OPTIONS_SCENE_ON_OFF_BUTTON_HOVER: Color = Color::Rgba{ red:( 150.0 / 255.0 ), green:( 75.0 / 255.0 ), blue:( 45.0 / 255.0 ), alpha: 1.0 };
 const OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL: Color = Color::Rgba{ red:( 100.0 / 255.0 ), green:( 50.0 / 255.0 ) , blue:( 20.0 / 255.0 ) , alpha: 1.0 };
 
-const OPTIONS_SCENE_LANGUAGE_BUTTON_NORMAL_COLOR: Color = Color::Rgba{ red:( 175.0 / 255.0 ), green:( 0.0 ), blue:( 0.0 ), alpha: 0.5 };
-const OPTIONS_SCENE_LANGUAGE_BUTTON_HOVER_COLOR: Color = Color::Rgba{ red:( 0.0 ), green:( 75.0 / 255.0 ), blue:( 0.0 ), alpha: 0.5 };
-const OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR: Color = Color::Rgba{ red:( 0.0 ), green:( 175.0/ 255.0 ), blue:( 0.0 ), alpha: 0.5 };
+const OPTIONS_SCENE_LANGUAGE_BUTTON_NORMAL_COLOR: Color = Color::Rgba{ red:( 175.0 / 255.0 ), green:( 0.0 ), blue:( 0.0 ), alpha: 1.0 };
+const OPTIONS_SCENE_LANGUAGE_BUTTON_HOVER_COLOR: Color = Color::Rgba{ red:( 0.0 ), green:( 75.0 / 255.0 ), blue:( 0.0 ), alpha: 1.0 };
+const OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR: Color = Color::Rgba{ red:( 0.0 ), green:( 175.0/ 255.0 ), blue:( 0.0 ), alpha: 1.0 };
 
 const TEXT_OPTIONS_TOP_POSITION: f32 = 100.0;
 const TEXT_OPTIONS_LEFT_POSITION: f32 = 300.0;
@@ -111,6 +111,8 @@ impl Plugin for OptionsScenePlugin{
             .with_system( update_return_button )
             .with_system( update_language_button )
             .with_system( update_text )
+            .with_system( update_text_in_on_off_buttons )
+            .with_system( update_text_in_return_button )
         );
         app.add_system_set( SystemSet::on_exit( SceneState::OptionsScene ).with_system( cleanup ));
     }
@@ -229,7 +231,7 @@ fn texts( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: 
 }
 
 fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: &Dictionary ){
-    for( index, button_component ) in ButtonComponent::iterator().enumerate(){
+    for( _index, button_component ) in ButtonComponent::iterator().enumerate(){
         let size = Size{
             width: Val::Px( OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
             height: Val::Px( OPTIONS_SCENE_ON_OFF_BUTTON_HEIGHT ),
@@ -335,7 +337,7 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
 fn language_buttons( parent: &mut ChildBuilder, material_manager: &MaterialManager, dictionary: &Dictionary ){
     for( index, button_component ) in LanguageButtonComponent::iterator().enumerate(){
         let position = Rect{ 
-                left: Val::Px( TEXT_LANGUAGE_LEFT_POSITION + 300.0 + index as f32 * OPTIONS_SCENE_ON_OFF_BUTTON_HEIGHT ),
+                left: Val::Px( TEXT_LANGUAGE_LEFT_POSITION + 300.0 + index as f32 * OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
                 top: Val::Px( TEXT_LANGUAGE_TOP_POSITION ),
                 right: Val::Auto,
                 bottom: Val::Auto,
@@ -430,62 +432,93 @@ fn update_options_button(
     mut setting: ResMut<Setting>,
 ){
     for( interaction, button, mut color, on_off_button ) in button_query.iter_mut(){
-        match *button{
-            ButtonComponent::EnableMusic => match *interaction{
-                Interaction::None => {
-                    if setting.get_enable_music(){
-                        match on_off_button {
-                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
-                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
-                        }
-                    }else{
-                        match on_off_button {
-                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
-                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
-                        }
-                    }                    
+        /*match *button{
+            ButtonComponent::EnableMusic => match *on_off_button{
+                OnOffButtonComponent::On => match *interaction{
+                    Interaction::None =>{},
+                    Interaction::Hovered =>{},
+                    Interaction::Clicked => {},
                 },
-                Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER )},
-                Interaction::Clicked => {
-                    match on_off_button {
-                        OnOffButtonComponent::On => { 
-                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
-                            setting.set_enable_music( true ) 
-                        },
-                        OnOffButtonComponent::Off => { 
-                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
-                            setting.set_enable_music( false )
-                        },
-                    }
-                },
+                OnOffButtonComponent::Off => match *interaction{
+                    Interaction::None => {},
+                    Interaction::Hovered =>{},
+                    Interaction::Clicked =>{},
+                }
             },
-            ButtonComponent::EnableSound => match *interaction{
-                Interaction::None =>{
-                    if setting.get_enable_sound(){
-                        match on_off_button{
-                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
-                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
-                        }
-                    }else{
-                        match on_off_button{
-                            OnOffButtonComponent::On => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL )},
-                            OnOffButtonComponent::Off => {*color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED )},
-                        }
-                    }
+            ButtonComponent::EnableSound => match *on_off_button{
+                OnOffButtonComponent::On => match *interaction{
+                    Interaction::None => {},
+                    Interaction::Hovered => {},
+                    Interaction::Clicked => {},
                 },
-                Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER )},
-                Interaction::Clicked => {
-                    match on_off_button{
-                        OnOffButtonComponent::On => { 
+                OnOffButtonComponent::Off => match *interacrion{
+                    Interaction::None => {},
+                    Interaction::Hovered =>{},
+                    Interaction::Clicked => {},
+                }
+            }
+        }
+        */
+        match *on_off_button{
+            OnOffButtonComponent::On => match *button{
+                ButtonComponent::EnableMusic => match *interaction{
+                    Interaction::None => {
+                        if setting.get_enable_music(){
                             *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
-                            setting.set_enable_sound( true );
-                        },
-                        OnOffButtonComponent::Off => { 
+                        }else{
                             *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
-                            setting.set_enable_sound( false );
-                        },
+                        }
+                    },
+                    Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER );},
+                    Interaction::Clicked =>{
+                        *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        setting.set_enable_music( true );
                     }
                 },
+                ButtonComponent::EnableSound => match *interaction{
+                    Interaction::None => {
+                        if setting.get_enable_music(){
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        }else{
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
+                        }
+                    },
+                    Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER );},
+                    Interaction::Clicked =>{
+                        *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        setting.set_enable_sound( true );
+                    }
+                }
+            },
+            OnOffButtonComponent::Off => match *button{
+                ButtonComponent::EnableMusic => match *interaction{
+                    Interaction::None => {
+                        if setting.get_enable_music(){
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
+                        }else{
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        }
+                    },
+                    Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER );},
+                    Interaction::Clicked =>{
+                        *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        setting.set_enable_music( false );
+                    }
+                },
+                ButtonComponent::EnableSound => match *interaction{
+                    Interaction::None => {
+                        if setting.get_enable_music(){
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_NORMAL );
+                        }else{
+                            *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        }
+                    },
+                    Interaction::Hovered => { *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER );},
+                    Interaction::Clicked =>{
+                        *color = UiColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
+                        setting.set_enable_sound( false );
+                    }
+                }
             }
         }
     }
@@ -512,7 +545,8 @@ fn update_return_button(
 
 fn update_language_button( 
     mut button_query: Query<( &Interaction, &LanguageButtonComponent, &mut UiColor ), ( Changed<Interaction>, With<Button> )>,
-    mut setting: ResMut<Setting>
+    mut setting: ResMut<Setting>,
+    mut dictionary: ResMut<Dictionary>
 ){
     for( interaction, button, mut color ) in button_query.iter_mut(){
         match *button{
@@ -529,6 +563,7 @@ fn update_language_button(
                     Interaction::Clicked => { 
                         *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR );
                         setting.set_language( Language::EN );
+                        dictionary.set_current_language( Language::EN );
                     },
                 }
             },
@@ -545,6 +580,7 @@ fn update_language_button(
                     Interaction::Clicked => { 
                         *color = UiColor( OPTIONS_SCENE_LANGUAGE_BUTTON_SELECTED_COLOR );
                         setting.set_language( Language::RU );
+                        dictionary.set_current_language( Language::RU );
                     },
                 }
             },
@@ -552,6 +588,72 @@ fn update_language_button(
     }
 }
 
-fn update_text( ){
+fn update_text( 
+    mut text_query: Query<( &TextComponent, &mut Text )>,
+    font_material: Res<FontMaterials>,
+    dictionary: Res<Dictionary>
+){
+    
+    let font = font_material.get_font( dictionary.get_current_language() );
+    let glossary = dictionary.get_glossary();
+    if dictionary.is_changed(){
+        for( text_component, mut text ) in text_query.iter_mut(){
+            text.sections[0].style.font = font.clone();
+            match *text_component{
+                TextComponent::EnableMusic => {
+                    text.sections[0].value = glossary.options_text.enable_music.clone();
+                },
+                TextComponent::EnableSound => {
+                    text.sections[0].value = glossary.options_text.enable_sound.clone();
+                },
+                TextComponent::Language => {
+                    text.sections[0].value = glossary.options_text.language.clone();
+                },
+                TextComponent::Options => {
+                    text.sections[0].value = glossary.options_text.options.clone();
+                },
+            }
+        }
+    }
+}
 
+fn update_text_in_on_off_buttons(
+    mut button_query: Query<( &OnOffButtonComponent, &Children ), With<Button>>,
+    mut text_query: Query< &mut Text>,
+    font_material: Res<FontMaterials>,
+    dictionary: Res<Dictionary>
+){
+    let font = font_material.get_font( dictionary.get_current_language() );
+    let glossary = dictionary.get_glossary();
+    if dictionary.is_changed(){
+        for( button, children ) in button_query.iter_mut(){
+            let mut text = text_query.get_mut(children[0]).unwrap();
+            text.sections[0].style.font = font.clone();
+            match *button{
+                OnOffButtonComponent::On =>{
+                    text.sections[0].value = glossary.options_text.on.clone();
+                },
+                OnOffButtonComponent::Off =>{
+                    text.sections[0].value = glossary.options_text.off.clone();
+                }
+            }
+        }
+    }
+}
+
+fn update_text_in_return_button(
+    mut button_query: Query<( &ReturnButton, &Children ), With<Button>>,
+    mut text_query: Query< &mut Text>,
+    font_material: Res<FontMaterials>,
+    dictionary: Res<Dictionary>
+){
+    let font = font_material.get_font( dictionary.get_current_language() );
+    let glossary = dictionary.get_glossary();
+    if dictionary.is_changed(){
+        for( _button, children ) in button_query.iter_mut(){
+            let mut text = text_query.get_mut(children[0]).unwrap();
+            text.sections[0].style.font = font.clone();
+            text.sections[0].value = glossary.options_text.return_back.clone();
+        }
+    }
 }
