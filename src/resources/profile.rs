@@ -49,7 +49,7 @@ impl Profile{
             }
             Err( _err ) => {
                 let mut setting_file = File::create( "profile.json" ).expect( "Can not create profile file" );
-                let setting_str: String = serde_json::to_string( &Setting::new( true, true )).unwrap();
+                let setting_str: String = serde_json::to_string( &Profile::new()).unwrap();
                 setting_file.write( setting_str.as_bytes() ).expect( "Can not write file" );
                 Profile::new()
             }
@@ -57,6 +57,6 @@ impl Profile{
         self.last_save = profile.last_save;
         self.playtime = profile.playtime;
         self.profile_name = profile.profile_name;
-        
+
     }
 }
