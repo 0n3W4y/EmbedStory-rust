@@ -1,8 +1,6 @@
-use std::Vec;
+use crate::resources::gamedata::character::body_part::BodyPart;
 
-use crate::body_part::BodyPart;
-
-pub struct HealthStatsComponent{
+pub struct HealthStats{
     pub head: Option<BodyPart>,
     pub nose: Option<BodyPart>,
     pub left_eye: Option<BodyPart>,
@@ -12,8 +10,8 @@ pub struct HealthStatsComponent{
     pub left_lung: Option<BodyPart>,
     pub right_lung: Option<BodyPart>,
     pub heart: Option<BodyPart>,
-    pub current_health_points: f32,
-    pub total_health_points: f32,
+    pub current_health_points: i16,
+    pub total_health_points: i16,
 }
 
 
