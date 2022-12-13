@@ -1,0 +1,109 @@
+{
+    "none":{
+        "ground_type": "Earth",
+        "cover_type": "None",
+        "can_remove_floor": false,
+        "can_place_floor": true,
+        "can_place_object": true,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 900
+    },
+
+    "grass":{
+        "ground_type": "Earth",
+        "cover_type": "Grass",
+        "can_remove_floor": false,
+        "can_place_floor": true,
+        "can_place_object": true,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 900
+    },
+
+    "sand":{
+        "ground_type": "Earth",
+        "cover_type": "Sand",
+        "can_remove_floor": false,
+        "can_place_floor": true,
+        "can_place_object": true,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 800
+    },
+
+    "snow":{
+        "ground_type": "Earth",
+        "cover_type": "Snow",
+        "can_remove_floor": false,
+        "can_place_floor": true,
+        "can_place_object": true,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 750
+    },
+
+    "water":{
+        "ground_type": "Earth",
+        "cover_type": "Water",
+        "can_remove_floor": false,
+        "can_place_floor": false,
+        "can_place_object": false,
+        "can_remove_object": false,
+        "can_place_stuff": false,
+        "can_walk": true,
+        "movement_ratio": 100
+    },
+
+    "ice":{
+        "ground_type": "Earth",
+        "cover_type": "Ice",
+        "can_remove_floor": false,
+        "can_place_floor": false,
+        "can_place_object": false,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 600
+    },
+
+    "shallow":{
+        "ground_type": "Earth",
+        "cover_type": "Shallow",
+        "can_remove_floor": false,
+        "can_place_floor": false,
+        "can_place_object": false,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 600
+    },
+
+    "wooden_floor":{
+        "ground_type": "Earth",
+        "cover_type": "WoodenFloor",
+        "can_remove_floor": true,
+        "can_place_floor": false,
+        "can_place_object": true,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 1000
+    },
+
+    "rocky_road":{
+        "ground_type": "Earth",
+        "cover_type": "RockyRoad",
+        "can_remove_floor": false,
+        "can_place_floor": true,
+        "can_place_object": true,
+        "can_remove_object": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 1100
+    }
+}
