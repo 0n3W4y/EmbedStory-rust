@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::resources::deploy::Deploy;
 use crate::scenes::SceneState;
 use crate::config::*;
 use crate::resources::dictionary::Dictionary;
@@ -29,8 +30,7 @@ impl Plugin for  LoadingScenePlugin{
         app.add_system_set(
             SystemSet::on_enter( SceneState::LoadingScene )
                 .with_system( setup )
-                .with_system( load_images )
-                //.with_system(load_data),
+                .with_system( load_images ),
         );
         app.add_system_set( SystemSet::on_update( SceneState::LoadingScene ).with_system( update_loader ));
         app.add_system_set( SystemSet::on_exit( SceneState::LoadingScene ).with_system( cleanup ));

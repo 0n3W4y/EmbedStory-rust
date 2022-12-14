@@ -30,6 +30,7 @@ fn main(){
         })
         .init_resource::<resources::setting::Setting>()
         .init_resource::<resources::dictionary::Dictionary>()
+        .init_resource::<resources::deploy::Deploy>()
         .add_state(scenes::SceneState::LoadingScene)
         //.add_startup_system(plugins::music::background_audio_channel_setup)
         //.add_system(plugins::music::play_background_music)

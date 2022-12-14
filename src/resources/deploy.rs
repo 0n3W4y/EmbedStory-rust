@@ -94,7 +94,7 @@ impl Deploy{
 }
 
 impl FromWorld for Deploy{
-    fn from_world( world: &mut World ) -> Self {
+    fn from_world( _world: &mut World ) -> Self {
         let cover_data_path: &str = "deploy/ground_tilemap_tile_cover_config.json";
         let ground_data_path: &str = "deploy/ground_tilemap_tile_ground_config.json";
         
