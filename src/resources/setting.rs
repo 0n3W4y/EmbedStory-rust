@@ -75,7 +75,8 @@ impl Setting{
 impl FromWorld for Setting{
     fn from_world( _world: &mut World ) -> Self{
         let mut setting: Setting = Setting::new( true, true );
-        //setting.load_setting();
+        // first start game will create "default" settings, when exit - settings will be created;
+        setting.load_setting();
         return setting;
     }
 }
