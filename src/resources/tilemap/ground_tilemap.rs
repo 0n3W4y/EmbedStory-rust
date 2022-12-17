@@ -30,6 +30,22 @@ pub struct Biome{
     //pub solids: Vec<Solid>,
 }
 
+#[derive( Deserialize, Clone )]
+pub struct SpotSetting{
+    pub amount: u8,
+    pub emerging: u8,
+    pub ground_type: GroundType,
+    pub cover_type: CoverType,
+    pub max_width: u16,
+    pub max_height: u16,
+    pub min_width: u16,
+    pub min_height: u16,
+    pub x_offset: i8,
+    pub y_offset: i8,
+    pub height_offset: i8,
+    pub width_offset: i8,
+}
+
 
 #[derive( Serialize, Deserialize )]
 pub struct GroundTilemap{
@@ -113,24 +129,47 @@ impl GroundTilemap{
                 tile.graphic_y = i as u32 * self.tile_size as u32;
                 tile.index = i as u32 * self.tilemap_height as u32 + j as u32;
                 tile.ground_type = ground_type.clone();
-                //cover_type = Covertype::None by default;
                 GroundTilemap::set_data_to_tile( &mut tile, &tile_setting );
                 self.tilemap_tile_storage.push( tile );
             }
         }
     }
 
-    fn generate_additional_ground( &self, additional_ground_type: &Vec<GroundType>, additional_ground_type_value: &Vec<f32>, deploy: &Deploy ){
+    fn generate_additional_ground( &mut self, additional_ground_type: &Vec<GroundType>, additional_ground_type_value: &Vec<f32>, deploy: &Deploy ){
         let additional_ground_num: usize = additional_ground_type.len();
+        let mut rng = rand::thread_rng();
         for i in 0..additional_ground_num {
             let percent: f32 = additional_ground_type_value[ i ];
             let ground_type = additional_ground_type[ i ].clone();
-            let tile_settings: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &ground_type );
             let mut remain_tiles: usize = ( self.total_tiles as f32 * percent  / 100.0 ) as usize;
+            let max_width = ( self.tilemap_width * 5 / 100 ) as u16; // 5% of tilemap width;
+            let max_height: u16 = ( self.tilemap_height * 5 / 100 ) as u16; // 5% of tilemap height;
 
             //guard for infinity loop;
             while remain_tiles > 10 {
-                //TODO:
+                let current_max_width = rng.gen_range( 4..max_width );
+                let current_max_height = rng.gen_range( 4..max_height );
+                let current_min_width = rng.gen_range( 1..current_max_width / 4 ); // 25% of maximum value
+                let current_min_height = rng.gen_range( 1..current_max_height / 4 ); // 25% of maximum value
+
+                let spot_setting: SpotSetting = SpotSetting { 
+                    amount: 1, 
+                    emerging: 100, //100%
+                    ground_type: ground_type.clone(), 
+                    cover_type: CoverType::None, 
+                    max_width: current_max_width, 
+                    max_height: current_max_height, 
+                    min_width: current_min_width, 
+                    min_height: current_min_height, 
+                    x_offset: 1, 
+                    y_offset: 1, 
+                    height_offset: 1, 
+                    width_offset: 1,
+                };
+
+                self.generate_spots( deploy, &spot_setting );
+                let tiles_used = (( current_max_width + current_min_width ) / 2 ) * (( current_max_height + current_min_height ) / 2 );
+                remain_tiles -= tiles_used as usize;
             }
         }
     }
@@ -158,27 +197,30 @@ impl GroundTilemap{
         }
     }
 
-    fn generate_spots( &mut self, deploy: &Deploy ){
-        let amount: u8 = 2;
-        let emegring: u8 = 30;  //% 
+    fn generate_spots( &mut self, deploy: &Deploy, spot_setting: &SpotSetting ){
+        let amount: u8 = spot_setting.amount;
+        let emegring: u8 = spot_setting.emerging;  //% 
         let mut rng = rand::thread_rng();
         for n in 0..amount {
             let random_num = rng.gen_range( 0..99 ); //100%
             if random_num < emegring { continue; };
 
-            let ground_type = GroundType::Rock;
-            let cover_type: CoverType = CoverType::None;
+
+            let ground_type = spot_setting.ground_type.clone();
+            let cover_type: CoverType = spot_setting.cover_type.clone();
             let ground_data = deploy.get_ground_tile_data( &ground_type );
             let cover_data = deploy.get_cover_tile_data( &cover_type );
-            let max_width: u16 = 10;
-            let max_height: u16 = 10;
-            let min_width: u16 = 10;
-            let min_height: u16 = 10;
-            let x_offset: i8 = 1;
-            let y_offset: i8 = 1;
-            let height_offset: i8 = 1;
-            let width_offset: i8 = 1;
+            let max_width: u16 = spot_setting.max_width;
+            let max_height: u16 = spot_setting.max_height;
+            let min_width: u16 = spot_setting.min_width;
+            let min_height: u16 = spot_setting.min_height;
+            let x_offset: i8 = spot_setting.x_offset;
+            let y_offset: i8 = spot_setting.y_offset;
+            let height_offset: i8 = spot_setting.height_offset;
+            let width_offset: i8 = spot_setting.width_offset;
 
+            if self.tilemap_height <= max_height { panic!( "ground_tilemap.generate_spot; Map Height: {}, Max Height: {} ", self.tilemap_height, max_height )};
+            if self.tilemap_width <= max_width { panic!( "ground_tilemap.generate_spot; Map Width: {}, Max Width: {} ", self.tilemap_width, max_width )};
             let starting_point_x = rng.gen_range( 0..( self.tilemap_width - max_width ));
             let starting_point_y = rng.gen_range( 0..( self.tilemap_height - max_height ));
 
@@ -202,9 +244,47 @@ impl GroundTilemap{
                 for j in 0..current_width {
                     let x: u16 = left_top_point_x + j;
                     let index: usize = y as usize * self.tilemap_height as usize + x as usize;
-                    if index < 0 || index > self.total_tiles { continue; };
+                    if ( x < 0 && y == 0 ) || index > self.total_tiles { continue; };
 
-                    let mut tile = &mut self.tilemap_tile_storage[ index ];
+                    let mut tile = self.get_tile_by_index( index );
+                    match cover_type {
+                        CoverType::None =>{
+                            tile.ground_type = ground_type.clone();
+                            GroundTilemap::set_data_to_tile( tile, &ground_data );
+                        },
+                        _ =>{
+                            tile.cover_type = cover_type.clone();
+                            GroundTilemap::set_data_to_tile( tile, &cover_data );
+                        },
+                    };
+                }
+            }
+
+            for k in 0..average_width {
+                let left_top_point_y_i32 = left_top_point_y as i32 + ( rng.gen_range( -y_offset..y_offset )) as i32;
+                if left_top_point_y < 0 {
+                    left_top_point_y = 0;
+                }else{
+                    left_top_point_y = left_top_point_y_i32 as u16;
+                }
+                
+                let current_height_i32 = current_height as i32 + ( rng.gen_range( -height_offset..height_offset )) as i32;
+                if current_height_i32 < 1 {
+                    current_height = 1;
+                }else{
+                    current_height = current_height_i32 as u16;
+                }
+
+                if current_height > max_height { current_height = max_height };
+                if current_height < min_height { current_height = min_height };
+
+                let x = starting_point_x + k;
+                for l in 0..current_height {
+                    let y = left_top_point_y + l;
+                    let index = y as usize * self.tilemap_height as usize + x as usize;
+                    if  index > self.total_tiles { continue; };
+
+                    let mut tile = self.get_tile_by_index( index );
                     match cover_type {
                         CoverType::None =>{
                             tile.ground_type = ground_type.clone();
