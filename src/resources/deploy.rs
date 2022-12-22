@@ -74,7 +74,7 @@ impl Deploy{
             GroundType::Dirt => &self.ground_tilemap_tile_data.ground_tile_data.dirt,
             GroundType::DryEarth => &self.ground_tilemap_tile_data.ground_tile_data.dry_earth,
             GroundType::Rock => &self.ground_tilemap_tile_data.ground_tile_data.rock,
-            GroundType::RockEnvirounment => &self.ground_tilemap_tile_data.ground_tile_data.rock_envirounment,
+            GroundType::RockEnvironment => &self.ground_tilemap_tile_data.ground_tile_data.rock_envirounment,
         };
     }
 

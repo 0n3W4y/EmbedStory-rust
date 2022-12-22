@@ -124,7 +124,7 @@ impl GroundTilemap{
         let biome_setting: Biome = Biome {
             main_ground: GroundType::Earth,
             main_cover: CoverType::Grass,
-            additional_ground: vec![ GroundType::Dirt, GroundType::RockEnvirounment ],
+            additional_ground: vec![ GroundType::Dirt, GroundType::RockEnvironment ],
             additional_ground_value: vec![ 5.3, 5.0 ],
             additional_cover: vec![ CoverType::RockyRoad, CoverType::Sand ],
             additional_cover_value: vec![ 5.0, 0.8 ],
@@ -348,7 +348,7 @@ impl GroundTilemap{
 
     }
 
-    fn generate_river( &mut self, river_setting: &RiverSetting ){
+    fn generate_river( &mut self, river_setting: &RiverSetting, deploy: &Deploy ){
         let mut rng = rand::thread_rng();
         let mut random_num: u8 = rng.gen_range( 0..99 ); // 100%
         if random_num >= river_setting.emerging { return; };
@@ -372,83 +372,116 @@ impl GroundTilemap{
 
         match river_type{
             RiverType::Horizontal => {
-                let mut river_point_y = rng.gen_range(( current_width as i32 + offet as i32 ) as u16..( self.tilemap_height as i32 - ( current_width as i32 + offset as i32 )) as u16 );
+                let mut river_point_y = rng.gen_range(( current_width as i32 + offset as i32 ) as u16..( self.tilemap_height as i32 - ( current_width as i32 + offset as i32 )) as u16 );
                 for i in 0..self.tilemap_width {
-                    river_point_y_i32 = river_point_y as i32 + ( rng.gen_range( - offset as i32..offset as i32 ));
+                    let river_point_y_i32 = river_point_y as i32 + ( rng.gen_range( - offset as i32..offset as i32 ));
                     river_point_y = river_point_y_i32 as u16;
-                    if river_point_y_i32 < 0 { river_point_y = 0; }
+                    if river_point_y_i32 < 0 { continue; };
                     if river_point_y_i32 > self.tilemap_height as i32 { river_point_y = self.tilemap_height; };
-                }
-        
-                riverPoint += Math.floor( -offset + Math.random()* ( offset*2 + 1 ));
-                currentRiverWidth += Math.floor( -widthOffset + Math.random()*( widthOffset*2 + 1 ));
 
-                if( currentRiverWidth > widthMax )
-                    currentRiverWidth = widthMax;
-                else if( currentRiverWidth < widthMin )
-                    currentRiverWidth = widthMin;
+                    let current_width_i32: i32 = current_width as i32 + rng.gen_range( -offset_width as i32..offset_width as i32 );
+                    current_width = if current_width_i32 < min_width as i32 { min_width }
+                        else if current_width_i32 > max_width as i32 { max_width }
+                        else { current_width_i32 as u16 };
+                    
+                    for j in 0..current_width {
+                        let index = ( river_point_y + j ) * self.tilemap_height + i;
+                        if index as usize >= self.total_tiles { continue; };
+                        let tile = self.get_tile_by_index( index as usize );
+                        let mut tile_data: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &river_setting.ground_type );
 
-                for( j in 0...currentRiverWidth ){
-                    var index = ( riverPoint + j ) * this.height + i;
-                    if( index < 0 || index >= this._totalTiles )
-                        continue;
+                        if river_setting.cover_type == CoverType::None  { 
+                            tile.ground_type = river_setting.ground_type.clone();
+                        }else{
+                           tile_data = deploy.get_cover_tile_data( &river_setting.cover_type );
+                           tile.cover_type = river_setting.cover_type.clone();
+                        };
 
-                    var tile:Tile = this.tileStorage[ index ];
-                    tile.changeFloorType( floorTileConfig );
-                }
-            }
+                        GroundTilemap::set_data_to_tile( tile, tile_data );
+                    }
+                };
             },
             RiverType::Vertical => {
-                var riverPoint:Int = Math.floor( currentRiverWidth + offset + Math.random()* ( this.width - currentRiverWidth - offset ));
-            for( i in 0...this.height ){
-                riverPoint += Math.floor( -offset + Math.random() * ( offset*2 + 1 ));
-                currentRiverWidth += Math.floor( -widthOffset + Math.random()*( widthOffset*2 + 1 ));
-                
-                if( currentRiverWidth > widthMax )
-                    currentRiverWidth = widthMax;
-                else if( currentRiverWidth < widthMin )
-                    currentRiverWidth = widthMin;                
-                
-                for( j in 0...currentRiverWidth ){
-                    var index:Int = riverPoint + j + this.height * i;
-                    if( this._totalTiles <= index || index < 0)
-                        continue;
+                let mut river_point_x = rng.gen_range(( current_width as i32 + offset as i32 ) as u16 .. ( self.tilemap_width as i32 - ( current_width as i32 + offset as i32 )) as u16 );
+                for i in 0..self.tilemap_height {
+                    let river_point_x_i32 = river_point_x as i32 + rng.gen_range( -offset as i32.. offset as i32 );
+                    if river_point_x_i32 < 0 { continue; };
 
-                    var tile:Tile = this.tileStorage[ index ];
-                    tile.changeFloorType( floorTileConfig );
-                }                
-            }
+                    river_point_x = if river_point_x_i32 > self.tilemap_width as i32 { self.tilemap_width }
+                        else { river_point_x_i32 as u16 };
+
+                    let current_width_i32: i32 = current_width as i32 + rng.gen_range( -offset_width as i32..offset_width as i32 );
+                    current_width = if current_width_i32 < min_width as i32 { min_width }
+                        else if current_width_i32 > max_width as i32 { max_width }
+                        else { current_width_i32 as u16 };
+                    for j in 0..current_width {
+                        let index = river_point_x + j + self.tilemap_height * i;
+                        if index as usize >= self.total_tiles { continue };
+
+                        let tile = self.get_tile_by_index( index as usize );
+                        let mut tile_data: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &river_setting.ground_type );
+
+                        if river_setting.cover_type == CoverType::None  { 
+                            tile.ground_type = river_setting.ground_type.clone();
+                        }else{
+                           tile_data = deploy.get_cover_tile_data( &river_setting.cover_type );
+                           tile.cover_type = river_setting.cover_type.clone();
+                        };
+
+                        GroundTilemap::set_data_to_tile( tile, tile_data );
+                    }
+                }
             },
             _ => panic!(" Unknown river type: {:?}", river_type ),
         }
     }
 
-    fn generate_envirounment(){
+    fn generate_envirounment( &mut self, tile: &GroundTilemapTile, deploy: &Deploy ){
         //рандомно выбираем "подложку" 0 - 1 - 2 по умолчанию
-        var number:Int = 2; // радиус распространения подложки. в теории можно вынести в конфиг.
-        var randomNumber:Int = Math.floor( Math.random()*( number + 1 )); // 0 - 2;
-        if( randomNumber == 0 )
-            return;
+        let max_envirounment: u8 = 2;
+        let mut rng = rand::thread_rng();
+        let current_envirounment = rng.gen_range( 0..max_envirounment );
+        if current_envirounment == 0 { return; };
 
-        var y:Int = tile.gridY;
-        var x:Int = tile.gridX;
-        var height:Int = this.height;        
-        var gridMultiplier:Int = randomNumber * 2 + 1;
+        let x = tile.x;
+        let y = tile.y;
+        let height = self.tilemap_height;
+        let grid_multiplier = current_envirounment * 2 + 1; // окружность вокруг тайла
 
-        for( i in 0...gridMultiplier ){
-            for( j in 0...gridMultiplier ){
-                var index:Int = ( y - randomNumber + i ) * height + ( x - randomNumber + j );
-                if( index < 0 || index >= this._totalTiles ) // защита от значений не принадлежащих текущей карты
-                    continue; 
+        for i in 0..grid_multiplier {
+            for j in 0..grid_multiplier {
+                let index_i32: i32 = ( y as i32 - current_envirounment as i32 + i as i32 ) * height as i32 + ( x as i32- current_envirounment as i32 + j as i32 );
+                if index_i32 < 0 || index_i32 >= self.total_tiles as i32 { continue; }; // защита от значений не принадлежащих текущей карты
 
-                var newTile:Tile = this.tileStorage[ index ];
-                var indexTileGroundType = newTile.groundType;
-                if( indexTileGroundType == tileGroundType ) // защита от перезаписи существующих тайлов для текущего значения тайла.
-                    continue;
+                let environment_tile = self.get_tile_by_index( index_i32 as usize );
 
-                newTile.changeGroundType( newTileConfig );
-                if( newTile.floorType == "grass" ) // заменяем только если покрытие это трава, снег и песок можно не заменять.
-                    newTile.changeFloorType( tileFloorTypeConfig );
+                if tile.cover_type == CoverType::None {
+                    match tile.ground_type {
+                        GroundType::Rock => {
+                            if environment_tile.ground_type == GroundType::RockEnvironment || environment_tile.ground_type == GroundType::Rock {
+                                continue;
+                            }else{
+                                let data_tile: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &GroundType::RockEnvironment );
+                                environment_tile.ground_type = GroundType::RockEnvironment.clone();
+                                GroundTilemap::set_data_to_tile( environment_tile, data_tile );
+                            }
+                        },
+                        _ => { continue; },
+                    }
+                }else{
+                    match tile.cover_type {
+                        CoverType::Water => {
+                            if environment_tile.cover_type == CoverType::Water || environment_tile.cover_type == CoverType::Shallow {
+                                continue;
+                            }else{
+                                let data_tile = deploy.get_cover_tile_data( &CoverType::Shallow );
+                                environment_tile.cover_type = CoverType::Shallow.clone();
+                                GroundTilemap::set_data_to_tile( environment_tile, data_tile );
+                            }
+                        },
+                        _ => { continue; },
+                    }
+                };
             }
         }
     }
