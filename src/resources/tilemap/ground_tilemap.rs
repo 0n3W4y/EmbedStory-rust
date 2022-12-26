@@ -110,14 +110,14 @@ impl GroundTilemap{
 
     pub fn get_tile_by_index( &mut self, value: usize ) -> &mut GroundTilemapTile{
         let vector_length = self.tilemap_tile_storage.len();
-        if value as usize > vector_length{
+        if value > vector_length{
             panic!( "ground_tilemap::get_tile_by_index. Value > vec.len(); Value:{}, vec.len():{}", value, vector_length );
         }
 
-        return &mut self.tilemap_tile_storage[ value as usize ];
+        return &mut self.tilemap_tile_storage[ value ];
     }
 
-    pub fn generate_tilemap( &mut self, deploy: &Deploy ){
+    pub fn generate_tilemap( &mut self, deploy: &Deploy, biome_setting: &Biome ){
         if self.tile_size == 0 || self.total_tiles == 0{
             panic!( "ground_tilemap::generate_tilemap. Tilemap not setted yet!" );
         }
@@ -446,16 +446,16 @@ impl GroundTilemap{
         let x = tile.x;
         let y = tile.y;
         let height = self.tilemap_height;
-        let grid_multiplier = current_envirounment * 2 + 1; // окружность вокруг тайла
+        let grid_multiplier = current_envirounment * 2 + 1; // окружность вокруг тайла ( CE = 1; x = 3, y = 3 ( 3 x 3 ) ); 
 
         for i in 0..grid_multiplier {
             for j in 0..grid_multiplier {
-                let index_i32: i32 = ( y as i32 - current_envirounment as i32 + i as i32 ) * height as i32 + ( x as i32- current_envirounment as i32 + j as i32 );
-                if index_i32 < 0 || index_i32 >= self.total_tiles as i32 { continue; }; // защита от значений не принадлежащих текущей карты
+                let index_i32: i32 = ( y as i32 - current_envirounment as i32 + i as i32 ) * height as i32 + ( x as i32 - current_envirounment as i32 + j as i32 );
+                if index_i32 < 0 || index_i32 >= self.total_tiles as i32 { continue; }; // защита от значений не принадлежащих текущей карте
 
                 let environment_tile = self.get_tile_by_index( index_i32 as usize );
 
-                if tile.cover_type == CoverType::None {
+                if tile.cover_type == CoverType::None { // do ground environment;
                     match tile.ground_type {
                         GroundType::Rock => {
                             if environment_tile.ground_type == GroundType::RockEnvironment || environment_tile.ground_type == GroundType::Rock {
@@ -468,7 +468,7 @@ impl GroundTilemap{
                         },
                         _ => { continue; },
                     }
-                }else{
+                }else{ // do cover environment;
                     match tile.cover_type {
                         CoverType::Water => {
                             if environment_tile.cover_type == CoverType::Water || environment_tile.cover_type == CoverType::Shallow {
