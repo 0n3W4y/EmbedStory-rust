@@ -38,7 +38,8 @@ pub struct GameGroundSceneData{
     pub objects_layer: Entity,
     pub stuff_layer: Entity,
     pub characters_layer: Entity,
-    pub effects_layer: Entity
+    pub effects_layer: Entity,
+    //pub fog_layer: Entity,
 }
 
 
@@ -57,4 +58,12 @@ fn setup(){}
 
 fn update(){}
 
-fn cleanup(){}
+fn cleanup(mut commands: Commands, scene_data: Res<GameGroundSceneData> ){
+    //commands.entity( scene_data.fog_layer ).despawn_recursive();
+    commands.entity( scene_data.effects_layer ).despawn_recursive();
+    commands.entity( scene_data.characters_layer ).despawn_recursive();
+    commands.entity( scene_data.stuff_layer ).despawn_recursive();
+    commands.entity( scene_data.objects_layer ).despawn_recursive();
+    commands.entity( scene_data.tilemap_cover_layer ).despawn_recursive();
+    commands.entity( scene_data.tilemap_ground_layer ).despawn_recursive();
+}

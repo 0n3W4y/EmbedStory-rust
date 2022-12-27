@@ -25,6 +25,7 @@ pub enum RiverType{
     Random,
 }
 
+
 #[derive( Deserialize, Clone )]
 pub struct Biome{
     pub main_ground: GroundType,
@@ -33,8 +34,8 @@ pub struct Biome{
     pub additional_ground_value: Vec<f32>,
     pub additional_cover: Vec<CoverType>,
     pub additional_cover_value: Vec<f32>,
-    //pub liquids: pub river: Vec<River> pub lake: Vec<Lake>,
-    //pub solids: Vec<Solid>,
+    pub river: Vec<RiverSetting>,
+    pub spot: Vec<SpotSetting>,
 }
 
 #[derive( Deserialize, Clone )]
@@ -128,6 +129,8 @@ impl GroundTilemap{
             additional_ground_value: vec![ 5.3, 5.0 ],
             additional_cover: vec![ CoverType::RockyRoad, CoverType::Sand ],
             additional_cover_value: vec![ 5.0, 0.8 ],
+            river: vec![],
+            spot: vec![],
         };
 
         self.generate_ground( &biome_setting.main_ground, &deploy );
@@ -135,6 +138,9 @@ impl GroundTilemap{
         
         self.generate_cover( &biome_setting.main_cover, &deploy );
         self.generate_additional_cover( &biome_setting.additional_cover, &biome_setting.additional_cover_value, &deploy );
+
+        self.generate_solid( &biome_setting.spot, &deploy );
+        //self.generate_liquid();
     }
 
     fn generate_ground( &mut self, ground_type: &GroundType, deploy: &Deploy ){
@@ -237,6 +243,13 @@ impl GroundTilemap{
                 let tiles_used = (( current_max_width + current_min_width ) / 2 ) * (( current_max_height + current_min_height ) / 2 );
                 remain_tiles -= tiles_used as usize;
             }
+        }
+    }
+
+    fn generate_solid( &mut self, spot_vector: &Vec<SpotSetting>, deploy: &Deploy ){
+        let vec_len = spot_vector.len();
+        for i in 0..vec_len {
+
         }
     }
 

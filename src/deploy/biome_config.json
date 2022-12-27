@@ -1,56 +1,44 @@
 {
-    "100":{
-        "biome": "Desert"
-
-    },
-
-    "101":{
-        "biome": "Forest"
-
-    },
-
-    "102":{
-        "biome": "Plain",
-        "ground": "Earth",
-        "additionalGround": { 
-            "Dirt": 3, 
-            "RockEnvironment": 1 
-        },
-        "cover": "Grass",
-        "additionalCover": { 
-            "RockRoad": 1 
-        },
+    "Plain":{
+        "main_ground": "Earth",
+        "main_cover": "Grass",
+        "additional_ground": [ "Dirt", "RockEnvironment" ],
+        "additional_ground_value": [ 5.3, 5.0 ],
+        "additional_cover": [ "RockyRoad", "Sand" ],
+        "additional_cover_value": [ 5.0, 0.8 ],
         "liquids": {
-            "river": { 
-                "river1":{
-                    "emerging": 10,
-                    "widthMax": 8,
-                    "widthMin": 2,
+            "river": [ 
+                {
+                    "emerging": 20,
+                    "ground_type": "Earth",
+                    "cover_type": "Water",
+                    "max_width": 6,
+                    "min_width": 3,
                     "offset": 1,
-                    "widthOffset": 1,
-                    "type": null,
-                    "cover": "Water"
+                    "offset_width": 1,
+                    "river_type": "Random"
                 }                
-            },
-            "lake": {
-                "lake1":{
-                    "emerging":15,
+            ],
+            "lake": [
+                {
                     "amount": 1,
-                    "widthMax": 20,
-                    "widthMin": 10,
-                    "heightMax": 20,
-                    "heightMin": 10,
-                    "offsetX": 3,
-                    "offsetY": 3,
-                    "widthOffset": 2,
-                    "heightOffset": 2,
-                    "cover": "Water"
+                    "emerging": 25,
+                    "ground_type": "Erath",
+                    "cover_type": "Water",
+                    "max_width": 15,
+                    "max_height": 15,
+                    "min_width": 5,
+                    "min_height": 5,
+                    "x_offset": 1,
+                    "y_offset": 1,
+                    "height_offset": 2,
+                    "width_offset": 2
                 }                
-            }
+            ]
         },
         "solids":{
-            "rock": {
-                "rock1": {
+            "rock": [
+                {
                     "emerging":50,
                     "amount": 2,
                     "widthMax": 20,
@@ -63,7 +51,7 @@
                     "heightOffset": 2,
                     "ground": "Rock"
                 }                
-            }
+            ]
         }, 
         "resources": {
             "tree": 30,
@@ -77,22 +65,5 @@
             "copperOre": 3
         }
 
-    },
-
-    "103":{
-        "biome": "Rocky"
-    },
-
-    "104":{
-        "biome": "Tropics"
-    },
-    
-    "105":{
-        "biome": "Winter"
-    },
-
-    "106":{
-        "biome": "Swamp"
     }
-
 }
