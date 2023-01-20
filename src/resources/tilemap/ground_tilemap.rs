@@ -4,7 +4,7 @@ use rand::Rng;
 
 use crate::resources::{
     tilemap::tile::ground_tilemap_tile::{ GroundType, CoverType, GroundTilemapTile, GroundTilemapTileDeploy }, 
-    deploy::{Deploy, GroundTilemapTileDeployData}
+    deploy::Deploy,
 };
 
 #[derive( Deserialize, Clone )]
@@ -34,8 +34,20 @@ pub struct Biome{
     pub additional_ground_value: Vec<f32>,
     pub additional_cover: Vec<CoverType>,
     pub additional_cover_value: Vec<f32>,
-    pub river: Vec<RiverSetting>,
-    pub spot: Vec<SpotSetting>,
+    pub rivers: Rivers,
+    pub spots: Spots,
+}
+
+#[derive( Deserialize, Clone )]
+pub struct Rivers{
+    pub liquid_river: Vec<RiverSetting>,
+    pub solid_river: Vec<RiverSetting>,
+}
+
+#[derive( Deserialize, Clone )]
+pub struct Spots{
+    pub liquid_spot: Vec<SpotSetting>,
+    pub solid_spot: Vec<SpotSetting>,
 }
 
 #[derive( Deserialize, Clone )]
@@ -129,8 +141,8 @@ impl GroundTilemap{
             additional_ground_value: vec![ 5.3, 5.0 ],
             additional_cover: vec![ CoverType::RockyRoad, CoverType::Sand ],
             additional_cover_value: vec![ 5.0, 0.8 ],
-            river: vec![],
-            spot: vec![],
+            rivers: Rivers{ solid_river: vec![], liquid_river: vec![] },
+            spots: Spots{ solid_spot: vec![], liquid_spot: vec![]} ,
         };
 
         self.generate_ground( &biome_setting.main_ground, &deploy );
@@ -139,12 +151,11 @@ impl GroundTilemap{
         self.generate_cover( &biome_setting.main_cover, &deploy );
         self.generate_additional_cover( &biome_setting.additional_cover, &biome_setting.additional_cover_value, &deploy );
 
-        self.generate_solid( &biome_setting.spot, &deploy );
-        //self.generate_liquid();
+        self.generate_solids_liquids( &biome_setting.spots, &biome_setting.rivers, &deploy );
     }
 
     fn generate_ground( &mut self, ground_type: &GroundType, deploy: &Deploy ){
-        let tile_setting = deploy.get_ground_tile_data( &ground_type );
+        let tile_setting = deploy.ground_tilemap_tile.get_ground_tile_deploy( &ground_type );
         for i in 0..self.tilemap_height {
             for j in 0..self.tilemap_width {
                 let mut tile = GroundTilemapTile::new();
@@ -192,7 +203,7 @@ impl GroundTilemap{
                     width_offset: 1,
                 };
 
-                self.generate_spots( deploy, &spot_setting );
+                self.generate_spot( deploy, &spot_setting );
                 let tiles_used = (( current_max_width + current_min_width ) / 2 ) * (( current_max_height + current_min_height ) / 2 );
                 remain_tiles -= tiles_used as usize;
             }
@@ -200,7 +211,7 @@ impl GroundTilemap{
     }
 
     fn generate_cover( &mut self, cover_type: &CoverType, deploy: &Deploy ){
-        let tile_setting = deploy.get_cover_tile_data( &cover_type );
+        let tile_setting = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
         for i in 0..self.total_tiles{
             let mut tile = self.get_tile_by_index( i );
             tile.cover_type = tile_setting.cover_type.clone();
@@ -239,21 +250,24 @@ impl GroundTilemap{
                     width_offset: 1,
                 };
 
-                self.generate_spots( deploy, &spot_setting );
+                self.generate_spot( deploy, &spot_setting );
                 let tiles_used = (( current_max_width + current_min_width ) / 2 ) * (( current_max_height + current_min_height ) / 2 );
                 remain_tiles -= tiles_used as usize;
             }
         }
     }
 
-    fn generate_solid( &mut self, spot_vector: &Vec<SpotSetting>, deploy: &Deploy ){
+    fn generate_spots( &mut self, spot_vector: &Vec<SpotSetting>, deploy: &Deploy ){
         let vec_len = spot_vector.len();
-        for i in 0..vec_len {
+        if vec_len == 0 { return; };
 
+        for i in 0..vec_len {
+            let spot_setting = &spot_vector[ i ];
+            self.generate_spot( deploy, spot_setting );
         }
     }
 
-    fn generate_spots( &mut self, deploy: &Deploy, spot_setting: &SpotSetting ){
+    fn generate_spot( &mut self, deploy: &Deploy, spot_setting: &SpotSetting ){
         let mut rng = rand::thread_rng();
         for n in 0..spot_setting.amount {
             let random_num = rng.gen_range( 0..99 ); //100%
@@ -262,8 +276,8 @@ impl GroundTilemap{
 
             let ground_type = spot_setting.ground_type.clone();
             let cover_type: CoverType = spot_setting.cover_type.clone();
-            let ground_data = deploy.get_ground_tile_data( &ground_type );
-            let cover_data = deploy.get_cover_tile_data( &cover_type );
+            let ground_data = deploy.ground_tilemap_tile.get_ground_tile_deploy( &ground_type );
+            let cover_data = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
             let max_width: u16 = spot_setting.max_width;
             let max_height: u16 = spot_setting.max_height;
             let min_width: u16 = spot_setting.min_width;
@@ -361,6 +375,16 @@ impl GroundTilemap{
 
     }
 
+    fn generate_rivers( &mut self, river_vector: &Vec<RiverSetting>, deploy: &Deploy ){
+        let vec_len = river_vector.len();
+        if vec_len == 0 { return; };
+
+        for i in 0..vec_len {
+            let river_setting = &river_vector[ i ];
+            self.generate_river( &river_setting, &deploy );
+        }
+    }
+
     fn generate_river( &mut self, river_setting: &RiverSetting, deploy: &Deploy ){
         let mut rng = rand::thread_rng();
         let mut random_num: u8 = rng.gen_range( 0..99 ); // 100%
@@ -401,12 +425,12 @@ impl GroundTilemap{
                         let index = ( river_point_y + j ) * self.tilemap_height + i;
                         if index as usize >= self.total_tiles { continue; };
                         let tile = self.get_tile_by_index( index as usize );
-                        let mut tile_data: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &river_setting.ground_type );
+                        let mut tile_data: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &river_setting.ground_type );
 
                         if river_setting.cover_type == CoverType::None  { 
                             tile.ground_type = river_setting.ground_type.clone();
                         }else{
-                           tile_data = deploy.get_cover_tile_data( &river_setting.cover_type );
+                           tile_data = deploy.ground_tilemap_tile.get_cover_tile_deploy( &river_setting.cover_type );
                            tile.cover_type = river_setting.cover_type.clone();
                         };
 
@@ -432,12 +456,12 @@ impl GroundTilemap{
                         if index as usize >= self.total_tiles { continue };
 
                         let tile = self.get_tile_by_index( index as usize );
-                        let mut tile_data: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &river_setting.ground_type );
+                        let mut tile_data: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &river_setting.ground_type );
 
                         if river_setting.cover_type == CoverType::None  { 
                             tile.ground_type = river_setting.ground_type.clone();
                         }else{
-                           tile_data = deploy.get_cover_tile_data( &river_setting.cover_type );
+                           tile_data = deploy.ground_tilemap_tile.get_cover_tile_deploy( &river_setting.cover_type );
                            tile.cover_type = river_setting.cover_type.clone();
                         };
 
@@ -474,7 +498,7 @@ impl GroundTilemap{
                             if environment_tile.ground_type == GroundType::RockEnvironment || environment_tile.ground_type == GroundType::Rock {
                                 continue;
                             }else{
-                                let data_tile: &GroundTilemapTileDeploy = deploy.get_ground_tile_data( &GroundType::RockEnvironment );
+                                let data_tile: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &GroundType::RockEnvironment );
                                 environment_tile.ground_type = GroundType::RockEnvironment.clone();
                                 GroundTilemap::set_data_to_tile( environment_tile, data_tile );
                             }
@@ -487,7 +511,7 @@ impl GroundTilemap{
                             if environment_tile.cover_type == CoverType::Water || environment_tile.cover_type == CoverType::Shallow {
                                 continue;
                             }else{
-                                let data_tile = deploy.get_cover_tile_data( &CoverType::Shallow );
+                                let data_tile = deploy.ground_tilemap_tile.get_cover_tile_deploy( &CoverType::Shallow );
                                 environment_tile.cover_type = CoverType::Shallow.clone();
                                 GroundTilemap::set_data_to_tile( environment_tile, data_tile );
                             }
@@ -497,6 +521,19 @@ impl GroundTilemap{
                 };
             }
         }
+    }
+
+    fn generate_solids_liquids( &mut self, spots: &Spots, rivers: &Rivers, deploy: &Deploy ){
+        let solid_rivers = &rivers.solid_river;
+        let solid_spots = &spots.solid_spot;
+        let liquid_rivers = &rivers.liquid_river;
+        let liquid_spots = &spots.liquid_spot;
+
+        //first generate solids, then liquids;
+        self.generate_spots( &solid_spots, &deploy );
+        self.generate_rivers( &solid_rivers, &deploy );
+        self.generate_spots( &liquid_spots, &deploy );
+        self.generate_rivers( &liquid_rivers, &deploy );
     }
 
     fn set_data_to_tile( tile: &mut GroundTilemapTile, data: &GroundTilemapTileDeploy ){

@@ -6,6 +6,7 @@ use crate::resources::gamedata::object::Object;
 use crate::resources::gamedata::ground_effect::GroundEffect;
 use crate::resources::gamedata::stuff::Stuff;
 use crate::resources::tilemap::ground_tilemap::GroundTilemap;
+use crate::resources::deploy::Deploy;
 use crate::scenes::SceneState;
 
 #[derive( Serialize, Deserialize )]
@@ -54,7 +55,10 @@ impl Plugin for GameGroundScenePlugin{
     }
 }
 
-fn setup(){}
+fn setup(
+    mut commands: Commands,
+    deploy: Res<Deploy>,
+){}
 
 fn update(){}
 

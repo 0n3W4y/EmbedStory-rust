@@ -6,3 +6,5 @@ pub mod deploy;
 pub mod profile;
 pub mod gamedata;
 pub mod tilemap;
+pub mod deploy_addiction;
+pub mod scene_manager;

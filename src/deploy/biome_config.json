@@ -6,8 +6,8 @@
         "additional_ground_value": [ 5.3, 5.0 ],
         "additional_cover": [ "RockyRoad", "Sand" ],
         "additional_cover_value": [ 5.0, 0.8 ],
-        "liquids": {
-            "river": [ 
+        "rivers": {
+            "liquid_river": [ 
                 {
                     "emerging": 20,
                     "ground_type": "Earth",
@@ -19,7 +19,27 @@
                     "river_type": "Random"
                 }                
             ],
-            "lake": [
+
+            "solid_river":[]
+        },
+
+        "spots":{
+            "solid_spot": [
+                {
+                    "emerging":50,
+                    "amount": 2,
+                    "widthMax": 20,
+                    "widthMin": 5,
+                    "heightMax": 20,
+                    "heightMin": 5,
+                    "offsetX": 1,
+                    "offsetY": 1,
+                    "widthOffset": 2,
+                    "heightOffset": 2,
+                    "ground": "Rock"
+                }                
+            ],
+            "liquid_spot": [
                 {
                     "amount": 1,
                     "emerging": 25,
@@ -33,23 +53,6 @@
                     "y_offset": 1,
                     "height_offset": 2,
                     "width_offset": 2
-                }                
-            ]
-        },
-        "solids":{
-            "rock": [
-                {
-                    "emerging":50,
-                    "amount": 2,
-                    "widthMax": 20,
-                    "widthMin": 5,
-                    "heightMax": 20,
-                    "heightMin": 5,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "widthOffset": 2,
-                    "heightOffset": 2,
-                    "ground": "Rock"
                 }                
             ]
         }, 
