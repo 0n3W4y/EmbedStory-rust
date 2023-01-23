@@ -17,5 +17,9 @@
         "return_back": "Back",
         "on": "On",
         "off": "Off"
-    }    
+    },
+    "create_char_scene":{
+        "back": "Back",
+        "start": "Start"
+    }
 }

@@ -10,6 +10,7 @@ pub struct Glossary{
     pub loading_scene_text: LoadingSceneText,
     pub main_menu_text: MainMenuText,
     pub options_text: OptionsText,
+    pub create_char_scene: CreateCharSceneText,
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
@@ -35,6 +36,12 @@ pub struct OptionsText{
     pub return_back: String,
     pub on: String,
     pub off: String,
+}
+
+#[derive( Serialize, Deserialize, Debug, Clone )]
+pub struct CreateCharSceneText{
+    pub back: String,
+    pub start: String,
 }
 
 impl Glossary{

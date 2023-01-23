@@ -8,22 +8,27 @@ use crate::resources::gamedata::stuff::Stuff;
 use crate::resources::tilemap::ground_tilemap::GroundTilemap;
 use crate::resources::deploy::Deploy;
 use crate::scenes::SceneState;
+use crate::resources::gamedata::game_data::GameData;
 
 #[derive( Serialize, Deserialize )]
 pub struct GameGroundScene{
-    pub scene_id: u32,
+    pub scene_id: usize,
+    pub index: usize, // vector index in scene_manager.ground_scene;
     pub tilemap: GroundTilemap,
     pub objects: Vec<Object>,
     pub stuff: Vec<Stuff>,
     pub characters: Vec<Character>,
     pub effects: Vec<GroundEffect>,
+    //pub fog: Vec<>,
+    //pub roof: Vec<>,
 
 }
 impl GameGroundScene{
-    pub fn new( id: u32 ) -> GameGroundScene{
+    pub fn new( id: usize, index: usize ) -> Self{
         let new_tilemap = GroundTilemap::new();
         return GameGroundScene{
             scene_id: id,
+            index: 0,
             tilemap: new_tilemap,
             objects: vec![],
             stuff: vec![],
@@ -40,6 +45,7 @@ pub struct GameGroundSceneData{
     pub stuff_layer: Entity,
     pub characters_layer: Entity,
     pub effects_layer: Entity,
+    //pub roof_layer: Entity,
     //pub fog_layer: Entity,
 }
 
@@ -58,7 +64,20 @@ impl Plugin for GameGroundScenePlugin{
 fn setup(
     mut commands: Commands,
     deploy: Res<Deploy>,
-){}
+    mut game_data: ResMut<GameData>,
+){
+    let current_scene: &mut GameGroundScene = game_data.scene_manager.get_next_ground_scene();
+    //commands.insert_resource( GameGroundSceneData{ 
+    //  tilemap_ground_layer: tilemap_ground_layer,
+    //  tilemap_cover_layer: tilemap_cover_layer,
+    //  objects_layer: objects_layer,
+    //  stuff_layer: stuff_layer,
+    //  characters_layer: characters_layer,
+    //  effects_layer: effects_layer,
+    //  roof_layer: roof_layer,
+    //  for_layer: fog_layer,
+    //});
+}
 
 fn update(){}
 

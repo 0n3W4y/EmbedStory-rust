@@ -6,6 +6,18 @@ use crate::resources::scene_manager::SceneManager;
 
 #[derive( Serialize, Deserialize )]
 pub struct GameData{
-    scene_manager: SceneManager,
-    profile: Profile,
+    pub scene_manager: SceneManager,
+    pub profile: Profile,
+}
+
+impl GameData{
+    pub fn new() -> Self {
+        return GameData{
+            scene_manager: SceneManager::new(),
+            profile: Profile::new(),
+        };
+    }
+
+    pub fn save( &self ){}
+    pub fn load( &mut self ){}
 }

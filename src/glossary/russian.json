@@ -17,5 +17,9 @@
         "return_back": "Назад",
         "on": "Вкл.",
         "off": "Выкл."
-    } 
+    },
+    "create_char_scene":{
+        "back": "Назад",
+        "start": "Начать"
+    }
 }
