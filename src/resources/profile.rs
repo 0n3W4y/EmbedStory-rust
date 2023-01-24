@@ -10,6 +10,8 @@ pub struct Profile {
     pub profile_name: String,
     pub start_time: String,
     pub end_time: String,
+    //pub player_character: Character;
+    //pub player_companion_list: Vec<Character>;
 }
 
 impl Profile{
@@ -30,8 +32,8 @@ impl Profile{
     }
 
     pub fn save_profile( &mut self ){
-        let end_time = DateTime::parse_from_rfc3339( self.end_time.clone().as_str() ).expect( "Can now parse time" );
-        let start_time = DateTime::parse_from_rfc3339( self.start_time.clone().as_str() ).expect( "Can now parse time" );
+        let end_time = DateTime::parse_from_rfc3339( self.end_time.clone().as_str() ).expect( "Can not parse time" );
+        let start_time = DateTime::parse_from_rfc3339( self.start_time.clone().as_str() ).expect( "Can not parse time" );
         let diff_time = end_time - start_time;
         let playtime = diff_time.num_seconds();
         self.playtime = playtime;
