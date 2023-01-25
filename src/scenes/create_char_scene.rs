@@ -6,7 +6,6 @@ use crate::scenes::SceneState;
 use crate::resources::dictionary::Dictionary;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::profile::Profile;
-use crate::resources::gamedata::game_data::GameData;
 
 const BUTTON_HEIGHT: f32 = 150.0;
 const BUTTON_WIDTH: f32 = 70.0;
@@ -61,7 +60,7 @@ fn setup(
                 size: Size::new( Val::Percent(100.0), Val::Percent( 100.0 )),
                 ..Default::default()
             },
-            image: UiImage( material_manager.create_char_scene_material.background_image.clone() ),
+            image: UiImage( material_manager.create_char_scene.background_image.clone() ),
             ..Default::default()
         })
         .with_children(|parent|{
@@ -73,8 +72,7 @@ fn setup(
         user_interface_root: user_interface_root,
     });
 
-    commands.insert_resource( GameData::new() );
-
+    commands.insert_resource( Profile::new() );
 }
 
 fn create_buttons( 
@@ -139,7 +137,7 @@ fn create_buttons(
 fn button_handle_system(
     mut button_query: Query<( &Interaction, &MainButtonComponent, &mut UiColor ),( Changed<Interaction>, With<Button> )>,
     mut state: ResMut<State<SceneState>>,
-    mut game_data: ResMut<GameData>,
+    mut profile: ResMut<Profile>,
 ){
     for( interaction, button_component, mut color ) in button_query.iter_mut(){
         match *button_component {
@@ -159,8 +157,10 @@ fn button_handle_system(
                     *color = UiColor( BUTTON_SELECT_COLOR );
                     //TODO: check name, check stats all checks;
                     // if all good -> set name, start game;
-                    game_data.profile.set_name( "Test Player Name".to_string() );
+                    profile.set_name( "Test Player Name".to_string() );
                     //TODO: start @new game intro@, then load loading_scene to load new global map and current ground scene;
+                    state.set( SceneState::LoadingNewGameScene )
+                    .expect("Couldn't switch state to Loading New Game Scene");
                 },
             },
         }

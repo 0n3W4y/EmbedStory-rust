@@ -1,9 +1,14 @@
 use bevy::prelude::*;
 
+use crate::resources::deploy::Deploy;
+use crate::resources::scene_manager::SceneManager;
+use crate::resources::object_manager::ObjectManager;
 use crate::scenes::SceneState;
-use crate::materials::{material_manager::MaterialManager, font::FontMaterials};
+use crate::materials::{ material_manager::MaterialManager, font::FontMaterials };
 use crate::resources::dictionary::Dictionary;
-use crate::config::{ RESOLUTION, WINDOW_HEIGHT };
+use crate::config::{ RESOLUTION, WINDOW_HEIGHT, TILE_SIZE };
+
+use super::game_scenes::game_ground_scene::GameGroundScene;
 
 const LOADING_BORDER_WIDTH: f32 = 600.0;
 const LOADING_BORDER_HEIGHT: f32 = 60.0;
@@ -26,7 +31,10 @@ pub struct LoadingNewGameScenePlugin;
 
 impl Plugin for LoadingNewGameScenePlugin{
     fn build( &self, app: &mut App ){
-        app.add_system_set( SystemSet::on_enter( SceneState::LoadingNewGameScene ).with_system( setup ));
+        app.add_system_set( SystemSet::on_enter( SceneState::LoadingNewGameScene )
+            .with_system( setup )
+            .with_system( create_starting_scenes )
+        );
         app.add_system_set( SystemSet::on_update( SceneState::LoadingNewGameScene ).with_system( update ));
         app.add_system_set( SystemSet::on_exit( SceneState::LoadingNewGameScene ).with_system( cleanup ));
     }
@@ -44,7 +52,7 @@ fn setup(
                 size: Size::new( Val::Percent( 100.0 ), Val::Percent( 100.0)),
                 ..Default::default()
             },
-            image: UiImage( material_manager.loading_new_game_scene_material.background_image.clone() ),
+            image: UiImage( material_manager.loading_new_game_scene.background_image.clone() ),
             ..Default::default()
         })
         .with_children(|parent|{
@@ -184,12 +192,57 @@ fn loading_text(
 fn update(
     mut query: Query<( &mut LoadingNewGameSceneComponent, &mut Style, &Children )>,
     mut state: ResMut<State<SceneState>>,
-    mut text_query: Query< &mut Text>,
-){}
+    mut text_query: Query<&mut Text>,
+){
+    for( mut loading_component, mut style, children ) in query.iter_mut(){
+        if loading_component.max_width > loading_component.current_width {
+            loading_component.current_width += 2.5;
+            style.size.width = Val::Px( loading_component.current_width );
+
+            let value = ( loading_component.current_width / loading_component.max_width * 100.0 ) as usize;
+            if value >= 5 {
+                let mut text = text_query.get_mut( children[ 0 ]).unwrap();
+                text.sections[ 0 ].value = value.to_string() + "%";
+            }
+        }else{
+            state
+                .set( SceneState::GameGroundScene )
+                .expect("Couldn't switch state to Game Ground Scene");
+        }
+    }
+}
 
 fn cleanup(
     mut commands: Commands,
     scene_data: Res<LoadingNewGameSceneData>,
 ){
     commands.entity( scene_data.user_interface_root ).despawn_recursive();
+}
+
+fn create_starting_scenes ( 
+    mut commands: Commands,
+    deploy: Res<Deploy>,
+){
+
+    //TODO: Remove this variables;
+    let biome_type = BiomeType::Plain;
+    let width = 200;
+    let height = 200;
+
+
+    // Create new scene_manager;
+    let scene_manager = SceneManager::new();
+    //create new object manager;
+    let object_manager = ObjectManager::new();
+    //Create starting scene;
+    let starting_scene: &mut GameGroundScene = scene_manager.create_ground_scene();
+    //set next scene to load - new scene;
+    scene_manager.next_ground_scene = starting_scene.index as isize;
+    //config scene with deploy ;
+    starting_scene.tilemap.set( TILE_SIZE, width, height );
+    
+    starting_scene.tilemap.generate_tilemap( &deploy, biome_type );
+    //create global map scene;
+    //scene_manager.create_globalmap_scene();
+
 }

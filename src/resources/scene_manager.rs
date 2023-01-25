@@ -7,7 +7,7 @@ use crate::scenes::game_scenes::game_globalmap_scene::GameGlobalmapScene;
 #[derive( Serialize, Deserialize )]
 pub struct SceneManager{
     pub next_ground_scene: isize,
-    pub next_undeground_scene: isize,
+    //pub next_undeground_scene: isize,
     //globalmap_scene: GameGlobalmapScene,
     ground_scene: Vec<GameGroundScene>,
     //underground_scene: Vec<GameUndergroundScene>,
@@ -18,7 +18,7 @@ impl SceneManager{
     pub fn new() -> Self {
         return SceneManager { 
             next_ground_scene: -1, // empty
-            next_undeground_scene: -1, // empty
+            //next_undeground_scene: -1, // empty
             ground_scene: vec![], 
             scene_id: 0, 
         };

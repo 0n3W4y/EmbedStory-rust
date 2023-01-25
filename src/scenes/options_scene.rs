@@ -130,7 +130,7 @@ fn setup(
                     size: Size::new( Val::Percent( 100.0), Val::Percent( 100.0 )),
                     ..Default::default()
                 },
-                image: UiImage( material_manager.options_scene_material.background_image.clone() ),
+                image: UiImage( material_manager.options_scene.background_image.clone() ),
                 ..Default::default()
             })
             .with_children( |parent|{
@@ -349,8 +349,8 @@ fn language_buttons( parent: &mut ChildBuilder, material_manager: &MaterialManag
         };
 
         let handle_image: Handle<Image> = match button_component{
-            LanguageButtonComponent::LanguageEN => material_manager.options_scene_material.language_en.clone(),
-            LanguageButtonComponent::LanguageRU => material_manager.options_scene_material.language_ru.clone(),
+            LanguageButtonComponent::LanguageEN => material_manager.options_scene.language_en.clone(),
+            LanguageButtonComponent::LanguageRU => material_manager.options_scene.language_ru.clone(),
         };
 
         let color: Color = match button_component{

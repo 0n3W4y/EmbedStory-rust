@@ -10,8 +10,8 @@ pub struct Profile {
     pub profile_name: String,
     pub start_time: String,
     pub end_time: String,
-    //pub player_character: Character;
-    //pub player_companion_list: Vec<Character>;
+    //pub character: Character;
+    //pub companion_list: Vec<Character>;
 }
 
 impl Profile{
@@ -22,7 +22,7 @@ impl Profile{
             profile_name: String::new(),
             last_save: String::new(),
             playtime: 0,
-            start_time: start_time.to_rfc3339() ,
+            start_time: start_time.to_rfc3339(),
             end_time: String::new(),
         };
     }
@@ -32,11 +32,13 @@ impl Profile{
     }
 
     pub fn save_profile( &mut self ){
+        self.end_time = Local::now().to_rfc3339();
         let end_time = DateTime::parse_from_rfc3339( self.end_time.clone().as_str() ).expect( "Can not parse time" );
         let start_time = DateTime::parse_from_rfc3339( self.start_time.clone().as_str() ).expect( "Can not parse time" );
         let diff_time = end_time - start_time;
         let playtime = diff_time.num_seconds();
         self.playtime = playtime;
+        self.last_save = Local::now().to_rfc3339();
         let mut profile_file = File::create( "profile.json" ).expect( "Can not create profile file" );
         let profile_file_str: String = serde_json::to_string( &self ).unwrap();
         profile_file.write( profile_file_str.as_bytes() ).expect( "Can not to write profile file" );

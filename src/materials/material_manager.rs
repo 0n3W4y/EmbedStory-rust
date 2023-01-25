@@ -10,12 +10,12 @@ use crate::materials::loading_new_game_scene_material::LoadingNewGameSceneMateri
 
 #[derive( Debug, Clone )]
 pub struct MaterialManager {
-    pub main_menu_scene_material: MainMenuSceneMaterial,
-    pub options_scene_material: OptionsSceneMaterial,
-    pub create_char_scene_material: CreateCharSceneMaterial,
-    pub ground_tile_material: GroundTileMaterial,
-    pub cover_tile_material: CoverTileMaterial,
-    pub loading_new_game_scene_material: LoadingNewGameSceneMaterial,
+    pub main_menu_scene: MainMenuSceneMaterial,
+    pub options_scene: OptionsSceneMaterial,
+    pub create_char_scene: CreateCharSceneMaterial,
+    pub ground_tile: GroundTileMaterial,
+    pub cover_tile: CoverTileMaterial,
+    pub loading_new_game_scene: LoadingNewGameSceneMaterial,
     //pub character_texture: Characters,
     //pub object_texture: Objects,
     //pub stuff_texture: Stuffs,
@@ -26,12 +26,12 @@ impl MaterialManager{
 
     pub fn new( asset_server: &Res<AssetServer> ) -> Self {
         return MaterialManager { 
-            main_menu_scene_material: MaterialManager::load_main_menu_scene_material( asset_server ),
-            options_scene_material: MaterialManager::load_options_scene_material( asset_server ),
-            ground_tile_material: MaterialManager::load_ground_tile_material( asset_server ),
-            cover_tile_material: MaterialManager::load_cover_tile_material( asset_server ),
-            create_char_scene_material: MaterialManager::load_create_char_scene_material( asset_server ),
-            loading_new_game_scene_material: MaterialManager::load_loading_new_game_scene_material( asset_server ),
+            main_menu_scene: MaterialManager::load_main_menu_scene_material( asset_server ),
+            options_scene: MaterialManager::load_options_scene_material( asset_server ),
+            ground_tile: MaterialManager::load_ground_tile_material( asset_server ),
+            cover_tile: MaterialManager::load_cover_tile_material( asset_server ),
+            create_char_scene: MaterialManager::load_create_char_scene_material( asset_server ),
+            loading_new_game_scene: MaterialManager::load_loading_new_game_scene_material( asset_server ),
         }
     }
 

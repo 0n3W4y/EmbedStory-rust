@@ -1,4 +1,4 @@
-use crate::resources::gamedata::character::body_part::BodyPart;
+use crate::resources::scene_data::character::body_part::BodyPart;
 
 pub struct HealthStats{
     pub head: Option<BodyPart>,

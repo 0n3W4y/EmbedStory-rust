@@ -8,7 +8,7 @@ pub const WINDOW_HEIGHT: f32 = 768.0;
 pub const MONITOR_HEIGHT: f32 = 1080.0;
 pub const MONITOR_WIDTH: f32 = 1920.0;
 
-pub const TILE_SIZE: usize = 128;
+pub const TILE_SIZE: u16 = 128;
 
 pub const ENGLISH_LANGUAGE_FILE: &str = "src/glossary/english.json";
 pub const RUSSIAN_LANGUAGE_FILE: &str = "src/glossary/russian.json";

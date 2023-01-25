@@ -1,0 +1,115 @@
+use serde::{ Deserialize };
+use std::fs::File;
+use std::io::prelude::*;
+
+use crate::resources::tilemap::tile::ground_tilemap_tile::{ GroundType, CoverType };
+
+#[derive( Deserialize, Clone, Debug )]
+pub enum BiomeType{
+    Plain,
+    Desert,
+    Forest,
+    Rocks,
+    Tropic,
+    Snow,
+    Swamp,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct Biome{
+    pub main_ground: GroundType,
+    pub main_cover: CoverType,
+    pub additional_ground: Vec<GroundType>,
+    pub additional_ground_value: Vec<f32>,
+    pub additional_cover: Vec<CoverType>,
+    pub additional_cover_value: Vec<f32>,
+    pub rivers: Rivers,
+    pub spots: Spots,
+    pub objects: BiomeObjects,
+}
+
+#[derive( Deserialize, Clone, Debug, Eq, PartialEq )]
+pub enum RiverType{
+    Horizontal,
+    Vertical,
+    Random,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct Rivers{
+    pub liquid_river: Vec<RiverSetting>,
+    pub solid_river: Vec<RiverSetting>,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct Spots{
+    pub liquid_spot: Vec<SpotSetting>,
+    pub solid_spot: Vec<SpotSetting>,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct SpotSetting {
+    pub amount: u8,
+    pub emerging: u8,
+    pub ground_type: GroundType,
+    pub cover_type: CoverType,
+    pub max_width: u16,
+    pub max_height: u16,
+    pub min_width: u16,
+    pub min_height: u16,
+    pub x_offset: i8,
+    pub y_offset: i8,
+    pub height_offset: i8,
+    pub width_offset: i8,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct RiverSetting {
+    pub emerging: u8,
+    pub ground_type: GroundType,
+    pub cover_type: CoverType,
+    pub max_width: u16,
+    pub min_width: u16,
+    pub offset: i8,
+    pub offset_width: i8,
+    pub river_type: RiverType,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct BiomeObjects{
+    
+}
+
+
+#[derive( Deserialize, Debug )]
+pub struct GroundSceneBiomeDeploy{
+    plain: Biome,
+}
+
+impl GroundSceneBiomeDeploy{
+    pub fn new( path: &str ) -> Self{
+        let result: GroundSceneBiomeDeploy  = match File::open( path ){
+            Ok( mut file ) => {
+                let mut contents = String::new();
+                file.read_to_string( &mut contents ).unwrap();
+                serde_json::from_str( &contents ).expect( "JSON was not well-formatted" )
+            }
+            Err( err ) => panic!( "Can not open biome data file: {}, {}", err, path ),
+        };
+
+        return result;
+    }
+    
+    pub fn get_biome_setting( &self, biome_type: BiomeType ) -> &Biome{
+        match biome_type {
+            BiomeType::Plain => { return &self.plain },
+            _ => panic!( "GroundSceneDiomeDeploy.get_biome_setting. Not created yet!"),
+            //BiomeType::Desert => { return &self.desert },
+            //BiomeType::Forest => { return &self.forest },
+            //BiomeType::Rocks => { return &self.rocks },
+            //BiomeType::Snow => { return &self.snow },
+            //BiomeType::Swamp => { return &self.swamp },
+            //BiomeType::Tropic => { return &self.tropic },
+        }
+    }
+}

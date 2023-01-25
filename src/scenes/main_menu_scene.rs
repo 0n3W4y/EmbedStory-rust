@@ -52,7 +52,7 @@ fn setup( mut commands: Commands, dictionary: Res<Dictionary>, font: Res<FontMat
                 size: Size::new( Val::Percent(100.0), Val::Percent( 100.0 )),
                 ..Default::default()
             },
-            image: UiImage( material_manager.main_menu_scene_material.background_image.clone() ),
+            image: UiImage( material_manager.main_menu_scene.background_image.clone() ),
             ..Default::default()
         })
         .with_children(|parent|{

@@ -5,81 +5,11 @@ use rand::Rng;
 use crate::resources::{
     tilemap::tile::ground_tilemap_tile::{ GroundType, CoverType, GroundTilemapTile, GroundTilemapTileDeploy }, 
     deploy::Deploy,
+    deploy_addiction::ground_scene_biome_deploy::{ Biome, BiomeType, RiverSetting, SpotSetting, RiverType, Spots, Rivers },
 };
 
-#[derive( Deserialize, Clone )]
-pub enum BiomeType{
-    Plain,
-    Desert,
-    Forest,
-    Rocks,
-    Tropic,
-    Snow,
-    Swamp,
-}
 
-#[derive( Deserialize, Clone, Debug, Eq, PartialEq )]
-pub enum RiverType{
-    Horizontal,
-    Vertical,
-    Random,
-}
-
-
-#[derive( Deserialize, Clone )]
-pub struct Biome{
-    pub main_ground: GroundType,
-    pub main_cover: CoverType,
-    pub additional_ground: Vec<GroundType>,
-    pub additional_ground_value: Vec<f32>,
-    pub additional_cover: Vec<CoverType>,
-    pub additional_cover_value: Vec<f32>,
-    pub rivers: Rivers,
-    pub spots: Spots,
-}
-
-#[derive( Deserialize, Clone )]
-pub struct Rivers{
-    pub liquid_river: Vec<RiverSetting>,
-    pub solid_river: Vec<RiverSetting>,
-}
-
-#[derive( Deserialize, Clone )]
-pub struct Spots{
-    pub liquid_spot: Vec<SpotSetting>,
-    pub solid_spot: Vec<SpotSetting>,
-}
-
-#[derive( Deserialize, Clone )]
-pub struct SpotSetting {
-    pub amount: u8,
-    pub emerging: u8,
-    pub ground_type: GroundType,
-    pub cover_type: CoverType,
-    pub max_width: u16,
-    pub max_height: u16,
-    pub min_width: u16,
-    pub min_height: u16,
-    pub x_offset: i8,
-    pub y_offset: i8,
-    pub height_offset: i8,
-    pub width_offset: i8,
-}
-
-#[derive( Deserialize, Clone )]
-pub struct RiverSetting {
-    pub emerging: u8,
-    pub ground_type: GroundType,
-    pub cover_type: CoverType,
-    pub max_width: u16,
-    pub min_width: u16,
-    pub offset: i8,
-    pub offset_width: i8,
-    pub river_type: RiverType,
-}
-
-
-#[derive( Serialize, Deserialize )]
+#[derive( Serialize, Deserialize, Clone )]
 pub struct GroundTilemap{
     tile_size: u16,
     tilemap_width: u16,
@@ -123,18 +53,20 @@ impl GroundTilemap{
 
     pub fn get_tile_by_index( &mut self, value: usize ) -> &mut GroundTilemapTile{
         let vector_length = self.tilemap_tile_storage.len();
-        if value > vector_length{
+        if value >= vector_length{
             panic!( "ground_tilemap::get_tile_by_index. Value > vec.len(); Value:{}, vec.len():{}", value, vector_length );
         }
 
         return &mut self.tilemap_tile_storage[ value ];
     }
 
-    pub fn generate_tilemap( &mut self, deploy: &Deploy, biome_setting: &Biome ){
+    pub fn generate_tilemap( &mut self, deploy: &Deploy, biome_type: BiomeType ){
         if self.tile_size == 0 || self.total_tiles == 0{
             panic!( "ground_tilemap::generate_tilemap. Tilemap not setted yet!" );
         }
-        let biome_setting: Biome = Biome {
+
+        let biome_setting: &Biome = deploy.ground_scene_biome.get_biome_setting( biome_type );
+        /*let biome_setting: Biome = Biome {
             main_ground: GroundType::Earth,
             main_cover: CoverType::Grass,
             additional_ground: vec![ GroundType::Dirt, GroundType::RockEnvironment ],
@@ -143,7 +75,7 @@ impl GroundTilemap{
             additional_cover_value: vec![ 5.0, 0.8 ],
             rivers: Rivers{ solid_river: vec![], liquid_river: vec![] },
             spots: Spots{ solid_spot: vec![], liquid_spot: vec![]} ,
-        };
+        };*/
 
         self.generate_ground( &biome_setting.main_ground, &deploy );
         self.generate_additional_ground( &biome_setting.additional_ground, &biome_setting.additional_ground_value, &deploy ); 
@@ -483,7 +415,7 @@ impl GroundTilemap{
         let x = tile.x;
         let y = tile.y;
         let height = self.tilemap_height;
-        let grid_multiplier = current_envirounment * 2 + 1; // окружность вокруг тайла ( CE = 1; x = 3, y = 3 ( 3 x 3 ) ); 
+        let grid_multiplier = current_envirounment * 2 + 1; // окружность вокруг тайла ( CurEnv = 1; x = 3, y = 3 ( 3 x 3 ) ); 
 
         for i in 0..grid_multiplier {
             for j in 0..grid_multiplier {
@@ -522,6 +454,8 @@ impl GroundTilemap{
             }
         }
     }
+
+    fn spread_graphic_indexes(){}
 
     fn generate_solids_liquids( &mut self, spots: &Spots, rivers: &Rivers, deploy: &Deploy ){
         let solid_rivers = &rivers.solid_river;

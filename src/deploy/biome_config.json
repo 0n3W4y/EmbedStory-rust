@@ -1,5 +1,5 @@
 {
-    "Plain":{
+    "plain":{
         "main_ground": "Earth",
         "main_cover": "Grass",
         "additional_ground": [ "Dirt", "RockEnvironment" ],
@@ -26,17 +26,18 @@
         "spots":{
             "solid_spot": [
                 {
-                    "emerging":50,
                     "amount": 2,
-                    "widthMax": 20,
-                    "widthMin": 5,
-                    "heightMax": 20,
-                    "heightMin": 5,
-                    "offsetX": 1,
-                    "offsetY": 1,
-                    "widthOffset": 2,
-                    "heightOffset": 2,
-                    "ground": "Rock"
+                    "emerging":50,
+                    "ground_type": "Rock",
+                    "cover_type": "None",
+                    "max_width": 20,
+                    "max_height": 20,
+                    "min_width": 5,
+                    "min_height": 5,
+                    "x_offset": 1,
+                    "y_offset": 1,
+                    "width_offset": 2,
+                    "height_offse": 2
                 }                
             ],
             "liquid_spot": [
@@ -56,7 +57,7 @@
                 }                
             ]
         }, 
-        "resources": {
+        "objects": {
             "tree": 30,
             "fertileTree": 1,
             "bush": 5,
@@ -67,6 +68,5 @@
             "copperStone": 5,
             "copperOre": 3
         }
-
     }
 }

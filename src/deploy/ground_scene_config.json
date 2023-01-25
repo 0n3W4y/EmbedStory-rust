@@ -1,0 +1,9 @@
+{
+    "plaint_event_location":{
+        "biome_type": "Plain",
+        "width": 100,
+        "height": 100,
+        "underground": 50,
+        "underground_floor": 3
+    }
+}

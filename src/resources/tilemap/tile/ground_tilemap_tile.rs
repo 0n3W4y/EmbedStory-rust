@@ -22,7 +22,7 @@ pub enum CoverType{
     RockyRoad,
 }
 
-#[derive( Serialize, Deserialize, Debug )]
+#[derive( Serialize, Deserialize, Debug, Clone )]
 pub struct GroundTilemapTile{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
@@ -30,7 +30,7 @@ pub struct GroundTilemapTile{
     pub y: u16,
     pub graphic_x: u32,
     pub graphic_y: u32,
-    pub index: u32,
+    pub index: u32, // in vec;
     pub can_remove_floor: bool,
     pub can_place_floor: bool,
     pub can_place_object: bool,
