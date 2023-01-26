@@ -64,7 +64,7 @@ impl Plugin for GameGroundScenePlugin{
 fn setup(
     mut commands: Commands,
     deploy: Res<Deploy>,
-    scene_manager: ResMut<SceneManager>,
+    mut scene_manager: ResMut<SceneManager>,
 ){
     let current_scene: GameGroundScene = scene_manager.get_next_ground_scene().clone();
     //let current_scene: &mut GameGroundScene = game_data.scene_manager.get_next_ground_scene();

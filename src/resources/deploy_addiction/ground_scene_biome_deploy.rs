@@ -100,7 +100,7 @@ impl GroundSceneBiomeDeploy{
         return result;
     }
     
-    pub fn get_biome_setting( &self, biome_type: BiomeType ) -> &Biome{
+    pub fn get_biome_setting( &self, biome_type: &BiomeType ) -> &Biome{
         match biome_type {
             BiomeType::Plain => { return &self.plain },
             _ => panic!( "GroundSceneDiomeDeploy.get_biome_setting. Not created yet!"),

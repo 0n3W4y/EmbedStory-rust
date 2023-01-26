@@ -42,7 +42,7 @@ impl GroundSceneTileDeploy{
             GroundType::Dirt => &self.ground_tile.dirt,
             GroundType::DryEarth => &self.ground_tile.dry_earth,
             GroundType::Rock => &self.ground_tile.rock,
-            GroundType::RockEnvironment => &self.ground_tile.rock_envirounment,
+            GroundType::RockEnvironment => &self.ground_tile.rock_environment,
         };
     }
 
@@ -67,7 +67,7 @@ pub struct GroundTileDeploy{
     dirt: GroundTilemapTileDeploy,
     dry_earth: GroundTilemapTileDeploy,
     rock: GroundTilemapTileDeploy,
-    rock_envirounment: GroundTilemapTileDeploy,
+    rock_environment: GroundTilemapTileDeploy,
 }
 
 #[derive( Deserialize, Debug )]

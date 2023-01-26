@@ -7,8 +7,8 @@ use crate::resources::dictionary::Dictionary;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::profile::Profile;
 
-const BUTTON_HEIGHT: f32 = 150.0;
-const BUTTON_WIDTH: f32 = 70.0;
+const BUTTON_HEIGHT: f32 = 40.0;
+const BUTTON_WIDTH: f32 = 100.0;
 const BUTTON_FONT_SIZE: f32 = 32.0;
 const BUTTON_NORMAL_COLOR: Color = Color::Rgba{ red:( 100.0 / 255.0 ), green:( 50.0 / 255.0 ) , blue:( 20.0 / 255.0 ) , alpha: 1.0 };
 const BUTTON_HOVER_COLOR: Color = Color::Rgba{ red:( 150.0 / 255.0 ), green:( 75.0 / 255.0 ), blue:( 45.0 / 255.0 ), alpha: 1.0 };
@@ -41,9 +41,9 @@ pub struct CreateCharScenePlugin;
 
 impl Plugin for CreateCharScenePlugin{
     fn build( &self, app: &mut App ){
-        app.add_system_set( SystemSet::on_enter( SceneState::MainMenuScene ).with_system( setup ));
-        app.add_system_set( SystemSet::on_update( SceneState::MainMenuScene ).with_system( button_handle_system ));
-        app.add_system_set( SystemSet::on_exit( SceneState::MainMenuScene ).with_system( cleanup ));
+        app.add_system_set( SystemSet::on_enter( SceneState::CreateCharScene ).with_system( setup ));
+        app.add_system_set( SystemSet::on_update( SceneState::CreateCharScene ).with_system( button_handle_system ));
+        app.add_system_set( SystemSet::on_exit( SceneState::CreateCharScene ).with_system( cleanup ));
     }
 }
 
@@ -85,9 +85,9 @@ fn create_buttons(
     for ( index, button_component ) in MainButtonComponent::iterator().enumerate(){
         let position: Rect<Val> = Rect {
             left: Val::Auto,
-            right: Val::Px( BUTTON_HEIGHT + index as f32 * BUTTON_HEIGHT ), // 2 buttons together
+            right: Val::Px( BUTTON_WIDTH + index as f32 * BUTTON_WIDTH ), // 2 buttons together
             top: Val::Auto,
-            bottom: Val::Px( BUTTON_WIDTH )
+            bottom: Val::Px( BUTTON_HEIGHT )
         };
 
         let size: Size<Val> = Size { 

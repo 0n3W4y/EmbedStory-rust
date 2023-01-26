@@ -4,8 +4,8 @@
         "cover_type": "None",
         "can_remove_floor": false,
         "can_place_floor": true,
-        "can_place_object": true,
-        "can_remove_object": false,
+        "can_place_thing": true,
+        "can_remove_thing": false,
         "can_place_stuff": true,
         "can_walk": true,
         "movement_ratio": 900
@@ -16,8 +16,8 @@
         "cover_type": "None",
         "can_remove_floor": false,
         "can_place_floor": true,
-        "can_place_object": true,
-        "can_remove_object": false,
+        "can_place_thing": true,
+        "can_remove_thing": false,
         "can_place_stuff": true,
         "can_walk": true,
         "movement_ratio": 700
@@ -28,8 +28,8 @@
         "cover_type": "None",
         "can_remove_floor": false,
         "can_place_floor": true,
-        "can_place_object": true,
-        "can_remove_object": false,
+        "can_place_thing": true,
+        "can_remove_thing": false,
         "can_place_stuff": true,
         "can_walk": true,
         "movement_ratio": 1000
@@ -40,20 +40,20 @@
         "cover_type": "None",
         "can_remove_floor": false,
         "can_place_floor": false,
-        "can_place_object": false,
-        "can_remove_object": false,
+        "can_place_thing": false,
+        "can_remove_thing": false,
         "can_place_stuff": false,
         "can_walk": false,
         "movement_ratio": 0
     },
 
-    "rock_enviroument":{
-        "ground_type": "RockEnviroument",
+    "rock_environment":{
+        "ground_type": "RockEnvironment",
         "cover_type": "None",
         "can_remove_floor": false,
         "can_place_floor": true,
-        "can_place_object": true,
-        "can_remove_object": false,
+        "can_place_thing": true,
+        "can_remove_thing": false,
         "can_place_stuff": true,
         "can_walk": true,
         "movement_ratio": 1100

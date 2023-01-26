@@ -7,6 +7,7 @@ use crate::scenes::SceneState;
 use crate::materials::{ material_manager::MaterialManager, font::FontMaterials };
 use crate::resources::dictionary::Dictionary;
 use crate::config::{ RESOLUTION, WINDOW_HEIGHT, TILE_SIZE };
+use crate::resources::deploy_addiction::ground_scene_biome_deploy::BiomeType;
 
 use super::game_scenes::game_ground_scene::GameGroundScene;
 
@@ -225,24 +226,35 @@ fn create_starting_scenes (
 ){
 
     //TODO: Remove this variables;
-    let biome_type = BiomeType::Plain;
-    let width = 200;
-    let height = 200;
+    let scene_setting = deploy.ground_scene.get_scene_setting( BiomeType::Plain );
 
 
     // Create new scene_manager;
-    let scene_manager = SceneManager::new();
+    let mut scene_manager = SceneManager::new();
+
     //create new object manager;
     let object_manager = ObjectManager::new();
+
     //Create starting scene;
-    let starting_scene: &mut GameGroundScene = scene_manager.create_ground_scene();
-    //set next scene to load - new scene;
-    scene_manager.next_ground_scene = starting_scene.index as isize;
+    let mut starting_scene: GameGroundScene = scene_manager.create_ground_scene();
+
     //config scene with deploy ;
-    starting_scene.tilemap.set( TILE_SIZE, width, height );
+    starting_scene.tilemap.set( TILE_SIZE, scene_setting.width, scene_setting.height );
     
-    starting_scene.tilemap.generate_tilemap( &deploy, biome_type );
+    //generate tilemap with template from biome type;
+    starting_scene.tilemap.generate_tilemap( &deploy, &scene_setting.biome_type );
+
+    //store scene into scene_manager;
+    let index: usize = scene_manager.store_ground_scene( starting_scene );
+
+    //set next scene to load - new scene;
+    scene_manager.set_next_ground_scene( index );
+
+
     //create global map scene;
     //scene_manager.create_globalmap_scene();
+
+    commands.insert_resource( scene_manager );
+    commands.insert_resource( object_manager );
 
 }

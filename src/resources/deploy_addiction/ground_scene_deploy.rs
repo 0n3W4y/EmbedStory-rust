@@ -6,16 +6,28 @@ use crate::resources::deploy_addiction::ground_scene_biome_deploy::BiomeType;
 
 #[derive( Deserialize, Debug )]
 pub struct GroundSceneDeployConfig{
-    biome_type: BiomeType,
-    width: u16,
-    height: u16,
-    underground: u8, // percent;
-    underground_floor: u8, // min 0 - max - value;
+    pub biome_type: BiomeType,
+    pub width: u16,
+    pub height: u16,
+    pub underground: u8, // percent;
+    pub underground_floor: u8, // min 0 - max - value;
+    //pub house: u8,
+    //pub house_count: u8,
+    //pub neutral_animals: u8,
+    //pub neutral_animals_count: u8,
+    //pub neutral_npc: u8,
+    //pub neutral_npc_count: u8,
+    //pub enemy_npc: u8,
+    //pub enemy_npc_count:u8,
+    //pub enemy_npc_strength: Strong,
+    //pub enemy_animals: u8,
+    //pub enemy_animals_count: u8,
+    //pub enemy_animals_strength: Weak,
 }
 
 #[derive( Deserialize, Debug )]
 pub struct GroundSceneDeploy{
-    plain_event: GroundSceneDeployConfig,
+    pub plain_event: GroundSceneDeployConfig,
 }
 
 impl GroundSceneDeploy{
@@ -30,5 +42,20 @@ impl GroundSceneDeploy{
         };
 
         return result;
+    }
+
+    pub fn get_scene_setting( &self, biome_type: BiomeType ) -> &GroundSceneDeployConfig{
+        match biome_type {
+            BiomeType::Plain =>{ return &self.plain_event },
+            /*
+            BiomeType::Desert =>{},
+            BiomeType::Forest =>{},
+            BiomeType::Rocks =>{},
+            BiomeType::Snow =>{},
+            BiomeType::Swamp =>{},
+            BiomeType::Tropic =>{},
+            */
+            _ => { return &self.plain_event },
+        }
     }
 }

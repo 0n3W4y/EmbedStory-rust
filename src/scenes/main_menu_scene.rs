@@ -138,7 +138,7 @@ fn button_handle_system(
                 *color = UiColor( Color::rgb(0.25, 0.75, 0.25));
                 match button{
                     //ButtonComponent::Play => state.set( SceneState::CreateCharScene).expect( "Could not load CreateCharacterScene"),
-                    ButtonComponent::Play => state.set( SceneState::GameGroundScene).expect( "Could not load GameGroundScene"),
+                    ButtonComponent::Play => state.set( SceneState::CreateCharScene).expect( "Could not load GameGroundScene"),
                     ButtonComponent::Load => state.set( SceneState::LoadPreviousGameScene ).expect( "Could not load LoadPreviousGameScene"),
                     ButtonComponent::Options => state.set( SceneState::OptionsScene ).expect( "Could not load OptionsScene" ),
                     ButtonComponent::Quit => exit.send(AppExit),

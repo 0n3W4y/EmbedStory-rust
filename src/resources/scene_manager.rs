@@ -24,12 +24,17 @@ impl SceneManager{
         };
     }
 
-    pub fn create_ground_scene( &mut self ) -> &mut GameGroundScene {
+    pub fn create_ground_scene( &mut self ) -> GameGroundScene {
         let scene_id = self.create_scene_id();
-        let index = self.ground_scene.len();
-        let scene: GameGroundScene = GameGroundScene::new( scene_id, index );
+        let scene: GameGroundScene = GameGroundScene::new( scene_id, 0 );
+        return scene;
+    }
+
+    pub fn store_ground_scene( &mut self, mut scene: GameGroundScene ) -> usize {
+        let index: usize = self.ground_scene.len();
+        scene.index = index;
         self.ground_scene.push( scene );
-        return &mut self.ground_scene[ index ];
+        return index;
     }
 
     pub fn get_next_ground_scene( &mut self ) -> &mut GameGroundScene {
@@ -47,7 +52,16 @@ impl SceneManager{
             }
         }
 
-        panic!( "scene_mnager.get_ground_scene_by_id. There is no id: {} in vector with Ground Scene", scene_id );
+        panic!( "scene_mnager.get_ground_scene_by_id. There is no id: {} in vector with Ground Scenes", scene_id );
+    }
+
+    pub fn set_next_ground_scene( &mut self, index: usize ){
+        if self.next_ground_scene == -1 {
+            self.next_ground_scene = index as isize;
+        }else{
+            panic!( "scene_manager.set_next_ground_scene. Can not assigned next ground scene, because it already assigned or not deassigned. Next Scene: {}", self.next_ground_scene );
+        }
+        
     }
 
     fn create_scene_id( &mut self ) -> usize{

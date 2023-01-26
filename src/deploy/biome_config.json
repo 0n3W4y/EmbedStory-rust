@@ -37,14 +37,14 @@
                     "x_offset": 1,
                     "y_offset": 1,
                     "width_offset": 2,
-                    "height_offse": 2
+                    "height_offset": 2                                       
                 }                
             ],
             "liquid_spot": [
                 {
                     "amount": 1,
                     "emerging": 25,
-                    "ground_type": "Erath",
+                    "ground_type": "Earth",
                     "cover_type": "Water",
                     "max_width": 15,
                     "max_height": 15,
@@ -52,8 +52,8 @@
                     "min_height": 5,
                     "x_offset": 1,
                     "y_offset": 1,
-                    "height_offset": 2,
-                    "width_offset": 2
+                    "width_offset": 2,
+                    "height_offset": 2                    
                 }                
             ]
         }, 
