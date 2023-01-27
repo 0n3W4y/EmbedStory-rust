@@ -240,9 +240,12 @@ fn create_starting_scenes (
 
     //config scene with deploy ;
     starting_scene.tilemap.set( TILE_SIZE, scene_setting.width, scene_setting.height );
-    
+
     //generate tilemap with template from biome type;
     starting_scene.tilemap.generate_tilemap( &deploy, &scene_setting.biome_type );
+
+    //prepare things for scene;
+    //object_manager.generate_things_for_scene( &mut starting_scene );
 
     //store scene into scene_manager;
     let index: usize = scene_manager.store_ground_scene( starting_scene );

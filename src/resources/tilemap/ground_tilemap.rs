@@ -80,6 +80,7 @@ impl GroundTilemap{
         self.generate_solids_liquids( &biome_setting.spots, &biome_setting.rivers, deploy );
 
         self.generate_environment( deploy );
+        self.spread_indexes_for_cover_tiles();
     }
 
     fn generate_ground( &mut self, ground_type: &GroundType, deploy: &Deploy ){
@@ -489,6 +490,21 @@ impl GroundTilemap{
         
     }
 
+    fn spread_indexes_for_cover_tiles( &mut self ){
+        for i in 0..self.tilemap_tile_storage.len(){
+            let x = self.tilemap_tile_storage[ i ].x;
+            let y: u16 = self.tilemap_tile_storage[ i ].y;
+            let tile_cover: CoverType = self.tilemap_tile_storage[ i ].cover_type.clone();
+
+            let cover_graphic_index: u8 = match tile_cover{
+                CoverType::Water | CoverType::Shallow => { self.find_cover_graphic_index_for_shallow_water( x, y ) },
+                _ => { continue },
+            };
+
+            self.tilemap_tile_storage[ i ].cover_graphic_index = cover_graphic_index;
+        }
+    }
+
     fn generate_solids_liquids( &mut self, spots: &Spots, rivers: &Rivers, deploy: &Deploy ){
         let solid_rivers = &rivers.solid_river;
         let solid_spots = &spots.solid_spot;
@@ -500,6 +516,87 @@ impl GroundTilemap{
         self.generate_rivers( &solid_rivers, &deploy );
         self.generate_spots( &liquid_spots, &deploy );
         self.generate_rivers( &liquid_rivers, &deploy );
+    }
+
+    fn find_cover_graphic_index_for_shallow_water( &self, x: u16, y: u16 ) -> u8{
+        let storage: &Vec<GroundTilemapTile> = &self.tilemap_tile_storage;
+        let height = self.tilemap_height;
+        let total_tiles = self.total_tiles;
+
+        let top_index: isize = (( y - 1 ) * height + x ) as isize;
+        let left_index: isize = ( y * height + x - 1 ) as isize;
+        let right_index: isize = ( y * height + x + 1 ) as isize;
+        let bottom_index: isize = (( y + 1 ) * height + x ) as isize;
+
+        let top:bool = if top_index < 0 || top_index as usize >= total_tiles {
+            false
+        }else{
+            match storage[ top_index as usize ].cover_type {
+                CoverType::Shallow | CoverType::Water => true,
+                _ => false,
+            }
+        };
+        
+        let left: bool = if left_index < 0 || left_index as usize >= total_tiles {
+            false
+        }else{
+            match storage[ left_index as usize ].cover_type {
+                CoverType::Shallow | CoverType::Water => true,
+                _ => false,
+            }
+        };
+
+        let right: bool = if right_index < 0 || right_index as usize >= total_tiles {
+            false
+        }else{
+            match storage[ right_index as usize ].cover_type {
+                CoverType::Shallow | CoverType::Water => true,
+                _ => false,
+            }
+        };
+
+        let bottom: bool = if bottom_index < 0 || bottom_index as usize >= total_tiles {
+            false
+        }else{
+            match storage[ bottom_index as usize ].cover_type {
+                CoverType::Shallow | CoverType::Water => true,
+                _ => false,
+            }
+        };
+
+        if top && left && right && bottom {
+            return 0; // all
+        }else if top && left && right && !bottom {
+            return 1; // top + left + right;
+        }else if top && left && !right && bottom {
+            return 2; // top + left + bottom;
+        }else if top && !left && right && bottom {
+            return 3; // top + right + bottom;
+        }else if !top && left && right && bottom {
+            return 4; // left + right + bottom;
+        }else if top && !left && !right && bottom {
+            return 5; // top + bottom;
+        }else if !top && left && right && !bottom {
+            return 6; // left + right;
+        }else if top && left && !right && !bottom {
+            return 7; // top + left;
+        }else if top && !left && right && !bottom {
+            return 8; // top + right;
+        }else if !top && left && !right && bottom {
+            return 9; // left + bottom;
+        }else if !top && !left && right && bottom {
+            return 10; // right + bottom;
+        }else if top && !left && !right && !bottom {
+            return  11; // top;
+        }else if !top && left && !right && !bottom {
+            return 12; // left;
+        }else if !top && !left && right && !bottom {
+            return 13; // right;
+        }else if !top && !left && !right && bottom {
+            return 14; // bottom;
+        }else{
+            return 15; // alone;
+        }
     }
 
     fn set_data_to_tile( tile: &mut GroundTilemapTile, data: &GroundTilemapTileDeploy ){

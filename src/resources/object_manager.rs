@@ -1,3 +1,5 @@
+use crate::scenes::game_scenes::game_ground_scene::GameGroundScene;
+
 pub struct ObjectManager{
     id: usize,
 }
@@ -7,6 +9,10 @@ impl ObjectManager{
         return ObjectManager{
             id: 0,
         };
+    }
+
+    pub fn generate_things_for_scene( scene: &mut GameGroundScene ){
+        
     }
 
     pub fn set_id( &mut self, id:usize ){
