@@ -26,7 +26,7 @@ impl SceneManager{
 
     pub fn create_ground_scene( &mut self ) -> GameGroundScene {
         let scene_id = self.create_scene_id();
-        let scene: GameGroundScene = GameGroundScene::new( scene_id, 0 );
+        let scene: GameGroundScene = GameGroundScene::new( scene_id );
         return scene;
     }
 

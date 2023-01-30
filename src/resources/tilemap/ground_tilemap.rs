@@ -51,8 +51,12 @@ impl GroundTilemap{
         return self.total_tiles;
     }
 
-    pub fn get_tilemap_tile_storage( &mut self ) -> &mut Vec<GroundTilemapTile>{
+    pub fn get_tilemap_tile_storage_mut( &mut self ) -> &mut Vec<GroundTilemapTile>{
         return &mut self.tilemap_tile_storage;
+    }
+
+    pub fn get_tilemap_tile_storage( &self ) -> &Vec<GroundTilemapTile>{
+        return &&self.tilemap_tile_storage;
     }
 
     pub fn get_tile_by_index( &mut self, value: usize ) -> &mut GroundTilemapTile{
@@ -523,7 +527,7 @@ impl GroundTilemap{
         let height = self.tilemap_height;
         let total_tiles = self.total_tiles;
 
-        let top_index: isize = (( y - 1 ) * height + x ) as isize;
+        let top_index: isize = if y == 0{ -1 }else{(( y - 1 ) * height + x ) as isize};
         let left_index: isize = ( y * height + x - 1 ) as isize;
         let right_index: isize = ( y * height + x + 1 ) as isize;
         let bottom_index: isize = (( y + 1 ) * height + x ) as isize;

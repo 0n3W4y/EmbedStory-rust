@@ -1,13 +1,15 @@
 use serde::{ Serialize, Deserialize };
 use bevy::prelude::*;
+use rand::Rng;
 
+use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::character::Character;
 use crate::resources::scene_data::thing::Thing;
 use crate::resources::scene_data::ground_effect::GroundEffect;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::tilemap::ground_tilemap::GroundTilemap;
-use crate::resources::deploy::Deploy;
+use crate::resources::tilemap::tile::ground_tilemap_tile::{GroundType, CoverType};
 use crate::scenes::SceneState;
 
 #[derive( Serialize, Deserialize, Clone )]
@@ -24,7 +26,7 @@ pub struct GameGroundScene{
 
 }
 impl GameGroundScene{
-    pub fn new( id: usize, index: usize ) -> Self{
+    pub fn new( id: usize ) -> Self{
         let new_tilemap = GroundTilemap::new();
         return GameGroundScene{
             scene_id: id,
@@ -39,14 +41,14 @@ impl GameGroundScene{
 }
 
 pub struct GameGroundSceneData{
-    pub tilemap_ground_layer: Entity,
-    pub tilemap_cover_layer: Entity,
-    pub things_layer: Entity,
-    pub stuff_layer: Entity,
-    pub characters_layer: Entity,
-    pub effects_layer: Entity,
-    //pub roof_layer: Entity,
-    //pub fog_layer: Entity,
+    pub tilemap_ground_layer: Option<Entity>,
+    pub tilemap_cover_layer: Option<Entity>,
+    pub things_layer: Option<Entity>,
+    pub stuff_layer: Option<Entity>,
+    pub characters_layer: Option<Entity>,
+    pub effects_layer: Option<Entity>,
+    //pub roof_layer: Option<Entity>,
+    //pub fog_layer: Option<Entity>,
 }
 
 
@@ -55,39 +57,107 @@ pub struct GameGroundScenePlugin;
 
 impl Plugin for GameGroundScenePlugin{
     fn build( &self, app: &mut App ){
-        app.add_system_set( SystemSet::on_enter( SceneState::GameGroundScene ).with_system( setup ));
+        app.add_system_set( SystemSet::on_enter( SceneState::GameGroundScene )
+            .with_system( spawn_tilemap_ground )
+            .with_system( spawn_tilemap_cover )
+            //.with_system( spawn_things )
+        );
         app.add_system_set( SystemSet::on_update( SceneState::GameGroundScene ).with_system( update ));
         app.add_system_set( SystemSet::on_exit( SceneState::GameGroundScene ).with_system( cleanup ));
     }
 }
 
-fn setup(
+fn spawn_tilemap_ground( 
     mut commands: Commands,
-    deploy: Res<Deploy>,
-    mut scene_manager: ResMut<SceneManager>,
+    scene: Res<GameGroundScene>,
+    mut scene_data: ResMut<GameGroundSceneData>,
+    material_manager: Res<MaterialManager>,
 ){
-    let current_scene: GameGroundScene = scene_manager.get_next_ground_scene().clone();
-    //let current_scene: &mut GameGroundScene = game_data.scene_manager.get_next_ground_scene();
-    //commands.insert_resource( GameGroundSceneData{ 
-    //  tilemap_ground_layer: tilemap_ground_layer,
-    //  tilemap_cover_layer: tilemap_cover_layer,
-    //  objects_layer: objects_layer,
-    //  stuff_layer: stuff_layer,
-    //  characters_layer: characters_layer,
-    //  effects_layer: effects_layer,
-    //  roof_layer: roof_layer,
-    //  for_layer: fog_layer,
-    //});
+    let ground_tiles = commands.spawn_bundle( SpriteBundle {
+        transform: Transform::from_xyz(0.0, 0.0, 0.0), // 0 - layer;
+        ..Default::default()
+    })
+    .with_children( |parent| {
+        let tile_storage = scene.tilemap.get_tilemap_tile_storage();
+        for i in 0..tile_storage.len(){
+            let x = tile_storage[ i ].graphic_x;
+            let y = tile_storage[ i ].graphic_y;
+            let ground_type = &tile_storage[ i ].ground_type;
+
+            let transform = Transform::from_xyz( x as f32, y as f32, 0.0 );
+            let texture: Handle<Image> = match ground_type {
+                GroundType::Earth => { material_manager.ground_scene.ground_tile.earth.clone() },
+                GroundType::Dirt => { material_manager.ground_scene.ground_tile.dirt.clone() },
+                GroundType::DryEarth => { material_manager.ground_scene.ground_tile.dry_earth.clone() },
+                GroundType::Rock => { material_manager.ground_scene.ground_tile.rock.clone() },
+                GroundType::RockEnvironment => { material_manager.ground_scene.ground_tile.rock_environment.clone() },
+            };
+
+
+            parent.spawn_bundle( SpriteBundle{
+                transform: transform,
+                texture: texture,
+                ..Default::default()
+            });
+        }
+    })
+    .id();
+
+    scene_data.tilemap_ground_layer = Some( ground_tiles );
+}
+
+fn spawn_tilemap_cover(
+    mut commands: Commands,
+    scene: Res<GameGroundScene>,
+    mut scene_data: ResMut<GameGroundSceneData>,
+    material_manager: Res<MaterialManager>,
+){
+    let cover_tiles = commands.spawn_bundle( SpriteBundle{
+        transform: Transform::from_xyz(0.0, 0.0, 0.1), // 1 - layer;
+        ..Default::default()
+    })
+    .with_children( |parent| {
+        let tile_storage = scene.tilemap.get_tilemap_tile_storage();
+        let mut rnd = rand::thread_rng();
+        for i in 0..tile_storage.len(){
+            let x = tile_storage[ i ].graphic_x;
+            let y = tile_storage[ i ].graphic_y;
+            let cover_type = &tile_storage[ i ].cover_type;
+
+            if *cover_type == CoverType::None { continue; };
+
+            let transform = Transform::from_xyz( x as f32, y as f32, 0.0 );
+
+            let indexes = material_manager.ground_scene.cover_tile.get_indexes( cover_type );
+            let index = rnd.gen_range( 0..( indexes-1 ));
+            let texture:Handle<Image> = material_manager.ground_scene.cover_tile.get_image( cover_type, index ).clone();
+
+            parent.spawn_bundle( SpriteBundle{
+                transform: transform,
+                texture: texture,
+                ..Default::default()
+            });
+        }
+    })
+    .id();
+
+    scene_data.tilemap_cover_layer = Some( cover_tiles );
 }
 
 fn update(){}
 
-fn cleanup(mut commands: Commands, scene_data: Res<GameGroundSceneData> ){
+fn cleanup(mut commands: Commands, scene_data: Res<GameGroundSceneData>, mut scene_manager: ResMut<SceneManager>, scene: Res<GameGroundScene> ){
     //commands.entity( scene_data.fog_layer ).despawn_recursive();
-    commands.entity( scene_data.effects_layer ).despawn_recursive();
-    commands.entity( scene_data.characters_layer ).despawn_recursive();
-    commands.entity( scene_data.stuff_layer ).despawn_recursive();
-    commands.entity( scene_data.things_layer ).despawn_recursive();
-    commands.entity( scene_data.tilemap_cover_layer ).despawn_recursive();
-    commands.entity( scene_data.tilemap_ground_layer ).despawn_recursive();
+
+    let old_scene = scene_manager.get_ground_scene_by_id( scene.scene_id );
+    *old_scene = scene.clone();
+
+    commands.entity( scene_data.effects_layer.unwrap() ).despawn_recursive();
+    commands.entity( scene_data.characters_layer.unwrap() ).despawn_recursive();
+    commands.entity( scene_data.stuff_layer.unwrap() ).despawn_recursive();
+    commands.entity( scene_data.things_layer.unwrap() ).despawn_recursive();
+    commands.entity( scene_data.tilemap_cover_layer.unwrap() ).despawn_recursive();
+    commands.entity( scene_data.tilemap_ground_layer.unwrap() ).despawn_recursive();
+
+    commands.remove_resource::<GameGroundScene>();
 }

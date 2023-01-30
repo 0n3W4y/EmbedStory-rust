@@ -9,7 +9,7 @@ use crate::resources::dictionary::Dictionary;
 use crate::config::{ RESOLUTION, WINDOW_HEIGHT, TILE_SIZE };
 use crate::resources::deploy_addiction::ground_scene_biome_deploy::BiomeType;
 
-use super::game_scenes::game_ground_scene::GameGroundScene;
+use super::game_scenes::game_ground_scene::{GameGroundScene, GameGroundSceneData};
 
 const LOADING_BORDER_WIDTH: f32 = 600.0;
 const LOADING_BORDER_HEIGHT: f32 = 60.0;
@@ -238,6 +238,8 @@ fn create_starting_scenes (
     //Create starting scene;
     let mut starting_scene: GameGroundScene = scene_manager.create_ground_scene();
 
+    let id = starting_scene.scene_id;
+
     //config scene with deploy ;
     starting_scene.tilemap.set( TILE_SIZE, scene_setting.width, scene_setting.height );
 
@@ -253,11 +255,25 @@ fn create_starting_scenes (
     //set next scene to load - new scene;
     scene_manager.set_next_ground_scene( index );
 
+    let scene = scene_manager.get_ground_scene_by_id( id ).clone();
+
+    commands.insert_resource( GameGroundSceneData{ 
+        tilemap_ground_layer: None,
+        tilemap_cover_layer: None,
+        things_layer: None,
+        stuff_layer: None,
+        characters_layer: None,
+        effects_layer: None,
+        //roof_layer: None,
+        //fog_layer: None,
+      });
+
 
     //create global map scene;
     //scene_manager.create_globalmap_scene();
 
     commands.insert_resource( scene_manager );
     commands.insert_resource( object_manager );
+    commands.insert_resource( scene );
 
 }

@@ -29,7 +29,7 @@ fn spawn_ui_camera( mut commands: Commands ){
 
 fn spawn_2d_camera( mut commands: Commands ){
     let mut camera = OrthographicCameraBundle::new_2d();
-
+    camera.orthographic_projection.scale = 2.0;
     //camera.orthographic_projection.top = 1.0;
     //camera.orthographic_projection.bottom = -1.0;
     //camera.orthographic_projection.right = 1.0 * RESOLUTION;
