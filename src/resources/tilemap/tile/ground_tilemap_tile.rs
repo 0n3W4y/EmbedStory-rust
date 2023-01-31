@@ -13,6 +13,7 @@ pub enum GroundType{
 pub enum CoverType{
     None,
     Grass,
+    Flowers,
     Water,
     Sand,
     Snow,

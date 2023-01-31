@@ -2,10 +2,11 @@
     "plain":{
         "main_ground": "Earth",
         "main_cover": "Grass",
+        "main_cover_filling": 85,
         "additional_ground": [ "Dirt", "RockEnvironment" ],
-        "additional_ground_value": [ 5.3, 5.0 ],
-        "additional_cover": [ "RockyRoad", "Sand" ],
-        "additional_cover_value": [ 5.0, 0.8 ],
+        "additional_ground_value": [ 3.3, 2.0 ],
+        "additional_cover": [ "RockyRoad", "Sand", "Flowers" ],
+        "additional_cover_value": [ 0.2, 0.8, 1.0 ],
         "rivers": {
             "liquid_river": [ 
                 {
@@ -43,7 +44,7 @@
             "liquid_spot": [
                 {
                     "amount": 1,
-                    "emerging": 25,
+                    "emerging": 35,
                     "ground_type": "Earth",
                     "cover_type": "Water",
                     "max_width": 15,

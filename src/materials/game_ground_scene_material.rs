@@ -6,6 +6,7 @@ use crate::resources::tilemap::tile::ground_tilemap_tile::CoverType;
 pub struct CoverTileMaterial{
     pub grass: Vec<Handle<Image>>,
     pub sand: Vec<Handle<Image>>,
+    pub flowers: Vec<Handle<Image>>,
     pub snow: Vec<Handle<Image>>,
     pub shallow: Vec<Handle<Image>>,
     pub water: Vec<Handle<Image>>,
@@ -19,6 +20,7 @@ impl CoverTileMaterial{
         match cover_type{
             CoverType::Grass => { self.grass.len() },
             CoverType::Ice => { self.ice.len() },
+            CoverType::Flowers => { self.flowers.len() },
             CoverType::None => { 0 },
             CoverType::RockyRoad => { self.rocky_road.len() },
             CoverType::Sand => { self.sand.len() },
@@ -33,6 +35,7 @@ impl CoverTileMaterial{
         match cover_type {
             CoverType::Grass => { &self.grass[ index ] },
             CoverType::Ice => { &self.ice[ index ]},
+            CoverType::Flowers => { &self.flowers[ index ]},
             CoverType::None => { panic!(" Can not give a none image for CoverType::None" ) },
             CoverType::RockyRoad => { &self.rocky_road[ index ]},
             CoverType::Sand => { &self.sand[ index ]},
@@ -82,25 +85,60 @@ impl GameGroundSceneMaterial{
         let mut grass = vec![];
         grass.push( asset_server.load( "textures/tiles/cover/grass_00.png" ));
         grass.push( asset_server.load( "textures/tiles/cover/grass_01.png" ));
-        grass.push( asset_server.load( "textures/tiles/cover/grass_02.png" ));
-        grass.push( asset_server.load( "textures/tiles/cover/grass_03.png" ));
-        grass.push( asset_server.load( "textures/tiles/cover/grass_04.png" ));
+        //grass.push( asset_server.load( "textures/tiles/cover/grass_02.png" ));
+        //grass.push( asset_server.load( "textures/tiles/cover/grass_03.png" ));
+        //grass.push( asset_server.load( "textures/tiles/cover/grass_04.png" ));
+
+        let mut flowers: Vec<Handle<Image>> = vec![];
+        flowers.push( asset_server.load( "textures/tiles/cover/grass_02.png" ));
 
         let mut sand = vec![];
         sand.push( asset_server.load( "texture/tiles/cover/sand_00.png" ));
-        sand.push( asset_server.load( "texture/tiles/cover/sand_01.png" ));
-        sand.push( asset_server.load( "texture/tiles/cover/sand_02.png" ));
-        sand.push( asset_server.load( "texture/tiles/cover/sand_03.png" ));
-        sand.push( asset_server.load( "texture/tiles/cover/sand_04.png" ));
+        //sand.push( asset_server.load( "texture/tiles/cover/sand_01.png" ));
+        //sand.push( asset_server.load( "texture/tiles/cover/sand_02.png" ));
+        //sand.push( asset_server.load( "texture/tiles/cover/sand_03.png" ));
+        //sand.push( asset_server.load( "texture/tiles/cover/sand_04.png" ));
 
         let mut snow = vec![];
         snow.push( asset_server.load( "textures/tiles/cover/snow_00.png" ));
 
         let mut shallow = vec![];
         shallow.push( asset_server.load( "textures/tiles/cover/shallow_00.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_01.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_02.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_03.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_04.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_05.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_06.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_07.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_08.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_09.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_10.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_11.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_12.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_13.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_14.png" ));
+        shallow.push( asset_server.load( "textures/tiles/cover/shallow_15.png" ));
+
 
         let mut water = vec![];
         water.push( asset_server.load( "textures/tiles/cover/water_00.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_01.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_02.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_03.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_04.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_05.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_06.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_07.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_08.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_09.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_10.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_11.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_12.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_13.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_14.png" ));
+        water.push( asset_server.load( "textures/tiles/cover/water_15.png" ));
+
 
         let mut ice = vec![];
         ice.push( asset_server.load( "textures/tiles/cover/ice_00.png" ));
@@ -114,6 +152,7 @@ impl GameGroundSceneMaterial{
         return CoverTileMaterial{
             grass,
             sand,
+            flowers,
             snow,
             shallow,
             water,

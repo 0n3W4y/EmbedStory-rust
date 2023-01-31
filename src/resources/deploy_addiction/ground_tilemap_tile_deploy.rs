@@ -50,6 +50,7 @@ impl GroundSceneTileDeploy{
         return match *value{
             CoverType::Grass => &self.cover_tile.grass,
             CoverType::None => &self.cover_tile.none,
+            CoverType::Flowers => &self.cover_tile.flowers,
             CoverType::Ice => &self.cover_tile.ice,
             CoverType::Sand => &self.cover_tile.sand,
             CoverType::Shallow => &self.cover_tile.shallow,
@@ -74,6 +75,7 @@ pub struct GroundTileDeploy{
 pub struct CoverTileDeploy{
     none: GroundTilemapTileDeploy,
     grass: GroundTilemapTileDeploy,
+    flowers: GroundTilemapTileDeploy,
     water: GroundTilemapTileDeploy,
     sand: GroundTilemapTileDeploy,
     snow: GroundTilemapTileDeploy,

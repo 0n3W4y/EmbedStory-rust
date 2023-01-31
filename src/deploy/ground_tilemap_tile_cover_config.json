@@ -23,6 +23,18 @@
         "movement_ratio": 900
     },
 
+    "flowers":{
+        "ground_type": "Earth",
+        "cover_type": "Flowers",
+        "can_remove_floor": false,
+        "can_place_floor": true,
+        "can_place_thing": true,
+        "can_remove_thing": false,
+        "can_place_stuff": true,
+        "can_walk": true,
+        "movement_ratio": 900
+    },
+
     "sand":{
         "ground_type": "Earth",
         "cover_type": "Sand",

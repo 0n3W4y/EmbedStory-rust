@@ -128,8 +128,21 @@ fn spawn_tilemap_cover(
 
             let transform = Transform::from_xyz( x as f32, y as f32, 0.0 );
 
-            let indexes = material_manager.ground_scene.cover_tile.get_indexes( cover_type );
-            let index = rnd.gen_range( 0..( indexes-1 ));
+            let index = match cover_type{
+                CoverType::Ice => { tile_storage[ i ].cover_graphic_index as usize },
+                CoverType::Water => { tile_storage[ i ].cover_graphic_index as usize },
+                CoverType::Shallow => { tile_storage[ i ].cover_graphic_index as usize },
+                _ => { 
+                    let indexes = material_manager.ground_scene.cover_tile.get_indexes( cover_type );
+                    if indexes == 0 { 
+                        continue
+                    }else if indexes == 1{
+                        0
+                    }else{
+                        rnd.gen_range( 0..( indexes ))
+                    }
+                },
+            };
             let texture:Handle<Image> = material_manager.ground_scene.cover_tile.get_image( cover_type, index ).clone();
 
             parent.spawn_bundle( SpriteBundle{
@@ -146,11 +159,14 @@ fn spawn_tilemap_cover(
 
 fn update(){}
 
-fn cleanup(mut commands: Commands, scene_data: Res<GameGroundSceneData>, mut scene_manager: ResMut<SceneManager>, scene: Res<GameGroundScene> ){
-    //commands.entity( scene_data.fog_layer ).despawn_recursive();
-
+fn cleanup(
+    mut commands: Commands, 
+    scene_data: Res<GameGroundSceneData>, 
+    mut scene_manager: ResMut<SceneManager>, 
+    scene: Res<GameGroundScene> 
+){
     let old_scene = scene_manager.get_ground_scene_by_id( scene.scene_id );
-    *old_scene = scene.clone();
+    *old_scene = scene.clone(); // copy and paste scene into scene_manager;
 
     commands.entity( scene_data.effects_layer.unwrap() ).despawn_recursive();
     commands.entity( scene_data.characters_layer.unwrap() ).despawn_recursive();
@@ -158,6 +174,7 @@ fn cleanup(mut commands: Commands, scene_data: Res<GameGroundSceneData>, mut sce
     commands.entity( scene_data.things_layer.unwrap() ).despawn_recursive();
     commands.entity( scene_data.tilemap_cover_layer.unwrap() ).despawn_recursive();
     commands.entity( scene_data.tilemap_ground_layer.unwrap() ).despawn_recursive();
+    //commands.entity( scene_data.fog_layer ).despawn_recursive();
 
     commands.remove_resource::<GameGroundScene>();
 }

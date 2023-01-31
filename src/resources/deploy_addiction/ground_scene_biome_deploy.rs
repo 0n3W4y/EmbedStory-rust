@@ -19,6 +19,7 @@ pub enum BiomeType{
 pub struct Biome{
     pub main_ground: GroundType,
     pub main_cover: CoverType,
+    pub main_cover_filling: u8,
     pub additional_ground: Vec<GroundType>,
     pub additional_ground_value: Vec<f32>,
     pub additional_cover: Vec<CoverType>,
