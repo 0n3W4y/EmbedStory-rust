@@ -1,10 +1,18 @@
-use serde::{Deserialize, Serialize};
+use serde::{ Deserialize, Serialize };
 
 use crate::resources::scene_data::character::body_part::BodyPart;
 
 #[derive( Clone, Deserialize, Serialize, Debug, Eq, PartialEq )]
-enum BodyStructures{
-    Humaniod,
+enum BodyStructureType{
+    Humanoid,
+    Bogomol,
+    Gorro, // Mortal Kombat,
+    Roach,
+}
+
+pub struct BodyStructure{
+    structure_type: BodyStructureType,
+
 }
 
 #[derive( Deserialize, Serialize, Debug )]
@@ -21,6 +29,34 @@ pub struct HumaniodBodyStructure{
     pub heart: BodyPart,
     pub left_leg: BodyPart,
     pub right_leg: BodyPart,
+    pub current_health_points: i16,
+    pub total_health_points: i16,
+}
+
+impl HumaniodBodyStructure{
+    pub fn new() -> Self{
+        return HumaniodBodyStructure { 
+            head: BodyPart::new(), 
+            brain: (), 
+            nose: (), 
+            left_eye: (), 
+            right_eye: (), 
+            mouth: (), 
+            torso: (), 
+            left_lung: (), 
+            right_lung: (), 
+            heart: (), 
+            left_leg: (), 
+            right_leg: (), 
+            current_health_points: (), 
+            total_health_points: () 
+        };
+    }
+}
+
+#[derive( Deserialize, Serialize, Debug )]
+pub struct ThingBodyStructure {
+    pub torso: BodyPart,
     pub current_health_points: i16,
     pub total_health_points: i16,
 }

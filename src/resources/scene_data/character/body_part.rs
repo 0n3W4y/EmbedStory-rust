@@ -39,13 +39,12 @@ pub enum PartStatus{
 }
 
 impl PartStatus{
-    pub fn get_percent( part_status: PartStatus ) -> u8 {
-        return match part_status {
-            PartStatus::Healthy => 100, // 61 - 100,
-            PartStatus::Damaged => 60, // 31 - 60,
-            PartStatus::Broken => 30, // 1 - 30,
-            PartStatus::Disrupted => 0, // 0 - -100,
-        }
+    pub fn get_part_status_from_percent( percent: i8 ) -> PartStatus {
+        let result = if percent > 60 { PartStatus::Healthy }
+            else if percent <= 60 && percent > 30 { PartStatus::Damaged }
+            else if percent <= 30 && percent > 0 { PartStatus::Broken }
+            else{ PartStatus::Disrupted };
+        return result;
     }
 }
 
@@ -107,6 +106,7 @@ impl BodyPart{
         }else{
             self.set_current_health_points( 0 );
         };
+        self.check_part_status();
     }
 
     pub fn get_total_health_points( &self ) -> i16{
@@ -192,6 +192,14 @@ impl BodyPart{
 
     pub fn get_part_status( &self ) -> PartStatus{
         return self.part_status;
+    }
+
+    pub fn check_part_status( &self ) -> PartStatus {
+        let current_hp = self.get_current_health_points();
+        let total_hp = self.get_total_health_points();
+        let percent = ( current_hp * 100 / total_hp ) as i8;
+        let part_status = PartStatus::get_part_status_from_percent( percent );
+        return part_status;        
     }
 
     pub fn set_current_health_points( &mut self, value: i16 ){
