@@ -54,6 +54,7 @@ pub struct GroundTileMaterial{
     pub dirt: Handle<Image>,
     pub rock: Handle<Image>,
     pub rock_environment: Handle<Image>,
+    pub clay: Handle<Image>,
 }
 
 
@@ -78,6 +79,7 @@ impl GameGroundSceneMaterial{
             dirt: asset_server.load( "textures/tiles/ground/dirt_01.png" ),
             rock: asset_server.load( "textures/tiles/ground/rock_01.png" ),
             rock_environment: asset_server.load( "textures/tiles/ground/rock_environment_01.png" ),
+            clay: asset_server.load( "textures/tiles/ground/clay_01.png" ),
         }
     }
 

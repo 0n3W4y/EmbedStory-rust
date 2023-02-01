@@ -228,7 +228,6 @@ fn create_starting_scenes (
     //TODO: Remove this variables;
     let scene_setting = deploy.ground_scene.get_scene_setting( BiomeType::Plain );
 
-
     // Create new scene_manager;
     let mut scene_manager = SceneManager::new();
 
@@ -237,10 +236,9 @@ fn create_starting_scenes (
 
     //Create starting scene;
     let mut starting_scene: GameGroundScene = scene_manager.create_ground_scene();
-
     let id = starting_scene.scene_id;
 
-    //config scene with deploy ;
+    //config scen etilemap with deploy ;
     starting_scene.tilemap.set( TILE_SIZE, scene_setting.width, scene_setting.height );
 
     //generate tilemap with template from biome type;
@@ -248,6 +246,7 @@ fn create_starting_scenes (
 
     //prepare things for scene;
     //object_manager.generate_things_for_scene( &mut starting_scene );
+    //object_manager.generate_pattern_thing_or_scene( &mut starting_scene );
 
     //store scene into scene_manager;
     let index: usize = scene_manager.store_ground_scene( starting_scene );

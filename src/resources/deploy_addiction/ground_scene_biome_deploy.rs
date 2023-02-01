@@ -78,7 +78,10 @@ pub struct RiverSetting {
 
 #[derive( Deserialize, Clone, Debug )]
 pub struct BiomeObjects{
-    
+    pub things: BiomeThings,
+    pub stuff: BiomeStuff,
+    pub characters: BiomeCharacters,
+    pub effects: BiomeEffects,
 }
 
 

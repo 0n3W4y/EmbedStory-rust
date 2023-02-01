@@ -7,6 +7,7 @@ pub enum GroundType{
     Dirt,
     Rock,
     RockEnvironment,
+    Clay
 }
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug )]

@@ -91,6 +91,7 @@ fn spawn_tilemap_ground(
                 GroundType::DryEarth => { material_manager.ground_scene.ground_tile.dry_earth.clone() },
                 GroundType::Rock => { material_manager.ground_scene.ground_tile.rock.clone() },
                 GroundType::RockEnvironment => { material_manager.ground_scene.ground_tile.rock_environment.clone() },
+                GroundType::Clay => { material_manager.ground_scene.ground_tile.clay.clone() },
             };
 
 

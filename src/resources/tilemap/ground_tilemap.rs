@@ -83,7 +83,7 @@ impl GroundTilemap{
 
         self.generate_solids_liquids( &biome_setting.spots, &biome_setting.rivers, deploy );
 
-        self.generate_environment( deploy );
+        self.generate_environment( deploy, 2 );
         self.spread_indexes_for_cover_tiles();
     }
 
@@ -463,22 +463,22 @@ impl GroundTilemap{
         }
     }
 
-    fn generate_environment( &mut self, deploy: &Deploy ){
+    fn generate_environment( &mut self, deploy: &Deploy, enviroument: u8 ){
         let height: u16 = self.get_tilemap_height();
         let total_tiles: usize = self.get_total_tiles();
         let mut rng = rand::thread_rng();
 
-        let max_envirounment: u8 = 2;
+        let max_envirounment: u8 = enviroument;
 
         for a in 0..self.tilemap_tile_storage.len(){
             let x = self.tilemap_tile_storage[ a ].x;
             let y = self.tilemap_tile_storage[ a ].y;
             let tile_cover_type: CoverType = self.tilemap_tile_storage[ a ].cover_type.clone();
-            let tile_ground_type: GroundType = self.tilemap_tile_storage[ a ].ground_type.clone();         
+            let tile_ground_type: GroundType = self.tilemap_tile_storage[ a ].ground_type.clone();      
             
             //рандомно выбираем "подложку" 0 - 1 - 2 по умолчанию
             let current_envirounment = rng.gen_range( 0..max_envirounment + 1 );
-            if current_envirounment == 0 { return; };
+            if current_envirounment == 0 { continue; };
 
             let grid_multiplier = current_envirounment * 2 + 1; // окружность вокруг тайла ( CurEnv = 1; x = 3, y = 3 ( 3 x 3 ) ); 
 
@@ -489,36 +489,37 @@ impl GroundTilemap{
 
                     let mut environment_tile: &mut GroundTilemapTile = self.get_tile_by_index( index_i32 as usize );
 
-                    if tile_cover_type == CoverType::None { // do ground environment;
-                        match tile_ground_type {
-                            GroundType::Rock => {
-                                if environment_tile.ground_type == GroundType::RockEnvironment || environment_tile.ground_type == GroundType::Rock {
-                                    continue;
-                                }else{
-                                    let data_tile: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &GroundType::RockEnvironment );
-                                    environment_tile.ground_type = GroundType::RockEnvironment.clone();
-                                    GroundTilemap::set_data_to_tile( environment_tile, data_tile );
-                                }
-                            },
-                            GroundType::Water =>{
-                                //TODO:
-                            },
-                            _ => { continue; },
-                        }
-                    }else{ // do cover environment;
-                        match tile_cover_type {
-                            CoverType::Water => {
-                                if environment_tile.cover_type == CoverType::Water || environment_tile.cover_type == CoverType::Shallow {
-                                    continue;
-                                }else{
-                                    let cover_type = CoverType::Shallow;
-                                    let data_tile = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
-                                    environment_tile.cover_type = cover_type;
-                                    GroundTilemap::set_data_to_tile( environment_tile, data_tile );
-                                }
-                            },
-                            _ => { continue; },
-                        }
+                    match tile_ground_type {
+                        GroundType::Rock => {
+                            //do rock_environment;
+                            if environment_tile.ground_type == GroundType::RockEnvironment || environment_tile.ground_type == GroundType::Rock {
+                                continue;
+                            }else{
+                                let data_tile: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &GroundType::RockEnvironment );
+                                environment_tile.ground_type = GroundType::RockEnvironment.clone();
+                                if environment_tile.cover_type == CoverType::Grass || environment_tile.cover_type == CoverType::Flowers {
+                                    environment_tile.cover_type = CoverType::None.clone();
+                                };
+                                
+                                GroundTilemap::set_data_to_tile( environment_tile, data_tile );
+                            }
+                        },
+                        _ => {
+                            match tile_cover_type {
+                                CoverType::Water => {
+                                    //do water invironment;
+                                    if environment_tile.cover_type == CoverType::Water || environment_tile.cover_type == CoverType::Shallow {
+                                        continue;
+                                    }else{
+                                        let cover_type = CoverType::Shallow;
+                                        let data_tile = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
+                                        environment_tile.cover_type = cover_type;
+                                        GroundTilemap::set_data_to_tile( environment_tile, data_tile );
+                                    }
+                                },
+                                _ => {},
+                            };
+                        },
                     };
                 }
             }
