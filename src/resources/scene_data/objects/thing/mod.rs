@@ -1,8 +1,12 @@
 use serde::{ Serialize, Deserialize };
 
 use crate::resources::object_manager::ThingType;
+use crate::resources::scene_data::objects::main_resists::MainResists;
 
-#[derive( Serialize, Deserialize, Debug, Clone )]
+use super::body_structure::{ BodyStructure, BodyStructureType };
+
+
+#[derive( Serialize, Deserialize, Debug )]
 pub struct Thing{
     pub id: usize,
     pub index: usize, // in Scene Vec<Things>,
@@ -12,6 +16,9 @@ pub struct Thing{
     pub graphic_x: u32,
     pub graphic_y: u32,
     pub can_harvested: bool,
+    pub can_repaired: bool,
+    pub resists: MainResists,
+    pub body_structure: BodyStructure,
 }
 
 impl Thing {
@@ -24,7 +31,10 @@ impl Thing {
             y: 0, 
             graphic_x: 0, 
             graphic_y: 0,
-            can_harvested: false, 
+            can_harvested: false,
+            can_repaired: false,
+            resists: MainResists::new(),
+            body_structure: BodyStructure::new( BodyStructureType::Thing ),
         }
     }
 }

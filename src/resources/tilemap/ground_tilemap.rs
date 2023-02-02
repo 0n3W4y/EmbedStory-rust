@@ -159,26 +159,25 @@ impl GroundTilemap{
     fn generate_cover( &mut self, cover_type: &CoverType, percent: u8, deploy: &Deploy ){
         let mut rng = rand::thread_rng();
         let tile_setting = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
-        for i in 0..self.total_tiles{
+        for tile in self.tilemap_tile_storage.iter_mut(){
             let random_num = rng.gen_range( 0..100 ); // 100%
             if percent >random_num {
                 let set_cover_to_tile: bool = match cover_type {
-                    CoverType::Flowers | CoverType::Grass => { 
-                        match self.tilemap_tile_storage[ i ].ground_type {
-                            GroundType::Earth => { true }
+                    CoverType::Grass => {
+                        match tile.ground_type {
+                            GroundType::Earth => { true },
                             _ => { false }
-                        } 
+                        }
                     },
-                    _ => { true },
+                    _ => { true }
                 };
                 if set_cover_to_tile{
-                    let mut tile = self.get_tile_by_index( i );
                     tile.cover_type = tile_setting.cover_type.clone();
                     GroundTilemap::set_data_to_tile( &mut tile, &tile_setting );
                 }
-                
-            }            
+            }
         }
+        
     }
 
     fn generate_additional_cover( &mut self, additional_cover_type: &Vec<CoverType>, additional_cover_type_value: &Vec<f32>, deploy: &Deploy ){
@@ -470,11 +469,11 @@ impl GroundTilemap{
 
         let max_envirounment: u8 = enviroument;
 
-        for a in 0..self.tilemap_tile_storage.len(){
-            let x = self.tilemap_tile_storage[ a ].x;
-            let y = self.tilemap_tile_storage[ a ].y;
-            let tile_cover_type: CoverType = self.tilemap_tile_storage[ a ].cover_type.clone();
-            let tile_ground_type: GroundType = self.tilemap_tile_storage[ a ].ground_type.clone();      
+        for tile in self.tilemap_tile_storage.iter(){
+            let x = tile.x;
+            let y = tile.y;
+            let tile_cover_type: CoverType = tile.cover_type.clone();
+            let tile_ground_type: GroundType = tile.ground_type.clone();      
             
             //рандомно выбираем "подложку" 0 - 1 - 2 по умолчанию
             let current_envirounment = rng.gen_range( 0..max_envirounment + 1 );
@@ -528,17 +527,17 @@ impl GroundTilemap{
     }
 
     fn spread_indexes_for_cover_tiles( &mut self ){
-        for i in 0..self.tilemap_tile_storage.len(){
-            let x = self.tilemap_tile_storage[ i ].x;
-            let y: u16 = self.tilemap_tile_storage[ i ].y;
-            let tile_cover: CoverType = self.tilemap_tile_storage[ i ].cover_type.clone();
+        for tile in self.tilemap_tile_storage.iter_mut(){
+            let x = tile.x;
+            let y: u16 = tile.y;
+            let tile_cover: CoverType = tile.cover_type.clone();
 
             let cover_graphic_index: u8 = match tile_cover{
                 CoverType::Water | CoverType::Shallow | CoverType::Ice => { self.find_cover_graphic_index_for_shallow_water_ice( x, y ) },
                 _ => { continue },
             };
 
-            self.tilemap_tile_storage[ i ].cover_graphic_index = cover_graphic_index;
+            tile.cover_graphic_index = cover_graphic_index;
         }
     }
 

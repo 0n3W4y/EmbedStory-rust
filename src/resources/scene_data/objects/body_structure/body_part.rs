@@ -15,11 +15,14 @@ pub enum BodyPartType{
     Nose,
     Ear,
     Arm,
-    Leg,
+    Wrist,
+    Foot,
+    Sole,
     Torso,
     Brain,
     Lung,
-    Heart
+    Heart,
+    Groin
 }
 
 #[derive( Eq, PartialEq, Serialize, Deserialize, Clone, Debug )]
@@ -106,7 +109,6 @@ impl BodyPart{
         }else{
             self.set_current_health_points( 0 );
         };
-        self.check_part_status();
     }
 
     pub fn get_total_health_points( &self ) -> i16{
@@ -116,7 +118,7 @@ impl BodyPart{
         }
     }
 
-    pub fn add_total_health_points( &mut self, value: HealthPoints ){
+    fn add_total_health_points( &mut self, value: HealthPoints ){
         let current_value = match value{
             HealthPoints::Total( v ) => { v },
             _ => { panic!( "body_part.add_current_health_points. Wrong value for Total Health Points" )}
@@ -131,7 +133,7 @@ impl BodyPart{
         self.set_current_health_points( current_health + current_value );
     }
 
-    pub fn substruct_total_health_points( &mut self, value: HealthPoints ){
+    fn substruct_total_health_points( &mut self, value: HealthPoints ){
         let current_value = match value{
             HealthPoints::Total( v ) => { v },
             _ => { panic!( "body_part.add_current_health_points. Wrong value for Total Health Points" )}
@@ -186,12 +188,12 @@ impl BodyPart{
         self.substruct_total_health_points( HealthPoints::Total( new_value ));
     }
 
-    pub fn get_part_type( &self ) -> PartType{
-        return self.part_type;
+    pub fn get_part_type( &self ) -> &PartType{
+        return &self.part_type;
     }
 
-    pub fn get_part_status( &self ) -> PartStatus{
-        return self.part_status;
+    pub fn get_part_status( &self ) -> &PartStatus{
+        return &self.part_status;
     }
 
     pub fn check_part_status( &self ) -> PartStatus {
