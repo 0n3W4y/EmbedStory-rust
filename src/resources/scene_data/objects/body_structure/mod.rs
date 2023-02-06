@@ -7,13 +7,15 @@ pub mod thing_body_structure;
 use thing_body_structure::ThingBodyStructure;
 use humanoid_body_structure::HumaniodBodyStructure;
 
+use self::body_part::{BodyPart, BodyPartType};
+
 #[derive( Clone, Deserialize, Serialize, Debug, Eq, PartialEq )]
 pub enum BodyStructureType{
-    Humanoid,
-    Bogomol,
-    Gorro, // Mortal Kombat,
-    Roach,
-    Thing,
+    Humanoid, // 2 hands, 2 legs
+    Bogomol, // 2 hands, 4 legs
+    Gorro, // Mortal Kombat, 4 hands, 2 legs
+    Roach, // 6 legs
+    Thing, // 1 torso
 }
 
 #[derive( Deserialize, Serialize, Debug )]
@@ -65,4 +67,42 @@ impl BodyStructure{
 
         return result;
     }
+
+    pub fn get_available_outer_parts( &self ) -> Vec<&mut BodyPart>{
+        let mut vec: Vec<&mut BodyPart> = match self.structure_type {
+            BodyStructureType::Humanoid =>{
+                self.humanoid.unwrap().get_available_outer_parts()
+            },
+            BodyStructureType::Thing => {
+                self.thing.unwrap().get_available_outer_parts()
+            },
+            _ => {
+                vec![]
+            },
+        };
+
+        return vec;
+    }
+
+    pub fn get_available_inner_parts_for_body_part( &self, body_part_type: BodyPartType ) -> Vec<&mut BodyPart>{
+        let vec: Vec<&mut BodyPart> = match self.structure_type {
+            BodyStructureType::Humanoid => {
+                self.humanoid.unwrap().get_available_inner_parts_for_body_part( body_part_type )
+            },
+            BodyStructureType::Thing => {
+                self.thing.unwrap().get_available_inner_parts_for_body_part( body_part_type )
+            },
+            _ => {
+                vec![]
+            }
+        };
+        
+        return vec;
+    }
+
+    pub fn add_health_points(){}
+    pub fn substruct_health_points(){}
+
+    pub fn get_total_health_points(){}
+    pub fn get_current_health_points(){}
 }

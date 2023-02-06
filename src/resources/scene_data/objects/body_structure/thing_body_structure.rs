@@ -35,10 +35,24 @@ impl ThingBodyStructure {
         self.set_current_health_points( value );
     }
 
-    pub fn get_available_body_parts( &self ) -> Vec<&BodyPart> {
+    pub fn get_available_outer_parts( &self ) -> Vec<&mut BodyPart> {
         let mut result = vec![];
-        result.push( &self.torso );
+        self.torso.get_available_outer_parts( &result );
         return result;
+    }
+
+    pub fn get_available_inner_parts_for_body_part( &self, body_part_type: BodyPartType ) -> Vec<&mut BodyPart>{
+        let mut vec = vec![];
+        self.torso.get_available_inner_parts( &vec );
+        return vec;
+    }
+
+    pub fn add_health_points( &self, part_type: &mut BodyPart, value: HealthPoints ){
+
+    }
+
+    pub fn substruct_health_points(&self, part_type: &mut BodyPart, value: HealthPoints ){
+
     }
 
     fn set_total_health_points( &mut self, value: i16 ){
