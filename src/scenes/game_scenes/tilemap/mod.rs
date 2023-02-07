@@ -2,25 +2,24 @@ use serde::{ Serialize, Deserialize };
 use std::vec;
 use rand::Rng;
 
-use crate::resources::{
-    tilemap::tile::ground_tilemap_tile::{ GroundType, CoverType, GroundTilemapTile, GroundTilemapTileDeploy }, 
-    deploy::Deploy,
-    deploy_addiction::ground_scene_biome_deploy::{ Biome, BiomeType, RiverSetting, SpotSetting, RiverType, Spots, Rivers },
-};
+pub mod tile;
 
+use tile::{ Tile, CoverType, GroundType, TileDeploy };
+use crate::resources::deploy::Deploy;
+use crate::resources::deploy_addiction::game_scene_biome_deploy::{ BiomeType, SpotSetting, RiverSetting, RiverType, Spots, Rivers, Biome };
 
 #[derive( Serialize, Deserialize, Clone )]
-pub struct GroundTilemap{
+pub struct Tilemap{
     tile_size: u16,
     tilemap_width: u16,
     tilemap_height: u16,
-    tilemap_tile_storage: Vec<GroundTilemapTile>,
+    tilemap_tile_storage: Vec<Tile>,
     total_tiles: usize,
 }
 
-impl GroundTilemap{
-    pub fn new() -> GroundTilemap{
-        return GroundTilemap{
+impl Tilemap{
+    pub fn new() -> Tilemap{
+        return Tilemap{
             tile_size: 0,
             tilemap_width: 0,
             tilemap_height: 0,
@@ -51,15 +50,15 @@ impl GroundTilemap{
         return self.total_tiles;
     }
 
-    pub fn get_tilemap_tile_storage_mut( &mut self ) -> &mut Vec<GroundTilemapTile>{
+    pub fn get_tilemap_tile_storage_mut( &mut self ) -> &mut Vec<Tile>{
         return &mut self.tilemap_tile_storage;
     }
 
-    pub fn get_tilemap_tile_storage( &self ) -> &Vec<GroundTilemapTile>{
+    pub fn get_tilemap_tile_storage( &self ) -> &Vec<Tile>{
         return &&self.tilemap_tile_storage;
     }
 
-    pub fn get_tile_by_index( &mut self, value: usize ) -> &mut GroundTilemapTile{
+    pub fn get_tile_by_index( &mut self, value: usize ) -> &mut Tile{
         let vector_length = self.tilemap_tile_storage.len();
         if value >= vector_length{
             panic!( "ground_tilemap::get_tile_by_index. Value > vec.len(); Value:{}, vec.len():{}", value, vector_length );
@@ -73,7 +72,7 @@ impl GroundTilemap{
             panic!( "ground_tilemap::generate_tilemap. Tilemap not setted yet!" );
         }
 
-        let biome_setting: &Biome = deploy.ground_scene_biome.get_biome_setting( &biome_type );
+        let biome_setting: &Biome = deploy.game_scene_biome.get_biome_setting( &biome_type );
 
         self.generate_ground( &biome_setting.main_ground, deploy );
         self.generate_additional_ground( &biome_setting.additional_ground, &biome_setting.additional_ground_value, deploy ); 
@@ -88,17 +87,17 @@ impl GroundTilemap{
     }
 
     fn generate_ground( &mut self, ground_type: &GroundType, deploy: &Deploy ){
-        let tile_setting = deploy.ground_tilemap_tile.get_ground_tile_deploy( &ground_type );
+        let tile_setting = deploy.tile.get_ground_tile_deploy( &ground_type );
         for i in 0..self.tilemap_height {
             for j in 0..self.tilemap_width {
-                let mut tile = GroundTilemapTile::new();
+                let mut tile = Tile::new();
                 tile.x = j;
                 tile.y = i;
                 tile.graphic_x = j as u32 * self.tile_size as u32;
                 tile.graphic_y = i as u32 * self.tile_size as u32;
                 tile.index = i as u32 * self.tilemap_height as u32 + j as u32;
                 tile.ground_type = ground_type.clone();
-                GroundTilemap::set_data_to_tile( &mut tile, &tile_setting );
+                Tilemap::set_data_to_tile( &mut tile, &tile_setting );
                 self.tilemap_tile_storage.push( tile );
             }
         }
@@ -158,7 +157,7 @@ impl GroundTilemap{
 
     fn generate_cover( &mut self, cover_type: &CoverType, percent: u8, deploy: &Deploy ){
         let mut rng = rand::thread_rng();
-        let tile_setting = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
+        let tile_setting = deploy.tile.get_cover_tile_deploy( &cover_type );
         for tile in self.tilemap_tile_storage.iter_mut(){
             let random_num = rng.gen_range( 0..100 ); // 100%
             if percent >random_num {
@@ -173,7 +172,7 @@ impl GroundTilemap{
                 };
                 if set_cover_to_tile{
                     tile.cover_type = tile_setting.cover_type.clone();
-                    GroundTilemap::set_data_to_tile( &mut tile, &tile_setting );
+                    Tilemap::set_data_to_tile( &mut tile, &tile_setting );
                 }
             }
         }
@@ -257,8 +256,8 @@ impl GroundTilemap{
                 spot_setting.cover_type.clone()
             };
 
-            let ground_data = deploy.ground_tilemap_tile.get_ground_tile_deploy( &ground_type );
-            let cover_data = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
+            let ground_data = deploy.tile.get_ground_tile_deploy( &ground_type );
+            let cover_data = deploy.tile.get_cover_tile_deploy( &cover_type );
             let max_width: u16 = spot_setting.max_width;
             let max_height: u16 = spot_setting.max_height;
             let min_width: u16 = spot_setting.min_width;
@@ -306,11 +305,11 @@ impl GroundTilemap{
                         CoverType::None =>{
                             tile.ground_type = ground_type.clone();
                             tile.cover_type = cover_type.clone();
-                            GroundTilemap::set_data_to_tile( tile, &ground_data );
+                            Tilemap::set_data_to_tile( tile, &ground_data );
                         },
                         _ =>{
                             tile.cover_type = cover_type.clone();
-                            GroundTilemap::set_data_to_tile( tile, &cover_data );
+                            Tilemap::set_data_to_tile( tile, &cover_data );
                         },
                     };
                 }
@@ -345,11 +344,11 @@ impl GroundTilemap{
                         CoverType::None =>{
                             tile.ground_type = ground_type.clone();
                             tile.cover_type = cover_type.clone();
-                            GroundTilemap::set_data_to_tile( tile, &ground_data );
+                            Tilemap::set_data_to_tile( tile, &ground_data );
                         },
                         _ =>{
                             tile.cover_type = cover_type.clone();
-                            GroundTilemap::set_data_to_tile( tile, &cover_data );
+                            Tilemap::set_data_to_tile( tile, &cover_data );
                         },
                     };
                 }
@@ -408,7 +407,7 @@ impl GroundTilemap{
                         let index = ( river_point_y + j ) * self.tilemap_height + i;
                         if index as usize >= self.total_tiles { continue; };
                         let tile = self.get_tile_by_index( index as usize );
-                        let mut tile_data: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &river_setting.ground_type );
+                        let mut tile_data: &TileDeploy = deploy.tile.get_ground_tile_deploy( &river_setting.ground_type );
 
                         if river_setting.cover_type == CoverType::None  { 
                             tile.ground_type = river_setting.ground_type.clone();
@@ -416,11 +415,11 @@ impl GroundTilemap{
                                 tile.cover_type = CoverType::None;
                             };
                         }else{
-                           tile_data = deploy.ground_tilemap_tile.get_cover_tile_deploy( &river_setting.cover_type );
+                           tile_data = deploy.tile.get_cover_tile_deploy( &river_setting.cover_type );
                            tile.cover_type = river_setting.cover_type.clone();
                         };
 
-                        GroundTilemap::set_data_to_tile( tile, tile_data );
+                        Tilemap::set_data_to_tile( tile, tile_data );
                     }
                 };
             },
@@ -442,7 +441,7 @@ impl GroundTilemap{
                         if index as usize >= self.total_tiles { continue };
 
                         let tile = self.get_tile_by_index( index as usize );
-                        let mut tile_data: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &river_setting.ground_type );
+                        let mut tile_data: &TileDeploy = deploy.tile.get_ground_tile_deploy( &river_setting.ground_type );
 
                         if river_setting.cover_type == CoverType::None  { 
                             tile.ground_type = river_setting.ground_type.clone();
@@ -450,11 +449,11 @@ impl GroundTilemap{
                                 tile.cover_type = CoverType::None;
                             };
                         }else{
-                           tile_data = deploy.ground_tilemap_tile.get_cover_tile_deploy( &river_setting.cover_type );
+                           tile_data = deploy.tile.get_cover_tile_deploy( &river_setting.cover_type );
                            tile.cover_type = river_setting.cover_type.clone();
                         };
 
-                        GroundTilemap::set_data_to_tile( tile, tile_data );
+                        Tilemap::set_data_to_tile( tile, tile_data );
                     }
                 }
             },
@@ -486,7 +485,7 @@ impl GroundTilemap{
                     let index_i32: i32 = ( y as i32 - current_envirounment as i32 + i as i32 ) * height as i32 + ( x as i32 - current_envirounment as i32 + j as i32 );
                     if index_i32 < 0 || index_i32 >= total_tiles as i32 { continue; }; // защита от значений не принадлежащих текущей карте
 
-                    let mut environment_tile: &mut GroundTilemapTile = self.get_tile_by_index( index_i32 as usize );
+                    let mut environment_tile: &mut Tile = self.get_tile_by_index( index_i32 as usize );
 
                     match tile_ground_type {
                         GroundType::Rock => {
@@ -494,13 +493,13 @@ impl GroundTilemap{
                             if environment_tile.ground_type == GroundType::RockEnvironment || environment_tile.ground_type == GroundType::Rock {
                                 continue;
                             }else{
-                                let data_tile: &GroundTilemapTileDeploy = deploy.ground_tilemap_tile.get_ground_tile_deploy( &GroundType::RockEnvironment );
+                                let data_tile: &TileDeploy = deploy.tile.get_ground_tile_deploy( &GroundType::RockEnvironment );
                                 environment_tile.ground_type = GroundType::RockEnvironment.clone();
                                 if environment_tile.cover_type == CoverType::Grass || environment_tile.cover_type == CoverType::Flowers {
                                     environment_tile.cover_type = CoverType::None.clone();
                                 };
                                 
-                                GroundTilemap::set_data_to_tile( environment_tile, data_tile );
+                                Tilemap::set_data_to_tile( environment_tile, data_tile );
                             }
                         },
                         _ => {
@@ -511,9 +510,9 @@ impl GroundTilemap{
                                         continue;
                                     }else{
                                         let cover_type = CoverType::Shallow;
-                                        let data_tile = deploy.ground_tilemap_tile.get_cover_tile_deploy( &cover_type );
+                                        let data_tile = deploy.tile.get_cover_tile_deploy( &cover_type );
                                         environment_tile.cover_type = cover_type;
-                                        GroundTilemap::set_data_to_tile( environment_tile, data_tile );
+                                        Tilemap::set_data_to_tile( environment_tile, data_tile );
                                     }
                                 },
                                 _ => {},
@@ -555,7 +554,7 @@ impl GroundTilemap{
     }
 
     fn find_cover_graphic_index_for_shallow_water_ice( &self, x: u16, y: u16 ) -> u8{
-        let storage: &Vec<GroundTilemapTile> = &self.tilemap_tile_storage;
+        let storage: &Vec<Tile> = &self.tilemap_tile_storage;
         let height = self.tilemap_height;
         let total_tiles = self.total_tiles;
 
@@ -635,7 +634,7 @@ impl GroundTilemap{
         }
     }
 
-    fn set_data_to_tile( tile: &mut GroundTilemapTile, data: &GroundTilemapTileDeploy ){
+    fn set_data_to_tile( tile: &mut Tile, data: &TileDeploy ){
         tile.can_walk = data.can_walk;
         tile.movement_ratio = data.movement_ratio;
         tile.can_place_floor = data.can_place_floor;

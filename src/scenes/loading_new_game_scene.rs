@@ -7,9 +7,9 @@ use crate::scenes::SceneState;
 use crate::materials::{ material_manager::MaterialManager, font::FontMaterials };
 use crate::resources::dictionary::Dictionary;
 use crate::config::{ RESOLUTION, WINDOW_HEIGHT, TILE_SIZE };
-use crate::resources::deploy_addiction::ground_scene_biome_deploy::BiomeType;
+use crate::resources::deploy_addiction::game_scene_biome_deploy::BiomeType;
 
-use super::game_scenes::game_ground_scene::{GameGroundScene, GameGroundSceneData};
+use super::game_scenes::game_scene::{ GameScene, GameSceneData };
 
 const LOADING_BORDER_WIDTH: f32 = 600.0;
 const LOADING_BORDER_HEIGHT: f32 = 60.0;
@@ -207,7 +207,7 @@ fn update(
             }
         }else{
             state
-                .set( SceneState::GameGroundScene )
+                .set( SceneState::GameScene )
                 .expect("Couldn't switch state to Game Ground Scene");
         }
     }
@@ -225,8 +225,8 @@ fn create_starting_scenes (
     deploy: Res<Deploy>,
 ){
 
-    //TODO: Remove this variables;
-    let scene_setting = deploy.ground_scene.get_scene_setting( BiomeType::Plain );
+    //get scene settings fro deploy;
+    let scene_setting = deploy.game_scene.get_scene_setting( BiomeType::Plain );
 
     // Create new scene_manager;
     let mut scene_manager = SceneManager::new();
@@ -235,7 +235,7 @@ fn create_starting_scenes (
     let object_manager = ObjectManager::new();
 
     //Create starting scene;
-    let mut starting_scene: GameGroundScene = scene_manager.create_ground_scene();
+    let mut starting_scene: GameScene = scene_manager.create_ground_scene();
     let id = starting_scene.scene_id;
 
     //config scen etilemap with deploy ;
@@ -245,8 +245,9 @@ fn create_starting_scenes (
     starting_scene.tilemap.generate_tilemap( &deploy, &scene_setting.biome_type );
 
     //prepare things for scene;
+    //let things_for_scene = scene_setting.objects.things;
     //object_manager.generate_things_for_scene( &mut starting_scene );
-    //object_manager.generate_pattern_thing_or_scene( &mut starting_scene );
+    //object_manager.generate_pattern_things_for_scene( &mut starting_scene );
 
     //store scene into scene_manager;
     let index: usize = scene_manager.store_ground_scene( starting_scene );
@@ -256,7 +257,7 @@ fn create_starting_scenes (
 
     let scene = scene_manager.get_ground_scene_by_id( id ).clone();
 
-    commands.insert_resource( GameGroundSceneData{ 
+    commands.insert_resource( GameSceneData{ 
         tilemap_ground_layer: None,
         tilemap_cover_layer: None,
         things_layer: None,

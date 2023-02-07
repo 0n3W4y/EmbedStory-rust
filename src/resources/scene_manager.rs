@@ -1,15 +1,19 @@
 use serde::{ Serialize, Deserialize };
 
-use crate::scenes::game_scenes::game_ground_scene::GameGroundScene;
-use crate::scenes::game_scenes::game_globalmap_scene::GameGlobalmapScene;
+use crate::scenes::game_scenes::game_scene::GameScene;
 
+#[derive( Serialize, Deserialize, Clone )]
+pub enum SceneType{
+    GroundScene,
+    UndergroundScene,
+}
 
 #[derive( Serialize, Deserialize )]
 pub struct SceneManager{
     pub next_ground_scene: isize,
     //pub next_undeground_scene: isize,
     //globalmap_scene: GameGlobalmapScene,
-    ground_scene: Vec<GameGroundScene>,
+    game_scene: Vec<GameScene>,
     //underground_scene: Vec<GameUndergroundScene>,
     scene_id: usize,
 }
@@ -19,36 +23,36 @@ impl SceneManager{
         return SceneManager { 
             next_ground_scene: -1, // empty
             //next_undeground_scene: -1, // empty
-            ground_scene: vec![], 
+            game_scene: vec![], 
             scene_id: 0, 
         };
     }
 
-    pub fn create_ground_scene( &mut self ) -> GameGroundScene {
+    pub fn create_ground_scene( &mut self ) -> GameScene {
         let scene_id = self.create_scene_id();
-        let scene: GameGroundScene = GameGroundScene::new( scene_id );
+        let scene: GameScene = GameScene::new( scene_id );
         return scene;
     }
 
-    pub fn store_ground_scene( &mut self, mut scene: GameGroundScene ) -> usize {
-        let index: usize = self.ground_scene.len();
+    pub fn store_ground_scene( &mut self, mut scene: GameScene ) -> usize {
+        let index: usize = self.game_scene.len();
         scene.index = index;
-        self.ground_scene.push( scene );
+        self.game_scene.push( scene );
         return index;
     }
 
-    pub fn get_next_ground_scene( &mut self ) -> &mut GameGroundScene {
-        if self.next_ground_scene < 0 || self.next_ground_scene as usize >= self.ground_scene.len() {
+    pub fn get_next_ground_scene( &mut self ) -> &mut GameScene {
+        if self.next_ground_scene < 0 || self.next_ground_scene as usize >= self.game_scene.len() {
             panic!( "scene_manager.get_next_ground_scene. Can't get next scene. Next scene id: {}.", self.next_ground_scene );
         }
 
-        return &mut self.ground_scene[ self.next_ground_scene as usize ];
+        return &mut self.game_scene[ self.next_ground_scene as usize ];
     }
 
-    pub fn get_ground_scene_by_id( &mut self, scene_id: usize ) -> &mut GameGroundScene{
-        for i in 0..self.ground_scene.len(){
-            if scene_id == self.ground_scene[ i ].scene_id {
-                return &mut self.ground_scene[ i ];
+    pub fn get_ground_scene_by_id( &mut self, scene_id: usize ) -> &mut GameScene{
+        for i in 0..self.game_scene.len(){
+            if scene_id == self.game_scene[ i ].scene_id {
+                return &mut self.game_scene[ i ];
             }
         }
 

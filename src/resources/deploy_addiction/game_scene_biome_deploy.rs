@@ -2,7 +2,7 @@ use serde::{ Deserialize };
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::tilemap::tile::ground_tilemap_tile::{ GroundType, CoverType };
+use crate::scenes::game_scenes::tilemap::tile::{ GroundType, CoverType };
 
 #[derive( Deserialize, Clone, Debug )]
 pub enum BiomeType{
@@ -78,21 +78,21 @@ pub struct RiverSetting {
 
 #[derive( Deserialize, Clone, Debug )]
 pub struct BiomeObjects{
-    pub things: BiomeThings,
-    pub stuff: BiomeStuff,
-    pub characters: BiomeCharacters,
-    pub effects: BiomeEffects,
+    //pub things: BiomeThings,
+    //pub stuff: BiomeStuff,
+    //pub characters: BiomeCharacters,
+    //pub effects: BiomeEffects,
 }
 
 
 #[derive( Deserialize, Debug )]
-pub struct GroundSceneBiomeDeploy{
+pub struct GameSceneBiomeDeploy{
     plain: Biome,
 }
 
-impl GroundSceneBiomeDeploy{
+impl GameSceneBiomeDeploy{
     pub fn new( path: &str ) -> Self{
-        let result: GroundSceneBiomeDeploy  = match File::open( path ){
+        let result: GameSceneBiomeDeploy  = match File::open( path ){
             Ok( mut file ) => {
                 let mut contents = String::new();
                 file.read_to_string( &mut contents ).unwrap();
@@ -107,7 +107,7 @@ impl GroundSceneBiomeDeploy{
     pub fn get_biome_setting( &self, biome_type: &BiomeType ) -> &Biome{
         match biome_type {
             BiomeType::Plain => { return &self.plain },
-            _ => panic!( "GroundSceneDiomeDeploy.get_biome_setting. Not created yet!"),
+            _ => panic!( "Ground_scene_biome_deploy.get_biome_setting. Biome: '{:?}' Not created yet!", biome_type ),
             //BiomeType::Desert => { return &self.desert },
             //BiomeType::Forest => { return &self.forest },
             //BiomeType::Rocks => { return &self.rocks },

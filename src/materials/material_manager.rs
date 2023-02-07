@@ -4,7 +4,7 @@ use crate::materials::main_menu_scene_material::MainMenuSceneMaterial;
 use crate::materials::options_scene_material::OptionsSceneMaterial;
 use crate::materials::create_char_scene_material::CreateCharSceneMaterial;
 use crate::materials::loading_new_game_scene_material::LoadingNewGameSceneMaterial;
-use crate::materials::game_ground_scene_material::GameGroundSceneMaterial;
+use crate::materials::game_scene_material::GameSceneMaterial;
 
 
 #[derive( Debug, Clone )]
@@ -13,7 +13,7 @@ pub struct MaterialManager {
     pub options_scene: OptionsSceneMaterial,
     pub create_char_scene: CreateCharSceneMaterial,
     pub loading_new_game_scene: LoadingNewGameSceneMaterial,
-    pub ground_scene: GameGroundSceneMaterial,
+    pub game_scene: GameSceneMaterial,
 }
 
 impl MaterialManager{
@@ -22,7 +22,7 @@ impl MaterialManager{
         return MaterialManager { 
             main_menu_scene: MaterialManager::load_main_menu_scene_material( asset_server ),
             options_scene: MaterialManager::load_options_scene_material( asset_server ),
-            ground_scene: GameGroundSceneMaterial::load_ground_scene_material( asset_server ),
+            game_scene: GameSceneMaterial::load_ground_scene_material( asset_server ),
             create_char_scene: MaterialManager::load_create_char_scene_material( asset_server ),
             loading_new_game_scene: MaterialManager::load_loading_new_game_scene_material( asset_server ),
         }

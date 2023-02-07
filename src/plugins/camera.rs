@@ -18,8 +18,8 @@ impl Plugin for CameraPlugin{
         app.add_startup_system( spawn_ui_camera );
         app.add_startup_system( spawn_2d_camera );
 
-        app.add_system_set( SystemSet::on_update(SceneState::GameGroundScene).with_system( camera_zoom ));
-        app.add_system_set( SystemSet::on_update(SceneState::GameGroundScene).with_system( camera_move_by_left_button ));
+        app.add_system_set( SystemSet::on_update(SceneState::GameScene).with_system( camera_zoom ));
+        app.add_system_set( SystemSet::on_update(SceneState::GameScene).with_system( camera_move_by_left_button ));
         //app.add_syste_set( SystemSet::on_exit( SceneState::_).width_system(_));
     }
 }

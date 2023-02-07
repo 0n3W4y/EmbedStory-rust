@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::resources::tilemap::tile::ground_tilemap_tile::CoverType;
+use crate::scenes::game_scenes::tilemap::tile::CoverType;
 
 #[derive( Debug, Clone )]
 pub struct CoverTileMaterial{
@@ -59,16 +59,16 @@ pub struct GroundTileMaterial{
 
 
 #[derive( Debug, Clone )]
-pub struct GameGroundSceneMaterial{
+pub struct GameSceneMaterial{
     pub ground_tile: GroundTileMaterial,
     pub cover_tile: CoverTileMaterial,
 }
 
-impl GameGroundSceneMaterial{
+impl GameSceneMaterial{
     pub fn load_ground_scene_material( asset_server: &Res<AssetServer> ) -> Self{
-        return GameGroundSceneMaterial { 
-            ground_tile: GameGroundSceneMaterial::load_ground_tile_material( asset_server ), 
-            cover_tile: GameGroundSceneMaterial::load_cover_tile_material( asset_server ), 
+        return GameSceneMaterial { 
+            ground_tile: GameSceneMaterial::load_ground_tile_material( asset_server ), 
+            cover_tile: GameSceneMaterial::load_cover_tile_material( asset_server ), 
         };
     }
 

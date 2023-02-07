@@ -25,7 +25,7 @@ pub enum CoverType{
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
-pub struct GroundTilemapTile{
+pub struct Tile{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
     pub x: u16,
@@ -45,10 +45,10 @@ pub struct GroundTilemapTile{
     pub have_roof: bool,
 }
 
-impl GroundTilemapTile{
-    pub fn new() -> GroundTilemapTile{
+impl Tile{
+    pub fn new() -> Self{
         //Default Earth;
-        return GroundTilemapTile { 
+        return Tile { 
             ground_type: GroundType::Earth, 
             cover_type: CoverType::None, 
             x: 0, 
@@ -71,7 +71,7 @@ impl GroundTilemapTile{
 }
 
 #[derive( Deserialize, Clone, Debug )]
-pub struct GroundTilemapTileDeploy{
+pub struct TileDeploy{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
     pub can_remove_floor: bool,

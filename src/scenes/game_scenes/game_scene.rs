@@ -3,32 +3,34 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use crate::materials::material_manager::MaterialManager;
-use crate::resources::scene_data::character::Character;
-use crate::resources::scene_data::thing::Thing;
-use crate::resources::scene_data::ground_effect::GroundEffect;
-use crate::resources::scene_data::stuff::Stuff;
-use crate::resources::scene_manager::SceneManager;
-use crate::resources::tilemap::ground_tilemap::GroundTilemap;
-use crate::resources::tilemap::tile::ground_tilemap_tile::{GroundType, CoverType};
+use crate::resources::scene_data::objects::character::Character;
+use crate::resources::scene_data::objects::thing::Thing;
+use crate::resources::scene_data::objects::scene_effect::SceneEffect;
+use crate::resources::scene_data::objects::stuff::Stuff;
+use crate::resources::scene_manager::{ SceneManager, SceneType };
+use crate::scenes::game_scenes::tilemap::Tilemap;
+use crate::scenes::game_scenes::tilemap::tile::{ GroundType, CoverType };
 use crate::scenes::SceneState;
 
 #[derive( Serialize, Deserialize, Clone )]
-pub struct GameGroundScene{
+pub struct GameScene{
+    pub scene_type: SceneType,
     pub scene_id: usize,
     pub index: usize, // vector index in scene_manager.ground_scene;
-    pub tilemap: GroundTilemap,
+    pub tilemap: Tilemap,
     pub things: Vec<Thing>,
     pub stuff: Vec<Stuff>,
     pub characters: Vec<Character>,
-    pub effects: Vec<GroundEffect>,
+    pub effects: Vec<SceneEffect>,
     //pub fog: Vec<>,
     //pub roof: Vec<>,
 
 }
-impl GameGroundScene{
+impl GameScene{
     pub fn new( id: usize ) -> Self{
-        let new_tilemap = GroundTilemap::new();
-        return GameGroundScene{
+        let new_tilemap = Tilemap::new();
+        return GameScene{
+            scene_type: SceneType::GroundScene,
             scene_id: id,
             index: 0,
             tilemap: new_tilemap,
@@ -40,7 +42,7 @@ impl GameGroundScene{
     }
 }
 
-pub struct GameGroundSceneData{
+pub struct GameSceneData{
     pub tilemap_ground_layer: Option<Entity>,
     pub tilemap_cover_layer: Option<Entity>,
     pub things_layer: Option<Entity>,
@@ -53,24 +55,24 @@ pub struct GameGroundSceneData{
 
 
 
-pub struct GameGroundScenePlugin;
+pub struct GameScenePlugin;
 
-impl Plugin for GameGroundScenePlugin{
+impl Plugin for GameScenePlugin{
     fn build( &self, app: &mut App ){
-        app.add_system_set( SystemSet::on_enter( SceneState::GameGroundScene )
+        app.add_system_set( SystemSet::on_enter( SceneState::GameScene )
             .with_system( spawn_tilemap_ground )
             .with_system( spawn_tilemap_cover )
             //.with_system( spawn_things )
         );
-        app.add_system_set( SystemSet::on_update( SceneState::GameGroundScene ).with_system( update ));
-        app.add_system_set( SystemSet::on_exit( SceneState::GameGroundScene ).with_system( cleanup ));
+        app.add_system_set( SystemSet::on_update( SceneState::GameScene ).with_system( update ));
+        app.add_system_set( SystemSet::on_exit( SceneState::GameScene ).with_system( cleanup ));
     }
 }
 
 fn spawn_tilemap_ground( 
     mut commands: Commands,
-    scene: Res<GameGroundScene>,
-    mut scene_data: ResMut<GameGroundSceneData>,
+    scene: Res<GameScene>,
+    mut scene_data: ResMut<GameSceneData>,
     material_manager: Res<MaterialManager>,
 ){
     let ground_tiles = commands.spawn_bundle( SpriteBundle {
@@ -86,12 +88,12 @@ fn spawn_tilemap_ground(
 
             let transform = Transform::from_xyz( x as f32, y as f32, 0.0 );
             let texture: Handle<Image> = match ground_type {
-                GroundType::Earth => { material_manager.ground_scene.ground_tile.earth.clone() },
-                GroundType::Dirt => { material_manager.ground_scene.ground_tile.dirt.clone() },
-                GroundType::DryEarth => { material_manager.ground_scene.ground_tile.dry_earth.clone() },
-                GroundType::Rock => { material_manager.ground_scene.ground_tile.rock.clone() },
-                GroundType::RockEnvironment => { material_manager.ground_scene.ground_tile.rock_environment.clone() },
-                GroundType::Clay => { material_manager.ground_scene.ground_tile.clay.clone() },
+                GroundType::Earth => { material_manager.game_scene.ground_tile.earth.clone() },
+                GroundType::Dirt => { material_manager.game_scene.ground_tile.dirt.clone() },
+                GroundType::DryEarth => { material_manager.game_scene.ground_tile.dry_earth.clone() },
+                GroundType::Rock => { material_manager.game_scene.ground_tile.rock.clone() },
+                GroundType::RockEnvironment => { material_manager.game_scene.ground_tile.rock_environment.clone() },
+                GroundType::Clay => { material_manager.game_scene.ground_tile.clay.clone() },
             };
 
 
@@ -109,8 +111,8 @@ fn spawn_tilemap_ground(
 
 fn spawn_tilemap_cover(
     mut commands: Commands,
-    scene: Res<GameGroundScene>,
-    mut scene_data: ResMut<GameGroundSceneData>,
+    scene: Res<GameScene>,
+    mut scene_data: ResMut<GameSceneData>,
     material_manager: Res<MaterialManager>,
 ){
     let cover_tiles = commands.spawn_bundle( SpriteBundle{
@@ -134,7 +136,7 @@ fn spawn_tilemap_cover(
                 CoverType::Water => { tile_storage[ i ].cover_graphic_index as usize },
                 CoverType::Shallow => { tile_storage[ i ].cover_graphic_index as usize },
                 _ => { 
-                    let indexes = material_manager.ground_scene.cover_tile.get_indexes( cover_type );
+                    let indexes = material_manager.game_scene.cover_tile.get_indexes( cover_type );
                     if indexes == 0 { 
                         continue
                     }else if indexes == 1{
@@ -144,7 +146,7 @@ fn spawn_tilemap_cover(
                     }
                 },
             };
-            let texture:Handle<Image> = material_manager.ground_scene.cover_tile.get_image( cover_type, index ).clone();
+            let texture:Handle<Image> = material_manager.game_scene.cover_tile.get_image( cover_type, index ).clone();
 
             parent.spawn_bundle( SpriteBundle{
                 transform: transform,
@@ -162,9 +164,9 @@ fn update(){}
 
 fn cleanup(
     mut commands: Commands, 
-    scene_data: Res<GameGroundSceneData>, 
+    scene_data: Res<GameSceneData>, 
     mut scene_manager: ResMut<SceneManager>, 
-    scene: Res<GameGroundScene> 
+    scene: Res<GameScene> 
 ){
     let old_scene = scene_manager.get_ground_scene_by_id( scene.scene_id );
     *old_scene = scene.clone(); // copy and paste scene into scene_manager;
@@ -177,5 +179,5 @@ fn cleanup(
     commands.entity( scene_data.tilemap_ground_layer.unwrap() ).despawn_recursive();
     //commands.entity( scene_data.fog_layer ).despawn_recursive();
 
-    commands.remove_resource::<GameGroundScene>();
+    commands.remove_resource::<GameScene>();
 }

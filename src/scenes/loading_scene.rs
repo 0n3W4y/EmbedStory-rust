@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-use crate::resources::deploy::Deploy;
 use crate::scenes::SceneState;
 use crate::config::*;
 use crate::resources::dictionary::Dictionary;

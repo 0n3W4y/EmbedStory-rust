@@ -2,10 +2,10 @@ use serde::{ Deserialize };
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::deploy_addiction::ground_scene_biome_deploy::BiomeType;
+use crate::resources::deploy_addiction::game_scene_biome_deploy::BiomeType;
 
 #[derive( Deserialize, Debug )]
-pub struct GroundSceneDeployConfig{
+pub struct GameSceneConfig{
     pub biome_type: BiomeType,
     pub width: u16,
     pub height: u16,
@@ -26,13 +26,13 @@ pub struct GroundSceneDeployConfig{
 }
 
 #[derive( Deserialize, Debug )]
-pub struct GroundSceneDeploy{
-    pub plain_event: GroundSceneDeployConfig,
+pub struct GameSceneDeploy{
+    pub plain_event: GameSceneConfig,
 }
 
-impl GroundSceneDeploy{
+impl GameSceneDeploy{
     pub fn new( path: &str ) -> Self{
-        let result: GroundSceneDeploy  = match File::open( path ){
+        let result: GameSceneDeploy  = match File::open( path ){
             Ok( mut file ) => {
                 let mut contents = String::new();
                 file.read_to_string( &mut contents ).unwrap();
@@ -44,7 +44,7 @@ impl GroundSceneDeploy{
         return result;
     }
 
-    pub fn get_scene_setting( &self, biome_type: BiomeType ) -> &GroundSceneDeployConfig{
+    pub fn get_scene_setting( &self, biome_type: BiomeType ) -> &GameSceneConfig{
         match biome_type {
             BiomeType::Plain =>{ return &self.plain_event },
             /*

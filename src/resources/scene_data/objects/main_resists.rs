@@ -4,7 +4,7 @@ const MAXIMUM_CHARACTERRESIST_VALUE: i8 = 75;
 const MINIMUM_CHARACTERRESIST_VALUE: i8 = -125;
 
 
-#[derive( Eq, PartialEq, Serialize, Deserialize, Debug )]
+#[derive( Eq, PartialEq, Serialize, Deserialize, Debug, Clone )]
 pub enum MainResistType{
     Kinetic( i8 ),
     Fire( i8 ),
@@ -13,13 +13,13 @@ pub enum MainResistType{
     Laser( i8 )
 }
 
-#[derive( Serialize, Deserialize, Debug )]
+#[derive( Serialize, Deserialize, Debug, Clone )]
 struct Resist{
     pub current: MainResistType,
     pub modifier: MainResistType,
 }
 
-#[derive( Serialize, Deserialize, Debug )]
+#[derive( Serialize, Deserialize, Debug, Clone )]
 pub struct MainResists{
     pub kinetic: Resist,
     pub fire: Resist,

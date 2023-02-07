@@ -13,8 +13,6 @@ pub enum SceneState {
     OptionsScene,
     CreateCharScene,
     LoadPreviousGameScene,
-    GameGroundScene,
-    GameUndergroundScene,
-    GameGlobalMapScene,
+    GameScene,
     LoadingNewGameScene,
 }

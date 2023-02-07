@@ -1,6 +1,6 @@
 use serde::{ Serialize, Deserialize };
 
-#[derive( Serialize, Deserialize, Debug )]
+#[derive( Serialize, Deserialize, Debug, Clone )]
 pub enum HealthPoints{
     Current( i16 ),
     Total( i16 ),
@@ -47,7 +47,7 @@ pub enum PartStatus{
     Disrupted,
 }
 
-#[derive( Deserialize, Serialize, Debug )]
+#[derive( Deserialize, Serialize, Debug, Clone )]
 pub struct BodyPart{
     bodypart_type: BodyPartType,
     current_health_points: HealthPoints,
@@ -68,6 +68,11 @@ impl BodyPart{
             part_status: PartStatus::Healthy,
         };
     }
+
+    pub fn get_body_part_type( &self ) -> &BodyPartType {
+        return &self.bodypart_type;
+    }
+    
     pub fn get_current_health_points( &self ) -> i16{
         match self.current_health_points {
             HealthPoints::Current( v ) => { v },
@@ -161,12 +166,32 @@ impl BodyPart{
         return &self.part_status;
     }
 
-    pub fn check_part_status( &self ) -> PartStatus {
+    pub fn get_new_part_status( &self ) -> PartStatus {
         let current_hp = self.get_current_health_points();
         let total_hp = self.get_total_health_points();
         let percent = ( current_hp * 100 / total_hp ) as i8;
         let part_status = self.get_part_status_from_percent( percent );
-        return part_status;        
+        return part_status;
+    }
+
+    pub fn change_part_type( &mut self, part_type: PartType ){
+        let old_part_type = self.get_part_type();
+
+        if *old_part_type == part_type {
+            panic!( "Can't change part type, because part type already it is: {:?}", part_type );
+        }else{
+            self.part_type = part_type;
+        }
+    }
+
+    pub fn change_part_status( &mut self, part_status: PartStatus ){
+        let old_part_status = self.get_part_status();
+
+        if *old_part_status == part_status {
+            panic!( "Can't change part status, because part status already it is: {:?}", part_status );
+        }else{
+            self.part_status = part_status;
+        }
     }
 
     pub fn set_current_health_points( &mut self, value: i16 ){
@@ -200,7 +225,7 @@ impl BodyPart{
         
         //change current health while total change;
         let current_health: i16 = self.get_current_health_points();
-        self.set_current_health_points( current_health + current_value );
+        self.add_current_health_points( HealthPoints::Current( current_health + current_value ));
     }
     
     fn substruct_total_health_points( &mut self, value: HealthPoints ){
