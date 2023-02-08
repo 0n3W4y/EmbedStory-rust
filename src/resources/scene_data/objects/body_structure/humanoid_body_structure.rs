@@ -57,7 +57,7 @@ impl<'a> HumaniodBodyStructure{
         };
     }
 
-    pub fn get_available_outer_parts( &mut self ) -> Vec<&BodyPartType>{
+    pub fn get_available_outer_parts( &self ) -> Vec<&BodyPartType>{
         let mut result: Vec<&BodyPartType> = vec![];
         let part_status: PartStatus = PartStatus::Disrupted;
 
@@ -80,7 +80,7 @@ impl<'a> HumaniodBodyStructure{
         return result;
     }
 
-    pub fn get_available_inner_parts_for_body_part( &mut self, body_part_type: &BodyPartType ) -> Vec<&BodyPartType>{
+    pub fn get_available_inner_parts_for_body_part( &self, body_part_type: &BodyPartType ) -> Vec<&BodyPartType>{
         let mut result: Vec<&BodyPartType> = vec![];
         let part_status = PartStatus::Disrupted;
 
@@ -99,22 +99,22 @@ impl<'a> HumaniodBodyStructure{
         return result;
     }
 
-    pub fn add_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn add_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         let container = self.get_body_part_mut( part_type );
         container.add_current_health_points( value );
     }
 
-    pub fn substruct_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn substruct_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         let container = self.get_body_part_mut( part_type );
         container.substruct_current_health_points( value );
     }
 
-    pub fn add_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn add_modifier_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         let container = self.get_body_part_mut( part_type );
         container.add_modifier_health_points( value );
     }
 
-    pub fn substruct_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn substruct_modifier_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         let container = self.get_body_part_mut( part_type );
         container.substruct_modifier_health_points( value );
     }
@@ -133,7 +133,7 @@ impl<'a> HumaniodBodyStructure{
         };
     }
 
-    pub fn calculate_total_health_points( &self ){
+    pub fn calculate_total_health_points( &mut self ){
         let result = self.head.get_total_health_points() +
             self.left_eye.get_total_health_points() +
             self.right_eye.get_total_health_points() +
@@ -157,7 +157,7 @@ impl<'a> HumaniodBodyStructure{
         self.total_health_points = HealthPoints::Total( result );
     }
 
-    pub fn calculate_current_health_points( &self ){
+    pub fn calculate_current_health_points( &mut self ){
         let result = self.head.get_current_health_points() +
             self.left_eye.get_current_health_points() +
             self.right_eye.get_current_health_points() +
@@ -186,7 +186,7 @@ impl<'a> HumaniodBodyStructure{
         return container.get_part_status();
     }
 
-    pub fn change_part_status_to( &self, body_part_type: &BodyPartType, part_status: PartStatus ){
+    pub fn change_part_status_to( &mut self, body_part_type: &BodyPartType, part_status: PartStatus ){
         let container = self.get_body_part_mut( body_part_type );
         container.change_part_status( part_status );
     }
@@ -196,7 +196,7 @@ impl<'a> HumaniodBodyStructure{
         return container.get_part_type();
     }
 
-    pub fn change_part_type_to( &self, body_part_type: &BodyPartType, part_type: PartType ){
+    pub fn change_part_type_to( &mut self, body_part_type: &BodyPartType, part_type: PartType ){
         let container = self.get_body_part_mut( body_part_type );
         container.change_part_type( part_type );
     }
@@ -222,7 +222,7 @@ impl<'a> HumaniodBodyStructure{
             BodyPartType::RightSole => { &mut self.right_sole },
             BodyPartType::RightWrist => { &mut self.right_wrist },
             BodyPartType::Torso => { &mut self.torso },
-            _ => { panic!( "humanoid_body_structure.get_body_part_mut. There is no part type: '{:?}' in Humanoid Body Structure", body_part_type )}
+            //_ => { panic!( "humanoid_body_structure.get_body_part_mut. There is no part type: '{:?}' in Humanoid Body Structure", body_part_type )}
         };
 
         return container;
@@ -249,7 +249,7 @@ impl<'a> HumaniodBodyStructure{
             BodyPartType::RightSole => { & self.right_sole },
             BodyPartType::RightWrist => { & self.right_wrist },
             BodyPartType::Torso => { & self.torso },
-            _ => { panic!( "humanoid_body_structure.get_body_part_mut. There is no part type: '{:?}' in Humanoid Body Structure", body_part_type )}
+            //_ => { panic!( "humanoid_body_structure.get_body_part_mut. There is no part type: '{:?}' in Humanoid Body Structure", body_part_type )}
         };
 
         return container;

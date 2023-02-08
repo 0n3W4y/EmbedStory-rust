@@ -59,15 +59,28 @@
             ]
         }, 
         "objects": {
-            "tree": 30,
-            "fertileTree": 1,
-            "bush": 5,
-            "fertileBush": 1, 
-            "log": 6,
-            "stone": 10, 
-            "steelStone": 5, 
-            "copperStone": 5,
-            "copperOre": 3
+            "things":{
+                "natural_things" :[
+                    "Tree",
+                    "FertileTree",
+                    "Bush",
+                    "FertileBush",
+                    "Log",
+                    "Boulder",
+                    "CopperOre",
+                    "IronOre"
+                ],
+                "natural_things_value":[
+                    10.0,
+                    0.5,
+                    15.0,
+                    0.5,
+                    1.0,
+                    1.0,
+                    15.0,
+                    15.0
+                ]
+            }
         }
     }
 }

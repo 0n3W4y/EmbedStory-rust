@@ -69,12 +69,12 @@ impl BodyStructure{
     }
 
     pub fn get_available_outer_parts( &self ) -> Vec<&BodyPartType>{
-        let mut vec: Vec<&BodyPartType> = match self.structure_type {
+        let vec: Vec<&BodyPartType> = match self.structure_type {
             BodyStructureType::Humanoid =>{
-                self.humanoid.unwrap().get_available_outer_parts()
+                self.humanoid.as_ref().unwrap().get_available_outer_parts()
             },
             BodyStructureType::Thing => {
-                self.thing.unwrap().get_available_outer_parts()
+                self.thing.as_ref().unwrap().get_available_outer_parts()
             },
             _ => {
                 vec![]
@@ -87,10 +87,10 @@ impl BodyStructure{
     pub fn get_available_inner_parts_for_body_part( &self, body_part_type: &BodyPartType ) -> Vec<&BodyPartType>{
         let vec: Vec<&BodyPartType> = match self.structure_type {
             BodyStructureType::Humanoid => {
-                self.humanoid.unwrap().get_available_inner_parts_for_body_part( body_part_type )
+                self.humanoid.as_ref().unwrap().get_available_inner_parts_for_body_part( body_part_type )
             },
             BodyStructureType::Thing => {
-                self.thing.unwrap().get_available_inner_parts_for_body_part( body_part_type )
+                self.thing.as_ref().unwrap().get_available_inner_parts_for_body_part( body_part_type )
             },
             _ => {
                 vec![]
@@ -100,96 +100,96 @@ impl BodyStructure{
         return vec;
     }
 
-    pub fn add_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn add_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().add_current_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.unwrap().add_current_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().add_current_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().add_current_health_points( part_type, value )},
             _ => {},
         }
     }
     pub fn substruct_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().substruct_current_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.unwrap().substruct_current_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().substruct_current_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().substruct_current_health_points( part_type, value )},
             _ => {},
         }
     }
 
     pub fn add_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().add_modifier_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.unwrap().add_modifier_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().add_modifier_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().add_modifier_health_points( part_type, value )},
             _ => {},
         }
     }
 
     pub fn substruct_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().substruct_modifier_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.unwrap().substruct_modifier_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().substruct_modifier_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().substruct_modifier_health_points( part_type, value )},
             _ => {},
         }
     }
 
     pub fn get_total_health_points( &self ) -> i16 {
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().get_total_health_points() },
-            BodyStructureType::Thing => { self.thing.unwrap().get_total_health_points() },
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().get_total_health_points() },
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().get_total_health_points() },
             _ => { 0 },
         }
     }
     pub fn get_current_health_points( &self ) ->i16 {
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().get_current_health_points() },
-            BodyStructureType::Thing => { self.thing.unwrap().get_current_health_points() },
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().get_current_health_points() },
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().get_current_health_points() },
             _ => { 0 },
         }
     }
 
     pub fn change_part_status_to( &self, part_type: &BodyPartType, part_status: PartStatus ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().change_part_status_to( part_type, part_status )},
-            BodyStructureType::Thing => { self.thing.unwrap().change_part_status_to( part_type, part_status )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().change_part_status_to( part_type, part_status )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().change_part_status_to( part_type, part_status )},
             _ => {},
         }
     }
 
     pub fn get_part_status( &self, part_type: &BodyPartType ) -> &PartStatus{
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().get_part_status( part_type )},
-            BodyStructureType::Thing => { self.thing.unwrap().get_part_status( part_type )}
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().get_part_status( part_type )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().get_part_status( part_type )}
             _ => { &PartStatus::Healthy },
         }
     }
 
     pub fn change_part_type_to( &self, body_part_type: &BodyPartType, part_type: PartType ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().change_part_type_to( body_part_type, part_type )},
-            BodyStructureType::Thing => { self.thing.unwrap().change_part_type_to( body_part_type, part_type )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().change_part_type_to( body_part_type, part_type )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().change_part_type_to( body_part_type, part_type )},
             _ => {},
         }
     }
 
     pub fn get_part_type( &self, body_part_type: &BodyPartType ) -> &PartType {
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().get_part_type( body_part_type )},
-            BodyStructureType::Thing => { self.thing.unwrap().get_part_type( body_part_type )},
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().get_part_type( body_part_type )},
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().get_part_type( body_part_type )},
             _ => { &PartType::Natural },
         }
     }
 
     pub fn calculate_total_health_points( &self ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().calculate_total_health_points() },
-            BodyStructureType::Thing => { self.thing.unwrap().calculate_total_health_points() },
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().calculate_total_health_points() },
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().calculate_total_health_points() },
             _ => {},
         }
     }
 
     pub fn calculate_current_health_points( &self ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.unwrap().calculate_current_health_points() },
-            BodyStructureType::Thing => { self.thing.unwrap().calculate_current_health_points() },
+            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().calculate_current_health_points() },
+            BodyStructureType::Thing => { self.thing.as_ref().unwrap().calculate_current_health_points() },
             _ => {},
         }
     }

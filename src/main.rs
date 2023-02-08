@@ -1,6 +1,7 @@
 use bevy::{
     prelude::*,
-    window::{ PresentMode, WindowMode },
+    window::WindowMode,
+    //window::PresentMode,
 };
 
 mod config;

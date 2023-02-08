@@ -2,7 +2,7 @@ use serde::{ Deserialize };
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::scenes::game_scenes::tilemap::tile::{ GroundType, CoverType };
+use crate::{scenes::game_scenes::tilemap::tile::{ GroundType, CoverType }, resources::scene_data::objects::thing::ThingType};
 
 #[derive( Deserialize, Clone, Debug )]
 pub enum BiomeType{
@@ -78,10 +78,16 @@ pub struct RiverSetting {
 
 #[derive( Deserialize, Clone, Debug )]
 pub struct BiomeObjects{
-    //pub things: BiomeThings,
+    pub things: BiomeThings,
     //pub stuff: BiomeStuff,
     //pub characters: BiomeCharacters,
     //pub effects: BiomeEffects,
+}
+
+#[derive( Deserialize, Clone, Debug )]
+pub struct BiomeThings{
+    pub natural_things: Vec<ThingType>,
+    pub natural_things_value: Vec<f32>,
 }
 
 

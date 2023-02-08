@@ -95,7 +95,7 @@ impl Tilemap{
                 tile.y = i;
                 tile.graphic_x = j as u32 * self.tile_size as u32;
                 tile.graphic_y = i as u32 * self.tile_size as u32;
-                tile.index = i as u32 * self.tilemap_height as u32 + j as u32;
+                tile.index = i as usize * self.tilemap_height as usize + j as usize;
                 tile.ground_type = ground_type.clone();
                 Tilemap::set_data_to_tile( &mut tile, &tile_setting );
                 self.tilemap_tile_storage.push( tile );
@@ -172,7 +172,7 @@ impl Tilemap{
                 };
                 if set_cover_to_tile{
                     tile.cover_type = tile_setting.cover_type.clone();
-                    Tilemap::set_data_to_tile( &mut tile, &tile_setting );
+                    Tilemap::set_data_to_tile( tile, &tile_setting );
                 }
             }
         }
@@ -468,11 +468,11 @@ impl Tilemap{
 
         let max_envirounment: u8 = enviroument;
 
-        for tile in self.tilemap_tile_storage.iter(){
-            let x = tile.x;
-            let y = tile.y;
-            let tile_cover_type: CoverType = tile.cover_type.clone();
-            let tile_ground_type: GroundType = tile.ground_type.clone();      
+        for i in 0..self.tilemap_tile_storage.len(){
+            let x = self.tilemap_tile_storage[ i ].x;
+            let y = self.tilemap_tile_storage[ i ].y;
+            let tile_cover_type: CoverType = self.tilemap_tile_storage[ i ].cover_type.clone();
+            let tile_ground_type: GroundType = self.tilemap_tile_storage[ i ].ground_type.clone();   
             
             //рандомно выбираем "подложку" 0 - 1 - 2 по умолчанию
             let current_envirounment = rng.gen_range( 0..max_envirounment + 1 );
@@ -526,17 +526,17 @@ impl Tilemap{
     }
 
     fn spread_indexes_for_cover_tiles( &mut self ){
-        for tile in self.tilemap_tile_storage.iter_mut(){
-            let x = tile.x;
-            let y: u16 = tile.y;
-            let tile_cover: CoverType = tile.cover_type.clone();
+        for i in 0..self.tilemap_tile_storage.len(){
+            let x = self.tilemap_tile_storage[ i ].x;
+            let y: u16 = self.tilemap_tile_storage[ i ].y;
+            let tile_cover: CoverType = self.tilemap_tile_storage[ i ].cover_type.clone();
 
             let cover_graphic_index: u8 = match tile_cover{
                 CoverType::Water | CoverType::Shallow | CoverType::Ice => { self.find_cover_graphic_index_for_shallow_water_ice( x, y ) },
                 _ => { continue },
             };
 
-            tile.cover_graphic_index = cover_graphic_index;
+            self.tilemap_tile_storage[ i ].cover_graphic_index = cover_graphic_index;
         }
     }
 
@@ -641,6 +641,5 @@ impl Tilemap{
         tile.can_place_thing = data.can_place_thing;
         tile.can_place_stuff = data.can_place_stuff;
         tile.can_remove_floor = data.can_remove_floor;
-        tile.can_remove_thing = data.can_remove_thing;
     }
 }

@@ -34,12 +34,12 @@ impl ThingBodyStructure {
         };
     }
 
-    pub fn calculate_total_health_points( &self ){
+    pub fn calculate_total_health_points( &mut self ){
         let value = self.torso.get_total_health_points();
         self.set_total_health_points( value );
     }
 
-    pub fn calculate_current_health_points( &self ){
+    pub fn calculate_current_health_points( &mut self ){
         let value = self.torso.get_current_health_points();
         self.set_current_health_points( value );
     }
@@ -55,7 +55,7 @@ impl ThingBodyStructure {
         return result;
     }
 
-    pub fn add_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn add_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match part_type {
             BodyPartType::Torso => { self.torso.add_current_health_points( value )},
             _ => {}
@@ -64,7 +64,7 @@ impl ThingBodyStructure {
         self.calculate_current_health_points();
     }
 
-    pub fn substruct_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn substruct_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match part_type {
             BodyPartType::Torso => { self.torso.substruct_current_health_points( value )},
             _ => {}
@@ -73,7 +73,7 @@ impl ThingBodyStructure {
         self.calculate_current_health_points();
     }
 
-    pub fn add_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn add_modifier_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match part_type {
             BodyPartType::Torso => { self.torso.add_modifier_health_points( value )},
             _ => {}
@@ -83,7 +83,7 @@ impl ThingBodyStructure {
         self.calculate_current_health_points();
     }
 
-    pub fn substruct_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn substruct_modifier_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match part_type {
             BodyPartType::Torso => { self.torso.substruct_modifier_health_points( value )},
             _ => {}
@@ -99,7 +99,7 @@ impl ThingBodyStructure {
             _ => { panic!( "Can't get part status in THING bodystructure from {:?}", part_type )}
         }
     }
-    pub fn change_part_status_to( &self, part_type: &BodyPartType, part_status: PartStatus ){
+    pub fn change_part_status_to( &mut self, part_type: &BodyPartType, part_status: PartStatus ){
         match part_type{
             BodyPartType::Torso => { self.torso.change_part_status( part_status ) },
             _ => { panic!( "Can't change part status in THING bodystructure from {:?}", part_type )}
@@ -111,7 +111,7 @@ impl ThingBodyStructure {
             _ => { panic!( "Can't get part type in THING bodystructure from: {:?}", body_part_type )}
         }
     }
-    pub fn change_part_type_to( &self, body_part_type: &BodyPartType, part_type: PartType ){
+    pub fn change_part_type_to( &mut self, body_part_type: &BodyPartType, part_type: PartType ){
         match body_part_type {
             BodyPartType::Torso => { self.torso.change_part_type( part_type )},
             _ => { panic!( "Can't change part type in THING bodystructure from: {:?}", body_part_type )}
