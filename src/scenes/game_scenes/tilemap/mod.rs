@@ -58,7 +58,16 @@ impl Tilemap{
         return &&self.tilemap_tile_storage;
     }
 
-    pub fn get_tile_by_index( &mut self, value: usize ) -> &mut Tile{
+    pub fn get_tile_by_index( &self, value: usize ) -> &Tile{
+        let vector_length = self.tilemap_tile_storage.len();
+        if value >= vector_length{
+            panic!( "ground_tilemap::get_tile_by_index. Value > vec.len(); Value:{}, vec.len():{}", value, vector_length );
+        }
+
+        return &self.tilemap_tile_storage[ value ];
+    }
+
+    pub fn get_tile_by_index_mut( &mut self, value: usize ) -> &mut Tile{
         let vector_length = self.tilemap_tile_storage.len();
         if value >= vector_length{
             panic!( "ground_tilemap::get_tile_by_index. Value > vec.len(); Value:{}, vec.len():{}", value, vector_length );
@@ -300,7 +309,7 @@ impl Tilemap{
                     let index: usize = y as usize * self.tilemap_height as usize + x as usize;
                     if index > self.total_tiles { continue; };
 
-                    let mut tile = self.get_tile_by_index( index );
+                    let mut tile = self.get_tile_by_index_mut( index );
                     match cover_type {
                         CoverType::None =>{
                             tile.ground_type = ground_type.clone();
@@ -339,7 +348,7 @@ impl Tilemap{
                     let index = y as usize * self.tilemap_height as usize + x as usize;
                     if  index > self.total_tiles { continue; };
 
-                    let mut tile = self.get_tile_by_index( index );
+                    let mut tile = self.get_tile_by_index_mut( index );
                     match cover_type {
                         CoverType::None =>{
                             tile.ground_type = ground_type.clone();
@@ -406,7 +415,7 @@ impl Tilemap{
                     for j in 0..current_width {
                         let index = ( river_point_y + j ) * self.tilemap_height + i;
                         if index as usize >= self.total_tiles { continue; };
-                        let tile = self.get_tile_by_index( index as usize );
+                        let tile = self.get_tile_by_index_mut( index as usize );
                         let mut tile_data: &TileDeploy = deploy.tile.get_ground_tile_deploy( &river_setting.ground_type );
 
                         if river_setting.cover_type == CoverType::None  { 
@@ -440,7 +449,7 @@ impl Tilemap{
                         let index = river_point_x + j + self.tilemap_height * i;
                         if index as usize >= self.total_tiles { continue };
 
-                        let tile = self.get_tile_by_index( index as usize );
+                        let tile = self.get_tile_by_index_mut( index as usize );
                         let mut tile_data: &TileDeploy = deploy.tile.get_ground_tile_deploy( &river_setting.ground_type );
 
                         if river_setting.cover_type == CoverType::None  { 
@@ -485,7 +494,7 @@ impl Tilemap{
                     let index_i32: i32 = ( y as i32 - current_envirounment as i32 + i as i32 ) * height as i32 + ( x as i32 - current_envirounment as i32 + j as i32 );
                     if index_i32 < 0 || index_i32 >= total_tiles as i32 { continue; }; // защита от значений не принадлежащих текущей карте
 
-                    let mut environment_tile: &mut Tile = self.get_tile_by_index( index_i32 as usize );
+                    let mut environment_tile: &mut Tile = self.get_tile_by_index_mut( index_i32 as usize );
 
                     match tile_ground_type {
                         GroundType::Rock => {

@@ -27,7 +27,7 @@ pub enum ThingType{
     ReinforcedSteelDoor,
 }
 
-#[derive( Deserialize, Clone )]
+#[derive( Deserialize, Clone, Debug )]
 pub struct ThingConfig{
     pub can_harvested: bool,
     pub can_repaired: bool,

@@ -14,7 +14,7 @@ pub enum MainResistType{
 }
 
 #[derive( Serialize, Deserialize, Debug, Clone )]
-struct Resist{
+pub struct Resist{
     pub current: MainResistType,
     pub modifier: MainResistType,
 }

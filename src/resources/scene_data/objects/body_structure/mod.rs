@@ -102,31 +102,31 @@ impl BodyStructure{
 
     pub fn add_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().add_current_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().add_current_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().add_current_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().add_current_health_points( part_type, value )},
             _ => {},
         }
     }
-    pub fn substruct_current_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn substruct_current_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().substruct_current_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().substruct_current_health_points( part_type, value )},
-            _ => {},
-        }
-    }
-
-    pub fn add_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
-        match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().add_modifier_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().add_modifier_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().substruct_current_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().substruct_current_health_points( part_type, value )},
             _ => {},
         }
     }
 
-    pub fn substruct_modifier_health_points( &self, part_type: &BodyPartType, value: HealthPoints ){
+    pub fn add_modifier_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().substruct_modifier_health_points( part_type, value )},
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().substruct_modifier_health_points( part_type, value )},
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().add_modifier_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().add_modifier_health_points( part_type, value )},
+            _ => {},
+        }
+    }
+
+    pub fn substruct_modifier_health_points( &mut self, part_type: &BodyPartType, value: HealthPoints ){
+        match self.structure_type {
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().substruct_modifier_health_points( part_type, value )},
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().substruct_modifier_health_points( part_type, value )},
             _ => {},
         }
     }
@@ -146,10 +146,10 @@ impl BodyStructure{
         }
     }
 
-    pub fn change_part_status_to( &self, part_type: &BodyPartType, part_status: PartStatus ){
+    pub fn change_part_status_to( &mut self, part_type: &BodyPartType, part_status: PartStatus ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().change_part_status_to( part_type, part_status )},
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().change_part_status_to( part_type, part_status )},
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().change_part_status_to( part_type, part_status )},
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().change_part_status_to( part_type, part_status )},
             _ => {},
         }
     }
@@ -162,10 +162,10 @@ impl BodyStructure{
         }
     }
 
-    pub fn change_part_type_to( &self, body_part_type: &BodyPartType, part_type: PartType ){
+    pub fn change_part_type_to( &mut self, body_part_type: &BodyPartType, part_type: PartType ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().change_part_type_to( body_part_type, part_type )},
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().change_part_type_to( body_part_type, part_type )},
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().change_part_type_to( body_part_type, part_type )},
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().change_part_type_to( body_part_type, part_type )},
             _ => {},
         }
     }
@@ -178,18 +178,18 @@ impl BodyStructure{
         }
     }
 
-    pub fn calculate_total_health_points( &self ){
+    pub fn calculate_total_health_points( &mut self ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().calculate_total_health_points() },
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().calculate_total_health_points() },
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().calculate_total_health_points() },
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().calculate_total_health_points() },
             _ => {},
         }
     }
 
-    pub fn calculate_current_health_points( &self ){
+    pub fn calculate_current_health_points( &mut self ){
         match self.structure_type {
-            BodyStructureType::Humanoid => { self.humanoid.as_ref().unwrap().calculate_current_health_points() },
-            BodyStructureType::Thing => { self.thing.as_ref().unwrap().calculate_current_health_points() },
+            BodyStructureType::Humanoid => { self.humanoid.as_mut().unwrap().calculate_current_health_points() },
+            BodyStructureType::Thing => { self.thing.as_mut().unwrap().calculate_current_health_points() },
             _ => {},
         }
     }

@@ -1,0 +1,212 @@
+{
+    "rock":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 50,
+        "laser_resist": 20,
+        "plasma_resist": 10,
+        "health_points": 900
+    },
+
+    "tree":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": -20,
+        "kinetic_resist": 10,
+        "laser_resist": 0,
+        "plasma_resist": 5,
+        "health_points": 400
+    },
+    "fertile_tree":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": -20,
+        "kinetic_resist": 10,
+        "laser_resist": 0,
+        "plasma_resist": 5,
+        "health_points": 350
+    },
+    "bush":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": -30,
+        "kinetic_resist": 0,
+        "laser_resist": 0,
+        "plasma_resist": 5,
+        "health_points": 200
+    },
+    "fertile_bush":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": -30,
+        "kinetic_resist": 0,
+        "laser_resist": 0,
+        "plasma_resist": 5,
+        "health_points": 150
+    },
+    "boulder":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 50,
+        "laser_resist": 20,
+        "plasma_resist": 10,
+        "health_points": 400
+    },
+    "log":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": -20,
+        "kinetic_resist": 10,
+        "laser_resist": 0,
+        "plasma_resist": 5,
+        "health_points": 300
+    },
+    "copper_ore":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 50,
+        "laser_resist": 20,
+        "plasma_resist": 10,
+        "health_points": 900
+    },
+    "iron_ore":{
+        "can_harvested": true,
+        "can_repaired": false,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 50,
+        "laser_resist": 20,
+        "plasma_resist": 10,
+        "health_points": 900
+    },
+    "wooden_wall":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": -10,
+        "kinetic_resist": 15,
+        "laser_resist": 0,
+        "plasma_resist": 10,
+        "health_points": 650
+    },
+    "stone_wall":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 50,
+        "laser_resist": 20,
+        "plasma_resist": 10,
+        "health_points": 1100
+    },
+    "iron_wall":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 60,
+        "laser_resist": 30,
+        "plasma_resist": 20,
+        "health_points": 1500
+    },
+    "steel_wall":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 65,
+        "laser_resist": 40,
+        "plasma_resist": 30,
+        "health_points": 1800
+    },
+    "wooden_door":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 0,
+        "kinetic_resist": 30,
+        "laser_resist": 0,
+        "plasma_resist": 5,
+        "health_points": 500
+    },
+    "reinforced_wooden_door":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 10,
+        "kinetic_resist": 40,
+        "laser_resist": 5,
+        "plasma_resist": 15,
+        "health_points": 750
+    },
+    "iron_door":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 60,
+        "laser_resist": 30,
+        "plasma_resist": 20,
+        "health_points": 1200
+    },
+    "reinforced_iron_door":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 70,
+        "laser_resist": 40,
+        "plasma_resist": 30,
+        "health_points": 1500
+    },
+    "steel_door":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 65,
+        "laser_resist": 40,
+        "plasma_resist": 30,
+        "health_points": 1500
+    },
+    "reinforced_steel_door":{
+        "can_harvested": false,
+        "can_repaired": true,
+        "can_be_destroied": true,
+        "electric_resist": 90,
+        "fire_resist": 90,
+        "kinetic_resist": 75,
+        "laser_resist": 50,
+        "plasma_resist": 40,
+        "health_points": 1900
+    }
+}

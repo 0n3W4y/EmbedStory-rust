@@ -1,10 +1,12 @@
 //use serde::{ Deserialize, Serialize };
+use rand::Rng;
 
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Tile, GroundType};
 use crate::resources::scene_data::objects::body_structure::body_part::HealthPoints;
+use crate::resources::scene_data::objects::main_resists::MainResistType;
 
-use super::scene_data::objects::thing::{ Thing, ThingType, ThingConfig };
+use super::scene_data::objects::thing::{ Thing, ThingType };
 use super::scene_data::objects::body_structure::body_part::BodyPartType;
 use super::deploy::Deploy;
 use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
@@ -22,8 +24,19 @@ impl ObjectManager{
     }
 
     pub fn generate_things_for_scene( &mut self, scene: &mut GameScene, deploy: &Deploy, biome_things_setting: &BiomeThings ){
-        //first, create rock things generated before in tilemap;
-        self.generate_rock_things_for_scene( scene, deploy );
+        //first, create natural things generated before in tilemap;
+        //like rocks, ores, trees, etc..
+        for i in 0..biome_things_setting.natural_things.len(){
+            match biome_things_setting.natural_things[ i ]{
+                ThingType::Rock => {  self.generate_rocks_for_scene( scene, deploy )},
+                ThingType::Tree | ThingType::FertileTree => { self.generate_other_things_for_scene( scene, deploy, &biome_things_setting.natural_things[ i ], biome_things_setting.natural_things_value[ i ] )},
+                _ =>{}
+            }
+        };
+    }
+
+    pub fn generate_pattern_things_for_scene( &self, scene: &mut GameScene, deploy: &Deploy ){
+        //TODO: Generate Houses, cities etc...
     }
 
     pub fn generate_thing( &mut self, thing_type: &ThingType, deploy: &Deploy ) -> Thing{
@@ -31,28 +44,17 @@ impl ObjectManager{
         let mut thing = Thing::new( id, thing_type.clone() );
 
         //setup thing with dpeloy settings
-        //let config = deploy.objects_deploy.thing.get_config( &thing.thing_type );
-        let config = ThingConfig {
-            can_harvested: true,
-            can_be_destroied: true,
-            can_repaired: false,
-            electric_resist: 90,
-            fire_resist: 90,
-            kinetic_resist: 50,
-            laser_resist: 20,
-            plasma_resist: 10,
-            health_points: 900,
-        };
+        let config = deploy.objects_deploy.get_config( thing_type );
 
         thing.can_be_destroied = config.can_be_destroied;
         thing.can_harvested = config.can_harvested;
         thing.can_repaired = config.can_harvested;
 
-        thing.resists.set_electric_modifier( config.electric_resist );
-        thing.resists.set_fire_modifier( config.fire_resist );
-        thing.resists.set_kinetic_modifier( config.kinetic_resist );
-        thing.resists.set_laser_modifier( config.laser_resist );
-        thing.resists.set_plasma_modifier( config.plasma_resist );
+        thing.resists.add( MainResistType::Electric( config.electric_resist ));
+        thing.resists.add( MainResistType::Fire( config.fire_resist ));
+        thing.resists.add( MainResistType::Kinetic( config.kinetic_resist ));
+        thing.resists.add( MainResistType::Laser( config.laser_resist ));
+        thing.resists.add( MainResistType::Plasma( config.plasma_resist ));
 
         thing.body_structure.add_modifier_health_points( &BodyPartType::Torso, HealthPoints::Modifier( config.health_points ));
         thing.body_structure.calculate_total_health_points();
@@ -61,8 +63,7 @@ impl ObjectManager{
         return thing;
     }
 
-    pub fn get_thing_graphic_index_for_rock( &self, tile_storage: &Vec<Tile>, tilemap_height: u16, tilemap_total_tiles: usize,  x: u16, y: u16, thing_type: &ThingType ) -> u8{
-
+    pub fn get_thing_graphic_index( &self, tile_storage: &Vec<Tile>, tilemap_height: u16, tilemap_total_tiles: usize,  x: u16, y: u16, thing_type: &ThingType ) -> u8{
         match thing_type {
             ThingType::Rock => {
                 let top_index = (( y - 1 ) * tilemap_height + x) as isize;
@@ -136,33 +137,87 @@ impl ObjectManager{
         self.id = id;
     }
 
-    fn generate_rock_things_for_scene( &mut self, scene: &mut GameScene, deploy: &Deploy ){
+    fn generate_rocks_for_scene( &mut self, scene: &mut GameScene, deploy: &Deploy ){
         let tilemap = &mut scene.tilemap;
         let tilemap_height = tilemap.get_tilemap_height();
         let tilemap_total_tiles = tilemap.get_total_tiles();
+        let tile_size = tilemap.get_tile_size();
         
-       
-
         for i in 0..tilemap.get_tilemap_tile_storage().len(){
             let ground_type: &GroundType = &tilemap.get_tilemap_tile_storage()[ i ].ground_type;
             if *ground_type == GroundType::Rock {
                 let mut rock_thing: Thing = self.generate_thing( &ThingType::Rock, deploy );
+
                 rock_thing.x = tilemap.get_tilemap_tile_storage()[ i ].x;
                 rock_thing.y = tilemap.get_tilemap_tile_storage()[ i ].y;
+                rock_thing.graphic_x = rock_thing.x as u32 * tile_size as u32;
+                rock_thing.graphic_y = rock_thing.y as u32 * tile_size as u32;
                 rock_thing.index = scene.things.len();
-
-                let index = tilemap.get_tilemap_tile_storage()[ i ].index;
-                tilemap.get_tile_by_index( index ).can_place_thing = false;
-                tilemap.get_tile_by_index( index ).can_walk = false;
-                tilemap.get_tile_by_index( index ).thing_type = Some( ThingType::Rock );
-                tilemap.get_tile_by_index( index ).thing_id = rock_thing.id;
 
                 let tilemap_storage: &Vec<Tile> = tilemap.get_tilemap_tile_storage();
 
-                let graphics_index = self.get_thing_graphic_index_for_rock( tilemap_storage, tilemap_height, tilemap_total_tiles, rock_thing.x, rock_thing.y, &ThingType::Rock );
+                let graphics_index = self.get_thing_graphic_index( tilemap_storage, tilemap_height, tilemap_total_tiles, rock_thing.x, rock_thing.y, &ThingType::Rock );
                 rock_thing.graphic_index = graphics_index;
 
+                //let index = tilemap.get_tilemap_tile_storage()[ i ].index;
+                let tile = tilemap.get_tile_by_index_mut( i );
+                tile.can_place_thing = false;
+                tile.can_place_floor = false;
+                tile.can_place_stuff = false;
+                tile.can_remove_floor = false;
+                tile.can_walk = false;
+                tile.thing_type = Some( ThingType::Rock );
+                tile.thing_id = rock_thing.id;            
+
                 scene.things.push( rock_thing );
+            }
+        }
+    }
+
+    fn generate_other_things_for_scene( &mut self, scene: &mut GameScene, deploy: &Deploy, thing_type: &ThingType, thing_type_percent: f32 ){
+        let mut rng = rand::thread_rng();
+        let tilemap = &mut scene.tilemap;
+        let tilemap_total_tiles = tilemap.get_total_tiles();
+        let tilemap_width = tilemap.get_tilemap_width();
+        let tilemap_height = tilemap.get_tilemap_height();
+        let total_objects = ( tilemap_total_tiles as f32 * thing_type_percent / 100.0 ) as usize;
+        let tile_size = tilemap.get_tile_size();
+
+        if total_objects >= ( tilemap_total_tiles / 2 ) { 
+            println!( "object_manager.generate_other_thing_for_scene. Warning! Total things '{:?}' most than 50% of total tiles in tilemap", thing_type );
+        };
+
+        let mut number = 0; //count how many things r generated in tilemap; 
+        while total_objects > number {
+            let random_x: u16 = rng.gen_range( 0..( tilemap_width + 1 ));
+            let random_y: u16 = rng.gen_range( 0..( tilemap_height + 1 ));
+            let tile_index: usize = ( random_y * tilemap_height + random_x ) as usize;
+            let tile = tilemap.get_tile_by_index( tile_index );
+
+            //check for thing in current tile
+            if tile.thing_type != Option::None && tile.can_place_thing {
+                number += 1;
+                
+                let mut thing = self.generate_thing( thing_type, deploy );
+                thing.x = random_x;
+                thing.y = random_y;
+                thing.graphic_x = random_x as u32 * tile_size as u32;
+                thing.graphic_y = random_y as u32 * tile_size as u32;
+
+                let tilemap_storage: &Vec<Tile> = tilemap.get_tilemap_tile_storage();
+                thing.graphic_index = self.get_thing_graphic_index( tilemap_storage, tilemap_height, tilemap_total_tiles, random_x, random_y, thing_type );
+
+                let tile_mut = tilemap.get_tile_by_index_mut( tile_index );
+                tile_mut.thing_type = Some( thing_type.clone() );
+                tile_mut.thing_id = thing.id;
+                tile_mut.can_place_floor = false;
+                tile_mut.can_place_thing = false;
+                tile_mut.can_place_stuff = false;
+                //tile.movement_ratio = 400; TODO: add this into config;
+
+                scene.things.push( thing );
+            }else{
+                continue;
             }
         }
     }

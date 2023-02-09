@@ -232,7 +232,7 @@ fn create_starting_scenes (
     let mut scene_manager = SceneManager::new();
 
     //create new object manager;
-    let object_manager = ObjectManager::new();
+    let mut object_manager = ObjectManager::new();
 
     //Create starting scene;
     let mut starting_scene: GameScene = scene_manager.create_ground_scene();
@@ -245,9 +245,9 @@ fn create_starting_scenes (
     starting_scene.tilemap.generate_tilemap( &deploy, &scene_setting.biome_type );
 
     //prepare things for scene;
-    //let biome_setting = deploy.game_scene_biome.get_biome_setting( &scene_setting.biome_type );
+    let biome_setting = deploy.game_scene_biome.get_biome_setting( &scene_setting.biome_type );
     //let things_for_scene = scene_setting.objects.things;
-    //object_manager.generate_things_for_scene( &mut starting_scene, deploy. &scene_setting. );
+    object_manager.generate_things_for_scene( &mut starting_scene, &deploy, &biome_setting.objects.things );
     //object_manager.generate_pattern_things_for_scene( &mut starting_scene );
 
     //store scene into scene_manager;
