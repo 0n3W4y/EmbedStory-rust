@@ -1,6 +1,6 @@
 use serde::{ Serialize, Deserialize };
 
-#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug )]
+#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy )]
 pub enum StuffType {
     
 }

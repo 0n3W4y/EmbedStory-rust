@@ -7,6 +7,8 @@
         "can_place_thing": true,
         "can_place_stuff": true,
         "can_walk": true,
+        "have_fog": true,
+        "have_roof": true,
         "movement_ratio": 900
     },
 
@@ -18,6 +20,8 @@
         "can_place_thing": true,
         "can_place_stuff": true,
         "can_walk": true,
+        "have_fog": true,
+        "have_roof": true,
         "movement_ratio": 700
     },
 
@@ -29,6 +33,8 @@
         "can_place_thing": true,
         "can_place_stuff": true,
         "can_walk": true,
+        "have_fog": true,
+        "have_roof": true,
         "movement_ratio": 1000
     },
 
@@ -40,6 +46,8 @@
         "can_place_thing": false,
         "can_place_stuff": false,
         "can_walk": false,
+        "have_fog": true,
+        "have_roof": true,
         "movement_ratio": 0
     },
 
@@ -51,6 +59,8 @@
         "can_place_thing": true,
         "can_place_stuff": true,
         "can_walk": true,
+        "have_fog": true,
+        "have_roof": true,
         "movement_ratio": 1100
     },
 
@@ -62,6 +72,8 @@
         "can_place_thing": true,
         "can_place_stuff": true,
         "can_walk": true,
+        "have_fog": true,
+        "have_roof": true,
         "movement_ratio": 850
     }
 }

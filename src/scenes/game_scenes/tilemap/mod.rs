@@ -8,6 +8,8 @@ use tile::{ Tile, CoverType, GroundType, TileDeploy };
 use crate::resources::deploy::Deploy;
 use crate::resources::deploy_addiction::game_scene_biome_deploy::{ BiomeType, SpotSetting, RiverSetting, RiverType, Spots, Rivers, Biome };
 
+use self::tile::Position;
+
 #[derive( Serialize, Deserialize, Clone )]
 pub struct Tilemap{
     tile_size: u16,
@@ -97,16 +99,35 @@ impl Tilemap{
 
     fn generate_ground( &mut self, ground_type: &GroundType, deploy: &Deploy ){
         let tile_setting = deploy.tile.get_ground_tile_deploy( &ground_type );
+        let tilemap_height = self.tilemap_height as i32;
+        let tilemap_width = self.tilemap_width as i32;
+        let tile_size: i32 = self.tile_size as i32;
+
         for i in 0..self.tilemap_height {
             for j in 0..self.tilemap_width {
-                let mut tile = Tile::new();
-                tile.x = j;
-                tile.y = i;
-                tile.graphic_x = j as u32 * self.tile_size as u32;
-                tile.graphic_y = i as u32 * self.tile_size as u32;
-                tile.index = i as usize * self.tilemap_height as usize + j as usize;
-                tile.ground_type = ground_type.clone();
-                Tilemap::set_data_to_tile( &mut tile, &tile_setting );
+                let x: i32 = -tilemap_width / 2 + j as i32;
+                let y: i32 = -tilemap_height / 2 + i as i32;
+                let graphic_x = x * tile_size;
+                let graphic_y: i32 = y * tile_size;
+                let index = i as usize * tilemap_height as usize + j as usize;
+
+                let mut tile: Tile = Tile::new(
+                    index, 
+                    x, 
+                    y, 
+                    graphic_x, 
+                    graphic_y,
+                    ground_type.clone(),
+                    tile_setting.can_remove_floor,
+                    tile_setting.can_place_floor,
+                    tile_setting.can_place_thing,
+                    tile_setting.can_place_stuff,
+                    tile_setting.can_walk,
+                    tile_setting.have_fog,
+                    tile_setting.have_roof,
+                    tile_setting.movement_ratio
+                );
+
                 self.tilemap_tile_storage.push( tile );
             }
         }
@@ -478,10 +499,12 @@ impl Tilemap{
         let max_envirounment: u8 = enviroument;
 
         for i in 0..self.tilemap_tile_storage.len(){
-            let x = self.tilemap_tile_storage[ i ].x;
-            let y = self.tilemap_tile_storage[ i ].y;
-            let tile_cover_type: CoverType = self.tilemap_tile_storage[ i ].cover_type.clone();
-            let tile_ground_type: GroundType = self.tilemap_tile_storage[ i ].ground_type.clone();   
+            let tile_copy = self.tilemap_tile_storage[ i ]; // is copy?
+
+            let x = tile_copy.position.x;
+            let y = tile_copy.position.y;
+            let tile_cover_type: CoverType = tile_copy.cover_type;
+            let tile_ground_type: GroundType = tile_copy.ground_type;  
             
             //рандомно выбираем "подложку" 0 - 1 - 2 по умолчанию
             let current_envirounment = rng.gen_range( 0..max_envirounment + 1 );
@@ -536,9 +559,10 @@ impl Tilemap{
 
     fn spread_indexes_for_cover_tiles( &mut self ){
         for i in 0..self.tilemap_tile_storage.len(){
-            let x = self.tilemap_tile_storage[ i ].x;
-            let y: u16 = self.tilemap_tile_storage[ i ].y;
-            let tile_cover: CoverType = self.tilemap_tile_storage[ i ].cover_type.clone();
+            let tile_copy = self.tilemap_tile_storage[ i ]; // is copy?
+            let x = tile_copy.position.x;
+            let y: i32 = tile_copy.position.y;
+            let tile_cover: CoverType = tile_copy.cover_type;
 
             let cover_graphic_index: u8 = match tile_cover{
                 CoverType::Water | CoverType::Shallow | CoverType::Ice => { self.find_cover_graphic_index_for_shallow_water_ice( x, y ) },
@@ -562,7 +586,7 @@ impl Tilemap{
         self.generate_rivers( &liquid_rivers, &deploy );
     }
 
-    fn find_cover_graphic_index_for_shallow_water_ice( &self, x: u16, y: u16 ) -> u8{
+    fn find_cover_graphic_index_for_shallow_water_ice( &self, x: i32, y: i32 ) -> u8{
         let storage: &Vec<Tile> = &self.tilemap_tile_storage;
         let height = self.tilemap_height;
         let total_tiles = self.total_tiles;
@@ -650,5 +674,7 @@ impl Tilemap{
         tile.can_place_thing = data.can_place_thing;
         tile.can_place_stuff = data.can_place_stuff;
         tile.can_remove_floor = data.can_remove_floor;
+        tile.have_fog = data.have_fog;
+        tile.have_roof = data.have_roof;
     }
 }

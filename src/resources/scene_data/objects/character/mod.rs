@@ -1,9 +1,7 @@
 use serde::{ Serialize, Deserialize };
 
-pub mod character_resists;
 
-
-#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug )]
+#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy )]
 pub enum CharacterType{
     
 }

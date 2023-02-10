@@ -2,5 +2,5 @@ pub mod character;
 pub mod scene_effect;
 pub mod thing;
 pub mod stuff;
-pub mod main_resists;
-pub mod body_structure;
+pub mod resists;
+pub mod body_part;
