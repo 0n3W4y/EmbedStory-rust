@@ -1,7 +1,16 @@
 use serde::{Deserialize, Serialize};
 
+
+enum HealthPoints{
+    
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
-pub struct HealthPoints(pub i16, pub i16, pub i16);
+pub struct HealthPoints{
+    pub current: i16, 
+    pub total: i16, 
+    pub modified: i16
+}
 
 #[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Debug, Copy)]
 pub enum BodyPartType {
