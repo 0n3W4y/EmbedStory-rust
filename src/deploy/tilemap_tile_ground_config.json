@@ -2,78 +2,75 @@
     "earth":{
         "ground_type": "Earth",
         "cover_type": "None",
-        "can_remove_floor": false,
-        "can_place_floor": true,
-        "can_place_thing": true,
-        "can_place_stuff": true,
-        "can_walk": true,
-        "have_fog": true,
-        "have_roof": true,
-        "movement_ratio": 900
+        "movement_ratio": 900,
+        "permissions":[
+            "PlaceFloor",
+            "PlaceThing",
+            "PlaceStuff",
+            "Walk",
+            "Fog"
+        ]
     },
 
     "dirt":{
         "ground_type": "Dirt",
         "cover_type": "None",
-        "can_remove_floor": false,
-        "can_place_floor": true,
-        "can_place_thing": true,
-        "can_place_stuff": true,
-        "can_walk": true,
-        "have_fog": true,
-        "have_roof": true,
-        "movement_ratio": 700
+        "movement_ratio": 700,
+        "permissions":[
+            "PlaceFloor",
+            "PlaceThing",
+            "PlaceStuff",
+            "Walk",
+            "Fog"
+        ]
     },
 
     "dry_earth":{
         "ground_type": "DryEarth",
         "cover_type": "None",
-        "can_remove_floor": false,
-        "can_place_floor": true,
-        "can_place_thing": true,
-        "can_place_stuff": true,
-        "can_walk": true,
-        "have_fog": true,
-        "have_roof": true,
-        "movement_ratio": 1000
+        "movement_ratio": 1000,
+        "permissions":[
+            "PlaceFloor",
+            "PlaceThing",
+            "PlaceStuff",
+            "Walk",
+            "Fog"
+        ]
     },
 
     "rock":{
         "ground_type": "Rock",
         "cover_type": "None",
-        "can_remove_floor": false,
-        "can_place_floor": false,
-        "can_place_thing": false,
-        "can_place_stuff": false,
-        "can_walk": false,
-        "have_fog": true,
-        "have_roof": true,
-        "movement_ratio": 0
+        "movement_ratio": 0,
+        "permissions":[
+            "Fog",
+            "Roof"
+        ]
     },
 
     "rock_environment":{
         "ground_type": "RockEnvironment",
         "cover_type": "None",
-        "can_remove_floor": false,
-        "can_place_floor": true,
-        "can_place_thing": true,
-        "can_place_stuff": true,
-        "can_walk": true,
-        "have_fog": true,
-        "have_roof": true,
-        "movement_ratio": 1100
+        "movement_ratio": 1100,
+        "permissions":[
+            "PlaceFloor",
+            "PlaceThing",
+            "PlaceStuff",
+            "Walk",
+            "Fog"
+        ]
     },
 
     "clay": {
         "ground_type": "Clay",
         "cover_type": "None",
-        "can_remove_floor": false,
-        "can_place_floor": true,
-        "can_place_thing": true,
-        "can_place_stuff": true,
-        "can_walk": true,
-        "have_fog": true,
-        "have_roof": true,
-        "movement_ratio": 850
+        "movement_ratio": 850,
+        "permissions":[
+            "PlaceFloor",
+            "PlaceThing",
+            "PlaceStuff",
+            "Walk",
+            "Fog"
+        ]
     }
 }

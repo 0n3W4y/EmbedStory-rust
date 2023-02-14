@@ -4,7 +4,8 @@ use crate::resources::scene_data::objects::body_part::BodyPart;
 use crate::resources::scene_data::objects::resists::Resist;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
-use super::body_part::{BodyPartType, HealthPoints};
+use super::body_part::BodyPartType;
+use super::character::stats::Stat;
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Copy)]
 pub enum ThingType {
@@ -47,8 +48,8 @@ pub struct Thing {
     pub id: usize,
     pub index: usize, // in Scene Vec<Things>,
     pub thing_type: ThingType,
-    pub position: Position,
-    pub graphic_position: Position,
+    pub position: Position<i32>,
+    pub graphic_position: Position<f32>,
 
     pub graphic_index: u8,
     pub can_harvested: bool,
@@ -59,11 +60,15 @@ pub struct Thing {
     pub resists_cache: Vec<Resist>,
     pub body_structure: Vec<BodyPart>,
 
-    pub health_points: HealthPoints,
+    pub current_health_points: Stat,
+    pub total_health_points: Stat
 }
 
 impl Thing {
-    pub fn new(id: usize, thing_type: ThingType) -> Self {
+    pub fn new(
+        id: usize, 
+        thing_type: ThingType
+    ) -> Self {
         let resists = vec![
             Resist::Kinetic(0),
             Resist::Fire(0),
@@ -87,7 +92,7 @@ impl Thing {
             index: 0,
             thing_type: thing_type,
             position: Position{x: 0, y: 0},
-            graphic_position: Position{ x: 0, y: 0},
+            graphic_position: Position{x: 0.0, y: 0.0},
             graphic_index: 0,
             can_harvested: false,
             can_repaired: false,
@@ -95,7 +100,8 @@ impl Thing {
             resists,
             resists_cache,
             body_structure,
-            health_points: HealthPoints(0, 0, 0),
+            current_health_points: Stat::HealthPoints(0),
+            total_health_points: Stat::HealthPoints(0)
         };
     }
 }

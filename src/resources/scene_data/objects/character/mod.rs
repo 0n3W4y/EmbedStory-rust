@@ -1,5 +1,6 @@
 use serde::{ Serialize, Deserialize };
 
+pub mod stats;
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy )]
 pub enum CharacterType{
