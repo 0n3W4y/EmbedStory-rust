@@ -1,14 +1,12 @@
 //use serde::{ Deserialize, Serialize };
 use rand::Rng;
 
-use crate::resources::scene_data::objects::body_part::HealthPoints;
-use crate::resources::scene_data::objects::resists::Resist;
 use crate::scenes::game_scenes::game_scene::GameScene;
-use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, Position};
+use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, Position, TilePermissions};
 
 use super::deploy::Deploy;
 use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
-use super::scene_data::objects::body_part::BodyPartType;
+use super::scene_data::objects::body_part::BodyPart;
 use super::scene_data::objects::thing::{Thing, ThingType};
 
 pub struct ObjectManager {
@@ -51,28 +49,26 @@ impl ObjectManager {
 
     pub fn generate_thing(&mut self, thing_type: &ThingType, deploy: &Deploy) -> Thing {
         let id = self.create_id();
-        let mut thing = Thing::new(id, thing_type.clone());
-
-        //setup thing with dpeloy settings
         let config = deploy.objects_deploy.get_config(thing_type);
 
-        thing.can_be_destroied = config.can_be_destroied;
-        thing.can_harvested = config.can_harvested;
-        thing.can_repaired = config.can_harvested;
+        let mut thing = Thing{
+            id, 
+            thing_type: thing_type.clone(),
+            permissions: config.permissions.to_vec(),
+            resists: config.resists.to_vec(),
+            resists_cache : config.resists.to_vec(),
+            ..Default::default()
+        };
+       
+        for ( bodypart_type, hp ) in config.body_struct.iter(){
+            let mut body_part = BodyPart {
+                bodypart_type: bodypart_type.clone(),
+                ..Default::default()
+            };
+            body_part.set_health_points(*hp);
 
-        for resist in thing.resists.iter_mut() {
-            match resist {
-                Resist::Electric(v) => *v = config.electric_resist,
-                Resist::Fire(v) => *v = config.fire_resist,
-                Resist::Kinetic(v) => *v = config.kinetic_resist,
-                Resist::Laser(v) => *v = config.laser_resist,
-                Resist::Plasma(v) => *v = config.plasma_resist,
-                _ => {}
-            }
+            thing.body_structure.push(body_part);
         }
-        
-        //Torso body part;
-        thing.body_structure[0].set_health_points(config.health_points, config.health_points, config.health_points);
         
 
         return thing;
@@ -199,21 +195,34 @@ impl ObjectManager {
                     tilemap_storage,
                     tilemap_height,
                     tilemap_total_tiles,
-                    rock_thing.position.0,
-                    rock_thing.position.1,
+                    rock_thing.position.x,
+                    rock_thing.position.y,
                     &ThingType::Rock,
                 );
                 rock_thing.graphic_index = graphics_index;
 
                 //let index = tilemap.get_tilemap_tile_storage()[ i ].index;
                 let tile = tilemap.get_tile_by_index_mut(i);
-                tile.can_place_thing = false;
-                tile.can_place_floor = false;
-                tile.can_place_stuff = false;
-                tile.can_remove_floor = false;
-                tile.can_walk = false;
-                tile.thing_type = Some(ThingType::Rock);
-                tile.thing_id = rock_thing.id;
+
+                let not_allowed_permissions = vec![TilePermissions::PlaceFloor, TilePermissions::PlaceStuff, TilePermissions::PlaceThing, TilePermissions::RemoveFloor, TilePermissions::Walk];
+                let allowed_permisisions = vec![TilePermissions::Fog, TilePermissions::Roof];
+                for permission in not_allowed_permissions.into_iter(){
+                    let index = tile.permissions.into_iter().position(|x|{ x == permission});
+                    match index{
+                        Option::Some(v) => {tile.permissions.remove(v);},
+                        Option::None => {},
+                    };
+                };
+
+                for permission in allowed_permisisions.into_iter(){
+                    let index = tile.permissions.into_iter().position(|x|{ x == permission});
+                    match index{ 
+                        Option::Some(_) =>{},
+                        Option::None => tile.permissions.push(permission)
+                    };
+                };
+
+                tile.thing_type = (Some(ThingType::Rock), rock_thing.id);
 
                 scene.things.push(rock_thing);
             }
@@ -241,20 +250,20 @@ impl ObjectManager {
 
         let mut number = 0; //count how many things r generated in tilemap;
         while total_objects > number {
-            let random_x: u16 = rng.gen_range(0..(tilemap_width + 1));
-            let random_y: u16 = rng.gen_range(0..(tilemap_height + 1));
-            let tile_index: usize = (random_y * tilemap_height + random_x) as usize;
+            let random_x: i32 = rng.gen_range(0..(tilemap_width as i32 + 1));
+            let random_y: i32 = rng.gen_range(0..(tilemap_height as i32 + 1));
+            let tile_index: usize = (random_y * tilemap_height as i32 + random_x) as usize;
             let tile = tilemap.get_tile_by_index(tile_index);
 
             //check for thing in current tile
-            if tile.thing_type != Option::None && tile.can_place_thing {
+            if tile.thing_type.0 != Option::None && matches!(tile.permissions.into_iter().find(|&x|{ x == TilePermissions::PlaceThing}), Some(TilePermissions::PlaceThing)) {
                 number += 1;
 
                 let mut thing = self.generate_thing(thing_type, deploy);
-                thing.x = random_x;
-                thing.y = random_y;
-                thing.graphic_x = random_x as u32 * tile_size as u32;
-                thing.graphic_y = random_y as u32 * tile_size as u32;
+                thing.position.x = random_x;
+                thing.position.y = random_y;
+                thing.graphic_position.x = random_x as f32 * tile_size as f32;
+                thing.graphic_position.y = random_y as f32 * tile_size as f32;
 
                 let tilemap_storage: &Vec<Tile> = tilemap.get_tilemap_tile_storage();
                 thing.graphic_index = self.get_thing_graphic_index(

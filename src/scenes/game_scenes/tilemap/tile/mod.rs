@@ -4,19 +4,21 @@ use crate::resources::scene_data::objects::{
     character::CharacterType, scene_effect::SceneEffectType, stuff::StuffType, thing::ThingType,
 };
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
 pub enum TilePermissions{
     RemoveFloor,
     PlaceFloor,
     PlaceThing,
+    #[default]
     Walk,
     PlaceStuff,
     Roof,
     Fog
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
 pub enum GroundType {
+    #[default]
     Earth,
     DryEarth,
     Dirt,
@@ -25,8 +27,9 @@ pub enum GroundType {
     Clay,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
 pub enum CoverType {
+    #[default]
     None,
     Grass,
     Flowers,
@@ -39,13 +42,13 @@ pub enum CoverType {
     RockyRoad,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub struct Position<T>{
     pub x: T, 
     pub y: T
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Tile{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
@@ -62,35 +65,6 @@ pub struct Tile{
     pub stuff_type:  (Option<StuffType>, usize),
     pub character_type:  (Option<CharacterType>, usize),
     pub effect_type: (Option<SceneEffectType>, usize),
-}
-
-impl Tile {
-    pub fn new(
-        index: usize, 
-        x: i32, 
-        y: i32, 
-        graphic_x: f32, 
-        graphic_y: f32, 
-        ground_type: GroundType,
-        movement_ratio: u16,
-        permissions: Vec<TilePermissions>
-    ) -> Self {
-        //Default Earth;
-        return Tile {
-            ground_type: ground_type,
-            cover_type: CoverType::None,
-            position: Position{x, y},
-            graphic_position: Position{x: graphic_x, y: graphic_y},
-            cover_graphic_index: 0,
-            index,
-            thing_type: (None, 0),
-            stuff_type: (None, 0),
-            character_type: (None, 0),
-            effect_type: (None, 0),
-            movement_ratio: 900,
-            permissions
-        };
-    }
 }
 
 #[derive(Deserialize, Clone, Debug)]

@@ -8,7 +8,8 @@ use crate::resources::deploy::Deploy;
 use crate::resources::deploy_addiction::game_scene_biome_deploy::{
     Biome, BiomeType, RiverSetting, RiverType, Rivers, SpotSetting, Spots,
 };
-use tile::{CoverType, GroundType, Tile, TileDeploy};
+
+use self::tile::{Position, CoverType, GroundType, Tile, TileDeploy};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Tilemap {
@@ -131,16 +132,16 @@ impl Tilemap {
                 let graphic_y: f32 = (y * tile_size) as f32;
                 let index = i as usize * tilemap_height as usize + j as usize;
 
-                let mut tile: Tile = Tile::new(
+                let mut tile = Tile {
                     index,
-                    x,
-                    y,
-                    graphic_x,
-                    graphic_y,
-                    ground_type.clone(),
-                    tile_setting.movement_ratio,
-                    tile_setting.permissions,
-                );
+                    ground_type: tile_setting.ground_type.clone(),
+                    cover_type: tile_setting.cover_type.clone(),
+                    position: Position{x, y},
+                    graphic_position: Position{x:graphic_x, y:graphic_y},
+                    movement_ratio: tile_setting.movement_ratio,
+                    permissions: tile_setting.permissions.to_vec(),
+                    ..Default::default()
+                };
 
                 self.tilemap_tile_storage.push(tile);
             }
@@ -413,14 +414,14 @@ impl Tilemap {
                             tile.ground_type = ground_type.clone();
                             tile.cover_type = cover_type.clone();
                             tile.movement_ratio = ground_data.movement_ratio;
-                            tile.permissions = ground_data.permissions;
+                            tile.permissions = ground_data.permissions.to_vec();
                         },
                         CoverType::Flowers | CoverType::Grass => {
                             match tile.ground_type {
                                 GroundType::Earth => {
                                     tile.cover_type = cover_type.clone();
                                     tile.movement_ratio = cover_data.movement_ratio;
-                                    tile.permissions = cover_data.permissions;
+                                    tile.permissions = cover_data.permissions.to_vec();
                                 },
                                 _ => {continue;}
                             }
@@ -433,7 +434,7 @@ impl Tilemap {
                                 _ => {
                                     tile.cover_type = cover_type.clone();
                                     tile.movement_ratio = cover_data.movement_ratio;
-                                    tile.permissions = cover_data.permissions;
+                                    tile.permissions = cover_data.permissions.to_vec();
                                 }
                             }
                         }
@@ -476,14 +477,14 @@ impl Tilemap {
                             tile.ground_type = ground_type.clone();
                             tile.cover_type = cover_type.clone();
                             tile.movement_ratio = ground_data.movement_ratio;
-                            tile.permissions = ground_data.permissions;
+                            tile.permissions = ground_data.permissions.to_vec();
                         },
                         CoverType::Flowers | CoverType::Grass => {
                             match tile.ground_type {
                                 GroundType::Earth => {
                                     tile.cover_type = cover_type.clone();
                                     tile.movement_ratio = cover_data.movement_ratio;
-                                    tile.permissions = cover_data.permissions;
+                                    tile.permissions = cover_data.permissions.to_vec();
                                 },
                                 _ => {continue;}
                             }
@@ -496,7 +497,7 @@ impl Tilemap {
                                 _ => {
                                     tile.cover_type = cover_type.clone();
                                     tile.movement_ratio = cover_data.movement_ratio;
-                                    tile.permissions = cover_data.permissions;
+                                    tile.permissions = cover_data.permissions.to_vec();
                                 }
                             }
                         }
@@ -596,7 +597,7 @@ impl Tilemap {
                             tile.cover_type = cover_type;
                         };
 
-                        tile.permissions = tile_data.permissions;
+                        tile.permissions = tile_data.permissions.to_vec();
                         tile.movement_ratio = tile_data.movement_ratio;
                     }
                 }
@@ -645,7 +646,7 @@ impl Tilemap {
                             tile.cover_type = cover_type;
                         };
 
-                        tile.permissions = tile_data.permissions;
+                        tile.permissions = tile_data.permissions.to_vec();
                         tile.movement_ratio = tile_data.movement_ratio;
                     }
                 }
@@ -716,7 +717,7 @@ impl Tilemap {
                                 };
 
                                 environment_tile.movement_ratio = data_tile.movement_ratio;
-                                environment_tile.permissions = data_tile.permissions;
+                                environment_tile.permissions = data_tile.permissions.to_vec();
                                 continue;
                             }
                         }
@@ -737,7 +738,7 @@ impl Tilemap {
                                     deploy.tile.get_cover_tile_deploy(&cover_type);
                                 environment_tile.cover_type = cover_type;
                                 environment_tile.movement_ratio = data_tile.movement_ratio;
-                                environment_tile.permissions = data_tile.permissions;
+                                environment_tile.permissions = data_tile.permissions.to_vec();
                             }
                         }
                         _ => {}
@@ -755,7 +756,7 @@ impl Tilemap {
 
             let cover_graphic_index: u8 = match tile_cover {
                 CoverType::Water | CoverType::Shallow | CoverType::Ice => {
-                    self.find_cover_graphic_index_for_shallow_water_ice(x, y)
+                    self.find_cover_graphic_index_for_cover_tiles(x, y)
                 }
                 _ => continue,
             };
@@ -858,7 +859,7 @@ impl Tilemap {
             }
         };
 
-        let right_bottom: bool = if right_bottom_index < 0 || right_bottom_index >= total_tiles {
+        let right_bottom: bool = if right_bottom_index < 0 || right_bottom_index as usize >= total_tiles {
             false
         }else{
             match storage[right_bottom_index as usize].cover_type {
@@ -867,38 +868,279 @@ impl Tilemap {
             }
         };
 
-        if top && left && right && bottom {
-            return 0; // all
-        } else if top && left && right && !bottom {
-            return 1; // top + left + right;
-        } else if top && left && !right && bottom {
-            return 2; // top + left + bottom;
-        } else if top && !left && right && bottom {
-            return 3; // top + right + bottom;
-        } else if !top && left && right && bottom {
-            return 4; // left + right + bottom;
-        } else if top && !left && !right && bottom {
-            return 5; // top + bottom;
-        } else if !top && left && right && !bottom {
-            return 6; // left + right;
-        } else if top && left && !right && !bottom {
-            return 7; // top + left;
-        } else if top && !left && right && !bottom {
-            return 8; // top + right;
-        } else if !top && left && !right && bottom {
-            return 9; // left + bottom;
-        } else if !top && !left && right && bottom {
-            return 10; // right + bottom;
-        } else if top && !left && !right && !bottom {
-            return 11; // top;
-        } else if !top && left && !right && !bottom {
-            return 12; // left;
-        } else if !top && !left && right && !bottom {
-            return 13; // right;
-        } else if !top && !left && !right && bottom {
-            return 14; // bottom;
-        } else {
-            return 15; // alone;
+        return self.get_index_for_graphic_placement(top, left, right, bottom, left_top, right_top, left_bottom, right_bottom);
+        
+    }
+
+    pub fn get_index_for_graphic_placement( 
+        &self, 
+        top: bool, 
+        left: bool, 
+        right: bool, 
+        bottom: bool, 
+        left_top: bool, 
+        right_top: bool,
+        left_bottom: bool,
+        right_bottom: bool
+    ) -> u8 {
+        if top && left && right && bottom && left_top && right_top && left_bottom && right_bottom { // all
+            return 0; 
+        } else if top && left && right && bottom && left_top && right_top && left_bottom && !right_bottom { // excluded right_bottom 
+            return 1; 
+        } else if top && left && right && bottom && left_top && right_top && !left_bottom && right_bottom { // excluded  left_bottom 
+            return 2; 
+        } else if top && left && right && bottom && left_top && !right_top && left_bottom && right_bottom { // excluded  right_top 
+            return 3; 
+        } else if top && left && right && bottom && !left_top && right_top && left_bottom && right_bottom { // excluded  left_top 
+            return 4; 
+        } else if top && left && right && !bottom && left_top && right_top && left_bottom && right_bottom //excluded  bottom
+            || top && left && right && !bottom && left_top && right_top && left_bottom && !right_bottom //excluded right bottom and bottom
+            || top && left && right && !bottom && left_top && right_top && !left_bottom && right_bottom //excluded left bottom and bottom 
+            || top && left && right && !bottom && left_top && right_top && !left_bottom && !right_bottom { //excluded left bottom and left and right bottom
+            return 5;
+        } else if top && left && !right && bottom && left_top && right_top && left_bottom && right_bottom //excluded  right 
+            || top && left && !right && bottom && left_top && right_top && left_bottom && !right_bottom  //excluded right bottom and right
+            || top && left && !right && bottom && left_top && !right_top && left_bottom && right_bottom  //excluded right top and right
+            || top && left && !right && bottom && left_top && !right_top && left_bottom && !right_bottom { //excluded right top and right and right bottom
+            return 6; 
+        } else if top && !left && right && bottom && left_top && right_top && left_bottom && right_bottom //excluded  left
+            || top && !left && right && bottom && !left_top && right_top && left_bottom && right_bottom //excluded left top and left
+            || top && !left && right && bottom && left_top && right_top && !left_bottom && right_bottom //excluded left bottom and left
+            || top && !left && right && bottom && !left_top && right_top && !left_bottom && right_bottom { //left top and left and left bottom
+            return 7;
+        } else if !top && left && right && bottom && left_top && right_top && left_bottom && right_bottom //excluded  top
+            || !top && left && right && bottom && left_top && !right_top && left_bottom && right_bottom //excluded right top and top
+            || !top && left && right && bottom && !left_top && right_top && left_bottom && right_bottom //excluded left top and top
+            || !top && left && right && bottom && !left_top && !right_top && left_bottom && right_bottom { //left top and top and right top
+            return 8;
+        } else if top && left && right && bottom && left_top && right_top && !left_bottom && !right_bottom { // excluded left bottom and right bottom
+            return 9; 
+        } else if top && left && right && bottom && left_top && !right_top && left_bottom && !right_bottom { // excluded right bottom and right top
+            return 10; 
+        } else if top && left && right && bottom && !left_top && right_top && left_bottom && !right_bottom { // exluded right bottom and left top
+            return 11;
+        } else if top && left && right && bottom && !left_top && right_top && !left_bottom && right_bottom { // excluded left bottom and left top
+            return 12;
+        } else if top && left && right && bottom && !left_top && !right_top && left_bottom && right_bottom { // excluded right top and left top
+            return 13;
+        } else if top && left && right && bottom && left_top && !right_top && !left_bottom && right_bottom { // excluded left bottom and right top
+            return 14; 
+        } else if top && !left && right && bottom && left_top && right_top && left_bottom && !right_bottom  // excluded right bottom and left
+            || top && !left && right && bottom && left_top && right_top && !left_bottom && !right_bottom //excluded right bottom and left and left bottom
+            || top && !left && right && bottom && !left_top && right_top && left_bottom && !right_bottom // excluded right bottom and left and left top
+            || top && !left && right && bottom && !left_top && right_top && !left_bottom && !right_bottom { // exluded right bottom and left and left top and left bottom
+            return 15; 
+        } else if !top && left && right && bottom && left_top && right_top && left_bottom && !right_bottom // excluded right bottom and top
+            || !top && left && right && bottom && left_top && !right_top && left_bottom && !right_bottom // excluded right bottom and top and right top
+            || !top && left && right && bottom && !left_top && right_top && left_bottom && !right_bottom // exluded right bottom and top and left top
+            || !top && left && right && bottom && !left_top && !right_top && left_bottom && !right_bottom { // exluded right bottom and top and left top and right top
+            return 16; 
+        } else if top && left && !right && bottom && left_top && right_top && !left_bottom && right_bottom // excluded left bottom and right
+            || top && left && !right && bottom && left_top && right_top && !left_bottom && !right_bottom // excluded left bottom and right and right bottom
+            || top && left && !right && bottom && left_top && !right_top && !left_bottom && right_bottom // exluded left bottom and right and right top
+            || top && left && !right && bottom && left_top && !right_top && !left_bottom && !right_bottom { // exluded left bottom and right and right bottom and right top
+            return 17; 
+        } else if !top && left && right && bottom && left_top && right_top && !left_bottom && right_bottom // excluded left bottom and top
+            || !top && left && right && bottom && !left_top && right_top && !left_bottom && right_bottom // excluded left bottom and top and left top
+            || !top && left && right && bottom && left_top && !right_top && !left_bottom && right_bottom // excluded left bottom and top and right top
+            || !top && left && right && bottom && !left_top && !right_top && !left_bottom && right_bottom { // ecluded left bottom and top and left top and right top
+            return 18; 
+        } else if top && left && right && !bottom && left_top && !right_top && left_bottom && right_bottom // excluded right top and bottom
+            || top && left && right && !bottom && left_top && !right_top && !left_bottom && right_bottom // exlcluded right top and bottom and left bottom
+            || top && left && right && !bottom && left_top && !right_top && left_bottom && !right_bottom // excluded right top and bottom and right bottom
+            || top && left && right && !bottom && left_top && !right_top && !left_bottom && !right_bottom { // exluded right top and bottom and left bottom and right bottom
+            return 19; 
+        } else if top && !left && right && bottom && left_top && !right_top && left_bottom && right_bottom // excluded right top and left
+            || top && !left && right && bottom && !left_top && !right_top && left_bottom && right_bottom // excluded right top and left and left top
+            || top && !left && right && bottom && left_top && !right_top && !left_bottom && right_bottom // exccluded right top and left and left bottom
+            || top && !left && right && bottom && !left_top && !right_top && !left_bottom && right_bottom { // excluded right top and left and left bottom and left top
+            return 20; 
+        } else if top && left && right && !bottom && !left_top && right_top && left_bottom && right_bottom // excluded left top and bottom
+            || top && left && right && !bottom && !left_top && right_top && !left_bottom && right_bottom // excluded left top and bottom and left bottom
+            || top && left && right && !bottom && !left_top && right_top && left_bottom && !right_bottom // excluded left top and bottom and right bottom
+            || top && left && right && !bottom && !left_top && right_top && !left_bottom && !right_bottom { // excluded left top and bottom and right bottom and left bottom
+            return 21; 
+        } else if top && left && !right && bottom && !left_top && right_top && left_bottom && right_bottom  // excluded left top and right
+            || top && left && !right && bottom && !left_top && !right_top && left_bottom && right_bottom // excluded left top and right and right top
+            || top && left && !right && bottom && !left_top && right_top && left_bottom && !right_bottom // excluded left top and right and right bottom
+            || top && left && !right && bottom && !left_top && !right_top && left_bottom && !right_bottom { // excluded left top and right and right top and right bottom
+            return 22; 
+        } else if top && left && !right && !bottom && left_top && right_top && left_bottom && right_bottom // excluded bottom and right
+            || top && left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // excluded bottom and right and right bottom
+            || top && left && !right && !bottom && left_top && right_top && left_bottom && right_bottom // excluded bottom and right and right top
+            || top && left && !right && !bottom && left_top && right_top && !left_bottom && right_bottom // excluded bottom and right and left bottom
+            || top && left && !right && !bottom && left_top && !right_top && left_bottom && !right_bottom // excluded bottom and right and right bottom and right top
+            || top && left && !right && !bottom && left_top && right_top && !left_bottom && !right_bottom // excluded bottom and right and right bottom and left bottom
+            || top && left && !right && !bottom && left_top && !right_top && !left_bottom && right_bottom // excluded bottom and right and left bottom and right top
+            || top && left && !right && !bottom && left_top && !right_top && !left_bottom && !right_bottom { // excluded bottom and right and right top and right bottom and left bottom
+            return 23; 
+        } else if top && !left && right && !bottom && left_top && right_top && left_bottom && right_bottom // excluded bottom and left
+            || top && !left && right && !bottom && left_top && right_top && !left_bottom && right_bottom // excluded bottom and left and left bottom
+            || top && !left && right && !bottom && !left_top && right_top && left_bottom && right_bottom // excluded bottom and left and left top
+            || top && !left && right && !bottom && left_top && right_top && left_bottom && !right_bottom // excluded bottom and left and right bottom
+            || top && !left && right && !bottom && !left_top && right_top && !left_bottom && right_bottom // excluded bottom and left and left bottom and left top
+            || top && !left && right && !bottom && left_top && right_top && !left_bottom && !right_bottom // excluded bottom and left and left bottom and right bottom
+            || top && !left && right && !bottom && !left_top && right_top && left_bottom && !right_bottom // excluded bottom and left and left top and right bottom
+            || top && !left && right && !bottom && !left_top && right_top && !left_bottom && !right_bottom { // excluded bottom and left and left top and right bottom and left bottom
+            return 24; 
+        } else if !top && left && right && !bottom && left_top && right_top && left_bottom && right_bottom // excluded bottom and top
+            || !top && left && right && !bottom && left_top && right_top && left_bottom && !right_bottom // excluded bottom and top and right bottom
+            || !top && left && right && !bottom && left_top && right_top && !left_bottom && right_bottom // excluded bottom and top and left bottom
+            || !top && left && right && !bottom && left_top && !right_top && left_bottom && right_bottom // excluded bottom and top and right top
+            || !top && left && right && !bottom && !left_top && right_top && left_bottom && right_bottom // excluded bottom and top amd left top
+            || !top && left && right && !bottom && left_top && right_top && !left_bottom && !right_bottom // excluded bottom and top and right bottom and left bottom
+            || !top && left && right && !bottom && left_top && !right_top && left_bottom && !right_bottom // excluded bottom and top and right bottom and right top
+            || !top && left && right && !bottom && !left_top && right_top && left_bottom && !right_bottom // excluded bottom and top and right bottom and left top
+            || !top && left && right && !bottom && !left_top && right_top && !left_bottom && right_bottom // excluded bottom and top and left bottom and left top
+            || !top && left && right && !bottom && left_top && !right_top && !left_bottom && right_bottom // excluded bottom and top and left bottom and right top
+            || !top && left && right && !bottom && left_top && !right_top && !left_bottom && !right_bottom // included left top and right and left
+            || !top && left && right && !bottom && !left_top && !right_top && left_bottom && !right_bottom // included left bottom and right and left
+            || !top && left && right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // included right top and right and left
+            || !top && left && right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // included rigth bottom and right and left
+            || !top && left && right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom { // included right and left
+            return 25; 
+        } else if top && !left && !right && bottom && left_top && right_top && left_bottom && right_bottom // excluded left and right
+            || top && !left && !right && bottom && left_top && right_top && left_bottom && !right_bottom // excluded left and right and right bottom
+            || top && !left && !right && bottom && left_top && right_top && !left_bottom && right_bottom // excluded left and right and left bottom
+            || top && !left && !right && bottom && left_top && !right_top && left_bottom && right_bottom // excluded left and right and right top
+            || top && !left && !right && bottom && !left_top && right_top && left_bottom && right_bottom // excluded left and right and left top
+            || top && !left && !right && bottom && left_top && right_top && !left_bottom && !right_bottom // excluded left and right and right bottom and left bottom
+            || top && !left && !right && bottom && left_top && !right_top && left_bottom && !right_bottom // excluded left and right and right bottom and right top
+            || top && !left && !right && bottom && !left_top && right_top && left_bottom && !right_bottom // excluded left and right and right bottom and left top
+            || top && !left && !right && bottom && !left_top && right_top && !left_bottom && right_bottom // excluded left and right and left bottom and left top
+            || top && !left && !right && bottom && left_top && !right_top && !left_bottom && right_bottom // excluded left and right and left bottom and right top
+            || top && !left && !right && bottom && left_top && !right_top && !left_bottom && !right_bottom // include left top and top and bottom
+            || top && !left && !right && bottom && !left_top && !right_top && left_bottom && !right_bottom // include left bottom and top and bottom
+            || top && !left && !right && bottom && !left_top && right_top && !left_bottom && !right_bottom // include right top and top and bottom
+            || top && !left && !right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include right bottom and top and bottom
+            || top && !left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include top and bottom
+            return 26;
+        } else if top && !left && !right && !bottom && left_top && right_top && left_bottom && right_bottom // exclude left and right and bottom
+            || top && !left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and right and bottom and right bottom
+            || top && !left && !right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and right and bottom and left bottom
+            || top && !left && !right && !bottom && left_top && !right_top && left_bottom && right_bottom // exclude left and right and bottom and right top
+            || top && !left && !right && !bottom && !left_top && right_top && left_bottom && right_bottom // exclude left and right and bottom and left top
+            || top && !left && !right && !bottom && left_top && right_top && !left_bottom && !right_bottom // include top and left top and right top
+            || top && !left && !right && !bottom && !left_top && !right_top && left_bottom && right_bottom // include top and left bottom and right bottom
+            || top && !left && !right && !bottom && left_top && !right_top && left_bottom && !right_bottom // include top and left top and left bottom
+            || top && !left && !right && !bottom && !left_top && right_top && !left_bottom && right_bottom // include top and right top and right bottom
+            || top && !left && !right && !bottom && !left_top && right_top && left_bottom && !right_bottom // include top and right top and left bottom
+            || top && !left && !right && !bottom && left_top && !right_top && !left_bottom && right_bottom // include top and left top and right bottom
+            || top && !left && !right && !bottom && left_top && !right_top && !left_bottom && !right_bottom // include top and left top
+            || top && !left && !right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // include top and right top
+            || top && !left && !right && !bottom && !left_top && !right_top && left_bottom && !right_bottom // include top and left bottom
+            || top && !left && !right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include top and right bottom
+            || top && !left && !right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include top
+            return 27;
+        } else if !top && !left && !right && bottom && left_top && right_top && left_bottom && right_bottom // exclude left and right and top
+            || !top && !left && !right && bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and right and top and right bottom
+            || !top && !left && !right && bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and right and top and left bottom
+            || !top && !left && !right && bottom && left_top && !right_top && left_bottom && right_bottom // exclude left and right and top and right top
+            || !top && !left && !right && bottom && !left_top && right_top && left_bottom && right_bottom // exclude left and right and top and left top
+            || !top && !left && !right && bottom && left_top && right_top && !left_bottom && !right_bottom // include bottom and left top and right top
+            || !top && !left && !right && bottom && !left_top && !right_top && left_bottom && right_bottom // include bottom and left bottom and right bottom
+            || !top && !left && !right && bottom && left_top && !right_top && left_bottom && !right_bottom // include bottom and left top and left bottom
+            || !top && !left && !right && bottom && !left_top && right_top && !left_bottom && right_bottom // include bottom and right top and right bottom
+            || !top && !left && !right && bottom && !left_top && right_top && left_bottom && !right_bottom // include bottom and right top and left bottom
+            || !top && !left && !right && bottom && left_top && !right_top && !left_bottom && right_bottom // include bottom and left top and right bottom
+            || !top && !left && !right && bottom && left_top && !right_top && !left_bottom && !right_bottom // include bottom and left top
+            || !top && !left && !right && bottom && !left_top && right_top && !left_bottom && !right_bottom // include bottom and right top
+            || !top && !left && !right && bottom && !left_top && !right_top && left_bottom && !right_bottom // include bottom and left bottom
+            || !top && !left && !right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include bottom and right bottom
+            || !top && !left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include bottom
+            return 28;
+        } else if !top && !left && right && !bottom && left_top && right_top && left_bottom && right_bottom // exclude left and bottom and top
+            || !top && !left && right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and bottom and top and right bottom
+            || !top && !left && right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and bottom and top and left bottom
+            || !top && !left && right && !bottom && left_top && !right_top && left_bottom && right_bottom // exclude left and bottom and top and right top
+            || !top && !left && right && !bottom && !left_top && right_top && left_bottom && right_bottom // exclude left and bottom and top and left top
+            || !top && !left && right && !bottom && left_top && right_top && !left_bottom && !right_bottom // include right and left top and right top
+            || !top && !left && right && !bottom && !left_top && !right_top && left_bottom && right_bottom // include right and left bottom and right bottom
+            || !top && !left && right && !bottom && left_top && !right_top && left_bottom && !right_bottom // include right and left top and left bottom
+            || !top && !left && right && !bottom && !left_top && right_top && !left_bottom && right_bottom // include right and right top and right bottom
+            || !top && !left && right && !bottom && !left_top && right_top && left_bottom && !right_bottom // include right and right top and left bottom
+            || !top && !left && right && !bottom && left_top && !right_top && !left_bottom && right_bottom // include right and left top and right bottom
+            || !top && !left && right && !bottom && left_top && !right_top && !left_bottom && !right_bottom // include right and left top
+            || !top && !left && right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // include right and right top
+            || !top && !left && right && !bottom && !left_top && !right_top && left_bottom && !right_bottom // include right and left bottom
+            || !top && !left && right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include right and right bottom
+            || !top && !left && right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include right
+            return 29;
+        } else if !top && left && !right && !bottom && left_top && right_top && left_bottom && right_bottom // exclude right and bottom and top
+            || !top && left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude right and bottom and top and right bottom
+            || !top && left && !right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude right and bottom and top and left bottom
+            || !top && left && !right && !bottom && left_top && !right_top && left_bottom && right_bottom // exclude right and bottom and top and right top
+            || !top && left && !right && !bottom && !left_top && right_top && left_bottom && right_bottom // exclude right and bottom and top and left top
+            || !top && left && !right && !bottom && left_top && right_top && !left_bottom && !right_bottom // include left and left top and right top
+            || !top && left && !right && !bottom && !left_top && !right_top && left_bottom && right_bottom // include left and left bottom and right bottom
+            || !top && left && !right && !bottom && left_top && !right_top && left_bottom && !right_bottom // include left and left top and left bottom
+            || !top && left && !right && !bottom && !left_top && right_top && !left_bottom && right_bottom // include left and right top and right bottom
+            || !top && left && !right && !bottom && !left_top && right_top && left_bottom && !right_bottom // include left and right top and left bottom
+            || !top && left && !right && !bottom && left_top && !right_top && !left_bottom && right_bottom // include left and left top and right bottom
+            || !top && left && !right && !bottom && left_top && !right_top && !left_bottom && !right_bottom // include left and left top
+            || !top && left && !right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // include left and right top
+            || !top && left && !right && !bottom && !left_top && !right_top && left_bottom && !right_bottom // include left and left bottom
+            || !top && left && !right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include left and right bottom
+            || !top && left && !right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include left
+            return 30;
+        } else if top && left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude right and bottom and right bottom
+            || top && left && !right && !bottom && left_top && right_top && !left_bottom && !right_bottom // exclude right and bottom and right bottom and left bottom
+            || top && left && !right && !bottom && left_top && !right_top && left_bottom && !right_bottom // exclude right and bottom and right bottom and right top
+            || top && left && !right && !bottom && left_top && !right_top && !left_bottom && !right_bottom { // include left and top and left top
+            return 31;
+        } else if !top && left && !right && bottom && left_top && !right_top && left_bottom && right_bottom   // exclude right and top and right top
+            || !top && left && !right && bottom && !left_top && !right_top && left_bottom && right_bottom // exclude right and top and right top and left top
+            || !top && left && !right && bottom && left_top && !right_top && left_bottom && !right_bottom // exclude right and top and right top and right bottom
+            || !top && left && !right && bottom && !left_top && !right_top && left_bottom && !right_bottom {// include left and bottom and left bottom
+            return 32;
+        } else if top && !left && right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and bottom and left bottom
+            || top && !left && right && !bottom && left_top && right_top && !left_bottom && !right_bottom // exclude left and bottom and left bottom and right bottom
+            || top && !left && right && !bottom && !left_top && right_top && !left_bottom && right_bottom // exclude left and bottom and left bottom and left top
+            || top && !left && right && !bottom && !left_top && right_top && !left_bottom && !right_bottom { // include right and top and right top
+            return 33;
+        } else if !top && !left && right && bottom && !left_top && right_top && left_bottom && right_bottom // exclude left and top and left top
+            || !top && !left && right && bottom && !left_top && !right_top && left_bottom && right_bottom // exclude left and top and left top and right top
+            || !top && !left && right && bottom && !left_top && right_top && !left_bottom && right_bottom // exclude left and top and left top and left bottom
+            || !top && !left && right && bottom && !left_top && !right_top && !left_bottom && right_bottom { // include right and bottom and right bottom
+            return 34;
+        } else if top && left && !right && !bottom && !left_top && right_top && left_bottom && right_bottom  // exclude right and bottom and left top
+            || top && left && !right && !bottom && !left_top && right_top && !left_bottom && right_bottom // exclude right and bottom and left top and left bottom
+            || top && left && !right && !bottom && !left_top && right_top && left_bottom && !right_bottom // exclude right and bottom and left top and right bottom
+            || top && left && !right && !bottom && !left_top && !right_top && left_bottom && right_bottom // exclude right and bottom and left top and right top
+            || top && left && !right && !bottom && !left_top && !right_top && left_bottom && !right_bottom // include left and top and left bottom
+            || top && left && !right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include left and top and right bottom
+            || top && left && !right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // include left and top and right top
+            || top && left && !right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include left and top
+            return 35;
+        } else if !top && left && !right && bottom && left_top && right_top && !left_bottom && right_bottom // exclude right and top and left bottom
+            || !top && left && !right && bottom && !left_top && right_top && !left_bottom && right_bottom // exclude right and top and left bottom and left top
+            || !top && left && !right && bottom && left_top && !right_top && !left_bottom && right_bottom // exclude right and top and left bottom and right top
+            || !top && left && !right && bottom && left_top && right_top && !left_bottom && !right_bottom // exclude right and top and left bottom and right bottom
+            || !top && left && !right && bottom && left_top && !right_top && !left_bottom && !right_bottom // include left and bottom and left top
+            || !top && left && !right && bottom && !left_top && right_top && !left_bottom && !right_bottom // include left and bottom and right top
+            || !top && left && !right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include left and bottom and right bottom
+            || !top && left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include left and top
+            return 36;
+        } else if top && !left && right && !bottom && left_top && !right_top && left_bottom && right_bottom // exclude left and bottom and right top
+            || top && !left && right && !bottom && !left_top && !right_top && left_bottom && right_bottom // exclude left and bottom and right top and left top
+            || top && !left && right && !bottom && left_top && !right_top && !left_bottom && right_bottom // exclude left and bottom and right top and left bottom
+            || top && !left && right && !bottom && left_top && !right_top && left_bottom && !right_bottom // exclude left and bottom and right top and right bottom
+            || top && !left && right && !bottom && left_top && !right_top && !left_bottom && !right_bottom // include right and top and left top
+            || top && !left && right && !bottom && !left_top && !right_top && left_bottom && !right_bottom // include right and top and left bottom
+            || top && !left && right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include right and top and right bottom
+            || top && !left && right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include right and top
+            return 37;
+        } else if !top && !left && right && bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and top and right bottom
+            || !top && !left && right && bottom && left_top && right_top && !left_bottom && !right_bottom // exclude left and top and right bottom and left bottom
+            || !top && !left && right && bottom && !left_top && right_top && left_bottom && !right_bottom // exclude left and top and right bottom and left top
+            || !top && !left && right && bottom && left_top && !right_top && left_bottom && !right_bottom // exclude left and top and right bottom and right top
+            || !top && !left && right && bottom && !left_top && !right_top && left_bottom && !right_bottom // include right and bottom and left bottom
+            || !top && !left && right && bottom && left_top && !right_top && !left_bottom && !right_bottom // include right and bottom and left top
+            || !top && !left && right && bottom && !left_top && right_top && !left_bottom && !right_bottom // include right and bottom and right top
+            || !top && !left && right && bottom && !left_top && !right_top && !left_bottom && !right_bottom { // include right and bottom
+            return 38;
+        } else { // exclude left and right and top and bottom and other
+            return 39;
         }
     }
 }

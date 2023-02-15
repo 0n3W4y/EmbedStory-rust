@@ -82,8 +82,8 @@ fn spawn_tilemap_ground(
     .with_children( |parent| {
         let tile_storage = scene.tilemap.get_tilemap_tile_storage();
         for i in 0..tile_storage.len(){
-            let x = tile_storage[ i ].graphic_x;
-            let y = tile_storage[ i ].graphic_y;
+            let x = tile_storage[ i ].graphic_position.x;
+            let y = tile_storage[ i ].graphic_position.y;
             let ground_type = &tile_storage[ i ].ground_type;
 
             let transform = Transform::from_xyz( x as f32, y as f32, 0.0 );
@@ -123,8 +123,8 @@ fn spawn_tilemap_cover(
         let tile_storage = scene.tilemap.get_tilemap_tile_storage();
         let mut rnd = rand::thread_rng();
         for i in 0..tile_storage.len(){
-            let x = tile_storage[ i ].graphic_x;
-            let y = tile_storage[ i ].graphic_y;
+            let x = tile_storage[ i ].graphic_position.x;
+            let y = tile_storage[ i ].graphic_position.y;
             let cover_type = &tile_storage[ i ].cover_type;
 
             if *cover_type == CoverType::None { continue; };
