@@ -3,10 +3,8 @@
         "main_ground": "Earth",
         "main_cover": "Grass",
         "main_cover_filling": 85,
-        "additional_ground": [ "Dirt", "RockEnvironment" ],
-        "additional_ground_value": [ 2.3, 1.0 ],
-        "additional_cover": [ "RockyRoad", "Sand", "Flowers" ],
-        "additional_cover_value": [ 0.2, 0.8, 1.0 ],
+        "additional_ground": [ {"Dirt": 2.3}, {"RockEnvironment": 1.0}],
+        "additional_cover": [ {"RockyRoad": 0.2}, {"Sand": 0.8}, {"Flowers": 1.0} ],
         "rivers": {
             "liquid_river": [ 
                 {
@@ -61,24 +59,14 @@
         "objects": {
             "things":{
                 "natural_things" :[
-                    "Tree",
-                    "FertileTree",
-                    "Bush",
-                    "FertileBush",
-                    "Log",
-                    "Boulder",
-                    "CopperOre",
-                    "IronOre"
-                ],
-                "natural_things_value":[
-                    10.0,
-                    0.5,
-                    15.0,
-                    0.5,
-                    1.0,
-                    1.0,
-                    15.0,
-                    15.0
+                    {"Tree": 10.0},
+                    {"FertileTree": 0.5},
+                    {"Bush": 15.0},
+                    {"FertileBush": 0.5},
+                    {"Log": 1.0},
+                    {"Boulder": 1.0},
+                    {"CopperOre": 15.0},
+                    {"IronOre": 15.0}
                 ]
             }
         }

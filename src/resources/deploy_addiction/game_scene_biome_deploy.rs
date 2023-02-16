@@ -1,6 +1,7 @@
 use serde::{ Deserialize };
 use std::fs::File;
 use std::io::prelude::*;
+use std::collections::HashMap;
 
 use crate::{scenes::game_scenes::tilemap::tile::{ GroundType, CoverType }, resources::scene_data::objects::thing::ThingType};
 
@@ -20,9 +21,8 @@ pub struct Biome{
     pub main_ground: GroundType,
     pub main_cover: CoverType,
     pub main_cover_filling: u8,
-    pub additional_ground: Vec<GroundType>,
-    pub additional_ground_value: Vec<f32>,
-    pub additional_cover: Vec<CoverType>,
+    pub additional_ground: HashMap<GroundType, f32>,
+    pub additional_cover: HashMap<CoverType, f32>,
     pub additional_cover_value: Vec<f32>,
     pub rivers: Rivers,
     pub spots: Spots,
@@ -86,8 +86,7 @@ pub struct BiomeObjects{
 
 #[derive( Deserialize, Clone, Debug )]
 pub struct BiomeThings{
-    pub natural_things: Vec<ThingType>,
-    pub natural_things_value: Vec<f32>,
+    pub natural_things: HashMap<ThingType, f32>,
 }
 
 

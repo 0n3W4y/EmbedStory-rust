@@ -2,97 +2,325 @@
     "rock":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 900}
+        "body_parts": {"Tosrso": 900},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
 
     "tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": -20}, {"Electric": 90}, {"Kinetic": 10}, {"Laser": 0}, {"Plasma": 5}],
-        "body_parts": {"Tosrso": 400}
+        "body_parts": {"Tosrso": 400},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor",
+            "Walk"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof"
+        ],
+        "tile_movement_ratio": 500
     },
     "fertile_tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": -20}, {"Electric": 90}, {"Kinetic": 10}, {"Laser": 0}, {"Plasma": 5}],
-        "body_parts": {"Tosrso": 350}
+        "body_parts": {"Tosrso": 350},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor",
+            "Walk"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof"            
+        ],
+        "tile_movement_ratio": 500
     },
     "bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": -30}, {"Electric": 90}, {"Kinetic": 0}, {"Laser": 0}, {"Plasma": 5}],
-        "body_parts": {"Tosrso": 200}
+        "body_parts": {"Tosrso": 200},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor",
+            "Walk"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof"
+        ],
+        "tile_movement_ratio": 400
     },
     "fertile_bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": -30}, {"Electric": 90}, {"Kinetic": 0}, {"Laser": 0}, {"Plasma": 5}],
-        "body_parts": {"Tosrso": 150}
+        "body_parts": {"Tosrso": 150},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 400
     },
     "boulder":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 400}
+        "body_parts": {"Tosrso": 400},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor",
+            "Walk"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof"
+        ],
+        "tile_movement_ratio": 500
     },
     "log":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 300}
+        "body_parts": {"Tosrso": 300},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor",
+            "Walk"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof"
+        ],
+        "tile_movement_ratio": 600
     },
     "copper_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 900}
+        "body_parts": {"Tosrso": 900},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "iron_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 900}
+        "body_parts": {"Tosrso": 900},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "wooden_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 650}
+        "body_parts": {"Tosrso": 650},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "stone_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1100}
+        "body_parts": {"Tosrso": 1100},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "iron_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1500}
+        "body_parts": {"Tosrso": 1500},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "steel_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1800}
+        "body_parts": {"Tosrso": 1800},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "wooden_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 500}
+        "body_parts": {"Tosrso": 500},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "reinforced_wooden_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 750}
+        "body_parts": {"Tosrso": 750},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "iron_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1200}
+        "body_parts": {"Tosrso": 1200},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "reinforced_iron_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1500}
+        "body_parts": {"Tosrso": 1500},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "steel_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1500}
+        "body_parts": {"Tosrso": 1500},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     },
     "reinforced_steel_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
-        "body_parts": {"Tosrso": 1900}
+        "body_parts": {"Tosrso": 1900},
+        "tile_allow_permissions": [
+            "PlaceFloor", 
+            "PlaceStuff", 
+            "PlaceThing", 
+            "RemoveFloor"
+            ],
+        "tile_deny_permissions": [
+            "Fog", 
+            "Roof",
+            "Walk"
+        ],
+        "tile_movement_ratio": 0
     }
 }

@@ -1,5 +1,6 @@
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::vec;
 
 pub mod tile;
@@ -95,7 +96,6 @@ impl Tilemap {
         self.generate_ground(&biome_setting.main_ground, deploy);
         self.generate_additional_ground(
             &biome_setting.additional_ground,
-            &biome_setting.additional_ground_value,
             deploy,
         );
 
@@ -106,7 +106,6 @@ impl Tilemap {
         );
         self.generate_additional_cover(
             &biome_setting.additional_cover,
-            &biome_setting.additional_cover_value,
             deploy,
         );
 
@@ -150,19 +149,13 @@ impl Tilemap {
 
     fn generate_additional_ground(
         &mut self,
-        additional_ground_type: &Vec<GroundType>,
-        additional_ground_type_value: &Vec<f32>,
+        additional_ground: &HashMap<GroundType, f32>,
         deploy: &Deploy,
     ) {
-        if additional_ground_type.len() != additional_ground_type_value.len() {
-            panic!( "ground_tilemap.generate_additional_ground. Wrong cofiguration in JSON two vectors not equal" );
-        }
-
-        let additional_ground_length: usize = additional_ground_type.len();
         let mut rng = rand::thread_rng();
-        for i in 0..additional_ground_length {
-            let percent: f32 = additional_ground_type_value[i];
-            let ground_type = additional_ground_type[i].clone();
+        for (key, value) in additional_ground.iter() {
+            let percent: f32 = *value;
+            let ground_type = key.clone();
             let mut remain_tiles: usize = (self.total_tiles as f32 * percent / 100.0) as usize; //how manu tiles need to be created;
             let mut max_width = (self.tilemap_width * 5 / 100) as u16; // 5% of tilemap width;
             if max_width < 5 {
@@ -239,19 +232,13 @@ impl Tilemap {
 
     fn generate_additional_cover(
         &mut self,
-        additional_cover_type: &Vec<CoverType>,
-        additional_cover_type_value: &Vec<f32>,
+        additional_cover: &HashMap<CoverType, f32>,
         deploy: &Deploy,
     ) {
-        if additional_cover_type.len() != additional_cover_type_value.len() {
-            panic!( "ground_tilemap.generate_additional_cover. Wrong JSON file, two vectors are not equal" );
-        }
-
-        let additional_cover_num: usize = additional_cover_type.len();
         let mut rng = rand::thread_rng();
-        for i in 0..additional_cover_num {
-            let percent: f32 = additional_cover_type_value[i];
-            let cover_type: CoverType = additional_cover_type[i].clone();
+        for (key, value) in additional_cover.iter() {
+            let percent: f32 = *value;
+            let cover_type: CoverType = key.clone();
             let mut remain_tiles: usize = (self.total_tiles as f32 * percent / 100.0) as usize;
 
             let mut max_width = (self.tilemap_width * 5 / 100) as u16; // 5% of tilemap width;

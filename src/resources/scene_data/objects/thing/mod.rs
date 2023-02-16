@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::resources::scene_data::objects::body_part::BodyPart;
 use crate::resources::scene_data::objects::resists::Resist;
-use crate::scenes::game_scenes::tilemap::tile::Position;
+use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
 
 use super::body_part::BodyPartType;
 
@@ -46,7 +46,10 @@ pub enum ThingType {
 pub struct ThingConfig {
     pub permissions: Vec<ThingPermissions>,
     pub resists: Vec<Resist>,
-    pub body_struct: HashMap<BodyPartType, i16>
+    pub body_struct: HashMap<BodyPartType, i16>,
+    pub tile_allow_permissions: Vec<TilePermissions>,
+    pub tile_deny_permissions: Vec<TilePermissions>,
+    pub movement_ratio: u16
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
