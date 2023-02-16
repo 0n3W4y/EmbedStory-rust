@@ -3,6 +3,7 @@ use rand::Rng;
 
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions};
+use crate::scenes::game_scenes::tilemap::Tilemap;
 
 use super::deploy::Deploy;
 use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
@@ -22,16 +23,16 @@ impl ObjectManager {
         let id = self.create_id();
         let config = deploy.objects_deploy.get_config(thing_type);
 
-        let mut thing = Thing{
-            id, 
+        let mut thing = Thing {
+            id,
             thing_type: thing_type.clone(),
             permissions: config.permissions.to_vec(),
             resists: config.resists.to_vec(),
-            resists_cache : config.resists.to_vec(),
+            resists_cache: config.resists.to_vec(),
             ..Default::default()
         };
-       
-        for ( bodypart_type, hp ) in config.body_struct.iter(){
+
+        for (bodypart_type, hp) in config.body_struct.iter() {
             let mut body_part = BodyPart {
                 bodypart_type: bodypart_type.clone(),
                 ..Default::default()
@@ -40,33 +41,38 @@ impl ObjectManager {
 
             thing.body_structure.push(body_part);
         }
-        
 
         return thing;
     }
 
-    pub fn create_thing_on_tile(&self, thing_type: &ThingType, tile: &mut Tile, deploy: &Deploy) -> Thing{
+    pub fn create_thing_on_tile(
+        &mut self,
+        thing_type: &ThingType,
+        tile: &mut Tile,
+        deploy: &Deploy,
+    ) -> Thing {
         let mut thing = self.create_thing(thing_type, deploy);
         let config = deploy.objects_deploy.get_config(thing_type);
-        let mut allow_tile_permissions:Vec<TilePermissions> = config.tile_allow_permissions.to_vec();
-        let mut deny_tile_permissions: Vec<TilePermissions> = config.tile_deny_permissions.to_vec();
-        let mut movement_ratio = config.movement_ratio;
+        let allow_tile_permissions: Vec<TilePermissions> = config.tile_allow_permissions.to_vec();
+        let deny_tile_permissions: Vec<TilePermissions> = config.tile_deny_permissions.to_vec();
 
-        for permission in deny_tile_permissions.into_iter(){
-            let index = tile.permissions.into_iter().position(|x|{ x == permission});
-            match index{
-                Option::Some(v) => {tile.permissions.remove(v);},
-                Option::None => {},
+        for permission in deny_tile_permissions.iter() {
+            let index = tile.permissions.iter().position(|x| x == permission);
+            match index {
+                Option::Some(v) => {
+                    tile.permissions.remove(v);
+                }
+                Option::None => {}
             };
-        };
+        }
 
-        for permission in allow_tile_permissions.into_iter(){
-            let index = tile.permissions.into_iter().position(|x|{ x == permission});
-            match index{ 
-                Option::Some(_) =>{},
-                Option::None => tile.permissions.push(permission)
+        for permission in allow_tile_permissions.iter() {
+            let index = tile.permissions.iter().position(|x| x == permission);
+            match index {
+                Option::Some(_) => {}
+                Option::None => tile.permissions.push(permission.clone()),
             };
-        };
+        }
 
         thing.position.x = tile.position.x;
         thing.position.y = tile.position.y;
@@ -79,7 +85,7 @@ impl ObjectManager {
 
     fn generate_rocks_for_scene(&mut self, scene: &mut GameScene, deploy: &Deploy) {
         let tilemap = &mut scene.tilemap;
-        let tile_storage = tilemap.get_tilemap_tile_storage();
+        let tile_storage = tilemap.get_tilemap_tile_storage_mut();
 
         for tile in tile_storage.iter_mut() {
             let ground_type: &GroundType = &tile.ground_type;
@@ -90,6 +96,7 @@ impl ObjectManager {
                 scene.things.push(thing);
             }
         }
+
     }
 
     pub fn generate_things_for_scene(
@@ -105,20 +112,15 @@ impl ObjectManager {
                 ThingType::Rock => self.generate_rocks_for_scene(scene, deploy),
                 ThingType::CopperOre | ThingType::IronOre => {
                     self.generate_ores_for_scene(scene, deploy, key, *percent);
+                },
+                _ => {
+                    self.generate_other_things_for_scene(scene, deploy, key, *percent);
                 }
-                ThingType::Tree 
-                    | ThingType::FertileTree
-                    | ThingType::Bush
-                    | ThingType::FertileBush => {self.generate_other_things_for_scene(
-                    scene,
-                    deploy,
-                    key,
-                    *percent
-
-                );},
-                _ => {}
             }
         }
+
+        //after all, spread indexes for all things we create
+        self.spread_indexes_for_things( &mut scene.things, &scene.tilemap );
     }
 
     pub fn generate_pattern_things_for_scene(&self, scene: &mut GameScene, deploy: &Deploy) {
@@ -141,66 +143,60 @@ impl ObjectManager {
         let tilemap_total_tiles = tilemap.get_total_tiles();
         let tilemap_width = tilemap.get_tilemap_width();
         let tilemap_height = tilemap.get_tilemap_height();
-        let total_objects = (tilemap_total_tiles as f32 * thing_type_percent / 100.0) as usize;
-        let tile_size = tilemap.get_tile_size();
+        let half_tilemap_width = tilemap_width / 2;
+        let half_tilemap_height = tilemap_height / 2;
+        let mut total_objects = (tilemap_total_tiles as f32 * thing_type_percent / 100.0) as usize;
 
         if total_objects >= (tilemap_total_tiles / 2) {
             println!( "object_manager.generate_other_thing_for_scene. Warning! Total things '{:?}' most than 50% of total tiles in tilemap", thing_type );
         };
 
-        let mut number = 0; //count how many things r generated in tilemap;
-        while total_objects > number {
-            let random_x: i32 = rng.gen_range(0..(tilemap_width as i32 + 1));
-            let random_y: i32 = rng.gen_range(0..(tilemap_height as i32 + 1));
-            let tile_index: usize = (random_y * tilemap_height as i32 + random_x) as usize;
-            let tile = tilemap.get_tile_by_index(tile_index);
+        let mut number = 0; //protction fro endless loop;
+        while total_objects > 0 {
+            let start_range_x = -(half_tilemap_width as i32);
+            let end_range_x = half_tilemap_width as i32;
+            let random_x: i32 = rng.gen_range(start_range_x..end_range_x);
+
+            let start_range_y = -(half_tilemap_height as i32);
+            let end_range_y = half_tilemap_height as i32;
+            let random_y: i32 = rng.gen_range(start_range_y..end_range_y);
+
+            let tile_index: usize = ((random_y + half_tilemap_height as i32)* tilemap_height as i32 + (random_x + half_tilemap_width as i32)) as usize;
+            let tile = tilemap.get_tile_by_index_mut(tile_index);
 
             //check for thing in current tile
-            if tile.thing_type.0 != Option::None && matches!(tile.permissions.into_iter().find(|&x|{ x == TilePermissions::PlaceThing}), Some(TilePermissions::PlaceThing)) {
-                number += 1;
-
-                let mut thing = self.generate_thing(thing_type, deploy);
-                thing.position.x = random_x;
-                thing.position.y = random_y;
-                thing.graphic_position.x = random_x as f32 * tile_size as f32;
-                thing.graphic_position.y = random_y as f32 * tile_size as f32;
-
-                let tilemap_storage: &Vec<Tile> = tilemap.get_tilemap_tile_storage();
-                thing.graphic_index = self.get_thing_graphic_index(
-                    tilemap_storage,
-                    tilemap_height,
-                    tilemap_total_tiles,
-                    random_x,
-                    random_y,
-                    thing_type,
-                );
-
-                let tile_mut = tilemap.get_tile_by_index_mut(tile_index);
-                tile_mut.thing_type = (Some(thing_type.clone()), thing.id);
-                let not_allowed_permissions = vec![
-                    TilePermissions::PlaceFloor, 
-                    TilePermissions::PlaceStuff, 
-                    TilePermissions::PlaceThing, 
-                    TilePermissions::RemoveFloor,
-                    ];
-                let allowed_permisisions = vec![
-                    TilePermissions::Fog, 
-                    TilePermissions::Roof,
-                    TilePermissions::Walk
-                    ];
-                tile_mut.can_place_floor = false;
-                tile_mut.can_place_thing = false;
-                tile_mut.can_place_stuff = false;
-                //tile.movement_ratio = 400; TODO: add this into config;
-
+            if tile.thing_type.0 != Option::None
+                && matches!(
+                    tile.permissions
+                        .iter()
+                        .find(|&x| { *x == TilePermissions::PlaceThing }),
+                    Some(TilePermissions::PlaceThing)
+                )
+            {   
+                let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
+                thing.index = scene.things.len();
                 scene.things.push(thing);
+                total_objects -= 1;
             } else {
-                continue;
+                number += 1;
+                total_objects += 1;
+                if 10 <= number { // protect from endless loop, too much objects on tilamp;
+                    println!("object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'", thing_type );
+                    break;
+                };
+
             }
         }
     }
 
-    fn generate_ores_for_scene(&mut self, scene: &mut GameScene, deploy: &Deploy, thing_type: &ThingType, percent: f32) {}
+    fn generate_ores_for_scene(
+        &mut self,
+        scene: &mut GameScene,
+        deploy: &Deploy,
+        thing_type: &ThingType,
+        percent: f32,
+    ) {
+    }
 
     fn create_id(&mut self) -> usize {
         let id = self.id;
@@ -208,98 +204,132 @@ impl ObjectManager {
         return id;
     }
 
-    pub fn get_thing_graphic_index(
+    fn spread_indexes_for_things( &self, thing_storage: &mut Vec<Thing>, tilemap: &Tilemap ){
+        for thing in thing_storage.iter_mut(){
+            match thing.thing_type {
+                ThingType::CopperOre 
+                | ThingType::IronOre 
+                | ThingType::IronWall 
+                | ThingType::Rock 
+                | ThingType::SteelWall 
+                | ThingType::StoneWall 
+                | ThingType::WoodenWall => {
+                    let index = self.find_graphic_index_for_thing(tilemap, thing.position.x, thing.position.y, &thing.thing_type);
+                    thing.graphic_index = index;
+                },
+                _ => {}
+            }
+            
+        }
+    }
+
+    pub fn find_graphic_index_for_thing(
         &self,
-        tile_storage: &Vec<Tile>,
-        tilemap_height: u16,
-        tilemap_total_tiles: usize,
-        x: u16,
-        y: u16,
+        tilemap: &Tilemap,
+        x: i32,
+        y: i32,
         thing_type: &ThingType,
     ) -> u8 {
-        match thing_type {
-            ThingType::Rock => {
-                let top_index = ((y - 1) * tilemap_height + x) as isize;
-                let left_index = (y * tilemap_height + (x - 1)) as isize;
-                let right_index = (y * tilemap_height + (x + 1)) as isize;
-                let bot_index = ((y + 1) * tilemap_height + x) as isize;
+        let tile_storage = tilemap.get_tilemap_tile_storage();
+        let tilemap_width = tilemap.get_tilemap_width();
+        let tilemap_height = tilemap.get_tilemap_height();
+        let tilemap_total_tiles = tilemap.get_total_tiles();
+        let half_tilemap_width = tilemap_width / 2;
+        let half_tilemap_height = tilemap_height / 2;
 
-                let top: bool = if top_index < 0 || top_index >= tilemap_total_tiles as isize {
-                    false
-                } else {
-                    if tile_storage[top_index as usize].ground_type == GroundType::Rock {
-                        true
-                    } else {
-                        false
+        let top_index: i32 = (y + 1 + half_tilemap_height as i32) * tilemap_height as i32
+            + x
+            + half_tilemap_width as i32;
+
+        let left_top_index: i32 = (y + 1 + half_tilemap_height as i32) * tilemap_height as i32 
+            + x
+            - 1
+            + half_tilemap_width as i32;
+
+        let left_index: i32 = (y + half_tilemap_height as i32) * tilemap_height as i32 
+            + x 
+            - 1
+            + half_tilemap_width as i32;
+
+        let right_top_index: i32 = (y + 1 + half_tilemap_height as i32) * tilemap_height as i32
+            + 1
+            + x
+            + half_tilemap_width as i32;
+
+        let right_index: i32 = (y + half_tilemap_height as i32) * tilemap_height as i32
+            + x
+            + 1
+            + half_tilemap_width as i32;
+
+        let bottom_index: i32 = (y - 1 + half_tilemap_height as i32) * tilemap_height as i32
+            + x
+            + half_tilemap_width as i32;
+
+        let left_bottom_index: i32 =(y - 1 + half_tilemap_height as i32) * tilemap_height as i32 
+            + x 
+            - 1
+            + half_tilemap_width as i32;
+
+        let right_bottom_index: i32 = (y - 1 + half_tilemap_height as i32) * tilemap_height as i32
+            + x
+            + 1
+            + half_tilemap_width as i32;
+
+        let vec_of_indexes = vec![
+            top_index,
+            left_top_index,
+            left_index,
+            right_top_index,
+            right_index,
+            bottom_index,
+            left_bottom_index,
+            right_bottom_index,
+        ];
+
+        let mut vec_of_bool: Vec<bool> = vec![];
+
+        for index in vec_of_indexes.iter() {
+            let new_bool = if *index < 0 || *index as usize >= tilemap_total_tiles {
+                false
+            } else {
+                match tile_storage[*index as usize].thing_type.0 {
+                    Option::Some(v) => {
+                        match *thing_type {
+                            ThingType::Rock | ThingType::CopperOre | ThingType::IronOre => {
+                                if v == ThingType::Rock 
+                                    || v == ThingType::CopperOre
+                                    || v == ThingType::IronOre {
+                                        true
+                                } else {
+                                    false
+                                }
+                            },
+                            ThingType::IronWall | ThingType::SteelWall | ThingType::WoodenWall | ThingType::StoneWall => {
+                                if v == ThingType::IronWall
+                                    || v == ThingType::SteelWall
+                                    || v == ThingType::WoodenWall
+                                    || v == ThingType::StoneWall {
+                                        true
+                                } else {
+                                    false
+                                }
+                            },
+                            _ => {
+                                if v == *thing_type {
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                        }
                     }
-                };
-
-                let left: bool = if left_index < 0 || left_index >= tilemap_total_tiles as isize {
-                    false
-                } else {
-                    if tile_storage[left_index as usize].ground_type == GroundType::Rock {
-                        true
-                    } else {
-                        false
-                    }
-                };
-
-                let right: bool = if right_index < 0 || right_index >= tilemap_total_tiles as isize
-                {
-                    false
-                } else {
-                    if tile_storage[right_index as usize].ground_type == GroundType::Rock {
-                        true
-                    } else {
-                        false
-                    }
-                };
-
-                let bottom: bool = if bot_index < 0 || bot_index >= tilemap_total_tiles as isize {
-                    false
-                } else {
-                    if tile_storage[bot_index as usize].ground_type == GroundType::Rock {
-                        true
-                    } else {
-                        false
-                    }
-                };
-
-                if top && left && right && bottom {
-                    return 0; // all
-                } else if top && left && right && !bottom {
-                    return 1; // top + left + right;
-                } else if top && left && !right && bottom {
-                    return 2; // top + left + bottom;
-                } else if top && !left && right && bottom {
-                    return 3; // top + right + bottom;
-                } else if !top && left && right && bottom {
-                    return 4; // left + right + bottom;
-                } else if top && !left && !right && bottom {
-                    return 5; // top + bottom;
-                } else if !top && left && right && !bottom {
-                    return 6; // left + right;
-                } else if top && left && !right && !bottom {
-                    return 7; // top + left;
-                } else if top && !left && right && !bottom {
-                    return 8; // top + right;
-                } else if !top && left && !right && bottom {
-                    return 9; // left + bottom;
-                } else if !top && !left && right && bottom {
-                    return 10; // right + bottom;
-                } else if top && !left && !right && !bottom {
-                    return 11; // top;
-                } else if !top && left && !right && !bottom {
-                    return 12; // left;
-                } else if !top && !left && right && !bottom {
-                    return 13; // right;
-                } else if !top && !left && !right && bottom {
-                    return 14; // bottom;
-                } else {
-                    return 15; // alone;
+                    Option::None => false,
                 }
-            }
-            _ => 0,
+            };
+
+            vec_of_bool.push(new_bool);
         }
+
+        return tilemap.get_index_for_graphic_placement(vec_of_bool);
     }
 }

@@ -18,7 +18,7 @@ pub enum ThingPermissions{
 
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Copy, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Copy, Default, Hash)]
 pub enum ThingType {
     #[default]
     Tree,
@@ -66,16 +66,6 @@ pub struct Thing {
     pub resists_cache: Vec<Resist>,
     pub body_structure: Vec<BodyPart>,
 
-    current_health_points: i16,
-    total_health_points: i16
-}
-
-impl Thing {
-    pub fn get_current_health_points(&self) -> i16 {
-        return self.current_health_points;
-    }
-
-    pub fn get_total_health_points(&self) -> i16 {
-        return self.total_health_points;
-    }
+    pub current_health_points: i16,
+    pub total_health_points: i16
 }

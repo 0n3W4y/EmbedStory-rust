@@ -16,7 +16,7 @@ pub enum TilePermissions{
     Fog
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default, Hash)]
 pub enum GroundType {
     #[default]
     Earth,
@@ -27,7 +27,7 @@ pub enum GroundType {
     Clay,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default, Hash)]
 pub enum CoverType {
     #[default]
     None,
