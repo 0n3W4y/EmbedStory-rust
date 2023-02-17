@@ -22,7 +22,7 @@ pub struct Tilemap {
 }
 
 impl Tilemap {
-    pub fn new() -> Tilemap {
+    pub fn new() -> Self {
         return Tilemap {
             tile_size: 0,
             tilemap_width: 0,

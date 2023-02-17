@@ -166,7 +166,7 @@ fn cleanup(
     mut commands: Commands, 
     scene_data: Res<GameSceneData>, 
     mut scene_manager: ResMut<SceneManager>, 
-    scene: Res<GameScene> 
+    scene: Res<GameScene>
 ){
     let old_scene = scene_manager.get_ground_scene_by_id( scene.scene_id );
     *old_scene = scene.clone(); // copy and paste scene into scene_manager;

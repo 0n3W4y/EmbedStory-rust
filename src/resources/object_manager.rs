@@ -79,7 +79,7 @@ impl ObjectManager {
         thing.graphic_position.x = tile.graphic_position.x;
         thing.graphic_position.y = tile.graphic_position.y;
 
-        tile.thing_type = (Some(ThingType::Rock), thing.id);
+        tile.thing_type = Some((ThingType::Rock, thing.id));
         return thing;
     }
 
@@ -165,26 +165,23 @@ impl ObjectManager {
             let tile = tilemap.get_tile_by_index_mut(tile_index);
 
             //check for thing in current tile
-            if tile.thing_type.0 != Option::None
-                && matches!(
-                    tile.permissions
-                        .iter()
-                        .find(|&x| { *x == TilePermissions::PlaceThing }),
-                    Some(TilePermissions::PlaceThing)
-                )
-            {   
+            if matches!(
+                tile.permissions
+                    .iter()
+                    .find(|&x| {x == &TilePermissions::PlaceThing}),
+                Some(TilePermissions::PlaceThing)
+            ){
                 let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
                 thing.index = scene.things.len();
                 scene.things.push(thing);
                 total_objects -= 1;
-            } else {
+            }else{
                 number += 1;
                 total_objects += 1;
                 if 10 <= number { // protect from endless loop, too much objects on tilamp;
                     println!("object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'", thing_type );
                     break;
                 };
-
             }
         }
     }
@@ -196,6 +193,41 @@ impl ObjectManager {
         thing_type: &ThingType,
         percent: f32,
     ) {
+        let mut rng = rand::thread_rng();
+        let mut rock_thing_storage: Vec<(&Thing, usize)> = vec![];
+
+        // collect all things with type "rock" into vec;
+        for i in 0..scene.things.len(){
+            let thing = &scene.things[i];
+            if thing.thing_type == ThingType::Rock {
+                rock_thing_storage.push((thing, i));
+            };
+        }
+
+        let max_things = rock_thing_storage.len();
+        let mut max_ore_things = (max_things as f32 * percent / 100.0) as usize;
+
+        if max_things <= max_ore_things{
+            println!(
+                "object_manager.generate_ores_for_scene. Break generation of '{:?}', because no all things in map '{:?}' < '{:?}' ore things in biome",
+                thing_type,
+                max_things,
+                max_ore_things
+                );
+            return;
+        }
+
+
+        while max_ore_things > 0 {
+            let random_index = rng.gen_range(0..rock_thing_storage.len());
+            let thing_index_to_replace = rock_thing_storage[random_index].1;
+            let rock_thing = &things_storage[thing_index_to_replace];
+            let mut ore_thing = self.create_thing(thing_type, deploy);
+            let tile = scene.tilemap.get_tile_by_index_mut(value);
+        }
+        //TODO:: получить лен() получить thing, попнуть его из вектора, повторить в while.
+
+
     }
 
     fn create_id(&mut self) -> usize {
