@@ -160,6 +160,15 @@ fn spawn_tilemap_cover(
     scene_data.tilemap_cover_layer = Some( cover_tiles );
 }
 
+fn spawn_things(
+    mut commands: Commands,
+    scene: Res<GameScene>,
+    mut scene_data: ResMut<GameSceneData>,
+    material_manager: Res<MaterialManager>,
+) {
+    var something;
+}
+
 fn update(){}
 
 fn cleanup(

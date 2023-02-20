@@ -56,7 +56,7 @@ pub struct ThingConfig {
 pub struct Thing {
     pub id: usize,
     pub index: usize, // in Scene Vec<Things>,
-    pub tile_binding: usize, // index of tile in vec on tilemap for fast get; because all tiles r static in tilemap vec;
+    pub tile_index: usize, // index of tile in vec on tilemap for fast get; because all tiles r static in tilemap vec;
     pub thing_type: ThingType,
     pub position: Position<i32>,
     pub graphic_position: Position<f32>,

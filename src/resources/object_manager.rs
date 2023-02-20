@@ -194,13 +194,12 @@ impl ObjectManager {
         percent: f32,
     ) {
         let mut rng = rand::thread_rng();
-        let mut rock_thing_storage: Vec<(&Thing, usize)> = vec![];
+        let mut rock_thing_storage: Vec<usize> = vec![];
 
         // collect all things with type "rock" into vec;
         for i in 0..scene.things.len(){
-            let thing = &scene.things[i];
-            if thing.thing_type == ThingType::Rock {
-                rock_thing_storage.push((thing, i));
+            if scene.things[i].thing_type == ThingType::Rock {
+                rock_thing_storage.push(i);
             };
         }
 
@@ -209,7 +208,7 @@ impl ObjectManager {
 
         if max_things <= max_ore_things{
             println!(
-                "object_manager.generate_ores_for_scene. Break generation of '{:?}', because no all things in map '{:?}' < '{:?}' ore things in biome",
+                "object_manager.generate_ores_for_scene. Break generation of '{:?}', because all things in map '{:?}' <= '{:?}' ore things in biome config",
                 thing_type,
                 max_things,
                 max_ore_things
@@ -217,15 +216,18 @@ impl ObjectManager {
             return;
         }
 
-
         while max_ore_things > 0 {
             let random_index = rng.gen_range(0..rock_thing_storage.len());
-            let thing_index_to_replace = rock_thing_storage[random_index].1;
-            let rock_thing = &things_storage[thing_index_to_replace];
-            let mut ore_thing = self.create_thing(thing_type, deploy);
-            let tile = scene.tilemap.get_tile_by_index_mut(value);
+            let thing_index_to_replace = rock_thing_storage[random_index];
+            let tile_index_to_replace = scene.things[thing_index_to_replace].tile_index;
+            let tile = scene.tilemap.get_tile_by_index_mut(tile_index_to_replace);
+            let mut ore_thing = self.create_thing_on_tile( thing_type, tile, deploy);
+            
+            ore_thing.graphic_index = scene.things[thing_index_to_replace].graphic_index;
+            ore_thing.index = scene.things[thing_index_to_replace].index;
+            scene.things[thing_index_to_replace] = ore_thing;
+            max_ore_things -= 1;
         }
-        //TODO:: получить лен() получить thing, попнуть его из вектора, повторить в while.
 
 
     }
@@ -324,8 +326,8 @@ impl ObjectManager {
             let new_bool = if *index < 0 || *index as usize >= tilemap_total_tiles {
                 false
             } else {
-                match tile_storage[*index as usize].thing_type.0 {
-                    Option::Some(v) => {
+                match tile_storage[*index as usize].thing_type {
+                    Option::Some((v, _)) => {
                         match *thing_type {
                             ThingType::Rock | ThingType::CopperOre | ThingType::IronOre => {
                                 if v == ThingType::Rock 
