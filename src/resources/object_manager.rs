@@ -96,7 +96,6 @@ impl ObjectManager {
                 scene.things.push(thing);
             }
         }
-
     }
 
     pub fn generate_things_for_scene(
@@ -112,7 +111,7 @@ impl ObjectManager {
                 ThingType::Rock => self.generate_rocks_for_scene(scene, deploy),
                 ThingType::CopperOre | ThingType::IronOre => {
                     self.generate_ores_for_scene(scene, deploy, key, *percent);
-                },
+                }
                 _ => {
                     self.generate_other_things_for_scene(scene, deploy, key, *percent);
                 }
@@ -120,7 +119,7 @@ impl ObjectManager {
         }
 
         //after all, spread indexes for all things we create
-        self.spread_indexes_for_things( &mut scene.things, &scene.tilemap );
+        self.spread_indexes_for_things(&mut scene.things, &scene.tilemap);
     }
 
     pub fn generate_pattern_things_for_scene(&self, scene: &mut GameScene, deploy: &Deploy) {
@@ -161,24 +160,27 @@ impl ObjectManager {
             let end_range_y = half_tilemap_height as i32;
             let random_y: i32 = rng.gen_range(start_range_y..end_range_y);
 
-            let tile_index: usize = ((random_y + half_tilemap_height as i32)* tilemap_height as i32 + (random_x + half_tilemap_width as i32)) as usize;
+            let tile_index: usize =
+                ((random_y + half_tilemap_height as i32) * tilemap_height as i32
+                    + (random_x + half_tilemap_width as i32)) as usize;
             let tile = tilemap.get_tile_by_index_mut(tile_index);
 
             //check for thing in current tile
             if matches!(
                 tile.permissions
                     .iter()
-                    .find(|&x| {x == &TilePermissions::PlaceThing}),
+                    .find(|&x| { x == &TilePermissions::PlaceThing }),
                 Some(TilePermissions::PlaceThing)
-            ){
+            ) {
                 let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
                 thing.index = scene.things.len();
                 scene.things.push(thing);
                 total_objects -= 1;
-            }else{
+            } else {
                 number += 1;
                 total_objects += 1;
-                if 10 <= number { // protect from endless loop, too much objects on tilamp;
+                if 10 <= number {
+                    // protect from endless loop, too much objects on tilamp;
                     println!("object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'", thing_type );
                     break;
                 };
@@ -197,7 +199,7 @@ impl ObjectManager {
         let mut rock_thing_storage: Vec<usize> = vec![];
 
         // collect all things with type "rock" into vec;
-        for i in 0..scene.things.len(){
+        for i in 0..scene.things.len() {
             if scene.things[i].thing_type == ThingType::Rock {
                 rock_thing_storage.push(i);
             };
@@ -206,7 +208,7 @@ impl ObjectManager {
         let max_things = rock_thing_storage.len();
         let mut max_ore_things = (max_things as f32 * percent / 100.0) as usize;
 
-        if max_things <= max_ore_things{
+        if max_things <= max_ore_things {
             println!(
                 "object_manager.generate_ores_for_scene. Break generation of '{:?}', because all things in map '{:?}' <= '{:?}' ore things in biome config",
                 thing_type,
@@ -221,15 +223,13 @@ impl ObjectManager {
             let thing_index_to_replace = rock_thing_storage[random_index];
             let tile_index_to_replace = scene.things[thing_index_to_replace].tile_index;
             let tile = scene.tilemap.get_tile_by_index_mut(tile_index_to_replace);
-            let mut ore_thing = self.create_thing_on_tile( thing_type, tile, deploy);
-            
+            let mut ore_thing = self.create_thing_on_tile(thing_type, tile, deploy);
+
             ore_thing.graphic_index = scene.things[thing_index_to_replace].graphic_index;
             ore_thing.index = scene.things[thing_index_to_replace].index;
             scene.things[thing_index_to_replace] = ore_thing;
             max_ore_things -= 1;
         }
-
-
     }
 
     fn create_id(&mut self) -> usize {
@@ -238,22 +238,26 @@ impl ObjectManager {
         return id;
     }
 
-    fn spread_indexes_for_things( &self, thing_storage: &mut Vec<Thing>, tilemap: &Tilemap ){
-        for thing in thing_storage.iter_mut(){
+    fn spread_indexes_for_things(&self, thing_storage: &mut Vec<Thing>, tilemap: &Tilemap) {
+        for thing in thing_storage.iter_mut() {
             match thing.thing_type {
-                ThingType::CopperOre 
-                | ThingType::IronOre 
-                | ThingType::IronWall 
-                | ThingType::Rock 
-                | ThingType::SteelWall 
-                | ThingType::StoneWall 
+                ThingType::CopperOre
+                | ThingType::IronOre
+                | ThingType::IronWall
+                | ThingType::Rock
+                | ThingType::SteelWall
+                | ThingType::StoneWall
                 | ThingType::WoodenWall => {
-                    let index = self.find_graphic_index_for_thing(tilemap, thing.position.x, thing.position.y, &thing.thing_type);
+                    let index = self.find_graphic_index_for_thing(
+                        tilemap,
+                        thing.position.x,
+                        thing.position.y,
+                        &thing.thing_type,
+                    );
                     thing.graphic_index = index;
-                },
+                }
                 _ => {}
             }
-            
         }
     }
 
@@ -275,14 +279,11 @@ impl ObjectManager {
             + x
             + half_tilemap_width as i32;
 
-        let left_top_index: i32 = (y + 1 + half_tilemap_height as i32) * tilemap_height as i32 
-            + x
+        let left_top_index: i32 = (y + 1 + half_tilemap_height as i32) * tilemap_height as i32 + x
             - 1
             + half_tilemap_width as i32;
 
-        let left_index: i32 = (y + half_tilemap_height as i32) * tilemap_height as i32 
-            + x 
-            - 1
+        let left_index: i32 = (y + half_tilemap_height as i32) * tilemap_height as i32 + x - 1
             + half_tilemap_width as i32;
 
         let right_top_index: i32 = (y + 1 + half_tilemap_height as i32) * tilemap_height as i32
@@ -299,10 +300,9 @@ impl ObjectManager {
             + x
             + half_tilemap_width as i32;
 
-        let left_bottom_index: i32 =(y - 1 + half_tilemap_height as i32) * tilemap_height as i32 
-            + x 
-            - 1
-            + half_tilemap_width as i32;
+        let left_bottom_index: i32 =
+            (y - 1 + half_tilemap_height as i32) * tilemap_height as i32 + x - 1
+                + half_tilemap_width as i32;
 
         let right_bottom_index: i32 = (y - 1 + half_tilemap_height as i32) * tilemap_height as i32
             + x
@@ -327,36 +327,39 @@ impl ObjectManager {
                 false
             } else {
                 match tile_storage[*index as usize].thing_type {
-                    Option::Some((v, _)) => {
-                        match *thing_type {
-                            ThingType::Rock | ThingType::CopperOre | ThingType::IronOre => {
-                                if v == ThingType::Rock 
-                                    || v == ThingType::CopperOre
-                                    || v == ThingType::IronOre {
-                                        true
-                                } else {
-                                    false
-                                }
-                            },
-                            ThingType::IronWall | ThingType::SteelWall | ThingType::WoodenWall | ThingType::StoneWall => {
-                                if v == ThingType::IronWall
-                                    || v == ThingType::SteelWall
-                                    || v == ThingType::WoodenWall
-                                    || v == ThingType::StoneWall {
-                                        true
-                                } else {
-                                    false
-                                }
-                            },
-                            _ => {
-                                if v == *thing_type {
-                                    true
-                                } else {
-                                    false
-                                }
+                    Option::Some((v, _)) => match *thing_type {
+                        ThingType::Rock | ThingType::CopperOre | ThingType::IronOre => {
+                            if v == ThingType::Rock
+                                || v == ThingType::CopperOre
+                                || v == ThingType::IronOre
+                            {
+                                true
+                            } else {
+                                false
                             }
                         }
-                    }
+                        ThingType::IronWall
+                        | ThingType::SteelWall
+                        | ThingType::WoodenWall
+                        | ThingType::StoneWall => {
+                            if v == ThingType::IronWall
+                                || v == ThingType::SteelWall
+                                || v == ThingType::WoodenWall
+                                || v == ThingType::StoneWall
+                            {
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                        _ => {
+                            if v == *thing_type {
+                                true
+                            } else {
+                                false
+                            }
+                        }
+                    },
                     Option::None => false,
                 }
             };

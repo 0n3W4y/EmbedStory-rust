@@ -62,7 +62,7 @@ impl Plugin for GameScenePlugin{
         app.add_system_set( SystemSet::on_enter( SceneState::GameScene )
             .with_system( spawn_tilemap_ground )
             .with_system( spawn_tilemap_cover )
-            //.with_system( spawn_things )
+            .with_system( spawn_things )
         );
         app.add_system_set( SystemSet::on_update( SceneState::GameScene ).with_system( update ));
         app.add_system_set( SystemSet::on_exit( SceneState::GameScene ).with_system( cleanup ));
@@ -166,7 +166,9 @@ fn spawn_things(
     mut scene_data: ResMut<GameSceneData>,
     material_manager: Res<MaterialManager>,
 ) {
-    var something;
+    let things = commands.spawn_bundle(bundle);
+
+    scene_data.things_layer = Some(things);
 }
 
 fn update(){}
