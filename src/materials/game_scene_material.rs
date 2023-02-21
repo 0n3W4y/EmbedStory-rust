@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::scenes::game_scenes::tilemap::tile::CoverType;
+use crate::{scenes::game_scenes::tilemap::tile::CoverType, resources::scene_data::objects::thing::ThingType};
 
 #[derive( Debug, Clone )]
 pub struct CoverTileMaterial{
@@ -57,11 +57,85 @@ pub struct GroundTileMaterial{
     pub clay: Handle<Image>,
 }
 
+#[derive(Clone, Debug)]
+pub struct ThingMaterial{
+    pub rock: Vec<Handle<Image>>,
+    pub tree: Vec<Handle<Image>>,
+    pub fertile_tree: Vec<Handle<Image>>,
+    pub bush: Vec<Handle<Image>>,
+    pub fertile_bush: Vec<Handle<Image>>,
+    pub boulder: Vec<Handle<Image>>,
+    pub log: Vec<Handle<Image>>,
+    pub copper_ore: Vec<Handle<Image>>,
+    pub iron_ore: Vec<Handle<Image>>,
+    pub wooden_wall: Vec<Handle<Image>>,
+    pub stone_wall: Vec<Handle<Image>>,
+    pub iron_wall: Vec<Handle<Image>>,
+    pub steel_wall: Vec<Handle<Image>>,
+    pub wooden_door: Vec<Handle<Image>>,
+    pub reinforced_wooden_door: Vec<Handle<Image>>,
+    pub iron_door: Vec<Handle<Image>>,
+    pub reinforced_iron_door: Vec<Handle<Image>>,
+    pub steel_door: Vec<Handle<Image>>,
+    pub reinforced_steel_door: Vec<Handle<Image>>,
+}
+
+impl ThingMaterial {
+    pub fn get_image(&self, thing_type: &ThingType, index: usize) -> Handle<Image> {
+        return match *thing_type {
+            ThingType::Boulder => self.boulder[index].clone(),
+            ThingType::Bush => self.bush[index].clone(),
+            ThingType::CopperOre => self.copper_ore[index].clone(),
+            ThingType::FertileBush => self.fertile_bush[index].clone(),
+            ThingType::FertileTree => self.fertile_tree[index].clone(),
+            ThingType::IronDoor => self.iron_door[index].clone(),
+            ThingType::IronOre => self.iron_ore[index].clone(),
+            ThingType::IronWall => self.iron_wall[index].clone(),
+            ThingType::Log => self.log[index].clone(),
+            ThingType::ReinforcedIronDoor => self.reinforced_iron_door[index].clone(),
+            ThingType::ReinforcedSteelDoor => self.reinforced_steel_door[index].clone(),
+            ThingType::ReinforcedWoodenDoor => self.reinforced_wooden_door[index].clone(),
+            ThingType::Rock => self.rock[index].clone(),
+            ThingType::SteelDoor => self.steel_door[index].clone(),
+            ThingType::SteelWall => self.steel_wall[index].clone(),
+            ThingType::StoneWall => self.stone_wall[index].clone(),
+            ThingType::Tree => self.tree[index].clone(),
+            ThingType::WoodenDoor => self.wooden_door[index].clone(),
+            ThingType::WoodenWall => self.wooden_wall[index].clone(),
+        }
+    }
+
+    pub fn get_indexes(&self, thing_type: &ThingType) -> usize {
+        return match *thing_type {
+            ThingType::Boulder => self.boulder.len(),
+            ThingType::Bush => self.bush.len(),
+            ThingType::CopperOre => self.copper_ore.len(),
+            ThingType::FertileBush => self.fertile_bush.len(),
+            ThingType::FertileTree => self.fertile_tree.len(),
+            ThingType::IronDoor => self.iron_door.len(),
+            ThingType::IronOre => self.iron_ore.len(),
+            ThingType::IronWall => self.iron_wall.len(),
+            ThingType::Log => self.log.len(),
+            ThingType::ReinforcedIronDoor => self.reinforced_iron_door.len(),
+            ThingType::ReinforcedSteelDoor => self.reinforced_steel_door.len(),
+            ThingType::ReinforcedWoodenDoor => self.reinforced_wooden_door.len(),
+            ThingType::Rock => self.rock.len(),
+            ThingType::SteelDoor => self.steel_door.len(),
+            ThingType::SteelWall => self.steel_wall.len(),
+            ThingType::StoneWall => self.stone_wall.len(),
+            ThingType::Tree => self.tree.len(),
+            ThingType::WoodenDoor => self.wooden_door.len(),
+            ThingType::WoodenWall => self.wooden_wall.len(),
+        }
+    }
+}
+
 
 #[derive( Debug, Clone )]
 pub struct GameSceneMaterial{
     pub ground_tile: GroundTileMaterial,
     pub cover_tile: CoverTileMaterial,
+    pub things: ThingMaterial
 }
 
 impl GameSceneMaterial{
@@ -69,6 +143,7 @@ impl GameSceneMaterial{
         return GameSceneMaterial { 
             ground_tile: GameSceneMaterial::load_ground_tile_material( asset_server ), 
             cover_tile: GameSceneMaterial::load_cover_tile_material( asset_server ), 
+            things: GameSceneMaterial::load_things_material(asset_server),
         };
     }
 
@@ -161,6 +236,87 @@ impl GameSceneMaterial{
             ice,
             wooden_floor,
             rocky_road,
+        }
+    }
+
+    fn load_things_material(asset_server: &Res<AssetServer>) -> ThingMaterial {
+        let mut rock: Vec<Handle<Image>> = vec![];
+        rock.push(asset_server.load("textures/things/rock/rock_00.png"));
+
+        let mut tree: Vec<Handle<Image>> = vec![];
+        tree.push(asset_server.load("textures/things/tree/tree_00.png"));
+
+        let mut fertile_bush: Vec<Handle<Image>> = vec![];
+        fertile_bush.push(asset_server.load("textures/things/bush/fertile_bush_00.png"));
+
+        let mut fertile_tree: Vec<Handle<Image>> = vec![];
+        fertile_tree.push(asset_server.load("textures/things/tree/fertile_tree_00.png"));
+
+        let mut boulder: Vec<Handle<Image>> = vec![];
+        boulder.push(asset_server.load("textures/things/boulder/boulder_00.png"));
+
+        let mut bush: Vec<Handle<Image>> = vec![];
+        bush.push(asset_server.load("textures/things/bush/bush_00.png"));
+
+        let mut log: Vec<Handle<Image>> = vec![];
+        log.push(asset_server.load("textures/things/log/log_00.png"));
+
+        let mut copper_ore: Vec<Handle<Image>> = vec![];
+        copper_ore.push(asset_server.load("textures/things/ore/copper_ore_00.png"));
+
+        let mut iron_ore: Vec<Handle<Image>> = vec![];
+        iron_ore.push(asset_server.load("textures/things/ore/iron_ore_00.png"));
+
+        let mut iron_door: Vec<Handle<Image>> = vec![];
+        iron_door.push(asset_server.load("textures/things/door/iron_door_00.png"));
+
+        let mut wooden_door: Vec<Handle<Image>> = vec![];
+        wooden_door.push(asset_server.load("textures/things/door/wooden_door_00.png"));
+
+        let mut wooden_wall: Vec<Handle<Image>> = vec![];
+        wooden_wall.push(asset_server.load("textures/things/wall/wooden_wall_00.png"));
+
+        let mut stone_wall: Vec<Handle<Image>> = vec![];
+        stone_wall.push(asset_server.load("textures/things/wall/stone_wall_00.png"));
+
+        let mut steel_door: Vec<Handle<Image>> = vec![];
+        steel_door.push(asset_server.load("textures/things/door/steel_door_00.png"));
+
+        let mut steel_wall: Vec<Handle<Image>> = vec![];
+        steel_wall.push(asset_server.load("textures/things/wall/steel_wall_00.png"));
+
+        let mut iron_wall: Vec<Handle<Image>> = vec![];
+        iron_wall.push(asset_server.load("textures/things/wall/iron_wall_00.png"));
+
+        let mut reinforced_iron_door: Vec<Handle<Image>> = vec![];
+        reinforced_iron_door.push(asset_server.load("textures/things/door/reinforced_iron_door_00.png"));
+
+        let mut reinforced_steel_door: Vec<Handle<Image>> = vec![];
+        reinforced_steel_door.push(asset_server.load("textures/things/door/reinforced_steel_door_00.png"));
+
+        let mut reinforced_wooden_door: Vec<Handle<Image>> = vec![];
+        reinforced_wooden_door.push(asset_server.load("textures/things/door/reinforced_wooden_door_00.png"));
+
+        return ThingMaterial {
+            rock,
+            tree,
+            fertile_bush,
+            fertile_tree,
+            boulder,
+            bush,
+            log,
+            copper_ore,
+            iron_ore,
+            iron_door,
+            wooden_door,
+            wooden_wall,
+            stone_wall,
+            steel_door,
+            steel_wall,
+            iron_wall,
+            reinforced_iron_door,
+            reinforced_steel_door,
+            reinforced_wooden_door
         }
     }
 }

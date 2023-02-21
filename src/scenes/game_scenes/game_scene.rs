@@ -132,9 +132,9 @@ fn spawn_tilemap_cover(
             let transform = Transform::from_xyz( x as f32, y as f32, 0.0 );
 
             let index = match cover_type{
-                CoverType::Ice => { tile_storage[ i ].cover_graphic_index as usize },
-                CoverType::Water => { tile_storage[ i ].cover_graphic_index as usize },
-                CoverType::Shallow => { tile_storage[ i ].cover_graphic_index as usize },
+                CoverType::Ice
+                | CoverType::Water
+                | CoverType::Shallow => { tile_storage[ i ].cover_graphic_index as usize },
                 _ => { 
                     let indexes = material_manager.game_scene.cover_tile.get_indexes( cover_type );
                     if indexes == 0 { 
@@ -166,7 +166,20 @@ fn spawn_things(
     mut scene_data: ResMut<GameSceneData>,
     material_manager: Res<MaterialManager>,
 ) {
-    let things = commands.spawn_bundle(bundle);
+    let things = commands.spawn_bundle(SpriteBundle{
+        transform: Transform::from_xyz(0.0, 0.0, 0.2), // 2 - layer;
+        ..Default::default()
+    })
+    .with_children(|parent|{
+        for thing in scene.things.iter(){
+            let x: f32 = thing.graphic_position.x;
+            let y: f32 = thing.graphic_position.y;
+            let thing_type = &thing.thing_type;
+
+            let index = thing.graphic_index;
+            let texture = material_manager.game_scene.things.get_image(thing_type, index);
+        }
+    });
 
     scene_data.things_layer = Some(things);
 }
