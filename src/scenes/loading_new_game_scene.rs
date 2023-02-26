@@ -259,14 +259,14 @@ fn create_starting_scenes (
     let scene = scene_manager.get_ground_scene_by_id( id ).clone();
 
     commands.insert_resource( GameSceneData{ 
-        tilemap_ground_layer: None,
-        tilemap_cover_layer: None,
-        things_layer: None,
-        stuff_layer: None,
-        characters_layer: None,
-        effects_layer: None,
-        //roof_layer: None,
-        //fog_layer: None,
+        tilemap_ground_layer: vec![],
+        tilemap_cover_layer: vec![],
+        things_layer: vec![],
+        stuff_layer: vec![],
+        characters_layer: vec![],
+        effects_layer: vec![],
+        //roof_layer: vec![],
+        //fog_layer: vec![],
       });
 
 

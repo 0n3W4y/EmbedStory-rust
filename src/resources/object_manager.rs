@@ -239,6 +239,7 @@ impl ObjectManager {
     }
 
     fn spread_indexes_for_things(&self, thing_storage: &mut Vec<Thing>, tilemap: &Tilemap) {
+        // TODO: do this for log and boulder things;
         for thing in thing_storage.iter_mut() {
             match thing.thing_type {
                 ThingType::CopperOre
