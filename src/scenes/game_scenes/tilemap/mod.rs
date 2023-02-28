@@ -1074,6 +1074,28 @@ impl Tilemap {
             || top && !left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom // include top and bottom
         {
             return 26;
+        } else if !top && left && !right && bottom && left_top && right_top && left_bottom && right_bottom // excluded top and right
+            || !top && left && !right && bottom && left_top && !right_top && left_bottom && right_bottom // excluded top and right and right top
+            || !top && left && !right && bottom && !left_top && right_top && left_bottom && right_bottom // excluded top and right and left top
+            || !top && left && !right && bottom && left_top && right_top && left_bottom && !right_bottom // excluded top and right and right bottom
+            || !top && left && !right && bottom && !left_top && !right_top && left_bottom && right_bottom // exluded top and right and right top and left top
+            || !top && left && !right && bottom && left_top &&! right_top && left_bottom && !right_bottom // excluded top and right and right top and right bottom
+            || !top && left && !right && bottom && !left_top && right_top && left_bottom && !right_bottom // excluded top and right and left top and right bottom
+            || !top && left && !right && bottom && !left_top && !right_top && left_bottom && !right_bottom // included left and bottom and left bottom
+            || !top && left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom // included left and bottom
+        { 
+            return 27;
+        } else if !top && !left && right && bottom && left_top && right_top && left_bottom && right_bottom // excluded top and left
+            || !top && !left && right && bottom && !left_top && right_top && left_bottom && right_bottom // excluded top and left and left top
+            || !top && !left && right && bottom && left_top && !right_top && left_bottom && right_bottom // excluded top and left and right top
+            || !top && !left && right && bottom && left_top && right_top && !left_bottom && right_bottom // excluded top and left and left bottom
+            || !top && !left && right && bottom && !left_top && right_top && !left_bottom && right_bottom // excluded top and left and left top and left bottom
+            || !top && !left && right && bottom && !left_top && !right_top && left_bottom && right_bottom // excluded top and left and left top and right top
+            || !top && !left && right && bottom && left_top && !right_top && !left_bottom && right_bottom // excluded top and left and left bottom and right top
+            || !top && !left && right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include right and bottom and right bottom
+            || !top && !left && right && bottom && !left_top && !right_top && !left_bottom && !right_bottom // include right and bottom
+        { 
+            return 28;
         } else if top && !left && !right && !bottom && left_top && right_top && left_bottom && right_bottom // exclude left and right and bottom
             || top && !left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and right and bottom and right bottom
             || top && !left && !right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and right and bottom and left bottom
@@ -1091,7 +1113,7 @@ impl Tilemap {
             || top && !left && !right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include top and right bottom
             || top && !left && !right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom // include top
         {
-            return 27;
+            return 29;
         } else if !top && !left && !right && bottom && left_top && right_top && left_bottom && right_bottom // exclude left and right and top
             || !top && !left && !right && bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and right and top and right bottom
             || !top && !left && !right && bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and right and top and left bottom
@@ -1109,7 +1131,7 @@ impl Tilemap {
             || !top && !left && !right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include bottom and right bottom
             || !top && !left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom // include bottom
         {
-            return 28;
+            return 30;
         } else if !top && !left && right && !bottom && left_top && right_top && left_bottom && right_bottom // exclude left and bottom and top
             || !top && !left && right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and bottom and top and right bottom
             || !top && !left && right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and bottom and top and left bottom
@@ -1127,7 +1149,7 @@ impl Tilemap {
             || !top && !left && right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include right and right bottom
             || !top && !left && right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom // include right
         {
-            return 29;
+            return 31;
         } else if !top && left && !right && !bottom && left_top && right_top && left_bottom && right_bottom // exclude right and bottom and top
             || !top && left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude right and bottom and top and right bottom
             || !top && left && !right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude right and bottom and top and left bottom
@@ -1145,31 +1167,7 @@ impl Tilemap {
             || !top && left && !right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include left and right bottom
             || !top && left && !right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom // include left
         {
-            return 30;
-        } else if top && left && !right && !bottom && left_top && right_top && left_bottom && !right_bottom // exclude right and bottom and right bottom
-            || top && left && !right && !bottom && left_top && right_top && !left_bottom && !right_bottom // exclude right and bottom and right bottom and left bottom
-            || top && left && !right && !bottom && left_top && !right_top && left_bottom && !right_bottom // exclude right and bottom and right bottom and right top
-            || top && left && !right && !bottom && left_top && !right_top && !left_bottom && !right_bottom // include left and top and left top
-        {
-            return 31;
-        } else if !top && left && !right && bottom && left_top && !right_top && left_bottom && right_bottom   // exclude right and top and right top
-            || !top && left && !right && bottom && !left_top && !right_top && left_bottom && right_bottom // exclude right and top and right top and left top
-            || !top && left && !right && bottom && left_top && !right_top && left_bottom && !right_bottom // exclude right and top and right top and right bottom
-            || !top && left && !right && bottom && !left_top && !right_top && left_bottom && !right_bottom // include left and bottom and left bottom
-        {
             return 32;
-        } else if top && !left && right && !bottom && left_top && right_top && !left_bottom && right_bottom // exclude left and bottom and left bottom
-            || top && !left && right && !bottom && left_top && right_top && !left_bottom && !right_bottom // exclude left and bottom and left bottom and right bottom
-            || top && !left && right && !bottom && !left_top && right_top && !left_bottom && right_bottom // exclude left and bottom and left bottom and left top
-            || top && !left && right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // include right and top and right top
-        {
-            return 33;
-        } else if !top && !left && right && bottom && !left_top && right_top && left_bottom && right_bottom // exclude left and top and left top
-            || !top && !left && right && bottom && !left_top && !right_top && left_bottom && right_bottom // exclude left and top and left top and right top
-            || !top && !left && right && bottom && !left_top && right_top && !left_bottom && right_bottom // exclude left and top and left top and left bottom
-            || !top && !left && right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include right and bottom and right bottom
-        {  
-            return 34;
         } else if top && left && !right && !bottom && !left_top && right_top && left_bottom && right_bottom  // exclude right and bottom and left top
             || top && left && !right && !bottom && !left_top && right_top && !left_bottom && right_bottom // exclude right and bottom and left top and left bottom
             || top && left && !right && !bottom && !left_top && right_top && left_bottom && !right_bottom // exclude right and bottom and left top and right bottom
@@ -1179,7 +1177,7 @@ impl Tilemap {
             || top && left && !right && !bottom && !left_top && right_top && !left_bottom && !right_bottom // include left and top and right top
             || top && left && !right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom // include left and top
         {
-            return 35;
+            return 33;
         } else if !top && left && !right && bottom && left_top && right_top && !left_bottom && right_bottom // exclude right and top and left bottom
             || !top && left && !right && bottom && !left_top && right_top && !left_bottom && right_bottom // exclude right and top and left bottom and left top
             || !top && left && !right && bottom && left_top && !right_top && !left_bottom && right_bottom // exclude right and top and left bottom and right top
@@ -1189,7 +1187,7 @@ impl Tilemap {
             || !top && left && !right && bottom && !left_top && !right_top && !left_bottom && right_bottom // include left and bottom and right bottom
             || !top && left && !right && bottom && !left_top && !right_top && !left_bottom && !right_bottom // include left and top
         { 
-            return 36;
+            return 34;
         } else if top && !left && right && !bottom && left_top && !right_top && left_bottom && right_bottom // exclude left and bottom and right top
             || top && !left && right && !bottom && !left_top && !right_top && left_bottom && right_bottom // exclude left and bottom and right top and left top
             || top && !left && right && !bottom && left_top && !right_top && !left_bottom && right_bottom // exclude left and bottom and right top and left bottom
@@ -1199,7 +1197,7 @@ impl Tilemap {
             || top && !left && right && !bottom && !left_top && !right_top && !left_bottom && right_bottom // include right and top and right bottom
             || top && !left && right && !bottom && !left_top && !right_top && !left_bottom && !right_bottom // include right and top
         {
-           return 37;
+           return 35;
         } else if !top && !left && right && bottom && left_top && right_top && left_bottom && !right_bottom // exclude left and top and right bottom
             || !top && !left && right && bottom && left_top && right_top && !left_bottom && !right_bottom // exclude left and top and right bottom and left bottom
             || !top && !left && right && bottom && !left_top && right_top && left_bottom && !right_bottom // exclude left and top and right bottom and left top
@@ -1209,10 +1207,10 @@ impl Tilemap {
             || !top && !left && right && bottom && !left_top && right_top && !left_bottom && !right_bottom // include right and bottom and right top
             || !top && !left && right && bottom && !left_top && !right_top && !left_bottom && !right_bottom // include right and bottom
         {
-            return 38;
+            return 36;
         } else {
             // exclude left and right and top and bottom and other
-            return 39;
+            return 37;
         }
     }
 }
