@@ -61,7 +61,7 @@ pub struct Tile{
 
     pub permissions: Vec<TilePermissions>,
 
-    pub thing_type: Option<(ThingType, usize)>, // ( thing type, id of thing, and index in vec scene_objects);
+    pub thing_type: Option<(ThingType, usize)>, // ( thing type, id of thing);
     pub stuff_type:  Option<(StuffType, usize)>,
     pub character_type:  Option<(CharacterType, usize)>,
     pub effect_type: Option<(SceneEffectType, usize)>

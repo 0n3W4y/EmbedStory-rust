@@ -1,5 +1,10 @@
 use std::collections::HashMap;
 
+pub mod draw;
+pub mod cleanup;
+pub mod spawn;
+pub mod despawn;
+
 use serde::{Deserialize, Serialize};
 
 use crate::resources::scene_data::objects::body_part::BodyPart;
@@ -55,7 +60,6 @@ pub struct ThingConfig {
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Thing {
     pub id: usize,
-    pub index: usize, // in Scene Vec<Things>,
     pub tile_index: usize, // index of tile in vec on tilemap for fast get; because all tiles r static in tilemap vec;
     pub thing_type: ThingType,
     pub position: Position<i32>,

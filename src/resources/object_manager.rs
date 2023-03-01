@@ -4,20 +4,19 @@ use rand::Rng;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions};
 use crate::scenes::game_scenes::tilemap::Tilemap;
+use crate::scenes::game_scenes::tilemap;
 
 use super::deploy::Deploy;
 use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
 use super::scene_data::objects::body_part::BodyPart;
 use super::scene_data::objects::thing::{Thing, ThingType};
 
+#[derive(Default)]
 pub struct ObjectManager {
     id: usize,
 }
 
 impl ObjectManager {
-    pub fn new() -> Self {
-        return ObjectManager { id: 0 };
-    }
 
     pub fn create_thing(&mut self, thing_type: &ThingType, deploy: &Deploy) -> Thing {
         let id = self.create_id();
@@ -91,8 +90,7 @@ impl ObjectManager {
             let ground_type: &GroundType = &tile.ground_type;
             let thing_type = ThingType::Rock; // default;
             if *ground_type == GroundType::Rock {
-                let mut thing = self.create_thing_on_tile(&thing_type, tile, deploy);
-                thing.index = scene.things.len();
+                let thing = self.create_thing_on_tile(&thing_type, tile, deploy);
                 scene.things.push(thing);
             }
         }
@@ -124,10 +122,6 @@ impl ObjectManager {
 
     pub fn generate_pattern_things_for_scene(&self, scene: &mut GameScene, deploy: &Deploy) {
         //TODO: Generate Houses, cities etc...
-    }
-
-    pub fn set_id(&mut self, id: usize) {
-        self.id = id;
     }
 
     fn generate_other_things_for_scene(
@@ -172,8 +166,7 @@ impl ObjectManager {
                     .find(|&x| { x == &TilePermissions::PlaceThing }),
                 Some(TilePermissions::PlaceThing)
             ) {
-                let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
-                thing.index = scene.things.len();
+                let thing = self.create_thing_on_tile(thing_type, tile, deploy);
                 scene.things.push(thing);
                 total_objects -= 1;
             } else {
@@ -208,7 +201,7 @@ impl ObjectManager {
         let max_things = rock_thing_storage.len();
         let mut max_ore_things = (max_things as f32 * percent / 100.0) as usize;
 
-        if max_things <= max_ore_things {
+        if max_things + 10 <= max_ore_things { // 10 - magic number ;
             println!(
                 "object_manager.generate_ores_for_scene. Break generation of '{:?}', because all things in map '{:?}' <= '{:?}' ore things in biome config",
                 thing_type,
@@ -226,7 +219,6 @@ impl ObjectManager {
             let mut ore_thing = self.create_thing_on_tile(thing_type, tile, deploy);
 
             ore_thing.graphic_index = scene.things[thing_index_to_replace].graphic_index;
-            ore_thing.index = scene.things[thing_index_to_replace].index;
             scene.things[thing_index_to_replace] = ore_thing;
             max_ore_things -= 1;
         }
@@ -368,6 +360,6 @@ impl ObjectManager {
             vec_of_bool.push(new_bool);
         }
 
-        return tilemap.get_index_for_graphic_placement(vec_of_bool);
+        return tilemap::generate::get_index_for_graphic_placement(vec_of_bool);
     }
 }

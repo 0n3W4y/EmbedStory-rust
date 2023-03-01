@@ -9,6 +9,7 @@ mod resources;
 mod scenes;
 mod materials;
 mod plugins;
+mod components;
 
 use config::*;
 
