@@ -30,35 +30,25 @@ impl SceneManager {
         return scene;
     }
 
-    pub fn store_ground_scene(&mut self, mut scene: GameScene) -> usize {
+    pub fn store_game_scene(&mut self, mut scene: GameScene) -> usize {
         let index: usize = self.game_scene.len();
         scene.index = index;
         self.game_scene.push(scene);
         return index;
     }
 
-    pub fn get_next_game_scene_mut(&mut self) -> &mut GameScene {
-        let index: usize = match self.next_game_scene {
+    pub fn get_current_game_scene_mut(&mut self) -> &mut GameScene{
+        let index: usize = match self.current_game_scene {
             Option::Some(v) => v,
             Option::None => {
-                panic!("scene_manager.get_next_ground_scene. Can't get next scene.");
+                panic!("scene_manager.get_current_game_scene_mut. Can't get current scene.");
             }
         };
 
         return &mut self.game_scene[index];
     }
 
-    pub fn get_next_game_scene(&self) -> &GameScene {
-        let index: usize = match self.next_game_scene {
-            Option::Some(v) => v,
-            Option::None => {
-                panic!("scene_manager.get_next_ground_scene. Can't get next scene.");
-            }
-        };
-
-        return &self.game_scene[index];
-    }
-    pub fn get_current_game_scene_mut(&mut self) -> &mut GameScene{
+    pub fn get_current_game_scene(& self) -> & GameScene{
         let index: usize = match self.current_game_scene {
             Option::Some(v) => v,
             Option::None => {
@@ -66,7 +56,7 @@ impl SceneManager {
             }
         };
 
-        return &mut self.game_scene[index];
+        return &self.game_scene[index];
     }
 
     pub fn get_game_scene_by_id(&mut self, scene_id: usize) -> &mut GameScene {
@@ -82,16 +72,20 @@ impl SceneManager {
         );
     }
 
-    pub fn set_next_ground_scene(&mut self, id: usize) {
-        match self.next_game_scene {
+    pub fn clear_current_game_scene(&mut self){
+        self.current_game_scene = None;
+    }
+
+    pub fn set_current_game_scene(&mut self, id: usize) {
+        match self.current_game_scene {
             Option::Some(v) => {
                 println!(
-                    "scene_manager.set_next_ground_scene. Can not assigned next ground scene, because it already assigned or not deassigned. Next Scene id: {}",
+                    "scene_manager.set_current_game_scene. Can not assigned next ground scene, because it already assigned or not deassigned. Current Scene id: {}",
                     v
                 );
                 self.next_game_scene = Some(id);
             }
-            Option::None => self.next_game_scene = Some(id),
+            Option::None => self.current_game_scene = Some(id),
         };
     }
 

@@ -120,7 +120,7 @@ impl ThingMaterial {
             ThingType::WoodenWall => self.wooden_wall[index].clone(),
         };
     }
-
+    /*
     pub fn get_indexes(&self, thing_type: &ThingType) -> usize {
         return match *thing_type {
             ThingType::Boulder => self.boulder.len(),
@@ -144,6 +144,7 @@ impl ThingMaterial {
             ThingType::WoodenWall => self.wooden_wall.len(),
         };
     }
+    */
 }
 
 #[derive(Debug, Clone)]
@@ -185,7 +186,7 @@ impl GameSceneMaterial {
         flowers.push(asset_server.load("textures/tiles/cover/grass_02.png"));
 
         let mut sand = vec![];
-        sand.push(asset_server.load("texture/tiles/cover/sand_00.png"));
+        sand.push(asset_server.load("textures/tiles/cover/sand_00.png"));
         //sand.push( asset_server.load( "texture/tiles/cover/sand_01.png" ));
         //sand.push( asset_server.load( "texture/tiles/cover/sand_02.png" ));
         //sand.push( asset_server.load( "texture/tiles/cover/sand_03.png" ));

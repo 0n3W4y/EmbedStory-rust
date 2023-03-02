@@ -627,12 +627,12 @@ fn generate_environment(
                 let new_y = y as i32 - current_envirounment as i32
                     + i as i32
                     + half_tilemap_height as i32;
-                if new_x < 0
+                if new_x >= tilemap_width as i32
+                    || new_x < 0
                     || new_y < 0
-                    || new_x >= tilemap_width as i32
-                    || new_y >= tilemap_height as i32
+                    || new_y >= half_tilemap_height as i32
                 {
-                    panic!("tilemap.generate_environment. x: {}, y: {};", new_x, new_y);
+                    continue;
                 };
 
                 let index: usize = new_y as usize * tilemap_height as usize + new_x as usize;

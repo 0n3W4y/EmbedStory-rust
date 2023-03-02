@@ -262,10 +262,10 @@ fn create_starting_scenes(mut commands: Commands, deploy: Res<Deploy>) {
     //object_manager.generate_pattern_things_for_scene( &mut starting_scene );
 
     //store scene into scene_manager;
-    scene_manager.store_ground_scene(starting_scene);
+    scene_manager.store_game_scene(starting_scene);
 
     //set next scene to load - new scene;
-    scene_manager.set_next_ground_scene(id);
+    scene_manager.set_current_game_scene(id);
 
     commands.insert_resource(scene_manager);
     commands.insert_resource(object_manager);

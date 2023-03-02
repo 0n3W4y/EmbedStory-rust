@@ -19,7 +19,7 @@ pub enum ThingPermissions{
     CanHarvested,
     CanRepaired,
     #[default]
-    CanBeDestroied,
+    CanBeDestroyed,
 
 }
 
@@ -47,14 +47,26 @@ pub enum ThingType {
     ReinforcedSteelDoor,
 }
 
+impl ThingType{
+    pub fn to_string(&self) -> &str {
+        match *self {
+            Self::Tree => "Tree",
+            Self::FertileTree => "Fertile Tree",
+            Self::Bush => "Bush",
+            Self::FertileBush => "Fertile Bush",
+            _ => "Other Thing",
+        }
+    }
+}
+
 #[derive(Deserialize, Clone, Debug)]
 pub struct ThingConfig {
     pub permissions: Vec<ThingPermissions>,
     pub resists: Vec<Resist>,
-    pub body_struct: HashMap<BodyPartType, i16>,
+    pub body_structure: HashMap<BodyPartType, i16>,
     pub tile_allow_permissions: Vec<TilePermissions>,
     pub tile_deny_permissions: Vec<TilePermissions>,
-    pub movement_ratio: u16
+    pub tile_movement_ratio: u16
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

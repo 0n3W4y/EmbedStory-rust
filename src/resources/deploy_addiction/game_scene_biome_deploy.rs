@@ -23,7 +23,6 @@ pub struct Biome{
     pub main_cover_filling: u8,
     pub additional_ground: HashMap<GroundType, f32>,
     pub additional_cover: HashMap<CoverType, f32>,
-    pub additional_cover_value: Vec<f32>,
     pub rivers: Rivers,
     pub spots: Spots,
     pub objects: BiomeObjects,

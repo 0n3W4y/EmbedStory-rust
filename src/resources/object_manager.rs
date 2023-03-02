@@ -2,7 +2,7 @@
 use rand::Rng;
 
 use crate::scenes::game_scenes::game_scene::GameScene;
-use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions};
+use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions, CoverType};
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 
@@ -31,7 +31,7 @@ impl ObjectManager {
             ..Default::default()
         };
 
-        for (bodypart_type, hp) in config.body_struct.iter() {
+        for (bodypart_type, hp) in config.body_structure.iter() {
             let mut body_part = BodyPart {
                 bodypart_type: bodypart_type.clone(),
                 ..Default::default()
@@ -61,14 +61,14 @@ impl ObjectManager {
                 Option::Some(v) => {
                     tile.permissions.remove(v);
                 }
-                Option::None => {}
+                Option::None => continue,
             };
         }
 
         for permission in allow_tile_permissions.iter() {
             let index = tile.permissions.iter().position(|x| x == permission);
             match index {
-                Option::Some(_) => {}
+                Option::Some(_) => continue,
                 Option::None => tile.permissions.push(permission.clone()),
             };
         }
@@ -77,6 +77,7 @@ impl ObjectManager {
         thing.position.y = tile.position.y;
         thing.graphic_position.x = tile.graphic_position.x;
         thing.graphic_position.y = tile.graphic_position.y;
+        thing.tile_index = tile.index;
 
         tile.thing_type = Some((ThingType::Rock, thing.id));
         return thing;
@@ -103,13 +104,14 @@ impl ObjectManager {
         biome_things_setting: &BiomeThings,
     ) {
         //first, create natural things;
+        self.generate_rocks_for_scene(scene, deploy);
         //like rocks, ores, trees, etc..
         for (key, percent) in biome_things_setting.natural_things.iter() {
             match *key {
-                ThingType::Rock => self.generate_rocks_for_scene(scene, deploy),
+                ThingType::Rock => {},
                 ThingType::CopperOre | ThingType::IronOre => {
                     self.generate_ores_for_scene(scene, deploy, key, *percent);
-                }
+                },
                 _ => {
                     self.generate_other_things_for_scene(scene, deploy, key, *percent);
                 }
@@ -118,6 +120,9 @@ impl ObjectManager {
 
         //after all, spread indexes for all things we create
         self.spread_indexes_for_things(&mut scene.things, &scene.tilemap);
+        // sorting vec by evolving tile_index
+        //scene.things.sort_by(|a, b| b.tile_index.cmp(&a.tile_index));
+
     }
 
     pub fn generate_pattern_things_for_scene(&self, scene: &mut GameScene, deploy: &Deploy) {
@@ -131,6 +136,8 @@ impl ObjectManager {
         thing_type: &ThingType,
         thing_type_percent: f32,
     ) {
+        let tilesize = scene.tilemap.get_tile_size();
+        let half_tilesize: u16 = tilesize / 2;
         let mut rng = rand::thread_rng();
         let tilemap = &mut scene.tilemap;
         let tilemap_total_tiles = tilemap.get_total_tiles();
@@ -144,8 +151,9 @@ impl ObjectManager {
             println!( "object_manager.generate_other_thing_for_scene. Warning! Total things '{:?}' most than 50% of total tiles in tilemap", thing_type );
         };
 
-        let mut number = 0; //protction fro endless loop;
+        let mut number = 0; //protection for endless loop;
         while total_objects > 0 {
+            //TODO: Create graphics indexes for thing; Like SmallTree Normal Tree, BigTree; Or add this into enums and create images;
             let start_range_x = -(half_tilemap_width as i32);
             let end_range_x = half_tilemap_width as i32;
             let random_x: i32 = rng.gen_range(start_range_x..end_range_x);
@@ -166,15 +174,43 @@ impl ObjectManager {
                     .find(|&x| { x == &TilePermissions::PlaceThing }),
                 Some(TilePermissions::PlaceThing)
             ) {
-                let thing = self.create_thing_on_tile(thing_type, tile, deploy);
-                scene.things.push(thing);
-                total_objects -= 1;
+                if (*thing_type == ThingType::Tree
+                    || *thing_type == ThingType::FertileTree
+                    || *thing_type == ThingType::Bush
+                    || *thing_type == ThingType::FertileBush)
+                    && tile.ground_type == GroundType::RockEnvironment {
+                        number += 1;
+                        total_objects += 1;
+                        if tilemap_width <= number {
+                            // protect from endless loop, too much objects on tilamp;
+                            println!(
+                                "object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'. Protected by tilemap width: {:?}",
+                                thing_type,
+                                tilemap_width 
+                            );
+                            break;
+                        };
+                } else {
+                    let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
+
+                    if *thing_type == ThingType::Tree
+                    || *thing_type == ThingType::FertileTree {
+                        thing.graphic_position.y = thing.graphic_position.y + half_tilesize as f32;
+                    };
+
+                    scene.things.push(thing);
+                    total_objects -= 1;
+                }
             } else {
                 number += 1;
                 total_objects += 1;
-                if 10 <= number {
+                if tilemap_width <= number {
                     // protect from endless loop, too much objects on tilamp;
-                    println!("object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'", thing_type );
+                    println!(
+                        "object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'. Protected by tilemap width: {:?}",
+                        thing_type,
+                        tilemap_width 
+                    );
                     break;
                 };
             }

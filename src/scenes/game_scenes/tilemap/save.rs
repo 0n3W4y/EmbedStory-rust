@@ -1,16 +1,10 @@
 use bevy::prelude::*;
 
-use super::tile::Tile;
-use super::Tilemap;
-use crate::{components::tile_component::TileComponent, resources::scene_manager::SceneManager};
-
-pub fn cleanup(
-    mut cover_query: Query<(Entity, &TileComponent), With<TileComponent>>,
-    mut commands: Commands,
-    mut scene_manager: ResMut<SceneManager>,
-) {
-    let tilemap: &mut Tilemap = &mut scene_manager.get_current_game_scene_mut().tilemap;
-    for (cover_tile, tile_component) in cover_query.iter_mut() {
+pub fn save(
+    mut tile_query: Query<&TileComponent, With<TileComponent>>,
+    mut scene_manager: ResMut<SceneManager>
+){
+    for tile_component in tile_query.iter_mut() {
         let mut tile: &mut Tile = tilemap.get_tile_by_index_mut(tile_component.index);
         tile.ground_type = tile_component.ground_type.clone();
         tile.cover_type = tile_component.cover_type.clone();
@@ -28,7 +22,5 @@ pub fn cleanup(
         tile.stuff_type = tile.stuff_type.clone();
         tile.character_type = tile.character_type.clone();
         tile.effect_type = tile.effect_type.clone();
-
-        commands.entity(cover_tile).despawn_recursive();
     }
 }

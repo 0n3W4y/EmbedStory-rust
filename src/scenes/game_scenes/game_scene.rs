@@ -5,7 +5,7 @@ use crate::resources::scene_data::objects::character::Character;
 use crate::resources::scene_data::objects::scene_effect::SceneEffect;
 use crate::resources::scene_data::objects::stuff::Stuff;
 use crate::resources::scene_data::objects::thing::Thing;
-use crate::resources::scene_manager::{SceneManager, SceneType};
+use crate::resources::scene_manager::SceneType;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::objects::thing;
@@ -25,7 +25,14 @@ pub struct GameScene {
     //pub roof: Vec<>,
 }
 impl GameScene {
-    
+    pub fn get_thing_by_id(&self, id: usize) -> Option<&Thing> {
+        for thing in self.things.iter(){
+            if thing.id == id {
+                return Some(thing);
+            }
+        }
+        return None;
+    }
 }
 
 pub struct GameScenePlugin;
@@ -47,6 +54,7 @@ impl Plugin for GameScenePlugin {
         );
     }
 }
+
 
 
 fn update() {}
