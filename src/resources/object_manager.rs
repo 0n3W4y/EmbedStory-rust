@@ -103,9 +103,22 @@ impl ObjectManager {
         deploy: &Deploy,
         biome_things_setting: &BiomeThings,
     ) {
-        //first, create natural things;
+        //first get all "free" tiles, where i can put a Thing except rocks;
+        let mut vec_of_free_tiles: Vec<usize> = vec![];
+        for tile in scene.tilemap.get_tilemap_tile_storage_mut().iter(){
+            if matches!(
+                tile.permissions
+                    .iter()
+                    .find(|&x|{x == &TilePermissions::PlaceThing}),
+                Some(TilePermissions::PlaceThing)
+            ) {
+                vec_of_free_tiles.push(tile.index);
+            };
+        };
+
         self.generate_rocks_for_scene(scene, deploy);
-        //like rocks, ores, trees, etc..
+
+        //Generate other things, without Rock things;
         for (key, percent) in biome_things_setting.natural_things.iter() {
             match *key {
                 ThingType::Rock => {},
@@ -113,15 +126,16 @@ impl ObjectManager {
                     self.generate_ores_for_scene(scene, deploy, key, *percent);
                 },
                 _ => {
-                    self.generate_other_things_for_scene(scene, deploy, key, *percent);
+                    self.generate_other_things_for_scene(scene, deploy, key, *percent, &mut vec_of_free_tiles);
+
                 }
             }
         }
 
-        //after all, spread indexes for all things we create
+        //after all, spread indexes for all things we create;
         self.spread_indexes_for_things(&mut scene.things, &scene.tilemap);
-        // sorting vec by evolving tile_index
-        //scene.things.sort_by(|a, b| b.tile_index.cmp(&a.tile_index));
+        // sorting vec by evolving tile_index for spawn things and spread Z-Order;
+        scene.things.sort_by(|a, b| b.tile_index.cmp(&a.tile_index));
 
     }
 
@@ -134,86 +148,60 @@ impl ObjectManager {
         scene: &mut GameScene,
         deploy: &Deploy,
         thing_type: &ThingType,
-        thing_type_percent: f32,
+        percent: f32,
+        vec_of_free_tiles: &mut Vec<usize>
     ) {
         let tilesize = scene.tilemap.get_tile_size();
         let half_tilesize: u16 = tilesize / 2;
         let mut rng = rand::thread_rng();
         let tilemap = &mut scene.tilemap;
         let tilemap_total_tiles = tilemap.get_total_tiles();
-        let tilemap_width = tilemap.get_tilemap_width();
-        let tilemap_height = tilemap.get_tilemap_height();
-        let half_tilemap_width = tilemap_width / 2;
-        let half_tilemap_height = tilemap_height / 2;
-        let mut total_objects = (tilemap_total_tiles as f32 * thing_type_percent / 100.0) as usize;
+        let tilemap_half_width_height = (tilemap.get_tilemap_height() as usize + tilemap.get_tilemap_width() as usize) / 2;
+        let mut number: usize = 0;
+        let mut total_objects = (tilemap_total_tiles as f32 * percent / 100.0) as usize;
 
-        if total_objects >= (tilemap_total_tiles / 2) {
-            println!( "object_manager.generate_other_thing_for_scene. Warning! Total things '{:?}' most than 50% of total tiles in tilemap", thing_type );
+        if total_objects * 2 >= (vec_of_free_tiles.len()) {
+            println!( 
+                "object_manager.generate_other_thing_for_scene. Warning! Total things '{:?}' most than 50% of free tiles in tilemap for things",
+                thing_type 
+                );
         };
 
-        let mut number = 0; //protection for endless loop;
         while total_objects > 0 {
             //TODO: Create graphics indexes for thing; Like SmallTree Normal Tree, BigTree; Or add this into enums and create images;
-            let start_range_x = -(half_tilemap_width as i32);
-            let end_range_x = half_tilemap_width as i32;
-            let random_x: i32 = rng.gen_range(start_range_x..end_range_x);
 
-            let start_range_y = -(half_tilemap_height as i32);
-            let end_range_y = half_tilemap_height as i32;
-            let random_y: i32 = rng.gen_range(start_range_y..end_range_y);
-
-            let tile_index: usize =
-                ((random_y + half_tilemap_height as i32) * tilemap_height as i32
-                    + (random_x + half_tilemap_width as i32)) as usize;
+            let random_index = rng.gen_range(0..vec_of_free_tiles.len());
+            let tile_index: usize = vec_of_free_tiles[random_index];
             let tile = tilemap.get_tile_by_index_mut(tile_index);
 
-            //check for thing in current tile
-            if matches!(
-                tile.permissions
-                    .iter()
-                    .find(|&x| { x == &TilePermissions::PlaceThing }),
-                Some(TilePermissions::PlaceThing)
-            ) {
-                if (*thing_type == ThingType::Tree
-                    || *thing_type == ThingType::FertileTree
-                    || *thing_type == ThingType::Bush
-                    || *thing_type == ThingType::FertileBush)
-                    && tile.ground_type == GroundType::RockEnvironment {
-                        number += 1;
-                        total_objects += 1;
-                        if tilemap_width <= number {
-                            // protect from endless loop, too much objects on tilamp;
-                            println!(
-                                "object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'. Protected by tilemap width: {:?}",
-                                thing_type,
-                                tilemap_width 
-                            );
-                            break;
-                        };
-                } else {
-                    let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
-
-                    if *thing_type == ThingType::Tree
-                    || *thing_type == ThingType::FertileTree {
-                        thing.graphic_position.y = thing.graphic_position.y + half_tilesize as f32;
-                    };
-
-                    scene.things.push(thing);
-                    total_objects -= 1;
-                }
-            } else {
+            if (*thing_type == ThingType::Tree
+                || *thing_type == ThingType::FertileTree
+                || *thing_type == ThingType::Bush
+                || *thing_type == ThingType::FertileBush)
+                && (tile.ground_type == GroundType::RockEnvironment 
+                || tile.cover_type == CoverType::RockyRoad
+                || tile.cover_type == CoverType::WoodenFloor
+            ){
                 number += 1;
-                total_objects += 1;
-                if tilemap_width <= number {
+                if number >= tilemap_half_width_height {
                     // protect from endless loop, too much objects on tilamp;
                     println!(
-                        "object_manager.generate_other_things_for_scene. Breaking the loop with crateing thing on :'{:?}'. Protected by tilemap width: {:?}",
+                        "object_manager.generate_other_things_for_scene. Breaking the loop with creating thing:'{:?}'. Current objects not generated: {:?}",
                         thing_type,
-                        tilemap_width 
+                        total_objects 
                     );
                     break;
-                };
+                }
             }
+
+            let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
+            if *thing_type == ThingType::Tree
+            || *thing_type == ThingType::FertileTree {
+                thing.graphic_position.y = thing.graphic_position.y + half_tilesize as f32;
+            };
+            scene.things.push(thing);
+            total_objects -= 1;
+            vec_of_free_tiles.remove(random_index);
         }
     }
 
@@ -222,7 +210,7 @@ impl ObjectManager {
         scene: &mut GameScene,
         deploy: &Deploy,
         thing_type: &ThingType,
-        percent: f32,
+        percent: f32
     ) {
         let mut rng = rand::thread_rng();
         let mut rock_thing_storage: Vec<usize> = vec![];
@@ -340,11 +328,11 @@ impl ObjectManager {
 
         let vec_of_indexes = vec![
             top_index,
-            left_top_index,
             left_index,
-            right_top_index,
             right_index,
             bottom_index,
+            left_top_index,
+            right_top_index,
             left_bottom_index,
             right_bottom_index,
         ];
@@ -359,9 +347,8 @@ impl ObjectManager {
                     Option::Some((v, _)) => match *thing_type {
                         ThingType::Rock | ThingType::CopperOre | ThingType::IronOre => {
                             if v == ThingType::Rock
-                                || v == ThingType::CopperOre
-                                || v == ThingType::IronOre
-                            {
+                            || v == ThingType::CopperOre
+                            || v == ThingType::IronOre {
                                 true
                             } else {
                                 false
@@ -372,10 +359,9 @@ impl ObjectManager {
                         | ThingType::WoodenWall
                         | ThingType::StoneWall => {
                             if v == ThingType::IronWall
-                                || v == ThingType::SteelWall
-                                || v == ThingType::WoodenWall
-                                || v == ThingType::StoneWall
-                            {
+                            || v == ThingType::SteelWall
+                            || v == ThingType::WoodenWall
+                            || v == ThingType::StoneWall {
                                 true
                             } else {
                                 false

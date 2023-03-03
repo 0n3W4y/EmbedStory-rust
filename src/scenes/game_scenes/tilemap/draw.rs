@@ -6,8 +6,9 @@ use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::CoverType;
 use crate::components::tile_component::TileComponent;
 
-pub const Z_POSTION_FOR_GROUND: f32 = 0.0;
+pub const Z_POSITION_FOR_GROUND: f32 = 0.0;
 pub const Z_POSITION_FOR_COVER: f32 = 1.0;
+
 
 pub fn draw( 
     mut commands: Commands, 
@@ -20,7 +21,7 @@ pub fn draw(
         let x = tile.graphic_position.x;
         let y = tile.graphic_position.y;
         let ground_type = &tile.ground_type;        
-        let ground_transform = Transform::from_xyz(x as f32, y as f32, Z_POSTION_FOR_GROUND);
+        let ground_transform = Transform::from_xyz(x as f32, y as f32, Z_POSITION_FOR_GROUND);
         let ground_texture: Handle<Image> = material_manager.game_scene.ground_tile.get_image(ground_type).clone();
         
 
@@ -31,17 +32,17 @@ pub fn draw(
         })
         .with_children(|parent|{
             let cover_type = &tile.cover_type;
-            let cover_tranform: Transform = Transform::from_xyz(0.0, 0.0, Z_POSITION_FOR_COVER);
+            //let cover_tranform: Transform = Transform::from_xyz(0.0, 0.0, 0.0);
             if *cover_type != CoverType::None{
                 let cover_texture: Handle<Image> = material_manager.game_scene.cover_tile.get_image(cover_type, tile.cover_graphic_index as usize).clone();
                 parent.spawn_bundle(SpriteBundle{
-                    transform: cover_tranform,
+                    //transform: cover_tranform,
                     texture: cover_texture,
                     ..Default::default()
                 });
             } else {
                 parent.spawn_bundle(SpriteBundle{
-                    transform: cover_tranform,
+                    //transform: cover_tranform,
                     ..Default::default()
                 });
             }    

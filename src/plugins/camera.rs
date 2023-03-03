@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 use bevy::input::mouse::{ MouseButtonInput, MouseMotion, MouseWheel };
 
+//use crate::resources::scene_manager;
 use crate::scenes::SceneState;
+use crate::resources::scene_manager::SceneManager;
 
 #[derive( Component )]
 pub struct UserInterfaceCamera;
@@ -34,6 +36,7 @@ fn spawn_ui_camera( mut commands: Commands ){
 fn spawn_2d_camera( mut commands: Commands ){
     let mut camera = OrthographicCameraBundle::new_2d();
     camera.orthographic_projection.scale = 2.0;
+    //camera.transform.translation.z = 1000.0;
     //camera.orthographic_projection.top = 1.0;
     //camera.orthographic_projection.bottom = -1.0;
     //camera.orthographic_projection.right = 1.0 * RESOLUTION;
@@ -74,8 +77,19 @@ fn camera_zoom(
 fn camera_move_by_left_button(
     mouse_button_input: Res<Input<MouseButton>>, 
     mut cursor_moved_events: EventReader<CursorMoved>, 
-    mut camera: Query<( &mut Transform, &mut Orthographic2DCamera, &OrthographicProjection ), With<Orthographic2DCamera>> )
-{
+    mut camera: Query<( &mut Transform, &mut Orthographic2DCamera, &OrthographicProjection ), With<Orthographic2DCamera>>,
+    scene_manager: Res<SceneManager>,
+) {
+    let tilemap = &scene_manager.get_current_game_scene().tilemap;
+    //let tile_size = tilemap.get_tile_size() as f32;
+    //let map_width = tilemap.get_tilemap_width() as f32;
+    //let map_height = tilemap.get_tilemap_height() as f32;
+
+    //let mut min_x = -(map_width / 2.0  * tile_size);
+    //let mut max_x = map_width / 2.0 * tile_size;
+    //let mut max_y = map_height / 2.0 * tile_size;
+    //let mut min_y = -(map_height / 2.0 * tile_size);
+
     if mouse_button_input.pressed( MouseButton::Left ) {
         for ( mut transform, mut cam, projection ) in camera.iter_mut(){
             for event in cursor_moved_events.iter() {
@@ -83,11 +97,36 @@ fn camera_move_by_left_button(
                     cam.cursor_position.x = event.position.x;
                     cam.cursor_position.y = event.position.y;
                 }
+                let projection_scale = projection.scale;
                 let dif_x = cam.cursor_position.x - event.position.x;
                 let dif_y = cam.cursor_position.y - event.position.y;
-                transform.translation.x += dif_x * projection.scale;
-                transform.translation.y += dif_y * projection.scale;
+                let camera_x = dif_x * projection_scale;
+                let canera_y = dif_y * projection_scale;
 
+                //max_x = max_x * projection_scale;
+                //max_y = max_y * projection_scale;
+                //min_x = min_x * projection_scale;
+                //min_y = min_y * projection_scale;
+
+                transform.translation.x += camera_x;
+                transform.translation.y += canera_y;
+                /*
+                if transform.translation.x > max_x {
+                    transform.translation.x = max_x;
+                }
+
+                if transform.translation.x < min_x{
+                    transform.translation.x = min_x;
+                }
+
+                if transform.translation.y > max_y {
+                    transform.translation.y = max_y;
+                }
+
+                if transform.translation.y < min_y {
+                    transform.translation.y = min_y;
+                }                
+                */
                 cam.cursor_position.x = event.position.x;
                 cam.cursor_position.y = event.position.y;               
             }

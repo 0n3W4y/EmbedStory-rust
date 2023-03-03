@@ -12,7 +12,9 @@ pub fn draw(
     scene_manager: Res<SceneManager>,
     material_manager: Res<MaterialManager>,
 ){
+    
     let scene: &GameScene = scene_manager.get_current_game_scene();
+    let mut new_z_position = Z_POSITION;
     for tile in scene.tilemap.get_tilemap_tile_storage().iter().rev(){
         let thing_id = match tile.thing_type {
             Option::Some(v) => {v.1},
@@ -33,7 +35,8 @@ pub fn draw(
                     .game_scene
                     .things
                     .get_image(thing_type, index as usize);
-        let transform = Transform::from_xyz(x, y, Z_POSITION); // third layer;
+        let transform = Transform::from_xyz(x, y, new_z_position); // third layer;
+        new_z_position += 0.001;
 
         commands
         .spawn_bundle(SpriteBundle {
@@ -43,8 +46,11 @@ pub fn draw(
         })
         .insert(ThingComponent{id: thing.id, tile_index: thing.tile_index});
     }
+    
     /*
-    for thing in scene.things.iter().rev(){
+    let scene: &GameScene = scene_manager.get_current_game_scene();
+    //let tile_size = scene.tilemap.get_tile_size();
+    for thing in scene.things.iter(){
         let x: f32 = thing.graphic_position.x;
         let y: f32 = thing.graphic_position.y;
         let index = thing.graphic_index;
@@ -54,7 +60,8 @@ pub fn draw(
                     .game_scene
                     .things
                     .get_image(thing_type, index as usize);
-        let transform = Transform::from_xyz(x, y, Z_POSITION); // third layer;
+        let new_z_position = Z_POSITION + 1.0;
+        let transform = Transform::from_xyz(x, y, new_z_position); // third layer;
 
         commands
         .spawn_bundle(SpriteBundle {
