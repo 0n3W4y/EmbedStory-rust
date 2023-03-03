@@ -7,7 +7,7 @@ use crate::scenes::game_scenes::tilemap::tile::CoverType;
 use crate::components::tile_component::TileComponent;
 
 pub const Z_POSTION_FOR_GROUND: f32 = 0.0;
-pub const Z_POSITION_FOR_COVER: f32 = 0.1;
+pub const Z_POSITION_FOR_COVER: f32 = 1.0;
 
 pub fn draw( 
     mut commands: Commands, 
