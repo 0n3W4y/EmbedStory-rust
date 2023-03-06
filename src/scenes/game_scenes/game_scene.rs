@@ -11,6 +11,8 @@ use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::objects::thing;
 use crate::scenes::SceneState;
 
+use super::tilemap::change_cover_type_handler;
+
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GameScene {
     pub scene_type: SceneType,
@@ -25,8 +27,8 @@ pub struct GameScene {
     //pub roof: Vec<>,
 }
 impl GameScene {
-    pub fn get_thing_by_id(&self, id: usize) -> Option<&Thing> {
-        for thing in self.things.iter(){
+    pub fn get_thing_by_id_mut(&mut self, id: usize) -> Option<&mut Thing> {
+        for thing in self.things.iter_mut(){
             if thing.id == id {
                 return Some(thing);
             }
@@ -45,6 +47,8 @@ impl Plugin for GameScenePlugin {
         );
 
         app.add_system_set(SystemSet::on_update(SceneState::GameScene)
+            .with_system(thing::destroeyd_thing_handler::destroeyd_thing_handler)
+            .with_system(tilemap::change_cover_type_handler::change_cover_type_handler)
             .with_system(update)
         );
 

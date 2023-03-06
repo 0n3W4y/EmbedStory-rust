@@ -135,7 +135,7 @@ impl ObjectManager {
         //after all, spread indexes for all things we create;
         self.spread_indexes_for_things(&mut scene.things, &scene.tilemap);
         // sorting vec by evolving tile_index for spawn things and spread Z-Order;
-        scene.things.sort_by(|a, b| b.tile_index.cmp(&a.tile_index));
+        //scene.things.sort_by(|a, b| b.tile_index.cmp(&a.tile_index));
 
     }
 

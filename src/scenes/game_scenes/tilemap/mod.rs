@@ -4,6 +4,7 @@ pub mod tile;
 pub mod draw;
 pub mod cleanup;
 pub mod generate;
+pub mod change_cover_type_handler;
 
 use self::tile::Tile;
 

@@ -4,6 +4,7 @@ pub mod draw;
 pub mod cleanup;
 pub mod spawn;
 pub mod despawn;
+pub mod destroeyd_thing_handler;
 
 use serde::{Deserialize, Serialize};
 
