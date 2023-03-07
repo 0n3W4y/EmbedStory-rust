@@ -62,6 +62,5 @@ fn main(){
         //.add_plugin(plugins::survival_mode::SurvivalModePlugin)
         //.add_plugin(plugins::survival_mode::ui::SurvivalModeUIPlugin)
         //.add_plugin(plugins::monster::MonsterPlugin)
-        // .add_plugin(plugins::debug::DebugPlugin)ss
         .run();
 }

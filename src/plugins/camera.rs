@@ -80,7 +80,7 @@ fn camera_move_by_left_button(
     mut camera: Query<( &mut Transform, &mut Orthographic2DCamera, &OrthographicProjection ), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ) {
-    let tilemap = &scene_manager.get_current_game_scene().tilemap;
+    //let tilemap = &scene_manager.get_current_game_scene().tilemap;
     //let tile_size = tilemap.get_tile_size() as f32;
     //let map_width = tilemap.get_tilemap_width() as f32;
     //let map_height = tilemap.get_tilemap_height() as f32;

@@ -13,7 +13,9 @@ pub enum TilePermissions{
     Walk,
     PlaceStuff,
     Roof,
-    Fog
+    Fog,
+    PlaceEffect,
+    EndMovementPoint,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default, Hash)]
@@ -62,8 +64,9 @@ pub struct Tile{
     pub permissions: Vec<TilePermissions>,
 
     pub thing_type: Option<(ThingType, usize)>, // ( thing type, id of thing);
-    pub stuff_type:  Option<(StuffType, usize)>,
-    pub character_type:  Option<(CharacterType, usize)>,
+    pub stuff_type: Vec<(StuffType, usize)>,
+    pub alive_character_type: Option<(CharacterType, usize)>,
+    pub dead_character_type: Vec<(CharacterType, usize)>,
     pub effect_type: Option<(SceneEffectType, usize)>
 }
 
@@ -73,5 +76,4 @@ pub struct TileDeploy {
     pub cover_type: CoverType,
     pub movement_ratio: u16,
     pub permissions: Vec<TilePermissions>
-
 }

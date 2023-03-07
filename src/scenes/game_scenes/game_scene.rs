@@ -11,7 +11,6 @@ use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::objects::thing;
 use crate::scenes::SceneState;
 
-use super::tilemap::change_cover_type_handler;
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GameScene {

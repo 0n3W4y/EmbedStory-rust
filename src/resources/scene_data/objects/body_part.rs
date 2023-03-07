@@ -56,24 +56,8 @@ pub struct BodyPart {
 }
 
 impl BodyPart {
-    pub fn new(
-        body_type: BodyPartType,
-        total_health_points: i16,
-        part_type: PartType,
-        part_status: PartStatus,
-    ) -> Self {
-        return BodyPart {
-            bodypart_type: body_type,
-            current_health_points: Stat::HealthPoints(total_health_points),
-            total_health_points: Stat::HealthPoints(total_health_points),
-            modified_health_points: Stat::HealthPoints(total_health_points),
-            part_type: PartType::Natural,
-            part_status: PartStatus::Healthy,
-        };
-    }
-
     pub fn add_current_health_points(&mut self, value: i16) {
-        let current_value = self.get_current_healh_points();
+        let current_value = self.get_current_health_points();
         let total_value: i16 = self.get_total_health_points();
         let max_value: i16 =
             (total_value * self.get_percent_of_part_status(Option::None) as i16 / 100) as i16;
@@ -87,7 +71,7 @@ impl BodyPart {
     }
 
     pub fn substruct_current_health_points(&mut self, value: i16) {
-        let current_health_points = self.get_current_healh_points();
+        let current_health_points = self.get_current_health_points();
         let new_value = current_health_points - value;
         self.current_health_points = Stat::HealthPoints(new_value);
     }
@@ -106,8 +90,8 @@ impl BodyPart {
         self.modified_health_points = Stat::HealthPoints(new_value);
         let total_health = self.get_total_health_points();
         let new_total_health = total_health - value;
-        let current_health_points: i16 = self.get_current_healh_points();
-        let new_current_health_points: i16 = self.get_current_healh_points() - value;
+        let current_health_points: i16 = self.get_current_health_points();
+        let new_current_health_points: i16 = self.get_current_health_points() - value;
 
         // calc total health points
         if new_total_health <= 0 && self.part_status != PartStatus::Disrupted {
@@ -140,8 +124,6 @@ impl BodyPart {
 
         let new_min_current_health_points = new_total_health * lower_percent as i16 / 100;
         let new_max_current_health_points = new_total_health * percent as i16 / 100;
-        let new_half_current_health_points: i16 =
-            new_min_current_health_points + new_max_current_health_points / 2;
 
         if new_current_health_points >= new_max_current_health_points {
             // when part don't get damage at all;
@@ -161,7 +143,7 @@ impl BodyPart {
         self.current_health_points = Stat::HealthPoints(value);
     }
 
-    fn get_current_healh_points(&self) -> i16 {
+    pub fn get_current_health_points(&self) -> i16 {
         match self.current_health_points {
             Stat::HealthPoints(v) => v,
             _ => {
@@ -171,7 +153,7 @@ impl BodyPart {
         }
     }
 
-    fn get_total_health_points(&self) -> i16 {
+    pub fn get_total_health_points(&self) -> i16 {
         match self.total_health_points {
             Stat::HealthPoints(v) => v,
             _ => {
@@ -181,7 +163,7 @@ impl BodyPart {
         }
     }
 
-    fn get_modified_health_points(&self) -> i16 {
+    pub fn get_modified_health_points(&self) -> i16 {
         match self.modified_health_points {
             Stat::HealthPoints(v) => v,
             _ => {
@@ -195,7 +177,7 @@ impl BodyPart {
         let new_percent = match percent {
             Option::Some(v) => v,
             Option::None => {
-                let current_health = self.get_current_healh_points();
+                let current_health = self.get_current_health_points();
                 let total_health = self.get_total_health_points();
                 (current_health * 100 / total_health) as i8
             }

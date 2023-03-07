@@ -10,6 +10,7 @@ use super::deploy::Deploy;
 use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
 use super::scene_data::objects::body_part::BodyPart;
 use super::scene_data::objects::thing::{Thing, ThingType};
+use super::scene_data::objects::thing;
 
 #[derive(Default)]
 pub struct ObjectManager {
@@ -40,6 +41,8 @@ impl ObjectManager {
 
             thing.body_structure.push(body_part);
         }
+        thing::calculate_total_health_points(&mut thing);
+        thing::calculate_current_health_points(&mut thing);
 
         return thing;
     }
