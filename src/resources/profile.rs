@@ -3,7 +3,7 @@ use serde::{ Deserialize, Serialize };
 use std::fs::File;
 use std::io::prelude::*;
 
-#[derive( Serialize, Deserialize, Debug, Clone )]
+#[derive( Serialize, Deserialize, Debug, Clone, Default )]
 pub struct Profile {
     pub last_save: String,
     pub playtime: i64,

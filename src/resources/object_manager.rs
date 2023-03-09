@@ -8,6 +8,7 @@ use crate::scenes::game_scenes::tilemap;
 
 use super::deploy::Deploy;
 use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
+use super::scene_data::objects::body_part;
 use super::scene_data::objects::body_part::BodyPart;
 use super::scene_data::objects::thing::{Thing, ThingType};
 use super::scene_data::objects::thing;
@@ -37,7 +38,7 @@ impl ObjectManager {
                 bodypart_type: bodypart_type.clone(),
                 ..Default::default()
             };
-            body_part.set_health_points(*hp);
+            body_part::set_health_points(&mut body_part,*hp);
 
             thing.body_structure.push(body_part);
         }

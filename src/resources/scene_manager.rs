@@ -59,7 +59,7 @@ impl SceneManager {
         return &self.game_scene[index];
     }
 
-    pub fn get_game_scene_by_id(&mut self, scene_id: usize) -> &mut GameScene {
+    pub fn get_game_scene_by_id_mut(&mut self, scene_id: usize) -> &mut GameScene {
         for i in 0..self.game_scene.len() {
             if scene_id == self.game_scene[i].scene_id {
                 return &mut self.game_scene[i];
