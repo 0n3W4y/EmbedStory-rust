@@ -16,21 +16,21 @@ pub enum Stat{
 impl Stat {
     pub fn get_stat(&self) -> i16 {
         match *self{
-            Stat::Strength(v)
-            | Stat::Endurance(v)
-            | Stat::Intellect(v)
-            | Stat::Agility(v)
-            | Stat::HealthPoints(v) => v
+            Self::Strength(v)
+            | Self::Endurance(v)
+            | Self::Intellect(v)
+            | Self::Agility(v)
+            | Self::HealthPoints(v) => v
         }
     }
 
     pub fn set_stat(&mut self, value: i16) {
-        match *self {
-            Stat::Strength(mut v)
-            | Stat::Endurance(mut v)
-            | Stat::Intellect(mut v)
-            | Stat::Agility(mut v)
-            | Stat::HealthPoints(mut v) => v = value
+        *self = match self {
+            Self::Strength(_) => Self::Strength(value),
+            | Self::Endurance(_) => Self::Endurance(value),
+            | Self::Intellect(_) =>Self::Intellect(value),
+            | Self::Agility(_) =>Self::Agility(value),
+            | Self::HealthPoints(_) => Self::HealthPoints(value),
         }
     }
 }

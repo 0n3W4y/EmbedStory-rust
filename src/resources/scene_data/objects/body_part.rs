@@ -69,15 +69,17 @@ impl BodyPart {
     }
 
     pub fn set_current_health_points(&mut self, value: i16) {
-        Stat::set_stat(&mut self.current_health_points, value);
+        self.current_health_points.set_stat(value);
     }
 
     pub fn set_total_health_points(&mut self, value: i16) {
-        Stat::set_stat(&mut self.total_health_points, value);
+        self.total_health_points.set_stat(value);
+        //Stat::set_stat(&mut self.total_health_points, value);
     }
 
     pub fn set_modified_health_points(&mut self, value: i16) {
-        Stat::set_stat(&mut self.modified_health_points, value);
+        self.modified_health_points.set_stat(value);
+        //Stat::set_stat(&mut self.modified_health_points, value);
     }
 
     
