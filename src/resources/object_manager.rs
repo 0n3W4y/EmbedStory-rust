@@ -39,6 +39,7 @@ impl ObjectManager {
                 ..Default::default()
             };
             body_part::set_health_points(&mut body_part,*hp);
+            println!("{:?}", body_part.get_current_health_points());
 
             thing.body_structure.push(body_part);
         }
