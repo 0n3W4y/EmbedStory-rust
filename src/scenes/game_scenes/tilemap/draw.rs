@@ -73,8 +73,8 @@ pub fn copy_from_tile_to_entity_component(component: &mut TileComponent, tile_co
     component.permissions = tile.permissions.to_vec();
     component.thing_type = tile.thing_type.clone();
     component.stuff_type = tile.stuff_type.to_vec();
-    component.alive_character_type = tile.alive_character_type.clone();
-    component.dead_character_type = tile.dead_character_type.to_vec();
+    component.alive_charactor_type = tile.alive_charactor_type.clone();
+    component.dead_charactor_type = tile.dead_charactor_type.to_vec();
     component.effect_type = tile.effect_type.clone();
 
     tile_component.cover_type = tile.cover_type.clone();

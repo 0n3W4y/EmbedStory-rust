@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::resources::scene_data::objects::character::Character;
+use crate::resources::scene_data::objects::charactor::Charactor;
 use crate::resources::scene_data::objects::scene_effect::SceneEffect;
 use crate::resources::scene_data::objects::stuff::Stuff;
 use crate::resources::scene_data::objects::thing::Thing;
@@ -20,7 +20,7 @@ pub struct GameScene {
     pub tilemap: Tilemap,
     pub things: Vec<Thing>,
     pub stuff: Vec<Stuff>,
-    pub characters: Vec<Character>,
+    pub characters: Vec<Charactor>,
     pub effects: Vec<SceneEffect>,
     //pub fog: Vec<>,
     //pub roof: Vec<>,

@@ -42,18 +42,18 @@ impl Resist{
     }
 
     pub fn set_resist(&mut self, value: i16) {
-        match *self {
-            Resist::Bleed(mut v)
-            | Resist::Disease(mut v)
-            | Resist::Electric(mut v)
-            | Resist::Fatigue(mut v)
-            | Resist::Fire(mut v)
-            | Resist::Kinetic( mut v)
-            | Resist::Knockdown(mut v)
-            | Resist::Laser(mut v)
-            | Resist::Pain(mut v)
-            | Resist::Plasma(mut v)
-            | Resist::Poison(mut v) => v = value
+        *self = match *self {
+            Self::Bleed(_) => Self::Bleed(value),
+            Self::Disease(_) => Self::Disease(value),
+            Self::Electric(_) => Self::Electric(value),
+            Self::Fatigue(_) => Self::Fatigue(value),
+            Self::Fire(_) => Self::Fire(value),
+            Self::Kinetic(_) => Self::Kinetic(value),
+            Self::Knockdown(_) => Self::Knockdown(value),
+            Self::Laser(_) => Self::Laser(value),
+            Self::Pain(_) => Self::Pain(value),
+            Self::Plasma(_) => Self::Plasma(value),
+            Self::Poison(_) => Self::Poison(value),
         }
     }
 }

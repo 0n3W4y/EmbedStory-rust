@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 pub mod tile_cover_component;
 
-use crate::resources::scene_data::objects::character::CharacterType;
+use crate::resources::scene_data::objects::charactor::CharactorType;
 use crate::resources::scene_data::objects::scene_effect::SceneEffectType;
 use crate::resources::scene_data::objects::stuff::StuffType;
 use crate::resources::scene_data::objects::thing::ThingType;
@@ -24,7 +24,7 @@ pub struct TileComponent {
 
     pub thing_type: Option<(ThingType, usize)>,
     pub stuff_type: Vec<(StuffType, usize)>,
-    pub alive_character_type: Option<(CharacterType, usize)>,
-    pub dead_character_type: Vec<(CharacterType, usize)>,
+    pub alive_charactor_type: Option<(CharactorType, usize)>,
+    pub dead_charactor_type: Vec<(CharactorType, usize)>,
     pub effect_type: Option<(SceneEffectType, usize)>,
 }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::resources::scene_data::objects::{
-    character::CharacterType, scene_effect::SceneEffectType, stuff::StuffType, thing::ThingType,
+    charactor::CharactorType, scene_effect::SceneEffectType, stuff::StuffType, thing::ThingType,
 };
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
@@ -65,8 +65,8 @@ pub struct Tile{
 
     pub thing_type: Option<(ThingType, usize)>, // ( thing type, id of thing);
     pub stuff_type: Vec<(StuffType, usize)>,
-    pub alive_character_type: Option<(CharacterType, usize)>,
-    pub dead_character_type: Vec<(CharacterType, usize)>,
+    pub alive_charactor_type: Option<(CharactorType, usize)>,
+    pub dead_charactor_type: Vec<(CharactorType, usize)>,
     pub effect_type: Option<(SceneEffectType, usize)>
 }
 

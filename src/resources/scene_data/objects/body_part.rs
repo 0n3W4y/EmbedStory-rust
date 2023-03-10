@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::resources::scene_data::objects::character::stats::Stat;
+use crate::resources::scene_data::objects::charactor::stats::Stat;
 
 #[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Debug, Copy, Hash, Default)]
 pub enum BodyPartType {
