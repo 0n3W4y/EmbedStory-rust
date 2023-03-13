@@ -1,0 +1,9 @@
+{
+    "race_type": "Human",
+    "resists": [{},{},{}],
+    "stats": [{},{},{}],
+    "skills": [{},{},{}],
+    stuff_storage: Vec<Stuff>,
+    pub stuff_wear: Vec<Stuff>,
+    "body_structure": [{},{}]
+}

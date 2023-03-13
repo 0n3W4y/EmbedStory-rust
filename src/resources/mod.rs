@@ -7,4 +7,6 @@ pub mod profile;
 pub mod scene_data;
 pub mod deploy_addiction;
 pub mod scene_manager;
-pub mod object_manager;
+pub mod thing_manager;
+pub mod charactor_manager;
+pub mod stuff_manager;

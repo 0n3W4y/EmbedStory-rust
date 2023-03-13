@@ -3,10 +3,12 @@ use bevy::prelude::*;
 use super::game_scenes::tilemap;
 use crate::config::{RESOLUTION, TILE_SIZE, WINDOW_HEIGHT};
 use crate::materials::{font::FontMaterials, material_manager::MaterialManager};
+use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::deploy_addiction::game_scene_biome_deploy::BiomeType;
 use crate::resources::dictionary::Dictionary;
-use crate::resources::object_manager::ObjectManager;
+use crate::resources::stuff_manager::StuffManager;
+use crate::resources::thing_manager::ThingManager;
 use crate::resources::scene_manager::{SceneManager, SceneType};
 use crate::scenes::SceneState;
 
@@ -231,7 +233,15 @@ fn create_starting_scenes(mut commands: Commands, deploy: Res<Deploy>) {
     let mut scene_manager: SceneManager = Default::default();
 
     //create new object manager;
-    let mut object_manager: ObjectManager = Default::default();
+    let mut object_manager: ThingManager = Default::default();
+
+    //create new charactor manager;
+    
+    let mut charactor_manager: CharactorManager = Default::default();
+
+    //create new stuff manager;
+
+    let mut stuff_manager: StuffManager = Default::default();
 
     //Create starting scene;
     let mut starting_scene: GameScene = scene_manager.create_game_scene(&SceneType::GroundScene);
@@ -269,4 +279,6 @@ fn create_starting_scenes(mut commands: Commands, deploy: Res<Deploy>) {
 
     commands.insert_resource(scene_manager);
     commands.insert_resource(object_manager);
+    commands.insert_resource(stuff_manager);
+    commands.insert_resource(charactor_manager);
 }

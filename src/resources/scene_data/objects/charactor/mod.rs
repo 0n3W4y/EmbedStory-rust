@@ -6,6 +6,7 @@ use crate::scenes::game_scenes::tilemap::tile::Position;
 use super::body_part::BodyPart;
 use super::resists::{Resist, MAX_RESIST_VALUE, MIN_RESIST_VALUE};
 use super::charactor::stats::{Stat, MIN_STAT_VALUE};
+use super::stuff::Stuff;
 
 pub mod skills;
 pub mod stats;
@@ -34,6 +35,7 @@ pub enum RaceType {
     Humanoid,
     Robot,
     Mutant,
+    SuperMutant,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
@@ -55,9 +57,12 @@ pub struct Charactor {
     pub skills: Vec<Skill>,
     pub skills_cache: Vec<Skill>,
 
+    pub stuff_storage: Vec<Stuff>,
+    pub stuff_wear: Vec<Stuff>,
+
     pub body_structure: Vec<BodyPart>,
-    pub current_health_points: i16, // cache
-    pub total_health_points: i16,   // cache
+    pub current_health_points: i16, // cache from body_structure healthpoints
+    pub total_health_points: i16,   // cache from body_structure healthpoints
 }
 
 #[derive(Serialize, Deserialize)]

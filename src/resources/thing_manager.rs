@@ -14,11 +14,11 @@ use super::scene_data::objects::thing::{Thing, ThingType};
 use super::scene_data::objects::thing;
 
 #[derive(Default)]
-pub struct ObjectManager {
+pub struct ThingManager {
     id: usize,
 }
 
-impl ObjectManager {
+impl ThingManager {
 
     pub fn create_thing(&mut self, thing_type: &ThingType, deploy: &Deploy) -> Thing {
         let id = self.create_id();
