@@ -7,9 +7,11 @@ use super::body_part::BodyPart;
 use super::resists::{Resist, MAX_RESIST_VALUE, MIN_RESIST_VALUE};
 use super::charactor::stats::{Stat, MIN_STAT_VALUE};
 use super::stuff::Stuff;
+use super::charactor::charactor_effect::CharactorEffect;
 
 pub mod skills;
 pub mod stats;
+pub mod charactor_effect;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -59,6 +61,8 @@ pub struct Charactor {
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_wear: Vec<Stuff>,
+
+    pub charactor_effect: Vec<CharactorEffect>,
 
     pub body_structure: Vec<BodyPart>,
     pub current_health_points: i16, // cache from body_structure healthpoints
