@@ -13,14 +13,41 @@ pub mod skills;
 pub mod stats;
 pub mod charactor_effect;
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy)]
 pub enum CharactorType {
     Player,
-    #[default]
-    NPC,
-    Monster,
-    PlayerCompanion,
+    NPC(NPCType),
+    Monster(MonsterType),
+    PlayerCompanion(CompanionType),
 }
+
+impl Default for CharactorType {
+    fn default() -> Self {
+        Self::NPC(NPCType::Civilian)
+    }
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum NPCType {
+    #[default]
+    Civilian,
+    MeleeFighter,
+    RangedFighter,
+    MixedFighter,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum MonsterType{
+    #[default]
+    Bogomol,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum CompanionType{
+    #[default]
+    Scientist,
+}
+
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum AttitudeToPlayer {
@@ -72,7 +99,7 @@ pub struct Charactor {
 #[derive(Serialize, Deserialize)]
 pub struct CharacterDeploy {}
 
-pub fn add_to_resist(
+pub fn change_resist(
     charactor_resist: &mut Vec<Resist>,
     charactor_resist_cache: &mut Vec<Resist>,
     target_resist: &Resist,
@@ -83,7 +110,7 @@ pub fn add_to_resist(
         Option::Some(v) => v,
         Option::None => {
             println!(
-                    "Character.add_to_resist; Can not add to '{:?}' value: {:?}, bacause resist is not in vec of resists.",
+                    "Character.change_resist; Can no cnahge: '{:?}'; with value: {:?}, bacause resist is not in vec of resists.",
                     target_resist,
                     value
                 );
@@ -97,7 +124,7 @@ pub fn add_to_resist(
         Option::Some(v) => v,
         Option::None => {
             println!(
-                    "Character.add_to_resist; Can not add to '{:?}' value: {:?}, bacause resist is not in vec of resists_cache.",
+                    "Character.change_resist; Can no cnahge: '{:?}'; with value: {:?}, bacause resist is not in vec of resists_cache.",
                     target_resist,
                     value
                 );
@@ -118,51 +145,7 @@ pub fn add_to_resist(
     }
 }
 
-pub fn substruct_from_resist(
-    charactor_resist: &mut Vec<Resist>,
-    charactor_resist_cache: &mut Vec<Resist>,
-    target_resist: &Resist,
-    value: i16,
-) {
-    //working with cashe;
-    let resist = match charactor_resist.iter_mut().find(|x| *x == target_resist) {
-        Option::Some(v) => v,
-        Option::None => {
-            println!(
-                    "Character.substruct_from_resist; Can not add to '{:?}' value: {:?}, bacause resist is not in vec of resists.",
-                    target_resist,
-                    value
-                );
-            return;
-        }
-    };
-    let cache_resist = match charactor_resist_cache
-        .iter_mut()
-        .find(|x| *x == target_resist)
-    {
-        Option::Some(v) => v,
-        Option::None => {
-            println!(
-                    "Character.substruct_from_resist; Can not add to '{:?}' value: {:?}, bacause resist is not in vec of resists_cache.",
-                    target_resist,
-                    value
-                );
-            return;
-        }
-    };
-    //set cache value;
-    let cache_value = cache_resist.get_resist() + value;
-    cache_resist.set_resist(cache_value);
-
-    //calculate current value;   
-    if cache_value < MIN_RESIST_VALUE {
-        resist.set_resist(MIN_RESIST_VALUE);
-    } else {
-        resist.set_resist(cache_value);
-    }
-}
-
-pub fn add_to_stat(
+pub fn change_stat(
     charactor_stat: &mut Vec<Stat>,
     charactor_stat_cache: &mut Vec<Stat>,
     target_stat: &Stat,
@@ -172,7 +155,7 @@ pub fn add_to_stat(
         Option::Some(v) => v,
         Option::None => {
             println!(
-                    "Character.add_to_stat; Can not add to '{:?}' value: {:?}, bacause stat is not in vec of stats.",
+                    "Character.change_stat; Can not change '{:?}'; with value: {:?}, bacause stat is not in vec of stats.",
                     target_stat,
                     value
                 );
@@ -186,7 +169,7 @@ pub fn add_to_stat(
         Option::Some(v) => v,
         Option::None => {
             println!(
-                    "Character.substruct_from_resist; Can not add to '{:?}' value: {:?}, bacause resist is not in vec of resists_cache.",
+                    "Character.change_stat; Can not change '{:?}'; with value: {:?}, bacause stat is not in vec of stat_cache.",
                     target_stat,
                     value
                 );
@@ -200,50 +183,6 @@ pub fn add_to_stat(
     //calculate current value;
     if cache_value < MIN_STAT_VALUE {
         stat.set_stat(MIN_STAT_VALUE);
-    } else {
-        stat.set_stat(cache_value);
-    }
-}
-
-pub fn substruct_from_stat(
-    charactor_stat: &mut Vec<Stat>,
-    charactor_stat_cache: &mut Vec<Stat>,
-    target_stat: &Stat,
-    value: i16,
-) {
-    //working with cache;
-    let stat = match charactor_stat.iter_mut().find(|x| *x == target_stat) {
-        Option::Some(v) => v,
-        Option::None => {
-            println!(
-                    "Character.add_to_stat; Can not add to '{:?}' value: {:?}, bacause stat is not in vec of stats.",
-                    target_stat,
-                    value
-                );
-            return;
-        }
-    };
-    let cache_stat = match charactor_stat_cache
-        .iter_mut()
-        .find(|x| *x == target_stat)
-    {
-        Option::Some(v) => v,
-        Option::None => {
-            println!(
-                    "Character.substruct_from_resist; Can not add to '{:?}' value: {:?}, bacause resist is not in vec of resists_cache.",
-                    target_stat,
-                    value
-                );
-            return;
-        }
-    };
-    //set cache value;
-    let cache_value = cache_stat.get_stat() - value;
-    cache_stat.set_stat(cache_value);
-
-    //calculate current value;
-    if cache_value < MIN_STAT_VALUE {
-        stat.set_stat(MIN_STAT_VALUE)
     } else {
         stat.set_stat(cache_value);
     }

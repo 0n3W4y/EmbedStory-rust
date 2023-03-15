@@ -1,0 +1,79 @@
+{
+    "human": {
+        "resists": [
+            {"Fire": 0}, 
+            {"Electric": 0}, 
+            {"Kinetic": 0}, 
+            {"Laser": 0}, 
+            {"Plasma": 0}, 
+            {"Poison": 0}, 
+            {"Knockdown": 0},
+            {"Bleed": 0},
+            {"Disease": 0},
+            {"Pain": 0},
+            {"Fatigue": 0}
+        ],
+        "stats": [
+            {"Strength": 1},
+            {"Intellect": 1},
+            {"Endurance": 1},
+            {"Vitality": 1},
+            {"Agility": 1},
+            {"Mobility": 1}
+        ],
+        "stats_extra_points": 29,
+        "skills": [
+            {},
+            {},
+            {}
+        ],
+        "body_structure": [
+            {"Head": 100},
+            {"LeftEye": 50},
+            {"RightEye": 50},
+            {"Nose": 40},
+            {"Mouth": 40},
+            {"Brain": 30},
+            {"LeftArm": 100},
+            {"LeftWrist": 70},
+            {"RightArm": 100},
+            {"Torso": 150},
+            {"LeftLung": 50},
+            {"RightLung": 50},
+            {"Heart": 30},
+            {"Groin": 30},
+            {"LeftFoot": 100},
+            {"LeftSole": 70},
+            {"RightFoot": 100},
+            {"RightSole": 70}
+        ],
+        "body_structure_part_type": [
+            {"Head": "Natural"},
+            {"LeftEye": "Natural"},
+            {"RightEye": "Natural"},
+            {"Nose": "Natural"},
+            {"Mouth": "Natural"},
+            {"Brain": "Natural"},
+            {"LeftArm": "Natural"},
+            {"LeftWrist": "Natural"},
+            {"RightArm": "Natural"},
+            {"Torso": "Natural"},
+            {"LeftLung": "Natural"},
+            {"RightLung": "Natural"},
+            {"Heart": "Natural"},
+            {"Groin": "Natural"},
+            {"LeftFoot": "Natural"},
+            {"LeftSole": "Natural"},
+            {"RightFoot": "Natural"},
+            {"RightSole": "Natural"}
+        ]
+    },
+
+    "android": {
+
+    },
+
+    "robot": {
+
+    }
+}

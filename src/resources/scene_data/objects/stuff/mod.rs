@@ -21,6 +21,8 @@ pub enum StuffType{
     Ammo,
     HealthPackKit,
     Food,
+    WeaponUpgrade,
+    ArmorUpgrade,
 }
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy )]
@@ -34,7 +36,10 @@ pub enum StuffSubtype {
     Picklock,
     ElectronickPicklock,
     // разные баффы, наркотики
-    
+    // апгрейды для оружия
+    // апгрейды для брони
+    // собственно сама броня
+    // разные оружия
 }
 
 
@@ -51,5 +56,4 @@ pub struct Stuff{
     graphic_position: Position<f32>,
 
     attributes: Vec<StuffAttribute>,
-
 }

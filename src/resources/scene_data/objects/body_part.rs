@@ -81,11 +81,9 @@ impl BodyPart {
         self.modified_health_points.set_stat(value);
         //Stat::set_stat(&mut self.modified_health_points, value);
     }
-
-    
 }
 
-pub fn add_current_health_points(bodypart: &mut BodyPart, value: i16) {
+pub fn change_current_health_points(bodypart: &mut BodyPart, value: i16) {
     let current_value = bodypart.get_current_health_points();
     let total_value: i16 = bodypart.get_total_health_points();
     let max_value: i16 =
@@ -99,27 +97,14 @@ pub fn add_current_health_points(bodypart: &mut BodyPart, value: i16) {
     }
 }
 
-pub fn substruct_current_health_points(bodypart: &mut BodyPart, value: i16) {
-    let current_health_points = bodypart.get_current_health_points();
-    let new_value = current_health_points - value;
-    bodypart.set_current_health_points(new_value);
-}
-
-pub fn add_modified_health_points(bodypart: &mut BodyPart, value: i16) {
-    let new_value = bodypart.get_modified_health_points() + value;
-    let new_total_health = bodypart.get_total_health_points() + value;
-    bodypart.set_total_health_points(new_total_health);
-    bodypart.set_modified_health_points(new_value);
-}
-
-pub fn substruct_modified_health_points(bodypart: &mut BodyPart, value: i16) {
+pub fn change_modified_health_points(bodypart: &mut BodyPart, value: i16) {
     // we can change modidified value to biggest "-", but we can't disrupt part type, min total hp and curent hp will be equal 1;
-    let new_value = bodypart.get_modified_health_points() - value;
+    let new_value = bodypart.get_modified_health_points() + value;
     bodypart.set_modified_health_points(new_value);
     let total_health = bodypart.get_total_health_points();
-    let new_total_health = total_health - value;
+    let new_total_health = total_health + value;
     let current_health_points: i16 = bodypart.get_current_health_points();
-    let new_current_health_points: i16 = bodypart.get_current_health_points() - value;
+    let new_current_health_points: i16 = bodypart.get_current_health_points() + value;
 
     // calc total health points
     if new_total_health <= 0 && bodypart.part_status != PartStatus::Disrupted {
@@ -165,7 +150,7 @@ pub fn substruct_modified_health_points(bodypart: &mut BodyPart, value: i16) {
     }
 }
 
-pub fn set_health_points(bodypart: &mut BodyPart, value: i16){
+pub fn set_health_points(bodypart: &mut BodyPart, value: i16) {
     bodypart.set_modified_health_points(value);
     bodypart.set_total_health_points(value);
     bodypart.set_current_health_points(value);
