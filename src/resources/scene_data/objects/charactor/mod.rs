@@ -97,7 +97,10 @@ pub struct Charactor {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct CharacterDeploy {}
+pub struct RaceDeploy {}
+
+#[derive(Serialize, Deserialize)]
+pub struct NPCDeploy {}
 
 pub fn change_resist(
     charactor_resist: &mut Vec<Resist>,
