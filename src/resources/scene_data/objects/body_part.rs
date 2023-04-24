@@ -26,7 +26,7 @@ pub enum BodyPartType {
     Groin,
 }
 
-#[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Debug, Copy, Default)]
+#[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Debug, Copy, Default, Hash)]
 pub enum PartType {
     #[default]
     Natural,

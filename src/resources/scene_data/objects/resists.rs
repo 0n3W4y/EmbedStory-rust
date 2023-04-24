@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 pub const MAX_RESIST_VALUE: i16 = 75;
 pub const MIN_RESIST_VALUE: i16 = -100;
 
-#[derive(Eq, PartialEq, Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Eq, PartialEq, Serialize, Deserialize, Debug, Clone, Copy, Hash)]
 pub enum Resist {
     Kinetic(i16),
     Fire(i16),

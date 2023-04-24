@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 
 pub const MIN_STAT_VALUE: i16 = 1;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq )]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Stat{
     Strength(i16),
     Intellect(i16),

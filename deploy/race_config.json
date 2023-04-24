@@ -13,20 +13,7 @@
             {"Pain": 0},
             {"Fatigue": 0}
         ],
-        "stats": [
-            {"Strength": 1},
-            {"Intellect": 1},
-            {"Endurance": 1},
-            {"Vitality": 1},
-            {"Agility": 1},
-            {"Mobility": 1}
-        ],
         "stats_extra_points": 29,
-        "skills": [
-            {},
-            {},
-            {}
-        ],
         "body_structure": [
             {"Head": 100},
             {"LeftEye": 50},
@@ -47,29 +34,18 @@
             {"RightFoot": 100},
             {"RightSole": 70}
         ],
-        "body_structure_part_type": [
-            {"Head": "Natural"},
-            {"LeftEye": "Natural"},
-            {"RightEye": "Natural"},
-            {"Nose": "Natural"},
-            {"Mouth": "Natural"},
-            {"Brain": "Natural"},
-            {"LeftArm": "Natural"},
-            {"LeftWrist": "Natural"},
-            {"RightArm": "Natural"},
-            {"Torso": "Natural"},
-            {"LeftLung": "Natural"},
-            {"RightLung": "Natural"},
-            {"Heart": "Natural"},
-            {"Groin": "Natural"},
-            {"LeftFoot": "Natural"},
-            {"LeftSole": "Natural"},
-            {"RightFoot": "Natural"},
-            {"RightSole": "Natural"}
-        ]
+        "body_structure_part_type": "Natural"
     },
 
-    "android": {
+    "humanoid": {
+
+    },
+
+    "mutant": {
+
+    },
+
+    "super_mutant": {
 
     },
 
