@@ -49,7 +49,7 @@ pub enum ThingType {
 #[derive(Deserialize, Clone, Debug)]
 pub struct ThingConfig {
     pub permissions: Vec<ThingPermissions>,
-    pub resists: Vec<Resist>,
+    pub resists: HashMap<Resist, i16>,
     pub body_structure: HashMap<BodyPartType, i16>,
     pub tile_allow_permissions: Vec<TilePermissions>,
     pub tile_deny_permissions: Vec<TilePermissions>,
@@ -66,8 +66,8 @@ pub struct Thing {
     pub graphic_index: u8, // get image from material_manager;
 
     pub permissions: Vec<ThingPermissions>,
-    pub resists: Vec<Resist>,
-    pub resists_cache: Vec<Resist>,
+    pub resists: HashMap<Resist, i16>,
+    pub resists_cache: HashMap<Resist, i16>,
     pub body_structure: Vec<BodyPart>,
 
     pub current_health_points: i16,

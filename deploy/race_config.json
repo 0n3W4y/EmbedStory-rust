@@ -1,55 +1,63 @@
 {
     "human": {
-        "resists": [
-            {"Fire": 0}, 
-            {"Electric": 0}, 
-            {"Kinetic": 0}, 
-            {"Laser": 0}, 
-            {"Plasma": 0}, 
-            {"Poison": 0}, 
-            {"Knockdown": 0},
-            {"Bleed": 0},
-            {"Disease": 0},
-            {"Pain": 0},
-            {"Fatigue": 0}
-        ],
+        "resists":{
+            "Fire": 0, 
+            "Electric": 0, 
+            "Kinetic": 0, 
+            "Laser": 0, 
+            "Plasma": 0, 
+            "Poison": 0, 
+            "Knockdown": 0,
+            "Bleed": 0,
+            "Disease": 0,
+            "Pain": 0,
+            "Fatigue": 0
+        },
         "stats_extra_points": 29,
-        "body_structure": [
-            {"Head": 100},
-            {"LeftEye": 50},
-            {"RightEye": 50},
-            {"Nose": 40},
-            {"Mouth": 40},
-            {"Brain": 30},
-            {"LeftArm": 100},
-            {"LeftWrist": 70},
-            {"RightArm": 100},
-            {"Torso": 150},
-            {"LeftLung": 50},
-            {"RightLung": 50},
-            {"Heart": 30},
-            {"Groin": 30},
-            {"LeftFoot": 100},
-            {"LeftSole": 70},
-            {"RightFoot": 100},
-            {"RightSole": 70}
-        ],
+        "body_structure":{
+            "Head": 100,
+            "LeftEye": 50,
+            "RightEye": 50,
+            "Nose": 40,
+            "Mouth": 40,
+            "Brain": 30,
+            "LeftArm": 100,
+            "LeftWrist": 70,
+            "RightArm": 100,
+            "Torso": 150,
+            "LeftLung": 50,
+            "RightLung": 50,
+            "Heart": 30,
+            "Groin": 30,
+            "LeftFoot": 100,
+            "LeftSole": 70,
+            "RightFoot": 100,
+            "RightSole": 70
+        },
         "body_structure_part_type": "Natural"
     },
 
     "humanoid": {
-
+        "resists": {},
+        "stats_extra_points": 29,
+        "body_structure": {}
     },
 
     "mutant": {
-
+        "resists": {},
+        "stats_extra_points": 29,
+        "body_structure": {}
     },
 
     "super_mutant": {
-
+        "resists": {},
+        "stats_extra_points": 29,
+        "body_structure": {}
     },
 
     "robot": {
-
+        "resists": {},
+        "stats_extra_points": 29,
+        "body_structure": {}
     }
 }

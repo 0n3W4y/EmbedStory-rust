@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use crate::resources::scene_data::objects::body_part::PartType;
 use crate::resources::scene_data::objects::body_part::BodyPartType;
 use crate::resources::scene_data::objects::charactor::RaceType;
-use crate::resources::scene_data::objects::charactor::stats::Stat;
 use crate::resources::scene_data::objects::resists::Resist;
 
 #[derive( Deserialize, Debug)]
@@ -52,9 +51,8 @@ pub struct RaceDeploy{
 
 #[derive(Deserialize, Debug)]
 pub struct RaceConfig{
-    pub resists: HashMap<Resist, i8>,
+    pub resists: HashMap<Resist, i16>,
     pub stats_extra_point: u8,
-    //pub skills: 
     pub body_structure: HashMap<BodyPartType, u16>,
     pub body_structure_part_type: PartType,
 }

@@ -6,7 +6,7 @@ use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::stuff::stuff_attributes::StuffAttribute;
 
-#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy )]
+#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
 pub enum StuffType{
     MeleeWeapon,
     RangedWeapon,
@@ -25,7 +25,7 @@ pub enum StuffType{
     ArmorUpgrade,
 }
 
-#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy )]
+#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
 pub enum StuffSubtype {
     Bandage, // stop bleeding
     HealthPack, // add health to part
@@ -43,7 +43,7 @@ pub enum StuffSubtype {
 }
 
 
-#[derive( Serialize, Deserialize, Debug, Clone )]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Stuff{
     id: usize,
     stuff_type: StuffType,
@@ -55,5 +55,6 @@ pub struct Stuff{
     position: Position<i32>,
     graphic_position: Position<f32>,
 
-    attributes: Vec<StuffAttribute>,
+    //TODO: Stuff attributes with values
+    //attributes: Vec<StuffAttribute>,
 }

@@ -1,7 +1,7 @@
 {
     "rock":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 900},
         "tile_allow_permissions": [
             "Fog",
@@ -18,7 +18,7 @@
 
     "tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": -20}, {"Electric": 90}, {"Kinetic": 10}, {"Laser": 0}, {"Plasma": 5}],
+        "resists":{"Fire": -20, "Electric": 90, "Kinetic": 10, "Laser": 0, "Plasma": 5},
         "body_structure": {"Torso": 400},
         "tile_allow_permissions": [
             "Fog",
@@ -34,7 +34,7 @@
     },
     "fertile_tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": -20}, {"Electric": 90}, {"Kinetic": 10}, {"Laser": 0}, {"Plasma": 5}],
+        "resists":{"Fire": -20, "Electric": 90, "Kinetic": 10, "Laser": 0, "Plasma": 5},
         "body_structure": {"Torso": 350},
         "tile_allow_permissions": [
             "Fog",
@@ -50,7 +50,7 @@
     },
     "bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": -30}, {"Electric": 90}, {"Kinetic": 0}, {"Laser": 0}, {"Plasma": 5}],
+        "resists":{"Fire": -30, "Electric": 90, "Kinetic": 0, "Laser": 0, "Plasma": 5},
         "body_structure": {"Torso": 200},
         "tile_allow_permissions": [
             "Fog",
@@ -66,7 +66,7 @@
     },
     "fertile_bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": -30}, {"Electric": 90}, {"Kinetic": 0}, {"Laser": 0}, {"Plasma": 5}],
+        "resists":{"Fire": -30, "Electric": 90, "Kinetic": 0, "Laser": 0, "Plasma": 5},
         "body_structure": {"Torso": 150},
         "tile_allow_permissions": [
             "Fog",
@@ -82,7 +82,7 @@
     },
     "boulder":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 400},
         "tile_allow_permissions": [
             "Fog",
@@ -98,7 +98,7 @@
     },
     "log":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 300},
         "tile_allow_permissions": [
             "Fog",
@@ -114,7 +114,7 @@
     },
     "copper_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 900},
         "tile_allow_permissions": [
             "Fog",
@@ -130,7 +130,7 @@
     },
     "iron_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 900},
         "tile_allow_permissions": [
             "Fog",
@@ -146,7 +146,7 @@
     },
     "wooden_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 650},
         "tile_allow_permissions": [
             "Fog"
@@ -161,7 +161,7 @@
     },
     "stone_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1100},
         "tile_allow_permissions": [
             "Fog"
@@ -176,7 +176,7 @@
     },
     "iron_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1500},
         "tile_allow_permissions": [
             "Fog"
@@ -191,7 +191,7 @@
     },
     "steel_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1800},
         "tile_allow_permissions": [
             "Fog"
@@ -206,7 +206,7 @@
     },
     "wooden_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 500},
         "tile_allow_permissions": [
             "Fog",
@@ -222,7 +222,7 @@
     },
     "reinforced_wooden_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 750},
         "tile_allow_permissions": [
             "Fog",
@@ -238,7 +238,7 @@
     },
     "iron_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1200},
         "tile_allow_permissions": [
             "Fog",
@@ -254,7 +254,7 @@
     },
     "reinforced_iron_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1500},
         "tile_allow_permissions": [
             "Fog",
@@ -270,7 +270,7 @@
     },
     "steel_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1500},
         "tile_allow_permissions": [
             "Fog",
@@ -286,7 +286,7 @@
     },
     "reinforced_steel_door":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":[{"Fire": 90}, {"Electric": 90}, {"Kinetic": 50}, {"Laser": 20}, {"Plasma": 10}],
+        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
         "body_structure": {"Torso": 1900},
         "tile_allow_permissions": [
             "Fog",

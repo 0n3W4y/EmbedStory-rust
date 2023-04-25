@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use crate::resources::scene_data::objects::charactor::skills::Skill;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::body_part::BodyPart;
-use super::resists::{Resist, MAX_RESIST_VALUE, MIN_RESIST_VALUE};
+use super::resists::Resist;
 use super::charactor::stats::{Stat, MIN_STAT_VALUE};
 use super::stuff::Stuff;
 use super::charactor::charactor_effect::CharactorEffect;
@@ -67,27 +68,41 @@ pub enum RaceType {
     SuperMutant,
 }
 
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
+pub enum StuffWearSlot {
+    Head,
+    Vest,
+    Pants,
+    Gloves,
+    Shoes,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Charactor {
     pub id: usize,
     pub charactor_type: CharactorType,
     pub attitude_to_player: AttitudeToPlayer,
+    //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;
     pub race_type: RaceType,
 
     pub position: Position<i32>,
     pub graphic_position: Position<f32>,
 
-    pub resists: Vec<Resist>,
-    pub resists_cache: Vec<Resist>,
+    pub resists: HashMap<Resist, i16>,
+    pub resists_cache: HashMap<Resist, i16>,
+    pub min_resist_value: i16,
+    pub max_resist_value: i16,
 
-    pub stats: Vec<Stat>,
-    pub stats_cache: Vec<Stat>,
+    pub stats: HashMap<Stat, u8>,
+    pub stats_cache: HashMap<Stat, u8>,
+    pub min_stat_value: u8,
 
     pub skills: Vec<Skill>,
     pub skills_cache: Vec<Skill>,
 
     pub stuff_storage: Vec<Stuff>,
-    pub stuff_wear: Vec<Stuff>,
+    pub stuff_wear: Vec<Stuff>, // 
+    pub stuff_wear_slots: Vec<StuffWearSlot>,
 
     pub charactor_effect: Vec<CharactorEffect>,
 
