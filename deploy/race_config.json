@@ -13,7 +13,10 @@
             "Pain": 0,
             "Fatigue": 0
         },
+        "resist_max_value": 75,
+        "resist_min_value": -75,
         "stats_extra_points": 29,
+        "stats_min_value": 1,
         "body_structure":{
             "Head": 100,
             "LeftEye": 50,

@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-
-use crate::resources::scene_data::objects::charactor::stats::Stat;
+use std::collections::HashMap;
 
 #[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Debug, Copy, Hash, Default)]
 pub enum BodyPartType {
@@ -44,42 +43,66 @@ pub enum PartStatus {
     Broken,
     Disrupted,
 }
+#[derive(Eq, PartialEq, Serialize, Deserialize, Clone, Debug, Default, Hash)]
+pub enum HealthPoints{
+    #[default]
+    Current,
+    Modified,
+    Total,
+}
 
-#[derive(Deserialize, Serialize, Debug, Clone, Copy, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct BodyPart {
     pub bodypart_type: BodyPartType,
-    pub current_health_points: Stat,
-    pub total_health_points: Stat,
-    pub modified_health_points: Stat,
+    pub health_points: HashMap<HealthPoints, i16>,
     pub part_type: PartType,
     pub part_status: PartStatus,
 }
 
 impl BodyPart {
     pub fn get_current_health_points(&self) -> i16 {
-        Stat::get_stat(&self.current_health_points)
+        match self.health_points.get(&HealthPoints::Current) {
+            Some(v) => return *v,
+            None => { 
+                println!("Can't get current health points from '{:?}', return 0", self.bodypart_type); 
+                return 0;
+            }
+        };
     }
 
     pub fn get_total_health_points(&self) -> i16 {
-        Stat::get_stat(&self.total_health_points)
+        match self.health_points.get(&HealthPoints::Total) {
+            Some(v) => return *v,
+            None => { 
+                println!("Can't get total health points from '{:?}', return 0", self.bodypart_type); 
+                return 0;
+            }
+        };
     }
 
     pub fn get_modified_health_points(&self) -> i16 {
-        Stat::get_stat(&self.modified_health_points)
+        match self.health_points.get(&HealthPoints::Modified) {
+            Some(v) => return *v,
+            None => { 
+                println!("Can't get modified health points from '{:?}', return 0", self.bodypart_type); 
+                return 0;
+            }
+        };
     }
 
     pub fn set_current_health_points(&mut self, value: i16) {
-        self.current_health_points.set_stat(value);
+        // create new key if not exist, or modify current key value, if existed;
+        self.health_points.entry(HealthPoints::Current).and_modify(|key: &mut i16| *key = value).or_insert(value);
     }
 
     pub fn set_total_health_points(&mut self, value: i16) {
-        self.total_health_points.set_stat(value);
-        //Stat::set_stat(&mut self.total_health_points, value);
+        // create new key if not exist, or modify current key value, if existed;
+        self.health_points.entry(HealthPoints::Total).and_modify(|key: &mut i16| *key = value).or_insert(value);
     }
 
     pub fn set_modified_health_points(&mut self, value: i16) {
-        self.modified_health_points.set_stat(value);
-        //Stat::set_stat(&mut self.modified_health_points, value);
+        // create new key if not exist, or modify current key value, if existed;
+        self.health_points.entry(HealthPoints::Modified).and_modify(|key: &mut i16| *key = value).or_insert(value);
     }
 }
 

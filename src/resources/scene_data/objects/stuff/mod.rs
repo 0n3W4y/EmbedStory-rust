@@ -5,6 +5,7 @@ pub mod stuff_attributes;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::stuff::stuff_attributes::StuffAttribute;
+use crate::resources::scene_data::objects::charactor::StuffWearSlot;
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
 pub enum StuffType{
@@ -45,16 +46,18 @@ pub enum StuffSubtype {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Stuff{
-    id: usize,
-    stuff_type: StuffType,
-    stuff_subtype: StuffSubtype,
+    pub id: usize,
+    pub stuff_type: StuffType,
+    pub stuff_subtype: StuffSubtype,
 
-    max_stack_size: usize,
-    current_stack_size: usize,
+    pub max_amount: usize,
+    pub amount: usize,
 
-    position: Position<i32>,
-    graphic_position: Position<f32>,
+    pub position: Position<i32>,
+    pub graphic_position: Position<f32>,
+
+    pub wear_slot: StuffWearSlot,
 
     //TODO: Stuff attributes with values
-    //attributes: Vec<StuffAttribute>,
+    //attributes: HashMap<StuffAttribute>,
 }

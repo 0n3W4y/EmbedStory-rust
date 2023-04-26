@@ -52,7 +52,10 @@ pub struct RaceDeploy{
 #[derive(Deserialize, Debug)]
 pub struct RaceConfig{
     pub resists: HashMap<Resist, i16>,
+    pub resist_max_value: i16,
+    pub resist_min_value: i16,
     pub stats_extra_point: u8,
+    pub stat_min_value: u8,
     pub body_structure: HashMap<BodyPartType, u16>,
     pub body_structure_part_type: PartType,
 }
