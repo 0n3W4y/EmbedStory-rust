@@ -2,7 +2,7 @@ use serde::{ Deserialize };
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::deploy_addiction::game_scene_biome_deploy::BiomeType;
+use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 
 #[derive( Deserialize, Debug )]
 pub struct GameSceneConfig{

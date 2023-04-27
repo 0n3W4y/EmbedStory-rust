@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::collections::HashSet;
 
 use crate::resources::scene_data::objects::charactor::skills::Skill;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
-use super::body_part::BodyPart;
+use super::body_part::{BodyPart, BodyPartType};
 use super::resists::Resist;
 use super::charactor::stats::Stat;
 use super::stuff::Stuff;
@@ -91,7 +90,7 @@ pub struct Charactor {
 
     pub charactor_effect: Vec<CharactorEffect>,
 
-    pub body_structure: Vec<BodyPart>,
+    pub body_structure: HashMap<BodyPartType, BodyPart>,
     pub current_health_points: i16, // cache from body_structure healthpoints
     pub total_health_points: i16,   // cache from body_structure healthpoints
 }
@@ -185,4 +184,38 @@ pub fn change_stat(
     } else {
         *stat = *stat_cache as u8;
     }
+}
+
+pub fn calculate_current_health_points(body_structure: &HashMap<BodyPartType, BodyPart>) -> i16{
+    let mut sum: i16 = 0;
+    for (body_part_type, body_part) in body_structure {
+        let hp = match body_part.get_current_health_points() {
+            Ok(v) => v,
+            Err(e) => {
+                println!("Can't calculate current health points, because {} from {:?}, using default = 0", e, body_part_type);
+                0
+            }
+        };
+
+        sum += hp;
+    }
+
+    return sum;
+}
+
+pub fn calculate_total_health_points(body_structure: &HashMap<BodyPartType, BodyPart>) -> i16{
+    let mut sum: i16 = 0;
+    for (body_part_type, body_part) in body_structure {
+        let hp = match body_part.get_total_health_points() {
+            Ok(v) => v,
+            Err(e) => {
+                println!("Can't calculate total health points, because {} from {:?}, using default = 0", e, body_part_type);
+                0
+            }
+        };
+
+        sum += hp;
+    }
+
+    return sum;
 }

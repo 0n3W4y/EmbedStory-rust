@@ -1,12 +1,19 @@
+pub mod tilemap_tile_deploy;
+pub mod scene_miscellaneous_deploy;
+pub mod game_scene_biome_deploy;
+pub mod game_scene_deploy;
+pub mod game_objects_deploy;
+pub mod charactor_deploy;
+
 use bevy::prelude::*;
 use serde::Deserialize;
 
 //use crate::resources::deploy_addiction::scene_miscellaneous_deploy::SceneMiscellaneousDeploy;
-use super::deploy_addiction::game_scene_deploy::GameSceneDeploy;
-use super::deploy_addiction::tilemap_tile_deploy::TilemapTileDeploy;
-use super::deploy_addiction::game_scene_biome_deploy::GameSceneBiomeDeploy;
-use super::deploy_addiction::game_objects_deploy::GameObjectsDeploy;
-use super::deploy_addiction::charactor_deploy::CharactorDeploy;
+use super::deploy::game_scene_deploy::GameSceneDeploy;
+use super::deploy::tilemap_tile_deploy::TilemapTileDeploy;
+use super::deploy::game_scene_biome_deploy::GameSceneBiomeDeploy;
+use super::deploy::game_objects_deploy::GameObjectsDeploy;
+use super::deploy::charactor_deploy::CharactorDeploy;
 
 
 
@@ -32,7 +39,6 @@ impl FromWorld for Deploy{
         let biome_path: &str = "deploy/biome_config.json";
         let ground_scene_path: &str = "deploy/game_scene_config.json";
         let objects_path: &str = "deploy/game_objects_config.json";
-        let charactor_path: &str = "deploy/charactor_config.json";
         
 
         let tile_deploy = TilemapTileDeploy::new(ground_path, cover_path);
@@ -40,7 +46,7 @@ impl FromWorld for Deploy{
         let biome_deploy: GameSceneBiomeDeploy = GameSceneBiomeDeploy::new(biome_path);
         let game_scene_deploy: GameSceneDeploy = GameSceneDeploy::new(ground_scene_path);
         let objects_deploy: GameObjectsDeploy = GameObjectsDeploy::new(objects_path);
-        let charactor_deploy: CharactorDeploy = CharactorDeploy::new(charactor_path);
+        let charactor_deploy: CharactorDeploy = CharactorDeploy::new();
         return Deploy{
             tile: tile_deploy,
             game_scene_biome: biome_deploy,

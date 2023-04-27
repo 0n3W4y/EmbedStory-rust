@@ -53,40 +53,30 @@ pub enum HealthPoints{
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct BodyPart {
-    pub bodypart_type: BodyPartType,
     pub health_points: HashMap<HealthPoints, i16>,
     pub part_type: PartType,
     pub part_status: PartStatus,
 }
 
 impl BodyPart {
-    pub fn get_current_health_points(&self) -> i16 {
+    pub fn get_current_health_points(&self) -> Result<i16, &str> {
         match self.health_points.get(&HealthPoints::Current) {
-            Some(v) => return *v,
-            None => { 
-                println!("Can't get current health points from '{:?}', return 0", self.bodypart_type); 
-                return 0;
-            }
+            Some(v) => return Ok(*v),
+            None => return Err("Can't get current health points"),
         };
     }
 
-    pub fn get_total_health_points(&self) -> i16 {
+    pub fn get_total_health_points(&self) -> Result<i16, &str> {
         match self.health_points.get(&HealthPoints::Total) {
-            Some(v) => return *v,
-            None => { 
-                println!("Can't get total health points from '{:?}', return 0", self.bodypart_type); 
-                return 0;
-            }
+            Some(v) => return Ok(*v),
+            None => return Err("Can't get total health points"),
         };
     }
 
-    pub fn get_modified_health_points(&self) -> i16 {
+    pub fn get_modified_health_points(&self) -> Result<i16, &str> {
         match self.health_points.get(&HealthPoints::Modified) {
-            Some(v) => return *v,
-            None => { 
-                println!("Can't get modified health points from '{:?}', return 0", self.bodypart_type); 
-                return 0;
-            }
+            Some(v) =>  return Ok(*v),
+            None => return Err("Can't get modified health points"),
         };
     }
 
@@ -106,9 +96,23 @@ impl BodyPart {
     }
 }
 
-pub fn change_current_health_points(bodypart: &mut BodyPart, value: i16) {
-    let current_value = bodypart.get_current_health_points();
-    let total_value: i16 = bodypart.get_total_health_points();
+pub fn change_current_health_points(body_part_type: &BodyPartType, bodypart: &mut BodyPart, value: i16) {
+    let current_value = match bodypart.get_current_health_points() {
+        Ok(v) => v,
+        Err(e) => {
+            println!("Can't change current health points because: {} from '{:?}', use default value = 0", e, body_part_type);
+            0
+        },
+    };
+
+    let total_value: i16 = match bodypart.get_total_health_points() {
+        Ok(v) => v,
+        Err(e) => {
+            println!("Can't change current health points because: {} from '{:?}', use default value = 0", e, body_part_type);
+            0
+        },
+    };
+    
     let max_value: i16 =
         (total_value * get_percent_of_part_status(bodypart, Option::None) as i16 / 100) as i16;
 
@@ -120,14 +124,43 @@ pub fn change_current_health_points(bodypart: &mut BodyPart, value: i16) {
     }
 }
 
-pub fn change_modified_health_points(bodypart: &mut BodyPart, value: i16) {
+pub fn change_modified_health_points(body_part_type: &BodyPartType, bodypart: &mut BodyPart, value: i16) {
     // we can change modidified value to biggest "-", but we can't disrupt part type, min total hp and curent hp will be equal 1;
-    let new_value = bodypart.get_modified_health_points() + value;
+    let new_value = match bodypart.get_modified_health_points() {
+        Ok(v) => v + value,
+        Err(e) => {
+            println!("Can't change modified health points because: {} from '{:?}', use default value = 0", e, body_part_type);
+            0 + value
+        },
+    };
+
     bodypart.set_modified_health_points(new_value);
-    let total_health = bodypart.get_total_health_points();
+
+    let total_health = match bodypart.get_total_health_points() {
+        Ok(v) => v,
+        Err(e) => {
+            println!("Can't change modified health points because: {} from '{:?}', use default value = 0", e, body_part_type);
+            0
+        },
+    };
+
     let new_total_health = total_health + value;
-    let current_health_points: i16 = bodypart.get_current_health_points();
-    let new_current_health_points: i16 = bodypart.get_current_health_points() + value;
+
+    let current_health_points: i16 = match bodypart.get_current_health_points() {
+        Ok(v) => v,
+        Err(e) => {
+            println!("Can't change modified health points because: {} from '{:?}', use default value = 0", e, body_part_type);
+            0
+        },
+    };
+
+    let new_current_health_points: i16 = match bodypart.get_current_health_points() {
+        Ok(v) => v + value,
+        Err(e) => {
+            println!("Can't change modified health points because: {} from '{:?}', use default value = 0", e, body_part_type);
+            0 + value
+        },
+    };
 
     // calc total health points
     if new_total_health <= 0 && bodypart.part_status != PartStatus::Disrupted {
@@ -143,7 +176,7 @@ pub fn change_modified_health_points(bodypart: &mut BodyPart, value: i16) {
 
     //calc current health pints
     let percent = get_percent_of_part_status(bodypart, Option::None);
-    let part_status = get_part_status_from_percent(bodypart, Option::Some(percent));
+    let part_status = get_part_status_from_percent(body_part_type, bodypart, Option::Some(percent));
     let lower_percent = match part_status {
         PartStatus::Healthy => {
             get_percent_of_part_status(bodypart, Option::Some(&PartStatus::Scratched))
@@ -179,12 +212,26 @@ pub fn set_health_points(bodypart: &mut BodyPart, value: i16) {
     bodypart.set_current_health_points(value);
 }
 
-fn get_part_status_from_percent(bodypart: &BodyPart, percent: Option<i8>) -> PartStatus {
+fn get_part_status_from_percent(body_part_type: &BodyPartType, bodypart: &BodyPart, percent: Option<i8>) -> PartStatus {
     let new_percent = match percent {
         Option::Some(v) => v,
         Option::None => {
-            let current_health = bodypart.get_current_health_points();
-            let total_health = bodypart.get_total_health_points();
+            let current_health = match bodypart.get_current_health_points(){
+                Ok(v) => v,
+                Err(e) => {
+                    println!("Can't get part status from percent because: {} from '{:?}', use default value = 0", e, body_part_type);
+                    0 
+                },
+            };
+
+            let total_health: i16 = match bodypart.get_total_health_points(){
+                Ok(v) => v,
+                Err(e) => {
+                    println!("Can't get part status from percent because: {} from '{:?}', use default value = 0", e, body_part_type);
+                    0 
+                },
+            };
+
             (current_health * 100 / total_health) as i8
         }
     };

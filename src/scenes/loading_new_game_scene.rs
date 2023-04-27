@@ -5,7 +5,7 @@ use crate::config::{RESOLUTION, TILE_SIZE, WINDOW_HEIGHT};
 use crate::materials::{font::FontMaterials, material_manager::MaterialManager};
 use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::deploy::Deploy;
-use crate::resources::deploy_addiction::game_scene_biome_deploy::BiomeType;
+use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::stuff_manager::StuffManager;
 use crate::resources::thing_manager::ThingManager;

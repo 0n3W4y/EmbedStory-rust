@@ -1,17 +1,20 @@
 //use serde::{ Deserialize, Serialize };
 use rand::Rng;
+use std::collections::HashMap;
 
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions, CoverType};
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
+use crate::resources::scene_data::objects::resists::Resist;
 
+use super::charactor_manager;
 use super::deploy::Deploy;
-use super::deploy_addiction::game_scene_biome_deploy::BiomeThings;
-use super::scene_data::objects::body_part;
-use super::scene_data::objects::body_part::BodyPart;
+use super::deploy::game_scene_biome_deploy::BiomeThings;
+use super::scene_data::objects::body_part::{PartType, BodyPartType, BodyPart};
 use super::scene_data::objects::thing::{Thing, ThingType};
-use super::scene_data::objects::thing;
+use super::scene_data::objects::charactor;
+
 
 #[derive(Default)]
 pub struct ThingManager {
@@ -24,26 +27,23 @@ impl ThingManager {
         let id = self.create_id();
         let config = deploy.objects_deploy.get_config(thing_type);
 
-        let mut thing = Thing {
+        let body_structure: HashMap<BodyPartType, BodyPart> = charactor_manager::create_body_structure(&config.body_structure, &PartType::Natural);
+        let total_health_points = charactor::calculate_total_health_points(&body_structure);
+        let current_health_points = charactor::calculate_current_health_points(&body_structure);
+
+        let resists: HashMap<Resist, i16> = charactor_manager::create_resists(&config.resists);
+
+        let thing = Thing {
             id,
             thing_type: thing_type.clone(),
             permissions: config.permissions.to_vec(),
-            resists: config.resists.to_vec(),
-            resists_cache: config.resists.to_vec(),
+            resists_cache: resists.clone(),
+            resists,            
+            body_structure,
+            total_health_points,
+            current_health_points,
             ..Default::default()
         };
-
-        for (bodypart_type, hp) in config.body_structure.iter() {
-            let mut body_part = BodyPart {
-                bodypart_type: bodypart_type.clone(),
-                ..Default::default()
-            };
-            body_part::set_health_points(&mut body_part,*hp);
-
-            thing.body_structure.push(body_part);
-        }
-        thing::calculate_total_health_points(&mut thing);
-        thing::calculate_current_health_points(&mut thing);
 
         return thing;
     }
@@ -143,9 +143,9 @@ impl ThingManager {
 
     }
 
-    pub fn generate_pattern_things_for_scene(&self, scene: &mut GameScene, deploy: &Deploy) {
+    //pub fn generate_pattern_things_for_scene(&self, scene: &mut GameScene, deploy: &Deploy) {
         //TODO: Generate Houses, cities etc...
-    }
+    //}
 
     fn generate_other_things_for_scene(
         &mut self,

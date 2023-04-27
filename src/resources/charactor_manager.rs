@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use super::{scene_data::objects::{charactor::{RaceType, CharactorType, Charactor, stats::Stat, CharactorSubType}, body_part::PartType}, deploy::Deploy};
 use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_data::objects::resists::Resist;
-use crate::resources::deploy_addiction::charactor_deploy::RaceConfig;
+use crate::resources::deploy::charactor_deploy::RaceConfig;
 use crate::resources::scene_data::objects::body_part::BodyPart;
 use crate::resources::scene_data::objects::body_part::BodyPartType;
 
@@ -17,55 +17,30 @@ impl CharactorManager {
     //TODO: Function
     pub fn create_charactor(& mut self, deploy: &Deploy, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, race_type: &RaceType) -> Charactor{
         let id = self.create_id();
+
+        let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(&race_type);
+        let resists: HashMap<Resist, i16> = create_resists(&race_config.resists);
+        let body_structure: HashMap<BodyPartType, BodyPart> = create_body_structure(&race_config.body_structure, &race_config.body_structure_part_type);
+        let stats: HashMap<Stat, u8> = generate_stats(race_config.stat_extra_points);
+
         let charactor = Charactor{
             race_type: race_type.clone(),
             charactor_type: charactor_type.clone(),
             charactor_subtype: charactor_subtype.clone(),
-            stats: create_stats(),
-            stats_cache: create_stats(),
+            stats_cache: stats.clone(),
+            stats: stats,            
+            resists_cache: resists.clone(),
+            resists,            
+            resist_min_value: race_config.resist_min_value,
+            resist_max_value: race_config.resist_max_value,
+            stat_min_value: race_config.stat_min_value,
+            body_structure,
             id,
             ..Default::default()
         };
-        return charactor;
-    }
-    pub fn create_player(&mut self, deploy: &Deploy) -> Charactor {
-        let race_type = RaceType::Human;
-        let charactor_type = CharactorType::Player;
-        let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(&race_type);
-        let mut charactor = self.create_charactor(&charactor_type, &race_type);
 
-        let resists: HashMap<Resist, i16> = create_resists(&race_config.resists);
-        charactor.resists = resists;
-        charactor.resists_cache = resists;
-        charactor.resist_min_value = race_config.resist_min_value;
-        charactor.resist_max_value = race_config.resist_max_value;
-        charactor.stat_min_value = race_config.stat_min_value;
-        let mut body_structure:Vec<BodyPart> = vec![];
-
-        
-        return charactor;
-    }
-    pub fn create_npc(&mut self, race_type: &RaceType, charactor_subtype: &CharactorSubType, deploy: &Deploy) -> Charactor{
-        let charactor_type = CharactorType::NPC;
-        let mut charactor = self.create_charactor(&charactor_type, &charactor_subtype, &race_type);
-        let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(&race_type);
-
-        return charactor;
-    }
-
-    pub fn create_monster(&mut self, race_type: &RaceType, charactor_subtype: &CharactorSubType, deploy: &Deploy) -> Charactor {
-        let charactor_type = CharactorType::Monster(monster_type.clone());
-        let mut charactor = self.create_charactor(&charactor_type, &charactor_subtype, &race_type);
-        let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(&race_type);
-
-        return charactor;
-    }
-
-    pub fn create_compnaion(&mut self, race_type: &RaceType, charactor_subtype: &CharactorSubType, deploy: &Deploy) -> Charactor {
-        let charactor_type = CharactorType::PlayerCompanion(companion_type.clone());
-        let mut charactor = self.create_charactor(&charactor_type, &charactor_subtype, &race_type);
-        let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(&race_type);
-
+        // calculate total hp;
+        // calculate current hp;
         return charactor;
     }
 
@@ -80,19 +55,7 @@ impl CharactorManager {
     }
 }
 
-fn create_stats() -> HashMap<Stat, u8>{
-    let stats: HashMap<Stat, u8> = HashMap::from([ 
-        (Stat::Strength, 1),
-        (Stat::Intellect, 1),
-        (Stat::Endurance, 1),
-        (Stat::Vitality, 1),
-        (Stat::Agility, 1),
-        (Stat::Mobility, 1)
-        ]);
-    return stats;
-}
-
-fn create_resists(resists: &HashMap<Resist, i16>) -> HashMap<Resist, i16>{
+pub fn create_resists(resists: &HashMap<Resist, i16>) -> HashMap<Resist, i16>{
     let mut new_resists: HashMap<Resist, i16> = HashMap::from([ 
         (Resist::Kinetic, 0),
         (Resist::Fire, 0),
@@ -116,26 +79,29 @@ fn create_resists(resists: &HashMap<Resist, i16>) -> HashMap<Resist, i16>{
     return new_resists;
 }
 
-fn create_body_structure(config: &HashMap<BodyPartType, i16>, part_type: &PartType) -> Vec<BodyPart> {
-    let mut vec: Vec<BodyPart> = vec![];
+pub fn create_body_structure(config: &HashMap<BodyPartType, i16>, part_type: &PartType) -> HashMap<BodyPartType, BodyPart> {
+    let mut body_structure: HashMap<BodyPartType, BodyPart> = HashMap::new();
     for (body_part_type, value) in config {
-        let mut bodypart = BodyPart{ 
-            bodypart_type: body_part_type.clone(),
+        let mut bodypart = BodyPart{
             ..Default::default()
         };
-        bodypart.set_modified_health_points(*value);
-        bodypart.set_total_health_points(*value);
         bodypart.set_current_health_points(*value);
-        vec.push(bodypart);
+        bodypart.set_total_health_points(*value);
+        bodypart.set_modified_health_points(*value);
+        body_structure.insert(body_part_type.clone(), bodypart);
     };
 
-    return vec;
+    return body_structure;
 }
 
-fn generate_stat_for_monster(vec_stat: &mut Vec<Stat>, stat_points: u8){
-
-}
-
-fn generate_stats_for_npc(vec_stat: &mut Vec<Stat>, stat_points: u8, npc_type: &CharactorType){
-
+fn generate_stats(stat_points: u8) -> HashMap<Stat, u8>{
+    let stats: HashMap<Stat, u8> = HashMap::from([ 
+        (Stat::Strength, 1),
+        (Stat::Intellect, 1),
+        (Stat::Endurance, 1),
+        (Stat::Vitality, 1),
+        (Stat::Agility, 1),
+        (Stat::Mobility, 1)
+    ]);
+    return stats;
 }

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::vec;
 
 
-use crate::resources::deploy_addiction::game_scene_biome_deploy::{
+use crate::resources::deploy::game_scene_biome_deploy::{
     Biome, BiomeType, RiverSetting, RiverType, Rivers, SpotSetting, Spots,
 };
 use crate::resources::deploy::Deploy;

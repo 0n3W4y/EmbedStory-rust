@@ -68,26 +68,8 @@ pub struct Thing {
     pub permissions: Vec<ThingPermissions>,
     pub resists: HashMap<Resist, i16>,
     pub resists_cache: HashMap<Resist, i16>,
-    pub body_structure: Vec<BodyPart>,
+    pub body_structure: HashMap<BodyPartType, BodyPart>,
 
     pub current_health_points: i16,
     pub total_health_points: i16
 }
-
-
-pub fn calculate_total_health_points(thing: &mut Thing){
-    let mut health: i16 = 0;
-    for bodypart in thing.body_structure.iter(){
-        health += bodypart.get_total_health_points();
-    }
-    thing.total_health_points = health;
-}
-
-pub fn calculate_current_health_points(thing: &mut Thing){
-    let mut health: i16 = 0;
-    for bodypart in thing.body_structure.iter(){
-        health += bodypart.get_current_health_points();
-    }
-    thing.current_health_points = health;
-}
-

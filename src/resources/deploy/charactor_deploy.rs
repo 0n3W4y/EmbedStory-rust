@@ -14,17 +14,20 @@ pub struct CharactorDeploy{
 }
 
 impl CharactorDeploy{
-    pub fn new(path: &str) -> Self {
-        let result: CharactorDeploy  = match File::open( path ){
-            Ok( mut file ) => {
-                let mut contents = String::new();
-                file.read_to_string( &mut contents ).unwrap();
-                serde_json::from_str( &contents ).expect( "JSON was not well-formatted" )
-            }
-            Err( err ) => panic!( "Can not open objects data file: {}, {}", err, path ),
+    pub fn new() -> Self {
+        let race_config_deploy: &str = "deploy/race_config.json";
+        let race_config: RaceDeploy = match File::open(race_config_deploy){
+            Ok(mut file) => {
+                let mut content = String::new();
+                file.read_to_string(&mut content).unwrap();
+                serde_json::from_str(&content).expect("JSON was not well-formatted")
+            },
+            Err(e) => panic!("Can not open objects data file: {}, {}", e, race_config_deploy),
         };
 
-        return result;
+        return CharactorDeploy{
+            race_config
+        };
     }
 
     pub fn get_race_config(&self, race_type: &RaceType) -> &RaceConfig{
@@ -54,9 +57,9 @@ pub struct RaceConfig{
     pub resists: HashMap<Resist, i16>,
     pub resist_max_value: i16,
     pub resist_min_value: i16,
-    pub stats_extra_point: u8,
+    pub stat_extra_points: u8,
     pub stat_min_value: u8,
-    pub body_structure: HashMap<BodyPartType, u16>,
+    pub body_structure: HashMap<BodyPartType, i16>,
     pub body_structure_part_type: PartType,
 }
 

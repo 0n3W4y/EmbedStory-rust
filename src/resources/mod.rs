@@ -5,7 +5,6 @@ pub mod dictionary;
 pub mod deploy;
 pub mod profile;
 pub mod scene_data;
-pub mod deploy_addiction;
 pub mod scene_manager;
 pub mod thing_manager;
 pub mod charactor_manager;

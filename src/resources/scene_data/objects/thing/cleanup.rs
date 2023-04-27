@@ -38,9 +38,9 @@ pub fn copy_from_entity_component_to_thing( thing: &mut Thing, component: &Thing
         thing.graphic_position = component.graphic_position.clone();
         thing.graphic_index = component.graphic_index;
         thing.permissions = component.permissions.to_vec();
-        thing.resists = component.resists.to_vec();
-        thing.resists_cache = component.resists_cache.to_vec();
-        thing.body_structure = component.body_structure.to_vec();
+        thing.resists = component.resists.clone();
+        thing.resists_cache = component.resists_cache.clone();
+        thing.body_structure = component.body_structure.clone();
         thing.current_health_points = component.current_health_points;
         thing.total_health_points = component.total_health_points;
 }
