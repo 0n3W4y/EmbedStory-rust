@@ -82,17 +82,17 @@ impl BodyPart {
 
     pub fn set_current_health_points(&mut self, value: i16) {
         // create new key if not exist, or modify current key value, if existed;
-        self.health_points.entry(HealthPoints::Current).and_modify(|key: &mut i16| *key = value).or_insert(value);
+        self.health_points.entry(HealthPoints::Current).and_modify(|val: &mut i16| *val = value).or_insert(value);
     }
 
     pub fn set_total_health_points(&mut self, value: i16) {
         // create new key if not exist, or modify current key value, if existed;
-        self.health_points.entry(HealthPoints::Total).and_modify(|key: &mut i16| *key = value).or_insert(value);
+        self.health_points.entry(HealthPoints::Total).and_modify(|val: &mut i16| *val = value).or_insert(value);
     }
 
     pub fn set_modified_health_points(&mut self, value: i16) {
         // create new key if not exist, or modify current key value, if existed;
-        self.health_points.entry(HealthPoints::Modified).and_modify(|key: &mut i16| *key = value).or_insert(value);
+        self.health_points.entry(HealthPoints::Modified).and_modify(|val: &mut i16| *val = value).or_insert(value);
     }
 }
 
@@ -204,12 +204,6 @@ pub fn change_modified_health_points(body_part_type: &BodyPartType, bodypart: &m
     } else {
         bodypart.set_current_health_points(new_min_current_health_points);
     }
-}
-
-pub fn set_health_points(bodypart: &mut BodyPart, value: i16) {
-    bodypart.set_modified_health_points(value);
-    bodypart.set_total_health_points(value);
-    bodypart.set_current_health_points(value);
 }
 
 fn get_part_status_from_percent(body_part_type: &BodyPartType, bodypart: &BodyPart, percent: Option<i8>) -> PartStatus {

@@ -14,23 +14,35 @@ pub mod skills;
 pub mod stats;
 pub mod charactor_effect;
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy)]
 pub enum CharactorType {
-    Player,
-    #[default]
-    NPC,
-    Monster,
-    PlayerCompanion,
+    Player(PlayerType),
+    NPC(NPCType),
+    Monster(MonsterType),
+}
+
+impl Deafault for CharactorType {
+    fn default() -> Self {
+        Self::NPC(NPCType::Civilian)
+    }
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum CharactorSubType {
-    #[default]
+pub enum PlayerType{
+    Woman,
+    Man,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum NPCType{
     Civilian,
-    MeleeFighter,
-    RangedFighter,
-    MixedFighter,
-    MeleeBogomol,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum MonsterType{
+    Melee,
+    Ranged,
+    Mixed,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -64,7 +76,6 @@ pub enum StuffWearSlot {
 pub struct Charactor {
     pub id: usize,
     pub charactor_type: CharactorType,
-    pub charactor_subtype: CharactorSubType,
     pub attitude_to_player: AttitudeToPlayer,
     //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;
     pub race_type: RaceType,
