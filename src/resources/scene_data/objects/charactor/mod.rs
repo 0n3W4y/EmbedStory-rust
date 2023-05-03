@@ -14,35 +14,28 @@ pub mod skills;
 pub mod stats;
 pub mod charactor_effect;
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
-    Player(PlayerType),
-    NPC(NPCType),
-    Monster(MonsterType),
-}
-
-impl Deafault for CharactorType {
-    fn default() -> Self {
-        Self::NPC(NPCType::Civilian)
-    }
+    Player,
+    #[default]
+    NPC,
+    Monster,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum PlayerType{
+pub enum GenderType{
     Woman,
+    #[default]
     Man,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum NPCType{
+pub enum CharactorSubType{
+    #[default]
     Civilian,
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum MonsterType{
-    Melee,
-    Ranged,
-    Mixed,
+    MeleeFighter,
+    RangedFighter,
+    MixedFighter,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -61,6 +54,7 @@ pub enum RaceType {
     Robot,
     Mutant,
     SuperMutant,
+    Bogomol,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
@@ -72,13 +66,22 @@ pub enum StuffWearSlot {
     Shoes,
 }
 
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
+pub enum ConditionType {
+    Pain,
+    Fatigue,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Charactor {
     pub id: usize,
     pub charactor_type: CharactorType,
-    pub attitude_to_player: AttitudeToPlayer,
-    //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;
     pub race_type: RaceType,
+    pub charactor_subtype: CharactorSubType,    
+    pub gender_type: GenderType,
+
+    pub attitude_to_player: AttitudeToPlayer,
+    //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;    
 
     pub position: Position<i32>,
     pub graphic_position: Position<f32>,
@@ -92,12 +95,15 @@ pub struct Charactor {
     pub stats_cache: HashMap<Stat, u8>,
     pub stat_min_value: u8,
 
-    pub skills: Vec<Skill>,
-    pub skills_cache: Vec<Skill>,
+    pub condition: HashMap<ConditionType, u16>,
+    pub condition_max: HashMap<ConditionType, u16>,
+
+    pub skills: HashMap<Skill, u16>,
+    pub skills_cache: HashMap<Skill, u16>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
-    pub stuff_wear: HashMap<StuffWearSlot, usize>, // stuff id;
+    pub stuff_wear: HashMap<StuffWearSlot, usize>, // value is - stuff id;
 
     pub charactor_effect: Vec<CharactorEffect>,
 

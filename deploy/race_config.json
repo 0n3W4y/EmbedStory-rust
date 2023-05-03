@@ -15,7 +15,6 @@
         },
         "resist_max_value": 75,
         "resist_min_value": -75,
-        "stat_extra_points": 29,
         "stat_min_value": 1,
         "body_structure":{
             "Head": 100,
@@ -44,7 +43,6 @@
         "resists": {},
         "resist_max_value": 75,
         "resist_min_value": -75,
-        "stat_extra_points": 29,
         "stat_min_value": 1,
         "body_structure": {},
         "body_structure_part_type": "Natural"
@@ -54,7 +52,6 @@
         "resists": {},
         "resist_max_value": 75,
         "resist_min_value": -75,
-        "stat_extra_points": 29,
         "stat_min_value": 1,
         "body_structure": {},
         "body_structure_part_type": "Natural"
@@ -64,7 +61,6 @@
         "resists": {},
         "resist_max_value": 75,
         "resist_min_value": -75,
-        "stat_extra_points": 29,
         "stat_min_value": 1,
         "body_structure": {},
         "body_structure_part_type": "Natural"
@@ -74,7 +70,15 @@
         "resists": {},
         "resist_max_value": 75,
         "resist_min_value": -75,
-        "stat_extra_points": 29,
+        "stat_min_value": 1,
+        "body_structure": {},
+        "body_structure_part_type": "Natural"
+    },
+
+    "bogomol": {
+        "resists": {},
+        "resist_max_value": 75,
+        "resist_min_value": -75,
         "stat_min_value": 1,
         "body_structure": {},
         "body_structure_part_type": "Natural"

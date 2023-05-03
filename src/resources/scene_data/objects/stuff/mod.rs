@@ -30,7 +30,7 @@ pub enum StuffType{
 pub enum StuffSubtype {
     Bandage, // stop bleeding
     HealthPack, // add health to part
-    DoctorBag, // vs trauma
+    DoctorsBag, // vs trauma
     Painkillers, // vs pain
     Antibiotic, //vs disease
     Vitamins, // vs fatigue
