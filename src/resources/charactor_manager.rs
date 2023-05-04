@@ -16,7 +16,7 @@ pub struct CharactorManager{
 
 impl CharactorManager {
     //TODO: Function
-    pub fn create_charactor(& mut self, deploy: &Deploy, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, race_type: &RaceType) -> Charactor{
+    pub fn create_charactor(&mut self, deploy: &Deploy, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, race_type: &RaceType) -> Charactor{
         let id = self.create_id();
         let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(race_type);
         let charactor_subtype_config: &CharactorSubTypeConfig = deploy.charactor_deploy.get_charactor_subtype_config(charactor_subtype);
@@ -182,7 +182,7 @@ pub fn initialize_character_after_creation(charactor: &mut Charactor){
     for (key, _) in resists {
         match key {
             Resist::Kinetic => {
-                let value_to_change: i16 = calculate_resist_kinetic_resist_from_stat(*str, *end);
+                let value_to_change: i16 = calculate_resist_kinetic_from_stat(*str, *end);
                 charactor::change_resist(
                     &mut charactor.resists,
                     &mut charactor.resists_cache,
@@ -193,7 +193,7 @@ pub fn initialize_character_after_creation(charactor: &mut Charactor){
                 );
             },
             Resist::Bleed => {
-                let value_to_change: i16 = calculate_resist_bleed_resist_from_stat(*str, *end, *dex);
+                let value_to_change: i16 = calculate_resist_bleed_from_stat(*str, *end, *dex);
                 charactor::change_resist(
                     &mut charactor.resists,
                     &mut charactor.resists_cache,
@@ -247,7 +247,7 @@ pub fn initialize_character_after_creation(charactor: &mut Charactor){
                     resist_max_value
                 );
             },
-            _ => {}, // all other resist does no depend on stats;
+            _ => {}, // all other resist does not depend on stats;
         };
     }
 
@@ -256,13 +256,13 @@ pub fn initialize_character_after_creation(charactor: &mut Charactor){
 
 }
 
-pub fn calculate_resist_kinetic_resist_from_stat(str: u8, end: u8) -> i16 {
+pub fn calculate_resist_kinetic_from_stat(str: u8, end: u8) -> i16 {
     //formula: str -5 + end -6;
     let value: i16 = str as i16 + end as i16 - 11;
     return value;
 }
 
-pub fn calculate_resist_bleed_resist_from_stat(str: u8, end: u8, dex: u8) -> i16 {
+pub fn calculate_resist_bleed_from_stat(str: u8, end: u8, dex: u8) -> i16 {
     //formula: end - 5 + 5 - str + 5 - dex;
     let value: i16 = end as i16 + 5 + (5 - str as i16) - (5 - dex as i16);
     return value;
@@ -291,3 +291,5 @@ pub fn calculate_resist_pain_from_stat(str: u8, end: u8, int: u8, per: u8) -> i1
     let value: i16 = str as i16 + end as i16 - 5 - int as i16 - (per as i16 - 3);
     return value;
 }
+
+//TODO: calculate_skill_xxx_from_stat;
