@@ -3,9 +3,12 @@ use std::slice::Iter;
 
 use crate::materials::font::FontMaterials;
 use crate::materials::material_manager::MaterialManager;
+use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
+use crate::resources::scene_data::objects::charactor::{CharactorType, CharactorSubType, GenderType, RaceType};
 use crate::scenes::SceneState;
+use crate::resources::deploy::Deploy;
 
 const BUTTON_HEIGHT: f32 = 40.0;
 const BUTTON_WIDTH: f32 = 100.0;
@@ -129,6 +132,7 @@ fn setup(
     dictionary: Res<Dictionary>,
     font: Res<FontMaterials>,
     material_manager: Res<MaterialManager>,
+    deploy: Res<Deploy>,
 ) {
     let user_interface_root = commands
         .spawn_bundle(NodeBundle {
@@ -142,7 +146,7 @@ fn setup(
         })
         .with_children(|parent| {
             create_buttons(parent, &font, dictionary);
-            create_text(parent, &font, dictionary);
+            //create_text(parent, &font, dictionary);
         })
         .id();
 
@@ -150,7 +154,19 @@ fn setup(
         user_interface_root: user_interface_root,
     });
 
-    commands.insert_resource(Profile::new());
+    let mut charactor_manager: CharactorManager = Default::default();
+    let player = charactor_manager.create_charactor(
+        &deploy, 
+        &CharactorType::Player, 
+        &CharactorSubType::Civilian, 
+        &RaceType::Human, 
+        &GenderType::Male,
+    );
+
+    let mut profile: Profile = Default::default();
+    profile.charactor = player;
+    commands.insert_resource(charactor_manager);
+    commands.insert_resource(profile);
 }
 
 fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: Res<Dictionary>) {
@@ -207,10 +223,10 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
         .insert(button_component.clone());
     }
 }
-
+/*
 fn create_text(
     root: &mut ChildBuilder,
-    font: &Res<FontMaterials>, 
+    font_material: &Res<FontMaterials>, 
     dictionary: Res<Dictionary>
 ){
     let font = font_material.get_font( dictionary.get_current_language() );
@@ -286,7 +302,7 @@ fn create_text(
         .insert(prevalue.clone() );
     };
 }
-
+*/
 fn button_handle_system(
     mut button_query: Query<
         (&Interaction, &MainButtonComponent, &mut UiColor),
@@ -294,6 +310,8 @@ fn button_handle_system(
     >,
     mut state: ResMut<State<SceneState>>,
     mut profile: ResMut<Profile>,
+    mut charactor_manager: ResMut<CharactorManager>,
+    deploy: Res<Deploy>,
 ) {
     for (interaction, button_component, mut color) in button_query.iter_mut() {
         match *button_component {

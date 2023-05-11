@@ -148,10 +148,17 @@ impl ThingMaterial {
 }
 
 #[derive(Debug, Clone)]
+pub struct CharactorsMaterial{
+    player_female: Handle<Image>,
+    player_male: Handle<Image>,
+}
+
+#[derive(Debug, Clone)]
 pub struct GameSceneMaterial {
     pub ground_tile: GroundTileMaterial,
     pub cover_tile: CoverTileMaterial,
     pub things: ThingMaterial,
+    pub charactors: CharactorsMaterial,
 }
 
 impl GameSceneMaterial {
@@ -160,6 +167,7 @@ impl GameSceneMaterial {
             ground_tile: GameSceneMaterial::load_ground_tile_material(asset_server),
             cover_tile: GameSceneMaterial::load_cover_tile_material(asset_server),
             things: GameSceneMaterial::load_things_material(asset_server),
+            charactors: GameSceneMaterial::load_charactors_material(asset_server),
         };
     }
 
@@ -491,5 +499,14 @@ impl GameSceneMaterial {
             reinforced_steel_door,
             reinforced_wooden_door,
         };
+    }
+
+    pub fn load_charactors_material( asset_server: &Res<AssetServer>) -> CharactorsMaterial {
+        let player_male: Handle<Image> = asset_server.load("textures/charactor/player/male.png");
+        let player_female: Handle<Image> = asset_server.load("textures/charactor/player/female.png");
+        CharactorsMaterial {
+            player_male,
+            player_female,
+        }
     }
 }

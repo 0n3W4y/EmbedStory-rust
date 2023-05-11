@@ -20,7 +20,7 @@ pub struct GameScene {
     pub tilemap: Tilemap,
     pub things: Vec<Thing>,
     pub stuff: Vec<Stuff>,
-    pub characters: Vec<Charactor>,
+    pub charactors: Vec<Charactor>,
     pub effects: Vec<SceneEffect>,
     //pub fog: Vec<>,
     //pub roof: Vec<>,

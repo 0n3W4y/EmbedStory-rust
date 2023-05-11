@@ -13,6 +13,8 @@ use super::charactor::charactor_effect::CharactorEffect;
 pub mod skills;
 pub mod stats;
 pub mod charactor_effect;
+pub mod spawn;
+pub mod draw;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -24,9 +26,9 @@ pub enum CharactorType {
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum GenderType{
-    Woman,
+    Female,
     #[default]
-    Man,
+    Male,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]

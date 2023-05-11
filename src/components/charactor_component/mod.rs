@@ -10,7 +10,7 @@ use crate::resources::scene_data::objects::stuff::Stuff;
 //use crate::resources::scene_data::objects::charactor::charactor_effect::CharactorEffect;
 use crate::resources::scene_data::objects::charactor::{StuffWearSlot, CharactorType, RaceType, AttitudeToPlayer};
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Default)]
 pub struct CharactorComponent{
     pub id: usize,
     pub charactor_type: CharactorType,

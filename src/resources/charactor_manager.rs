@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 use rand::Rng;
 
-use super::{scene_data::objects::{charactor::{RaceType, CharactorType, Charactor, stats::Stat, CharactorSubType, self, ConditionType}, body_part::PartType}, deploy::Deploy};
+use super::{scene_data::objects::{charactor::{RaceType, CharactorType, Charactor, stats::Stat, CharactorSubType, self, ConditionType, GenderType}, body_part::PartType}, deploy::Deploy};
 use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_data::objects::resists::Resist;
 use crate::resources::deploy::charactor_deploy::{RaceConfig, CharactorSubTypeConfig};
@@ -16,7 +16,7 @@ pub struct CharactorManager{
 
 impl CharactorManager {
     //TODO: Function
-    pub fn create_charactor(&mut self, deploy: &Deploy, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, race_type: &RaceType) -> Charactor{
+    pub fn create_charactor(&mut self, deploy: &Deploy, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, race_type: &RaceType, gender: &GenderType) -> Charactor{
         let id = self.create_id();
         let race_config: &RaceConfig = deploy.charactor_deploy.get_race_config(race_type);
         let charactor_subtype_config: &CharactorSubTypeConfig = deploy.charactor_deploy.get_charactor_subtype_config(charactor_subtype);
