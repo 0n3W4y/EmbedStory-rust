@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    resources::scene_data::objects::thing::ThingType,
+    resources::scene_data::objects::{thing::ThingType, charactor::{CharactorType, CharactorSubType, GenderType}},
     scenes::game_scenes::tilemap::tile::{CoverType, GroundType},
 };
 
@@ -153,6 +153,41 @@ pub struct CharactorsMaterial{
     player_male: Handle<Image>,
 }
 
+impl CharactorsMaterial {
+    pub fn get_image(&self, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, gender: &GenderType ) -> Handle<Image> {
+        match * charactor_type {
+            CharactorType::Player => {
+                match *gender {
+                    GenderType::Male => self.player_male.clone_weak(),
+                    GenderType::Female => self.player_female.clone_weak(),
+                }
+            },
+            CharactorType::NPC => {
+                match *charactor_subtype {
+                    CharactorSubType::Civilian => {
+                        match *gender {
+                            GenderType::Male => self.player_male.clone_weak(),
+                            GenderType::Female => self.player_female.clone_weak(),
+                        }
+                    },
+                    _ => self.player_male.clone_weak(),
+                }
+            },
+            CharactorType::Monster => {
+                match *charactor_subtype {
+                    CharactorSubType::Civilian => {
+                        match *gender {
+                            GenderType::Male => self.player_male.clone_weak(),
+                            GenderType::Female => self.player_female.clone_weak(),
+                        }
+                    },
+                    _ => self.player_male.clone_weak(),
+                }
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct GameSceneMaterial {
     pub ground_tile: GroundTileMaterial,
@@ -183,6 +218,7 @@ impl GameSceneMaterial {
     }
 
     fn load_cover_tile_material(asset_server: &Res<AssetServer>) -> CoverTileMaterial {
+        //TODO: Create atlas with batch files;
         let mut grass = vec![];
         grass.push(asset_server.load("textures/tiles/cover/grass_00.png"));
         grass.push(asset_server.load("textures/tiles/cover/grass_01.png"));
