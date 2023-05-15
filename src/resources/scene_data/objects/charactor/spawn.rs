@@ -4,8 +4,9 @@ use crate::components::charactor_component::CharactorComponent;
 use crate::resources::profile::Profile;
 use crate::materials::material_manager::MaterialManager;
 
-pub fn spawn(
-
+pub fn spawn_character(
+    mut commands: Commands,
+    material_manager: Res<MaterialManager>,
 ){
 
 }

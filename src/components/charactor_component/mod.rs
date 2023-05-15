@@ -19,6 +19,7 @@ pub struct CharactorComponent{
     pub race_type: RaceType,
 
     pub position: Position<i32>,
+    pub destination_point: Position<i32>,
     pub graphic_position: Position<f32>,
 
     pub resists: HashMap<Resist, i16>,
@@ -43,3 +44,12 @@ pub struct CharactorComponent{
     pub current_health_points: i16, // cache from body_structure healthpoints
     pub total_health_points: i16,   // cache from body_structure healthpoints
 }
+
+#[derive(Component)]
+pub struct PlayerComponent;
+
+#[derive(Component)]
+pub struct NPCComponent;
+
+#[derive(Component)]
+pub struct MonsterComponent;

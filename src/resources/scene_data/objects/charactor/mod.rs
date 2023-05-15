@@ -86,6 +86,7 @@ pub struct Charactor {
     //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;    
 
     pub position: Position<i32>,
+    pub destination_point: Position<i32>,
     pub graphic_position: Position<f32>,
 
     pub resists: HashMap<Resist, i16>,
