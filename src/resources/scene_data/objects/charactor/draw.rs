@@ -5,6 +5,7 @@ use crate::materials::material_manager::MaterialManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::resources::scene_data::objects::charactor::{Charactor, CharactorType, CharactorSubType, GenderType};
 use crate::components::charactor_component::{CharactorComponent, PlayerComponent, NPCComponent, MonsterComponent};
+use crate::resources::profile::Profile;
 
 pub const Z_POSITION: f32 = 3.9; // fourth layer;
 
@@ -69,6 +70,40 @@ pub fn draw(
 
 }
 
+pub fn draw_player(
+    mut commands: Commands,
+    profile: Res<Profile>,
+    material_manager: Res<MaterialManager>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    asset_server: Res<AssetServer>,
+){
+    let player: &Charactor = &profile.charactor;
+    let x: f32 = player.graphic_position.x;
+    let y: f32 = player.graphic_position.y;
+    let charactor_type: &CharactorType = &player.charactor_type;
+    let charactor_subtype = &player.charactor_subtype;
+    let charactor_gender = &player.gender_type;
+
+
+    let texture_handle: Handle<Image> = material_manager.game_scene.charactors.get_image(charactor_type, charactor_subtype, charactor_gender);
+    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(128.0, 128.0), 3, 1);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+
+    let new_z_position = Z_POSITION - y as f32 / 1000.0;
+    let transform = Transform::from_xyz(x, y, new_z_position);
+
+    let mut charactor_component: CharactorComponent = Default::default();
+    copy_from_charactor_to_component(player, &mut charactor_component);
+
+    commands.spawn_bundle(SpriteSheetBundle{
+        texture_atlas: texture_atlas_handle,
+        transform,
+        ..default()
+    })
+    .insert(charactor_component)
+    .insert(PlayerComponent);
+}
+
 pub fn copy_from_charactor_to_component(
     charactor: &Charactor,
     charactor_component: &mut CharactorComponent,
@@ -76,7 +111,7 @@ pub fn copy_from_charactor_to_component(
     charactor_component.id = charactor.id;
     charactor_component.charactor_type = charactor.charactor_type.clone();
     charactor_component.attitude_to_player = charactor.attitude_to_player.clone();
-    //charactor_component.fraction = charactor.fraction.clone();
+    charactor_component.fraction = charactor.fraction.clone();
     charactor_component.race_type = charactor.race_type.clone();
 
     charactor_component.position = charactor.position.clone();
@@ -113,7 +148,7 @@ pub fn copy_from_component_to_charactor(
     charactor.id = charactor_component.id;
     charactor.charactor_type = charactor_component.charactor_type.clone();
     charactor.attitude_to_player = charactor_component.attitude_to_player.clone();
-    //charactor.fraction = charactor_component.fraction.clone();
+    charactor.fraction = charactor_component.fraction.clone();
     charactor.race_type = charactor_component.race_type.clone();
 
     charactor.position = charactor_component.position.clone();

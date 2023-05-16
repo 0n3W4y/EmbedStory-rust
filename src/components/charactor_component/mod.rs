@@ -8,14 +8,14 @@ use crate::resources::scene_data::objects::resists::Resist;
 use crate::resources::scene_data::objects::charactor::stats::Stat;
 use crate::resources::scene_data::objects::stuff::Stuff;
 //use crate::resources::scene_data::objects::charactor::charactor_effect::CharactorEffect;
-use crate::resources::scene_data::objects::charactor::{StuffWearSlot, CharactorType, RaceType, AttitudeToPlayer};
+use crate::resources::scene_data::objects::charactor::{StuffWearSlot, CharactorType, RaceType, AttitudeToPlayer, CharactorFraction};
 
 #[derive(Component, Debug, Default)]
 pub struct CharactorComponent{
     pub id: usize,
     pub charactor_type: CharactorType,
     pub attitude_to_player: AttitudeToPlayer,
-    //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;
+    pub fraction: CharactorFraction,
     pub race_type: RaceType,
 
     pub position: Position<i32>,

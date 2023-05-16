@@ -32,6 +32,17 @@ pub enum GenderType{
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum CharactorFraction{
+    Bandit,
+    Pirat,
+    Predator,
+    Herbivorous,
+    Trader,
+    #[default]
+    None
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorSubType{
     #[default]
     Civilian,
@@ -83,7 +94,7 @@ pub struct Charactor {
     pub gender_type: GenderType,
 
     pub attitude_to_player: AttitudeToPlayer,
-    //pub fraction: Fraction, // Maybe use this to create fights between NPCs; by default mosnters attacking NPCs and NPCs attacking monsters;    
+    pub fraction: CharactorFraction,
 
     pub position: Position<i32>,
     pub destination_point: Position<i32>,

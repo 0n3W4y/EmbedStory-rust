@@ -7,6 +7,7 @@ use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::dictionary::Dictionary;
+use crate::resources::profile::Profile;
 use crate::resources::stuff_manager::StuffManager;
 use crate::resources::thing_manager::ThingManager;
 use crate::resources::scene_manager::{SceneManager, SceneType};
@@ -225,7 +226,11 @@ fn cleanup(mut commands: Commands, scene_data: Res<LoadingNewGameSceneData>) {
         .despawn_recursive();
 }
 
-fn create_starting_scenes(mut commands: Commands, deploy: Res<Deploy>) {
+fn create_starting_scenes(
+    mut commands: Commands, 
+    deploy: Res<Deploy>,
+    profile: Res<Profile>,
+) {
     //get scene settings fro deploy;
     let scene_setting = deploy.game_scene.get_scene_setting(BiomeType::Plain);
 
@@ -263,13 +268,21 @@ fn create_starting_scenes(mut commands: Commands, deploy: Res<Deploy>) {
     let biome_setting = deploy
         .game_scene_biome
         .get_biome_setting(&scene_setting.biome_type);
-    //let things_for_scene = scene_setting.objects.things;
+   
+   
     object_manager.generate_things_for_scene(
         &mut starting_scene,
         &deploy,
         &biome_setting.objects.things,
     );
+     //prepare monsters and npcs
+    charactor_manager.generate_mosnters_for_scene(
+        &mut starting_scene,
+        &deploy,
+        &biome_setting.objects.charactors,
+    );
     //object_manager.generate_pattern_things_for_scene( &mut starting_scene );
+    
 
     //store scene into scene_manager;
     scene_manager.store_game_scene(starting_scene);
