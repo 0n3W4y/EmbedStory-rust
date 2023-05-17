@@ -13,8 +13,9 @@ use super::charactor::charactor_effect::CharactorEffect;
 pub mod skills;
 pub mod stats;
 pub mod charactor_effect;
-pub mod spawn;
+pub mod killed_charactor_handler;
 pub mod draw;
+pub mod cleanup;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {

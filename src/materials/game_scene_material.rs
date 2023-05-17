@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    resources::scene_data::objects::{thing::ThingType, charactor::{CharactorType, CharactorSubType, GenderType}},
+    resources::scene_data::objects::{thing::ThingType, charactor::{CharactorType, CharactorSubType, GenderType, RaceType}},
     scenes::game_scenes::tilemap::tile::{CoverType, GroundType},
 };
 
@@ -149,39 +149,27 @@ impl ThingMaterial {
 
 #[derive(Debug, Clone)]
 pub struct CharactorsMaterial{
-    player_female: Handle<Image>,
-    player_male: Handle<Image>,
+    human_female: Handle<Image>,
+    human_male: Handle<Image>,
 }
 
 impl CharactorsMaterial {
-    pub fn get_image(&self, charactor_type: &CharactorType, charactor_subtype: &CharactorSubType, gender: &GenderType ) -> Handle<Image> {
-        match * charactor_type {
-            CharactorType::Player => {
+    pub fn get_image(
+        &self, 
+        charactor_racetype: &RaceType, 
+        gender: &GenderType 
+    ) -> Handle<Image> {
+        match * charactor_racetype {
+            RaceType::Human => {
                 match *gender {
-                    GenderType::Male => self.player_male.clone_weak(),
-                    GenderType::Female => self.player_female.clone_weak(),
+                    GenderType::Male => self.human_male.clone_weak(),
+                    GenderType::Female => self.human_female.clone_weak(),
                 }
             },
-            CharactorType::NPC => {
-                match *charactor_subtype {
-                    CharactorSubType::Civilian => {
-                        match *gender {
-                            GenderType::Male => self.player_male.clone_weak(),
-                            GenderType::Female => self.player_female.clone_weak(),
-                        }
-                    },
-                    _ => self.player_male.clone_weak(),
-                }
-            },
-            CharactorType::Monster => {
-                match *charactor_subtype {
-                    CharactorSubType::Civilian => {
-                        match *gender {
-                            GenderType::Male => self.player_male.clone_weak(),
-                            GenderType::Female => self.player_female.clone_weak(),
-                        }
-                    },
-                    _ => self.player_male.clone_weak(),
+            _ => {
+                match *gender {
+                    GenderType::Male => self.human_male.clone_weak(),
+                    GenderType::Female => self.human_female.clone_weak(),
                 }
             }
         }
@@ -538,11 +526,11 @@ impl GameSceneMaterial {
     }
 
     pub fn load_charactors_material( asset_server: &Res<AssetServer>) -> CharactorsMaterial {
-        let player_male: Handle<Image> = asset_server.load("textures/charactor/player/male.png");
-        let player_female: Handle<Image> = asset_server.load("textures/charactor/player/female.png");
+        let human_male: Handle<Image> = asset_server.load("textures/charactor/player/male.png");
+        let human_female: Handle<Image> = asset_server.load("textures/charactor/player/female.png");
         CharactorsMaterial {
-            player_male,
-            player_female,
+            human_male,
+            human_female,
         }
     }
 }

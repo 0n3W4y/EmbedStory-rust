@@ -9,6 +9,7 @@ use crate::resources::scene_manager::SceneType;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::objects::thing;
+use crate::resources::scene_data::objects::charactor;
 use crate::scenes::SceneState;
 
 
@@ -27,12 +28,11 @@ pub struct GameScene {
 }
 impl GameScene {
     pub fn get_thing_by_id_mut(&mut self, id: usize) -> Option<&mut Thing> {
-        for thing in self.things.iter_mut(){
-            if thing.id == id {
-                return Some(thing);
-            }
-        }
-        return None;
+        self.things.iter_mut().find(|x|{x.id == id})
+    }
+
+    pub fn get_charactor_by_id_mut(&mut self, id: usize) -> Option<&mut Charactor> {
+        self.charactors.iter_mut().find(|x| {x.id == id})
     }
 }
 
@@ -41,8 +41,13 @@ pub struct GameScenePlugin;
 impl Plugin for GameScenePlugin {
     fn build(&self, app: &mut App) {
         app.add_system_set(SystemSet::on_enter(SceneState::GameScene)
+            //draw playable ground tilemap;
             .with_system(tilemap::draw::draw)
+            // draw things;
             .with_system(thing::draw::draw)
+            //draw all charactor and player
+            .with_system(charactor::draw::draw)
+            .with_system(charactor::draw::draw_player)
         );
 
         app.add_system_set(SystemSet::on_update(SceneState::GameScene)
@@ -52,8 +57,12 @@ impl Plugin for GameScenePlugin {
         );
 
         app.add_system_set(SystemSet::on_exit(SceneState::GameScene)
+            //cleanup tilemap, all tiles and store them;
             .with_system(tilemap::cleanup::cleanup)
+            //cleanup all things and store them;
             .with_system(thing::cleanup::cleanup)
+            //cleanup charactors with player and store them;
+            .with_system(charactor::cleanup::cleanup)
         );
     }
 }

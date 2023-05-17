@@ -60,6 +60,7 @@ pub fn draw(
                 }
             })
             .insert(component);
+        //TODO:: sprite: TextureAtlasSprite::new(vendor_index), do spriteatlas and select sprite index;
     }
 }
 

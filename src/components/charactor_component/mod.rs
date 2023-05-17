@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-//use crate::resources::scene_data::objects::charactor::skills::Skill;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::objects::body_part::{BodyPart, BodyPartType};
 use crate::resources::scene_data::objects::resists::Resist;
@@ -9,8 +8,9 @@ use crate::resources::scene_data::objects::charactor::stats::Stat;
 use crate::resources::scene_data::objects::stuff::Stuff;
 //use crate::resources::scene_data::objects::charactor::charactor_effect::CharactorEffect;
 use crate::resources::scene_data::objects::charactor::{StuffWearSlot, CharactorType, RaceType, AttitudeToPlayer, CharactorFraction};
+use crate::resources::scene_data::objects::charactor::skills::Skill;
 
-#[derive(Component, Debug, Default)]
+#[derive(Component, Default)]
 pub struct CharactorComponent{
     pub id: usize,
     pub charactor_type: CharactorType,
@@ -31,8 +31,8 @@ pub struct CharactorComponent{
     pub stats_cache: HashMap<Stat, u8>,
     pub stat_min_value: u8,
 
-    //pub skills: Vec<Skill>,
-    //pub skills_cache: Vec<Skill>,
+    pub skills: HashMap<Skill, u16>,
+    pub skills_cache: HashMap<Skill, u16>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
