@@ -16,6 +16,7 @@ pub mod charactor_effect;
 pub mod killed_charactor_handler;
 pub mod draw;
 pub mod cleanup;
+pub mod move_charactor;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -86,6 +87,18 @@ pub enum ConditionType {
     Fatigue,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
+pub enum CharactorStatus {
+    Dead,
+    Moving,
+    Reloading,
+    #[default]
+    Standing,
+    Eating,
+    Doctor,
+    Bandaging,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Charactor {
     pub id: usize,
@@ -94,12 +107,13 @@ pub struct Charactor {
     pub charactor_subtype: CharactorSubType,    
     pub gender_type: GenderType,
 
+    pub status: CharactorStatus,
+
     pub attitude_to_player: AttitudeToPlayer,
     pub fraction: CharactorFraction,
 
     pub position: Position<i32>,
     pub destination_point: Position<i32>,
-    pub graphic_position: Position<f32>,
 
     pub resists: HashMap<Resist, i16>,
     pub resists_cache: HashMap<Resist, i16>,

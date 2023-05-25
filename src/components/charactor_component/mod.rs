@@ -7,20 +7,22 @@ use crate::resources::scene_data::objects::resists::Resist;
 use crate::resources::scene_data::objects::charactor::stats::Stat;
 use crate::resources::scene_data::objects::stuff::Stuff;
 //use crate::resources::scene_data::objects::charactor::charactor_effect::CharactorEffect;
-use crate::resources::scene_data::objects::charactor::{StuffWearSlot, CharactorType, RaceType, AttitudeToPlayer, CharactorFraction};
+use crate::resources::scene_data::objects::charactor::{StuffWearSlot, CharactorType, RaceType, AttitudeToPlayer, CharactorFraction, CharactorStatus, CharactorSubType};
 use crate::resources::scene_data::objects::charactor::skills::Skill;
 
 #[derive(Component, Default)]
 pub struct CharactorComponent{
     pub id: usize,
     pub charactor_type: CharactorType,
+    pub charactor_subtype: CharactorSubType,
     pub attitude_to_player: AttitudeToPlayer,
     pub fraction: CharactorFraction,
     pub race_type: RaceType,
 
+    pub status: CharactorStatus,
+
     pub position: Position<i32>,
     pub destination_point: Position<i32>,
-    pub graphic_position: Position<f32>,
 
     pub resists: HashMap<Resist, i16>,
     pub resists_cache: HashMap<Resist, i16>,

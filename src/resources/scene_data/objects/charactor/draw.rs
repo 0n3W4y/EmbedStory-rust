@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::materials::material_manager::MaterialManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -18,8 +19,8 @@ pub fn draw(
     let scene: &GameScene = scene_manager.get_current_game_scene();
 
     for charactor in scene.charactors.iter(){
-        let x: f32 = charactor.graphic_position.x;
-        let y: f32 = charactor.graphic_position.y;
+        let x: f32 = (charactor.position.x * TILE_SIZE as i32) as f32;
+        let y: f32 = (charactor.position.y * TILE_SIZE as i32) as f32;
         let charactor_type: &CharactorType = &charactor.charactor_type;
         let charactor_gender = &charactor.gender_type;
         let charactor_racetype = &charactor.race_type;
@@ -75,8 +76,8 @@ pub fn draw_player(
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ){
     let player: &Charactor = &profile.charactor;
-    let x: f32 = player.graphic_position.x;
-    let y: f32 = player.graphic_position.y;
+    let x: f32 = (player.position.x * TILE_SIZE as i32) as f32;
+    let y: f32 = (player.position.y * TILE_SIZE as i32) as f32;
     let charactor_gender = &player.gender_type;
     let charactor_racetype = &player.race_type;
 
@@ -106,13 +107,13 @@ pub fn copy_from_charactor_to_component(
 ){
     charactor_component.id = charactor.id;
     charactor_component.charactor_type = charactor.charactor_type.clone();
+    charactor_component.charactor_subtype = charactor.charactor_subtype.clone();
     charactor_component.attitude_to_player = charactor.attitude_to_player.clone();
     charactor_component.fraction = charactor.fraction.clone();
     charactor_component.race_type = charactor.race_type.clone();
 
     charactor_component.position = charactor.position.clone();
     charactor_component.destination_point = charactor.destination_point.clone();
-    charactor_component.graphic_position = charactor.graphic_position.clone();
 
     charactor_component.resists = charactor.resists.clone();
     charactor_component.resists_cache = charactor.resists_cache.clone();
