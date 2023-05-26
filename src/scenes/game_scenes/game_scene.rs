@@ -54,6 +54,7 @@ impl Plugin for GameScenePlugin {
             .with_system(thing::destroeyd_thing_handler::destroeyd_thing_handler)
             .with_system(tilemap::change_cover_type_handler::change_cover_type_handler)
             .with_system(charactor::move_charactor::move_charactor)
+            .with_system(charactor::player_click_function::player_click)
             .with_system(update)
         );
 

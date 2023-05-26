@@ -17,6 +17,7 @@ pub mod killed_charactor_handler;
 pub mod draw;
 pub mod cleanup;
 pub mod move_charactor;
+pub mod player_click_function;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -114,6 +115,7 @@ pub struct Charactor {
 
     pub position: Position<i32>,
     pub destination_point: Position<i32>,
+    pub destination_path: Vec<Position<i32>>,
 
     pub resists: HashMap<Resist, i16>,
     pub resists_cache: HashMap<Resist, i16>,
