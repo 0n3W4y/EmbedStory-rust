@@ -46,6 +46,7 @@ pub fn copy_from_component_to_charactor(
     charactor.position = charactor_component.position.clone();
     charactor.destination_point = charactor_component.destination_point.clone();
     charactor.destination_path = charactor_component.destination_path.to_vec();
+    charactor.destination_direction = charactor_component.destination_direction.clone();
 
     charactor.resists = charactor_component.resists.clone();
     charactor.resists_cache = charactor_component.resists_cache.clone();
