@@ -25,7 +25,6 @@ pub enum GroundType {
     DryEarth,
     Dirt,
     Rock,
-    RockEnvironment,
     Clay,
 }
 
@@ -54,20 +53,20 @@ pub struct Position<T>{
 pub struct Tile{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
-    pub index: usize, // in vec;
+    pub id: usize, // in vec;
+
+    pub ground_graphic_index: u8,
     pub cover_graphic_index: u8,
     pub movement_ratio: u16,
 
     pub position: Position<i32>,
-    pub graphic_position: Position<f32>,    
 
     pub permissions: Vec<TilePermissions>,
 
-    pub thing_type: Option<(ThingType, usize)>, // ( thing type, id of thing);
-    pub stuff_type: Vec<(StuffType, usize)>,
-    pub alive_charactor_type: Option<(CharactorType, usize)>,
-    pub dead_charactor_type: Vec<(CharactorType, usize)>,
-    pub effect_type: Option<(SceneEffectType, usize)>
+    pub thing_type: Option<usize>, // (id of thing);
+    pub stuff_type: Option<usize>,
+    pub charactor_type: Option<usize>,
+    pub effect_type: Option<usize>
 }
 
 #[derive(Deserialize, Clone, Debug)]
