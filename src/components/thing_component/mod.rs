@@ -16,7 +16,6 @@ pub struct ThingComponent{
     pub thing_type: ThingType,
 
     pub position: Position<i32>,
-    pub graphic_position: Position<f32>,
     pub graphic_index: u8,
 
     pub permissions: Vec<ThingPermissions>,

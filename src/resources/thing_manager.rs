@@ -54,6 +54,7 @@ impl ThingManager {
         tile: &mut Tile,
         deploy: &Deploy,
     ) -> Thing {
+        // no check for other thing on tile;
         let mut thing = self.create_thing(thing_type, deploy);
         let config = deploy.objects_deploy.get_config(thing_type);
         let allow_tile_permissions: Vec<TilePermissions> = config.tile_allow_permissions.to_vec();
@@ -79,11 +80,9 @@ impl ThingManager {
 
         thing.position.x = tile.position.x;
         thing.position.y = tile.position.y;
-        thing.graphic_position.x = tile.graphic_position.x;
-        thing.graphic_position.y = tile.graphic_position.y;
         thing.tile_index = tile.index;
 
-        tile.thing_type = Some((ThingType::Rock, thing.id));
+        tile.thing_type = Some(thing.id);
         return thing;
     }
 
@@ -182,8 +181,7 @@ impl ThingManager {
                 || *thing_type == ThingType::FertileTree
                 || *thing_type == ThingType::Bush
                 || *thing_type == ThingType::FertileBush)
-                && (tile.ground_type == GroundType::RockEnvironment 
-                || tile.cover_type == CoverType::RockyRoad
+                && (tile.cover_type == CoverType::RockyRoad
                 || tile.cover_type == CoverType::WoodenFloor
             ){
                 number += 1;
@@ -199,10 +197,6 @@ impl ThingManager {
             }
 
             let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
-            if *thing_type == ThingType::Tree
-            || *thing_type == ThingType::FertileTree {
-                thing.graphic_position.y = thing.graphic_position.y + half_tilesize as f32;
-            };
             scene.things.push(thing);
             total_objects -= 1;
             vec_of_free_tiles.remove(random_index);
@@ -274,6 +268,7 @@ impl ThingManager {
                         thing.position.x,
                         thing.position.y,
                         &thing.thing_type,
+                        &thing_storage,
                     );
                     thing.graphic_index = index;
                 }
@@ -288,6 +283,7 @@ impl ThingManager {
         x: i32,
         y: i32,
         thing_type: &ThingType,
+        thing_storage: &Vec<Thing>,
     ) -> u8 {
         let tile_storage = tilemap.get_tilemap_tile_storage();
         let tilemap_width = tilemap.get_tilemap_width();
@@ -348,11 +344,14 @@ impl ThingManager {
                 false
             } else {
                 match tile_storage[*index as usize].thing_type {
-                    Option::Some((v, _)) => match *thing_type {
+                    Option::Some(v) => {
+                        let thing = thing_storage.iter().find(|x| x.id == v).unwrap();
+
+                        match *thing_type {
                         ThingType::Rock | ThingType::CopperOre | ThingType::IronOre => {
-                            if v == ThingType::Rock
-                            || v == ThingType::CopperOre
-                            || v == ThingType::IronOre {
+                            if thing.thing_type == ThingType::Rock
+                            || thing.thing_type == ThingType::CopperOre
+                            || thing.thing_type == ThingType::IronOre {
                                 true
                             } else {
                                 false
@@ -362,22 +361,23 @@ impl ThingManager {
                         | ThingType::SteelWall
                         | ThingType::WoodenWall
                         | ThingType::StoneWall => {
-                            if v == ThingType::IronWall
-                            || v == ThingType::SteelWall
-                            || v == ThingType::WoodenWall
-                            || v == ThingType::StoneWall {
+                            if thing.thing_type == ThingType::IronWall
+                            || thing.thing_type == ThingType::SteelWall
+                            || thing.thing_type == ThingType::WoodenWall
+                            || thing.thing_type == ThingType::StoneWall {
                                 true
                             } else {
                                 false
                             }
                         }
                         _ => {
-                            if v == *thing_type {
+                            if thing.thing_type == *thing_type {
                                 true
                             } else {
                                 false
                             }
                         }
+                    }
                     },
                     Option::None => false,
                 }

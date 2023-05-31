@@ -62,7 +62,6 @@ pub struct Thing {
     pub tile_index: usize, // index of tile in vec on tilemap for fast get; because all tiles r static in tilemap vec;
     pub thing_type: ThingType,
     pub position: Position<i32>,
-    pub graphic_position: Position<f32>,
     pub graphic_index: u8, // get image from material_manager;
 
     pub permissions: Vec<ThingPermissions>,

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy::input::mouse::{ MouseButtonInput, MouseMotion, MouseWheel };
 
+use crate::components::charactor_component::PlayerComponent;
 //use crate::resources::scene_manager;
 use crate::scenes::SceneState;
 use crate::resources::scene_manager::SceneManager;
@@ -11,6 +12,7 @@ pub struct UserInterfaceCamera;
 #[derive( Component )]
 pub struct Orthographic2DCamera{
     pub cursor_position: Vec2,
+    pub camera_on_charator: bool,
 }
 
 pub struct CameraPlugin;
@@ -44,7 +46,7 @@ fn spawn_2d_camera( mut commands: Commands ){
 
     commands
         .spawn_bundle(camera)
-        .insert(Orthographic2DCamera{ cursor_position: Vec2::new( 0.0, 0.0 ) })
+        .insert(Orthographic2DCamera{ cursor_position: Vec2::new( 0.0, 0.0 ), camera_on_charator: true, })
         .insert(Name::new("Orthographic2DCamera"));
 }
 
@@ -89,9 +91,12 @@ fn camera_move_by_left_button(
     //let mut max_x = map_width / 2.0 * tile_size;
     //let mut max_y = map_height / 2.0 * tile_size;
     //let mut min_y = -(map_height / 2.0 * tile_size);
-
     if mouse_button_input.pressed( MouseButton::Left ) {
         for ( mut transform, mut cam, projection ) in camera.iter_mut(){
+            if cam.camera_on_charator {
+                return;
+            };
+            
             for event in cursor_moved_events.iter() {
                 if cam.cursor_position.x == 0.0 {
                     cam.cursor_position.x = event.position.x;
@@ -139,6 +144,19 @@ fn camera_move_by_left_button(
             cam.cursor_position.y = 0.0;
         }
     }
+}
+
+pub fn move_by_player_moving(
+    player: Query<&Transform, With<PlayerComponent>>,
+    mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
+){
+    let (mut cam_transform, cam, cam_projection) = camera.single_mut();
+    let player_transform = player.single();
+
+    if cam.camera_on_charator {
+        cam_transform.translation.x = player_transform.translation.x;
+        cam_transform.translation.y = player_transform.translation.y;
+    };
 }
 
 //todo: All functions with camera;

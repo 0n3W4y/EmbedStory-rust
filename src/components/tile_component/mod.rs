@@ -4,9 +4,10 @@ use bevy::prelude::*;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, CoverType};
 
 #[derive(Component, Default)]
-pub struct GroundTileComponent {
+pub struct TileGroundComponent {
     pub ground_type: GroundType,
     pub index: usize, // in vec;
+    pub ground_graphic_index: u8,
 }
 
 #[derive(Component, Default)]

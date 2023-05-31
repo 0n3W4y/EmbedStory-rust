@@ -35,7 +35,6 @@ pub fn copy_from_entity_component_to_thing( thing: &mut Thing, component: &Thing
         thing.id = component.id;
         thing.tile_index = component.tile_index;
         thing.position = component.position.clone();
-        thing.graphic_position = component.graphic_position.clone();
         thing.graphic_index = component.graphic_index;
         thing.permissions = component.permissions.to_vec();
         thing.resists = component.resists.clone();

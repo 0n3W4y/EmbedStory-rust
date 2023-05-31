@@ -2,31 +2,34 @@ use bevy::prelude::*;
 
 use super::tile::Tile;
 use super::Tilemap;
-use crate::{components::tile_component::TileComponent, resources::scene_manager::SceneManager};
-use crate::components::tile_component::tile_cover_component::TileCoverComponent;
+use crate::{components::tile_component::{TileGroundComponent, TileCoverComponent}, resources::scene_manager::SceneManager};
 
 pub fn cleanup(
-    mut tile_query: Query<(Entity, &TileComponent, &TileCoverComponent), With<TileComponent>>,
+    mut ground_query: Query<(Entity, &TileGroundComponent), With<TileGroundComponent>>,
+    mut cover_query: Query<(Entity, &TileCoverComponent), With<TileCoverComponent>>,
     mut commands: Commands,
     mut scene_manager: ResMut<SceneManager>,
 ) {
     let tilemap: &mut Tilemap = &mut scene_manager.get_current_game_scene_mut().tilemap;
-    for (entity, component, cover_component) in tile_query.iter_mut() {
-        let tile: &mut Tile = tilemap.get_tile_by_index_mut(component.index);
-        copy_from_entity_component_to_tile(tile, component, cover_component);        
+    for (entity, ground_component) in ground_query.iter_mut() {
+        let tile: &mut Tile = tilemap.get_tile_by_index_mut(ground_component.index);
+        copy_from_ground_component_to_tile(tile, ground_component); 
+        commands.entity(entity).despawn_recursive();
+    }
+
+    for (entity, cover_component) in cover_query.iter_mut() {
+        let tile: &mut Tile = tilemap.get_tile_by_index_mut(cover_component.index);
+        copy_from_cover_component_to_tile(tile, cover_component); 
         commands.entity(entity).despawn_recursive();
     }
 }
 
-pub fn copy_from_entity_component_to_tile(tile: &mut Tile, component: &TileComponent, cover_component: &TileCoverComponent){
+pub fn copy_from_cover_component_to_tile(tile: &mut Tile, cover_component: &TileCoverComponent){
     tile.cover_type = cover_component.cover_type.clone();
+    tile.cover_graphic_index = cover_component.cover_graphic_index;
+}
 
-    tile.cover_graphic_index = component.cover_graphic_index;
-    tile.movement_ratio = component.movement_ratio;
-    tile.permissions = component.permissions.to_vec();
-    tile.thing_type = component.thing_type.clone();
-    tile.stuff_type = component.stuff_type.to_vec();
-    tile.charactor_type = component.alive_charactor_type.clone();
-    tile.effect_type = component.effect_type.clone();
-
+pub fn copy_from_ground_component_to_tile( tile: &mut Tile, ground_component: &TileGroundComponent){
+    tile.ground_type = ground_component.ground_type.clone();
+    tile.ground_graphic_index = ground_component.ground_graphic_index;
 }

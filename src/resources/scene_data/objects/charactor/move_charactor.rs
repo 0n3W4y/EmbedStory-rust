@@ -9,11 +9,16 @@ use crate::resources::scene_data::objects::charactor::skills::Skill;
 use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_manager::SceneManager;
 
+//use crate::plugins::camera::Orthographic2DCamera;
+
+//use super::CharactorType;
+
 const DEFAULT_MOVEMENT_SPEED: u16 = 1000;
 
 pub fn move_charactor(
     time: Res<Time>,
     mut charactor_query: Query<(&mut CharactorComponent, &mut Transform, &mut TextureAtlasSprite), With<CharactorComponent>>,
+    //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
     for (mut component, mut transform, mut sprite) in charactor_query.iter_mut(){
@@ -21,6 +26,10 @@ pub fn move_charactor(
             continue;
         };
         let scene = scene_manager.get_current_game_scene();
+
+        //let mut move_camera_on_player: bool = false;
+        //let (mut camera_transform, cam, projection) = camera.single_mut();
+        //if component.charactor_type == CharactorType::Player && cam.camera_on_charator {move_camera_on_player = true;};
 
         if component.destination_path.len() == 0 {
             try_path(&mut component, scene);
@@ -48,9 +57,20 @@ pub fn move_charactor(
         let d_x = component.destination_direction.x as f32 * movement_speed as f32;
         let d_y = component.destination_direction.y as f32 * movement_speed as f32;
 
-        transform.translation.x += d_x * time.delta_seconds();
-        transform.translation.y += d_y * time.delta_seconds();
+        let new_x = d_x * time.delta_seconds();
+        let new_y = d_y * time.delta_seconds();
 
+        transform.translation.x += new_x;
+        transform.translation.y += new_y;
+
+        //if move_camera_on_player {
+        //    let projection_scale = projection.scale;
+        //    let cam_x = new_x * projection_scale;
+        //    let cam_y = new_y * projection_scale;
+    
+        //    camera_transform.translation.x += new_x;
+        //    camera_transform.translation.y += new_y;
+        //}
         
         try_grid_moving(&mut component, &mut transform.translation, &mut sprite);
     }

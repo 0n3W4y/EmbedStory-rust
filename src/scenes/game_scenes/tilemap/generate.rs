@@ -10,6 +10,8 @@ use crate::resources::deploy::Deploy;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, CoverType, Tile, Position, TileDeploy};
 
+use super::tile::TilePermissions;
+
 
 pub fn generate_tilemap(
     tilemap: &mut Tilemap, 
@@ -64,10 +66,6 @@ fn generate_ground(
                 ground_type: tile_setting.ground_type.clone(),
                 cover_type: tile_setting.cover_type.clone(),
                 position: Position { x, y },
-                graphic_position: Position {
-                    x: graphic_x,
-                    y: graphic_y,
-                },
                 movement_ratio: tile_setting.movement_ratio,
                 permissions: tile_setting.permissions.to_vec(),
                 ..Default::default()
@@ -641,27 +639,24 @@ fn generate_environment(
                 match tile_ground_type {
                     GroundType::Rock => {
                         //do rock_environment;
-                        if environment_tile.ground_type == GroundType::RockEnvironment
-                            || environment_tile.ground_type == GroundType::Rock
-                        {
-                            continue;
-                        } else {
-                            let data_tile: &TileDeploy = deploy
-                                .tile
-                                .get_ground_tile_deploy(&GroundType::RockEnvironment);
-                            environment_tile.ground_type = GroundType::RockEnvironment;
-
-                            if environment_tile.cover_type == CoverType::Grass
-                                || environment_tile.cover_type == CoverType::Flowers
-                            {
+                        match environment_tile.permissions.iter().find(|x|{ x == &&TilePermissions::Walk}){
+                            Some(_) => {
+                                if environment_tile.ground_type == GroundType::Rock {continue;};
+                                let data_tile: &TileDeploy = deploy
+                                    .tile
+                                    .get_ground_tile_deploy(&GroundType::Rock);
+                                environment_tile.ground_type = GroundType::Rock;
                                 environment_tile.cover_type = CoverType::None;
-                            };
 
-                            environment_tile.movement_ratio = data_tile.movement_ratio;
-                            environment_tile.permissions = data_tile.permissions.to_vec();
-                            continue;
+                                environment_tile.movement_ratio = data_tile.movement_ratio;
+                                environment_tile.permissions = data_tile.permissions.to_vec();
+                                environment_tile.permissions.push(TilePermissions::Walk); // as default Rock doesn't have walk permission;
+                                continue;
+                            },
+                            None => { continue; // water or rock},
+                            }
                         }
-                    }
+                    },
                     _ => {}
                 };
 

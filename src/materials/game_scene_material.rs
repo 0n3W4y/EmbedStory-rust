@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::config::TILE_SIZE;
 use crate::{
     resources::scene_data::objects::{
-        charactor::{CharactorSubType, CharactorType, GenderType, RaceType},
+        charactor::{GenderType, RaceType},
         thing::ThingType,
     },
     scenes::game_scenes::tilemap::tile::{CoverType, GroundType},
@@ -11,11 +11,14 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct TileMaterial {
+    //ground;
     pub earth_atlas: Handle<TextureAtlas>,
     pub clay_atlas: Handle<TextureAtlas>,
     pub dirt_atlas: Handle<TextureAtlas>,
     pub dry_earth_atlas: Handle<TextureAtlas>,
     pub rock_atlas: Handle<TextureAtlas>,
+    //cover;
+    pub none_atlas: Handle<TextureAtlas>,
     pub grass_atlas: Handle<TextureAtlas>,
     pub ice_atlas: Handle<TextureAtlas>,
     pub flowers_atlas: Handle<TextureAtlas>,
@@ -28,36 +31,66 @@ pub struct TileMaterial {
 }
 
 impl TileMaterial {
-    pub fn get_ground_atlas_and_indexes(
+    pub fn get_ground_atlas(
         &self,
         ground_type: &GroundType,
-    ) -> (Handle<TextureAtlas>, usize) {
+    ) -> Handle<TextureAtlas>{
         match *ground_type {
-            GroundType::Earth => (self.earth_atlas.clone_weak(), 2),
-            GroundType::Clay => (self.clay_atlas.clone_weak(), 2),
-            GroundType::Dirt => (self.dirt_atlas.clone_weak(), 2),
-            GroundType::DryEarth => (self.dry_earth_atlas.clone_weak(), 2),
-            GroundType::Rock => (self.rock_atlas.clone_weak(), 2),
+            GroundType::Earth => self.earth_atlas.clone_weak(),
+            GroundType::Clay => self.clay_atlas.clone_weak(),
+            GroundType::Dirt => self.dirt_atlas.clone_weak(),
+            GroundType::DryEarth => self.dry_earth_atlas.clone_weak(),
+            GroundType::Rock => self.rock_atlas.clone_weak(),
         }
     }
 
-    pub fn get_cover_atlas_and_indexes(
+    pub fn get_ground_atlas_indexes(&self, ground_type: &GroundType) -> usize {
+        match *ground_type {
+            GroundType::Earth => 0,
+            GroundType::Clay => 0,
+            GroundType::Dirt => 0,
+            GroundType::DryEarth => 0,
+            GroundType::Rock => 0,
+        }
+    }
+
+    pub fn get_cover_atlas(
         &self,
         cover_type: &CoverType,
-    ) -> (Handle<TextureAtlas>, usize) {
+    ) -> Handle<TextureAtlas> {
         match *cover_type {
-            CoverType::Flowers => (self.flowers_atlas.clone_weak(), 2),
-            CoverType::Grass => (self.grass_atlas.clone_weak(), 4),
-            CoverType::Ice => (self.ice_atlas.clone_weak(), 27),
-            CoverType::RockyRoad => (self.rocky_road_atlas.clone_weak(), 27),
-            CoverType::Sand => (self.sand_atlas.clone_weak(), 3),
-            CoverType::Shallow => (self.shallow_atlas.clone_weak(), 27),
-            CoverType::Snow => (self.snow_atlas.clone_weak(), 27),
-            CoverType::Water => (self.water_atlas.clone_weak(), 27),
-            CoverType::WoodenFloor => (self.wooden_floor_atlas.clone_weak(), 27),
+            CoverType::Flowers => self.flowers_atlas.clone_weak(),
+            CoverType::Grass => self.grass_atlas.clone_weak(),
+            CoverType::Ice => self.ice_atlas.clone_weak(),
+            CoverType::RockyRoad => self.rocky_road_atlas.clone_weak(),
+            CoverType::Sand => self.sand_atlas.clone_weak(),
+            CoverType::Shallow => self.shallow_atlas.clone_weak(),
+            CoverType::Snow => self.snow_atlas.clone_weak(),
+            CoverType::Water => self.water_atlas.clone_weak(),
+            CoverType::WoodenFloor => self.wooden_floor_atlas.clone_weak(),
+            CoverType::None => self.none_atlas.clone_weak(),
             _ => {
                 println!("Can't get '{:?}', there is no option for it", cover_type);
-                (self.flowers_atlas.clone_weak(), 0)
+                self.flowers_atlas.clone_weak()
+            }
+        }
+    }
+
+    pub fn get_cover_atlas_indexes(&self, cover_type: &CoverType) -> usize {
+        match *cover_type {
+            CoverType::Flowers =>  2,
+            CoverType::Grass =>  4,
+            CoverType::Ice =>  37,
+            CoverType::RockyRoad => 15,
+            CoverType::Sand =>  3,
+            CoverType::Shallow =>  37,
+            CoverType::Snow =>  3,
+            CoverType::Water => 37,
+            CoverType::WoodenFloor =>  15,
+            CoverType::None => 0,
+            _ => {
+                println!("Can't get '{:?}', there is no option for it", cover_type);
+                0
             }
         }
     }
@@ -87,27 +120,51 @@ pub struct ThingMaterial {
 }
 
 impl ThingMaterial {
-    pub fn get_atlas(&self, thing_type: &ThingType) -> (Handle<TextureAtlas>, usize) {
+    pub fn get_atlas(&self, thing_type: &ThingType) -> Handle<TextureAtlas> {
         return match *thing_type {
-            ThingType::Boulder => (self.boulder_atlas.clone_weak(), 2),
-            ThingType::Bush => (self.bush_atlas.clone_weak(), 2),
-            ThingType::CopperOre => (self.copper_ore_atlas.clone_weak(), 2),
-            ThingType::FertileBush => (self.fertile_bush_atlas.clone_weak(), 2),
-            ThingType::FertileTree => (self.fertile_tree_atlas.clone_weak(), 2),
-            ThingType::IronDoor => (self.iron_door_atlas.clone_weak(), 2),
-            ThingType::IronOre => (self.iron_ore_atlas.clone_weak(), 2),
-            ThingType::IronWall => (self.iron_wall_atlas.clone_weak(), 2),
-            ThingType::Log => (self.log_atlas.clone_weak(), 2),
-            ThingType::ReinforcedIronDoor => (self.reinforced_iron_door_atlas.clone_weak(), 2),
-            ThingType::ReinforcedSteelDoor => (self.reinforced_steel_door_atlas.clone_weak(), 2),
-            ThingType::ReinforcedWoodenDoor => (self.reinforced_wooden_door_atlas.clone_weak(), 2),
-            ThingType::Rock => (self.rock_atlas.clone_weak(), 27),
-            ThingType::SteelDoor => (self.steel_door_atlas.clone_weak(), 2),
-            ThingType::SteelWall => (self.steel_wall_atlas.clone_weak(), 27),
-            ThingType::StoneWall => (self.stone_wall_atlas.clone_weak(), 27),
-            ThingType::Tree => (self.tree_atlas.clone_weak(), 2),
-            ThingType::WoodenDoor => (self.wooden_door_atlas.clone_weak(), 2),
-            ThingType::WoodenWall => (self.wooden_wall_atlas.clone_weak(), 27),
+            ThingType::Boulder => self.boulder_atlas.clone_weak(),
+            ThingType::Bush => self.bush_atlas.clone_weak(),
+            ThingType::CopperOre => self.copper_ore_atlas.clone_weak(),
+            ThingType::FertileBush => self.fertile_bush_atlas.clone_weak(),
+            ThingType::FertileTree => self.fertile_tree_atlas.clone_weak(),
+            ThingType::IronDoor => self.iron_door_atlas.clone_weak(),
+            ThingType::IronOre => self.iron_ore_atlas.clone_weak(),
+            ThingType::IronWall => self.iron_wall_atlas.clone_weak(),
+            ThingType::Log => self.log_atlas.clone_weak(),
+            ThingType::ReinforcedIronDoor => self.reinforced_iron_door_atlas.clone_weak(),
+            ThingType::ReinforcedSteelDoor => self.reinforced_steel_door_atlas.clone_weak(),
+            ThingType::ReinforcedWoodenDoor => self.reinforced_wooden_door_atlas.clone_weak(),
+            ThingType::Rock => self.rock_atlas.clone_weak(),
+            ThingType::SteelDoor => self.steel_door_atlas.clone_weak(),
+            ThingType::SteelWall => self.steel_wall_atlas.clone_weak(),
+            ThingType::StoneWall => self.stone_wall_atlas.clone_weak(),
+            ThingType::Tree => self.tree_atlas.clone_weak(),
+            ThingType::WoodenDoor => self.wooden_door_atlas.clone_weak(),
+            ThingType::WoodenWall => self.wooden_wall_atlas.clone_weak(),
+        };
+    }
+
+    pub fn get_atlas_indexes(&self, thing_type: &ThingType) -> usize {
+        return match *thing_type {
+            ThingType::Boulder => 2,
+            ThingType::Bush => 2,
+            ThingType::CopperOre => 37,
+            ThingType::FertileBush => 2,
+            ThingType::FertileTree => 2,
+            ThingType::IronDoor => 1,
+            ThingType::IronOre => 37,
+            ThingType::IronWall => 1,
+            ThingType::Log => 2,
+            ThingType::ReinforcedIronDoor => 1,
+            ThingType::ReinforcedSteelDoor => 1,
+            ThingType::ReinforcedWoodenDoor => 1,
+            ThingType::Rock => 37,
+            ThingType::SteelDoor => 1,
+            ThingType::SteelWall => 37,
+            ThingType::StoneWall => 37,
+            ThingType::Tree => 2,
+            ThingType::WoodenDoor => 1,
+            ThingType::WoodenWall => 37,
         };
     }
 }
@@ -170,6 +227,8 @@ impl GameSceneMaterial {
             asset_server.load("textures/tiles/ground/dry_earth_atlas.png");
         let rock_texture_handle: Handle<Image> =
             asset_server.load("textures/tiles/ground/rock_atlas.png");
+        let none_texture_handle: Handle<Image> = 
+            asset_server.load("textures/tiles/cover/none_atlas.png");
         let grass_texture_handle: Handle<Image> =
             asset_server.load("textures/tiles/cover/grass_atlas.png");
         let ice_texture_handle: Handle<Image> =
@@ -217,6 +276,12 @@ impl GameSceneMaterial {
             rock_texture_handle,
             Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
             6,
+            1,
+        );
+        let none_texture_atlas = TextureAtlas::from_grid(
+            none_texture_handle,
+            Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+            1,
             1,
         );
         let grass_texture_atlas = TextureAtlas::from_grid(
@@ -279,6 +344,7 @@ impl GameSceneMaterial {
         let dirt_atlas = texture_atlases.add(dirt_texture_atlas);
         let dry_earth_atlas = texture_atlases.add(dry_earth_texture_atlas);
         let rock_atlas = texture_atlases.add(rock_texture_atlas);
+        let none_atlas = texture_atlases.add(none_texture_atlas);
         let grass_atlas = texture_atlases.add(grass_texture_atlas);
         let ice_atlas = texture_atlases.add(ice_texture_atlas);
         let flowers_atlas = texture_atlases.add(flowers_texture_atlas);
@@ -295,6 +361,7 @@ impl GameSceneMaterial {
             dirt_atlas,
             dry_earth_atlas,
             rock_atlas,
+            none_atlas,
             grass_atlas,
             ice_atlas,
             flowers_atlas,

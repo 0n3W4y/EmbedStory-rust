@@ -84,7 +84,10 @@ impl CharactorManager {
         return charactor;
     }
 
-    pub fn palce_charator_on_tile(&self, charactor: &mut Charactor, tile: &mut Tile) {}
+    pub fn palce_charator_on_tile(&self, charactor: &mut Charactor, tile: &mut Tile) {
+        charactor.position = tile.position.clone();
+        tile.charactor_type = Some(charactor.id);
+    }
 
     pub fn generate_mosnters_for_scene(
         &mut self,

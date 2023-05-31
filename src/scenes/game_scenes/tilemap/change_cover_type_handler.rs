@@ -1,23 +1,17 @@
 use bevy::prelude::*;
 
-use super::tile::CoverType;
-use crate::{components::tile_component::{TileComponent, tile_cover_component::TileCoverComponent}, materials::material_manager::MaterialManager};
+use crate::{components::tile_component::TileCoverComponent, materials::material_manager::MaterialManager};
 
 
 pub fn change_cover_type_handler(
-    mut tile_query: Query<(&TileComponent, &TileCoverComponent, &mut Children), (Changed<TileCoverComponent>, With<TileComponent>)>,
-    mut texture_query: Query<(&mut Handle<Image>, With<TileComponent>)>,
+    mut tile_query: Query<(&TileCoverComponent, &mut TextureAtlasSprite, &Handle<TextureAtlas>,), (Changed<TileCoverComponent>, With<TileCoverComponent>)>,
     material_manager: Res<MaterialManager>,
     
 ){
-    for(component, cover_component, children) in tile_query.iter_mut(){
-        let new_texture: Handle<Image> = match cover_component.cover_type{
-            CoverType::None => Default::default(),            
-            _ => material_manager.game_scene.cover_tile.get_image(&cover_component.cover_type, component.cover_graphic_index as usize).clone(),  
-        };
-        if let Ok((mut texture, _)) = texture_query.get_mut(*children.first().unwrap()) {
-            *texture = new_texture;
-        }
+    for(component, mut sprite, mut texture_atlas_handle) in tile_query.iter_mut(){
+        let new_texture: (Handle<TextureAtlas>, usize) = material_manager.game_scene.tile.get_cover_atlas_and_indexes(&component.cover_type);
+        *texture_atlas_handle = new_texture.0;
+        sprite.index = component.cover_graphic_index as usize;
     }
 }
 

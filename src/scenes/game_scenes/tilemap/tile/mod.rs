@@ -1,9 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::resources::scene_data::objects::{
-    charactor::CharactorType, scene_effect::SceneEffectType, stuff::StuffType, thing::ThingType,
-};
-
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
 pub enum TilePermissions{
     RemoveFloor,
@@ -53,7 +49,7 @@ pub struct Position<T>{
 pub struct Tile{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
-    pub id: usize, // in vec;
+    pub index: usize, // in vec;
 
     pub ground_graphic_index: u8,
     pub cover_graphic_index: u8,
