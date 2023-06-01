@@ -58,7 +58,7 @@ fn generate_ground(
             let y: i32 = -half_tilmap_height + i as i32;
             let index = i as usize * tilemap_height as usize + j as usize;
 
-            let tile = Tile {
+            let mut tile = Tile {
                 index,
                 ground_type: tile_setting.ground_type.clone(),
                 cover_type: tile_setting.cover_type.clone(),
@@ -67,6 +67,11 @@ fn generate_ground(
                 permissions: tile_setting.permissions.to_vec(),
                 ..Default::default()
             };
+
+            //added walk permission for "rock environment" not for thing ROCK;
+            if *ground_type == GroundType::Rock {
+                tile.permissions.push(TilePermissions::Walk);
+            }
 
             tilemap.tilemap_tile_storage.push(tile);
         }

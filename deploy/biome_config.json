@@ -3,8 +3,8 @@
         "main_ground": "Earth",
         "main_cover": "Grass",
         "main_cover_filling": 85,
-        "additional_ground":  {"Dirt": 2.3, "RockEnvironment": 1.0},
-        "additional_cover":  {"RockyRoad": 0.2, "Sand": 0.8, "Flowers": 1.0} ,
+        "additional_ground":  {"Dirt": 2.3},
+        "additional_cover":  {"RockyRoad": 0.2, "Sand": 0.8, "Flowers": 1.0},
         "rivers": {
             "liquid_river": [ 
                 {
