@@ -7,7 +7,7 @@ use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::dictionary::Dictionary;
-use crate::resources::profile::Profile;
+//use crate::resources::profile::Profile;
 use crate::resources::stuff_manager::StuffManager;
 use crate::resources::thing_manager::ThingManager;
 use crate::resources::scene_manager::{SceneManager, SceneType};
@@ -229,7 +229,7 @@ fn cleanup(mut commands: Commands, scene_data: Res<LoadingNewGameSceneData>) {
 fn create_starting_scenes(
     mut commands: Commands, 
     deploy: Res<Deploy>,
-    profile: Res<Profile>,
+    //profile: Res<Profile>,
 ) {
     //get scene settings fro deploy;
     let scene_setting = deploy.game_scene.get_scene_setting(BiomeType::Plain);
@@ -246,7 +246,7 @@ fn create_starting_scenes(
 
     //create new stuff manager;
 
-    let mut stuff_manager: StuffManager = Default::default();
+    let stuff_manager: StuffManager = Default::default();
 
     //Create starting scene;
     let mut starting_scene: GameScene = scene_manager.create_game_scene(&SceneType::GroundScene);

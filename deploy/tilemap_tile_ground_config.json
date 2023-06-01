@@ -48,19 +48,6 @@
         ]
     },
 
-    "rock_environment":{
-        "ground_type": "RockEnvironment",
-        "cover_type": "None",
-        "movement_ratio": 1100,
-        "permissions":[
-            "PlaceFloor",
-            "PlaceThing",
-            "PlaceStuff",
-            "Walk",
-            "Fog"
-        ]
-    },
-
     "clay": {
         "ground_type": "Clay",
         "cover_type": "None",

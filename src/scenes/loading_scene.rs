@@ -224,7 +224,7 @@ fn update_loader(
 fn load_images(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     let font_materials: FontMaterials = FontMaterials {
         firasans_bold_font: asset_server.load(FIRASANS_BOLD_FONT),

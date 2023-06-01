@@ -6,7 +6,7 @@ pub const WINDOW_HEIGHT: f32 = 768.0;
 // Monitor information by default monitor
 pub const MONITOR_HEIGHT: f32 = 1080.0;
 pub const MONITOR_HALF_HEIGHT: f32 = 560.0;
-pub const MONITOR_WIDTH: f32 = 1920.0;
+//pub const MONITOR_WIDTH: f32 = 1920.0;
 pub const MONITOR_HALF_WIDTH: f32 = 960.0;
 
 pub const TILE_SIZE: u16 = 128;

@@ -53,7 +53,7 @@ pub fn destroeyd_thing_handler(
 
             match new_stuff {
                 Option::Some(v) => {
-                    //spawn new thing;
+                    //spawn new stuff;
                 },
                 None => { 
                     //do nothing;

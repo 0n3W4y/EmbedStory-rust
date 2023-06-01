@@ -204,7 +204,7 @@ pub struct GameSceneMaterial {
 impl GameSceneMaterial {
     pub fn load_ground_scene_material(
         asset_server: &Res<AssetServer>,
-        mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) -> Self {
         return GameSceneMaterial {
             tile: GameSceneMaterial::load_tile_material(asset_server, texture_atlases),
@@ -215,7 +215,7 @@ impl GameSceneMaterial {
 
     fn load_tile_material(
         asset_server: &Res<AssetServer>,
-        mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) -> TileMaterial {
         let earth_texture_handle: Handle<Image> =
             asset_server.load("textures/tiles/ground/earth_atlas.png");
@@ -267,7 +267,7 @@ impl GameSceneMaterial {
             1,
         );
         let dry_earth_texture_atlas = TextureAtlas::from_grid(
-            clay_texture_handle,
+            dry_earth_texture_handle,
             Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
             6,
             1,
@@ -376,7 +376,7 @@ impl GameSceneMaterial {
 
     fn load_things_material(
         asset_server: &Res<AssetServer>,
-        mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) -> ThingMaterial {
         let rock_texture_handle: Handle<Image> =
             asset_server.load("textures/things/rock/rock_atlas.png");
@@ -577,7 +577,7 @@ impl GameSceneMaterial {
 
     pub fn load_charactors_material(
         asset_server: &Res<AssetServer>,
-        mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
     ) -> CharactorsMaterial {
         let human_male_texture_handle: Handle<Image> = asset_server.load("textures/charactor/human/male.png");
         let human_female_texture_handle: Handle<Image> = asset_server.load("textures/charactor/human/female.png");

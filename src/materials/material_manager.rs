@@ -20,7 +20,7 @@ impl MaterialManager {
         return MaterialManager {
             main_menu_scene: MaterialManager::load_main_menu_scene_material(asset_server),
             options_scene: MaterialManager::load_options_scene_material(asset_server),
-            game_scene: GameSceneMaterial::load_ground_scene_material(asset_server, texture_atlases),
+            game_scene: GameSceneMaterial::load_ground_scene_material(asset_server, &mut texture_atlases),
             create_char_scene: MaterialManager::load_create_char_scene_material(asset_server),
             loading_new_game_scene: MaterialManager::load_loading_new_game_scene_material(
                 asset_server,

@@ -26,10 +26,6 @@ impl Tilemap {
         self.total_tiles = width as usize * height as usize;
     }
 
-    pub fn get_tile_size(&self) -> u16 {
-        return self.tile_size;
-    }
-
     pub fn get_tilemap_width(&self) -> u16 {
         return self.tilemap_width;
     }

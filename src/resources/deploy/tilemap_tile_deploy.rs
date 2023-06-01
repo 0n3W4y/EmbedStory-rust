@@ -42,7 +42,6 @@ impl TilemapTileDeploy{
             GroundType::Dirt => &self.ground_tile.dirt,
             GroundType::DryEarth => &self.ground_tile.dry_earth,
             GroundType::Rock => &self.ground_tile.rock,
-            GroundType::RockEnvironment => &self.ground_tile.rock_environment,
             GroundType::Clay => &self.ground_tile.clay,
         };
     }
@@ -69,7 +68,6 @@ pub struct GroundTileDeploy{
     dirt: TileDeploy,
     dry_earth: TileDeploy,
     rock: TileDeploy,
-    rock_environment: TileDeploy,
     clay: TileDeploy,
 }
 

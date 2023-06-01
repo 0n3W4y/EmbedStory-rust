@@ -36,7 +36,7 @@ pub fn spawn(
     commands
         .spawn_bundle(SpriteSheetBundle {
             transform,
-            sprite: TextureAtlasSprite::new(thing.graphic_index as usize),
+            sprite: TextureAtlasSprite::new(index as usize),
             texture_atlas: texture,
             ..Default::default()
         })

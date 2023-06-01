@@ -64,6 +64,7 @@ impl CharactorManager {
             race_type: race_type.clone(),
             charactor_type: charactor_type.clone(),
             charactor_subtype: charactor_subtype.clone(),
+            gender_type: gender.clone(),
             stats_cache: stats.clone(),
             stats: stats,
             resists_cache: resists.clone(),

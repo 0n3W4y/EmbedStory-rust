@@ -51,14 +51,11 @@ fn generate_ground(
     let tilemap_width = tilemap.tilemap_width as i32;
     let half_tilmap_width = (tilemap_width / 2) as i32;
     let half_tilmap_height = (tilemap_height / 2) as i32;
-    let tile_size: i32 = tilemap.tile_size as i32;
 
     for i in 0..tilemap.tilemap_height {
         for j in 0..tilemap.tilemap_width {
             let x: i32 = -half_tilmap_width + j as i32;
             let y: i32 = -half_tilmap_height + i as i32;
-            let graphic_x: f32 = (x * tile_size) as f32;
-            let graphic_y: f32 = (y * tile_size) as f32;
             let index = i as usize * tilemap_height as usize + j as usize;
 
             let tile = Tile {

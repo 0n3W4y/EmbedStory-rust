@@ -14,7 +14,6 @@ pub fn draw(
     mut commands: Commands,
     scene_manager: Res<SceneManager>,
     material_manager: Res<MaterialManager>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ){
     let scene: &GameScene = scene_manager.get_current_game_scene();
 
@@ -26,9 +25,7 @@ pub fn draw(
         let charactor_racetype = &charactor.race_type;
 
 
-        let texture_handle: Handle<Image> = material_manager.game_scene.charactors.get_image(charactor_racetype, charactor_gender);
-        let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(128.0, 128.0), 3, 1);
-        let texture_atlas_handle = texture_atlases.add(texture_atlas);
+        let texture: Handle<TextureAtlas> = material_manager.game_scene.charactors.get_atlas(charactor_racetype, charactor_gender);
 
         let new_z_position = Z_POSITION - y as f32 / 1000.0;
         let transform = Transform::from_xyz(x, y, new_z_position);
@@ -39,7 +36,7 @@ pub fn draw(
         match *charactor_type {
             CharactorType::Player => {
                 commands.spawn_bundle(SpriteSheetBundle{
-                    texture_atlas: texture_atlas_handle,
+                    texture_atlas: texture,
                     transform,
                     ..default()
                 })
@@ -48,7 +45,7 @@ pub fn draw(
             },
             CharactorType::NPC => {
                 commands.spawn_bundle(SpriteSheetBundle{
-                    texture_atlas: texture_atlas_handle,
+                    texture_atlas: texture,
                     transform,
                     ..default()
                 })
@@ -57,7 +54,7 @@ pub fn draw(
             },
             CharactorType::Monster => {
                 commands.spawn_bundle(SpriteSheetBundle{
-                    texture_atlas: texture_atlas_handle,
+                    texture_atlas: texture,
                     transform,
                     ..default()
                 })
@@ -73,7 +70,6 @@ pub fn draw_player(
     mut commands: Commands,
     profile: Res<Profile>,
     material_manager: Res<MaterialManager>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ){
     let player: &Charactor = &profile.charactor;
     let x: f32 = (player.position.x * TILE_SIZE as i32) as f32;
@@ -82,9 +78,7 @@ pub fn draw_player(
     let charactor_racetype = &player.race_type;
 
 
-    let texture_handle: Handle<Image> = material_manager.game_scene.charactors.get_image(charactor_racetype, charactor_gender);
-    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(128.0, 128.0), 3, 1);
-    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    let texture: Handle<TextureAtlas> = material_manager.game_scene.charactors.get_atlas(charactor_racetype, charactor_gender);
 
     let new_z_position = Z_POSITION - y as f32 / 1000.0;
     let transform = Transform::from_xyz(x, y, new_z_position);
@@ -93,7 +87,7 @@ pub fn draw_player(
     copy_from_charactor_to_component(player, &mut charactor_component);
 
     commands.spawn_bundle(SpriteSheetBundle{
-        texture_atlas: texture_atlas_handle,
+        texture_atlas: texture,
         transform,
         ..default()
     })

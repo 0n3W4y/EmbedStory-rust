@@ -154,8 +154,8 @@ impl ThingManager {
         percent: f32,
         vec_of_free_tiles: &mut Vec<usize>
     ) {
-        let tilesize = scene.tilemap.get_tile_size();
-        let half_tilesize: u16 = tilesize / 2;
+        //let tilesize = scene.tilemap.get_tile_size();
+        //let half_tilesize: u16 = tilesize / 2;
         let mut rng = rand::thread_rng();
         let tilemap = &mut scene.tilemap;
         let tilemap_total_tiles = tilemap.get_total_tiles();
@@ -196,7 +196,7 @@ impl ThingManager {
                 }
             }
 
-            let mut thing = self.create_thing_on_tile(thing_type, tile, deploy);
+            let thing = self.create_thing_on_tile(thing_type, tile, deploy);
             scene.things.push(thing);
             total_objects -= 1;
             vec_of_free_tiles.remove(random_index);
@@ -254,6 +254,7 @@ impl ThingManager {
 
     fn spread_indexes_for_things(&self, thing_storage: &mut Vec<Thing>, tilemap: &Tilemap) {
         // TODO: do this for log and boulder things;
+        let thing_storage_copy: Vec<Thing> = thing_storage.to_vec();
         for thing in thing_storage.iter_mut() {
             match thing.thing_type {
                 ThingType::CopperOre
@@ -268,7 +269,7 @@ impl ThingManager {
                         thing.position.x,
                         thing.position.y,
                         &thing.thing_type,
-                        &thing_storage,
+                        &thing_storage_copy,
                     );
                     thing.graphic_index = index;
                 }
