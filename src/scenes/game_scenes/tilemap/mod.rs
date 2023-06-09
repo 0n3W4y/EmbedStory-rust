@@ -45,7 +45,7 @@ impl Tilemap {
     pub fn get_tilemap_tile_storage(&self) -> &Vec<Tile> {
         return &&self.tilemap_tile_storage;
     }
-
+/*
     pub fn get_tile_by_index(&self, value: usize) -> &Tile {
         let vector_length = self.tilemap_tile_storage.len();
         if value >= vector_length {
@@ -57,7 +57,7 @@ impl Tilemap {
 
         return &self.tilemap_tile_storage[value];
     }
-
+*/
     pub fn get_tile_by_index_mut(&mut self, value: usize) -> &mut Tile {
         let vector_length = self.tilemap_tile_storage.len();
         if value >= vector_length {
@@ -78,7 +78,7 @@ impl Tilemap {
         }
         &self.tilemap_tile_storage[index]
     }
-
+/*
     pub fn get_tile_by_position_mut(&mut self, x: i32, y: i32) -> &mut Tile{
         let index = ((y + self.tilemap_height as i32 / 2)  * self.tilemap_height as i32 + (x + self.tilemap_width as i32 / 2)) as usize;
         if index >= self.tilemap_tile_storage.len() as usize {
@@ -87,4 +87,5 @@ impl Tilemap {
         }
         &mut self.tilemap_tile_storage[index]
     }
+*/
 }
