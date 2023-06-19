@@ -80,14 +80,17 @@ pub enum StuffWearSlot {
     Pants,
     Gloves,
     Shoes,
+    LeftArm,
+    RightArm,
 }
 
+/*/
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
 pub enum ConditionType {
     Pain,
     Fatigue,
 }
-
+*/
 #[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
 pub enum CharactorStatus {
     Dead,
@@ -105,7 +108,7 @@ pub struct Charactor {
     pub id: usize,
     pub charactor_type: CharactorType,
     pub race_type: RaceType,
-    pub charactor_subtype: CharactorSubType,    
+    pub charactor_subtype: CharactorSubType,
     pub gender_type: GenderType,
 
     pub status: CharactorStatus,
@@ -127,11 +130,12 @@ pub struct Charactor {
     pub stats_cache: HashMap<Stat, u8>,
     pub stat_min_value: u8,
 
-    pub condition: HashMap<ConditionType, u16>,
-    pub condition_max: HashMap<ConditionType, u16>,
+    //pub condition: HashMap<ConditionType, u16>,
+    //pub condition_max: HashMap<ConditionType, u16>,
 
-    pub skills: HashMap<Skill, u16>,
-    pub skills_cache: HashMap<Skill, u16>,
+    pub active_skills: Vec<Skill>,
+    pub passive_skills: Vec<Skill>,
+    //pub skills_cache: HashMap<Skill, u16>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
