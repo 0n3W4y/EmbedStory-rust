@@ -22,8 +22,8 @@ pub mod player_click_function;
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
     Player,
-    #[default]
     NPC,
+    #[default]
     Monster,
 }
 
@@ -34,25 +34,6 @@ pub enum GenderType{
     Male,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum CharactorFraction{
-    Bandit,
-    Pirat,
-    Predator,
-    Herbivorous,
-    Trader,
-    #[default]
-    None
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum CharactorSubType{
-    #[default]
-    Civilian,
-    MeleeFighter,
-    RangedFighter,
-    MixedFighter,
-}
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum AttitudeToPlayer {
@@ -66,11 +47,16 @@ pub enum AttitudeToPlayer {
 pub enum RaceType {
     #[default]
     Human,
-    Humanoid,
-    Robot,
-    Mutant,
-    SuperMutant,
-    Bogomol,
+    Elf,
+    Orc,
+    Dwarf,
+    Halfling,
+    Undead,
+    Naga,
+    Gnome,
+    Goblin,
+    Beast,
+    Arahnid,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
@@ -80,27 +66,21 @@ pub enum StuffWearSlot {
     Pants,
     Gloves,
     Shoes,
-    LeftArm,
-    RightArm,
+    Weapon,
+    Trinket,
+    Artefact,
+    LeftRing,
+    RightRing,
+    Amulet,
 }
 
-/*/
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
-pub enum ConditionType {
-    Pain,
-    Fatigue,
-}
-*/
 #[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
 pub enum CharactorStatus {
     Dead,
     Moving,
-    Reloading,
     #[default]
     Standing,
-    Eating,
-    Doctor,
-    Bandaging,
+    Attacking,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

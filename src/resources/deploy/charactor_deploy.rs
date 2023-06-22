@@ -3,15 +3,15 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::collections::HashMap;
 
-use crate::resources::scene_data::objects::body_part::{BodyPartType, PartType};
 use crate::resources::scene_data::objects::charactor::{RaceType, CharactorSubType, ConditionType};
 use crate::resources::scene_data::objects::resists::Resist;
 use crate::resources::scene_data::objects::charactor::stats::Stat;
 
 #[derive( Deserialize, Debug)]
 pub struct CharactorDeploy{
-    pub race_deploy: RaceDeploy,
-    pub charactor_subtype_deploy: CharactorSubTypeDeploy,
+    pub player_race_deploy: PlayerRaceDeploy,
+    pub monster_deploy: MonsterDeploy,
+    pub npc_deploy: NPCDeploy,
 }
 
 impl CharactorDeploy{
