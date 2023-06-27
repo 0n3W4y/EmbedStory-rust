@@ -1,10 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::resources::scene_data::objects::charactor::skills::Skill;
-use crate::scenes::game_scenes::tilemap::tile::Position;
-
-use super::body_part::{BodyPart, BodyPartType};
 use super::resists::Resist;
 use super::charactor::stats::Stat;
 use super::stuff::Stuff;
@@ -12,12 +8,14 @@ use super::charactor::charactor_effect::CharactorEffect;
 
 pub mod skills;
 pub mod stats;
-pub mod charactor_effect;
+pub mod effects;
 pub mod killed_charactor_handler;
 pub mod draw;
 pub mod cleanup;
 pub mod move_charactor;
 pub mod player_click_function;
+pub mod resists;
+pub mod damage_type;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -25,6 +23,7 @@ pub enum CharactorType {
     NPC,
     #[default]
     Monster,
+    Companion,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]

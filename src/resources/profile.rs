@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::scene_data::objects::charactor::Charactor;
+use crate::resources::scene_data::charactor::Charactor;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Profile {
@@ -12,8 +12,8 @@ pub struct Profile {
     pub profile_name: String,
     pub start_time: String,
     pub end_time: String,
-    pub charactor: Charactor,
-    //pub companion_list: Vec<Character>;
+    pub charactor: Option<Charactor>,
+    pub companion: Option<Charactor>,
 }
 
 impl Profile {
@@ -26,7 +26,8 @@ impl Profile {
             playtime: 0,
             start_time: start_time.to_rfc3339(),
             end_time: String::new(),
-            charactor: Charactor::default(),
+            charactor: None,
+            companion: None,
         };
     }
 
