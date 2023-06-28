@@ -1,8 +1,6 @@
 use bevy::prelude::*;
 
 use crate::components::charactor_component::CharactorComponent;
-use crate::resources::scene_data::objects::body_part::HealthPoints;
-use crate::resources::scene_data::objects::body_part::BodyPartType;
 
 use super::CharactorStatus;
 
