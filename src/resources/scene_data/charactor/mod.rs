@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use self::abilities::Ability;
 use self::effects::Effect;
-use self::skills::{ActiveSkill, PassiveSkill};
+use self::skills::Skill;
 use self::stats::{ExtraStat, Stat};
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
@@ -110,6 +110,7 @@ pub struct Charactor {
 
     pub extra_stats: HashMap<ExtraStat, i16>,
     pub extra_stats_cache: HashMap<ExtraStat, i16>,
+    pub extra_stats_regen: HashMap<ExtraStat, f32>,
 
     pub damage_resists: HashMap<DamageType, i16>,
     pub damage_resists_cache: HashMap<DamageType, i16>,
@@ -121,28 +122,16 @@ pub struct Charactor {
     pub effect_resist_min_value: i16,
     pub effect_resist_max_value: i16,
 
-    pub ability: HashMap<Ability, i16>,
+    pub ability: HashMap<Ability, f32>,
 
-    pub active_skills: HashMap<u8, Option<ActiveSkill>>,
-    pub passive_skills: HashMap<PassiveSkill, i16>,
+    pub skills: HashMap<u8, Option<Skill>>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
     pub stuff_wear: HashMap<StuffWearSlot, usize>, // value is - stuff id;
 
-    pub time_effect: Vec<Effect>,
+    pub temporary_effect: Vec<Effect>,
     pub endless_effect: Vec<Effect>,
-}
-
-pub fn change_passive_skill(
-    passive_skill_storage: &mut HashMap<PassiveSkill, i16>,
-    passive_skill: &PassiveSkill,
-    value: i16,
-) {
-    passive_skill_storage
-        .entry(passive_skill.clone())
-        .and_modify(|old_value| *old_value += value)
-        .or_insert(value);
 }
 
 pub fn change_ability(
@@ -235,6 +224,7 @@ pub fn change_stat(
     stats_storage: &mut HashMap<Stat, i16>,
     stats_cache: &mut HashMap<Stat, i16>,
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
+    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     effect_resists_storage: &mut HashMap<EffectType, i16>,
     effect_resists_cache: &mut HashMap<EffectType, i16>,
     effect_resists_min_value: i16,
@@ -243,7 +233,6 @@ pub fn change_stat(
     damage_resists_cache: &mut HashMap<DamageType, i16>,
     damage_resist_max_value: i16,
     damage_resist_min_value: i16,
-    passive_skill_storage: &mut HashMap<PassiveSkill, i16>,
     stat: &Stat,
     value: i16,
     stats_min_value: u8,
@@ -283,7 +272,6 @@ pub fn change_stat(
         damage_resists_cache,
         damage_resist_max_value,
         damage_resist_min_value,
-        passive_skill_storage,
         stat,
         new_value,
     );
@@ -303,7 +291,6 @@ pub fn do_stat_dependences(
     damage_resists_cache: &mut HashMap<DamageType, i16>,
     damage_resist_max_value: i16,
     damage_resist_min_value: i16,
-    passive_skill_storage: &mut HashMap<PassiveSkill, i16>,
     stat: &Stat,
     stat_value: i16,
 ) {

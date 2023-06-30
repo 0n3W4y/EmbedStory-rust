@@ -1,9 +1,30 @@
 {
     "human": {
-        "stats": {},
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Mobility": 10,
+            "Wisdom": 10,
+            "Intellect": 10,
+            "Luck": 10,
+            "Endurance": 10,
+            "Vitality": 10
+        },
         "stats_min_value": 1,
-        "extra_stats": {},
-        "damage_resists": {},
+        "extra_stats": {
+            "HealthPoints": 100,
+            "StaminaPoints": 50
+        },
+        "damage_resists": {
+            "Fire": 5,
+            "Cold": 5,
+            "Electric": 5,
+            "Kinetic": 5,
+            "Water": 5,
+            "Acid": 5,
+            "SacredEnergy": 5,
+            "DeathEnergy": 5
+        },
         "damage_resists_min_value": -80,
         "damage_resists_max_value": 80,
         "effect_resists": {},

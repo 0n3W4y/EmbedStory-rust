@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use super::{stats::{Stat, ExtraStat}, skills::ActiveSkill, abilities::Ability};
+use super::{stats::{Stat, ExtraStat}, skills::Skill, abilities::Ability};
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
 pub const PEREODIC_DAMAGE_TIME: f32 = 1000.0;
@@ -41,7 +41,7 @@ pub struct EffectDeploy {
     pub itself: bool,
     pub duration: u16,
 
-    pub extra_skill: Option<ActiveSkill>,
+    pub extra_skill: Option<Skill>,
     pub extra_skill_trigger: u8,
     
     // if +-10000 percent - we take value from weapon;
@@ -74,7 +74,7 @@ pub struct Effect {
     pub current_duration: u16,
     pub triggered: u16,
 
-    pub extra_skill: Option<ActiveSkill>,
+    pub extra_skill: Option<Skill>,
     pub extra_skill_trigger: u8,
 
     pub change_stat: HashMap<Stat, i16>, // Stat and flat damage to stat

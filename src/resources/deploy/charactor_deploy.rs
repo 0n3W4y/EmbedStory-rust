@@ -5,7 +5,6 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::abilities::Ability;
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
-use crate::resources::scene_data::charactor::skills::PassiveSkill;
 use crate::resources::scene_data::charactor::stats::{ExtraStat, Stat};
 use crate::resources::scene_data::charactor::RaceType;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
@@ -114,7 +113,6 @@ pub struct RaceConfig {
     pub effect_resists: HashMap<EffectType, i16>,
     pub effect_resist_min_value: i16,
     pub effect_resist_max_value: i16,
-    pub ability: HashMap<Ability, i16>,
-    pub passive_skills: HashMap<PassiveSkill, i16>,
+    pub ability: HashMap<Ability, f32>,
     pub endless_effect: Vec<EffectType>,
 }

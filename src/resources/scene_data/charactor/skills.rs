@@ -1,30 +1,13 @@
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
-pub enum ActiveSkillType {
+pub enum SkillType {
     #[default]
     BasicWeaponAttack,
     BasicTrinketAttack,
 }
 
-
-#[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
-pub enum PassiveSkillType {
-    LifeLich,
-    StaminaLich,
-    #[default]
-    Stun,
-    Slow,
-    Moveless,
-    Bleed,
-    Burn,
-    Electrification,
-    Freeze,
-    Blind,
-    Poison,
-    Acid,
-    Wet,
+pub struct Skill {
+    skill_type: SkillType,
+    passive_skill: bool,
 }
-
-pub struct ActiveSkill;
-pub struct PassiveSkill;

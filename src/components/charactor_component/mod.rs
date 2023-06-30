@@ -8,8 +8,7 @@ use crate::resources::scene_data::charactor::stats::ExtraStat;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::resources::scene_data::charactor::abilities::Ability;
-use crate::resources::scene_data::charactor::skills::ActiveSkill;
-use crate::resources::scene_data::charactor::skills::PassiveSkill;
+use crate::resources::scene_data::charactor::skills::Skill;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::charactor::StuffWearSlot;
 use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderType, CharactorStatus};
@@ -17,7 +16,7 @@ use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderTyp
 
 #[derive(Component, Default)]
 pub struct EffectComponent{
-    pub time_effect: Vec<Effect>,
+    pub tempory_effect: Vec<Effect>,
     pub endless_effect: Vec<Effect>,
 }
 
@@ -34,9 +33,15 @@ pub struct StatsComponent {
     pub stats: HashMap<Stat, i16>,
     pub stats_cache: HashMap<Stat, i16>,
     pub stats_min_value: u8,
+}
+
+#[derive(Component, Default)]
+pub struct ExtraStatsComponent {
     pub extra_stats: HashMap<ExtraStat, i16>,
     pub extra_stats_cache: HashMap<ExtraStat, i16>,
+    pub extra_stats_regen: HashMap<ExtraStat, f32>,
 }
+
 
 #[derive(Component, Default)]
 pub struct ResistsComponent {
@@ -53,13 +58,12 @@ pub struct ResistsComponent {
 
 #[derive(Component, Default)]
 pub struct AbilityComponent {
-    pub ability: HashMap<Ability, i16>,
+    pub ability: HashMap<Ability, f32>,
 }
 
 #[derive(Component, Default)]
 pub struct SkillComponent {
-    pub active_skills: HashMap<u8, Option<ActiveSkill>>,
-    pub passive_skills: HashMap<PassiveSkill, i16>,
+    pub skills: HashMap<u8, Option<Skill>>,
 }
 
 pub struct InventoryComponent {
@@ -80,5 +84,4 @@ pub struct CharactorComponent{
     //pub fraction: CharactorFraction,
     pub level: u8,
     pub experience: u32,
-
 }
