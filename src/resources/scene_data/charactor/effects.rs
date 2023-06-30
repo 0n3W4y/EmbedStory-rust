@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use super::{stats::{Stat, ExtraStat}, resists::{DamageResistType, EffectResistType}, skills::PassiveSkill};
+use super::{stats::{Stat, ExtraStat}, skills::ActiveSkill, abilities::Ability};
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
 pub const PEREODIC_DAMAGE_TIME: f32 = 1000.0;
@@ -39,28 +39,31 @@ pub struct EffectDeploy {
     pub effect_type: EffectType,
     pub damage_type: DamageType,
     pub itself: bool,
-    pub duration: u8,
+    pub duration: u16,
+
+    pub extra_skill: Option<ActiveSkill>,
+    pub extra_skill_trigger: u8,
     
-    // if +-101 percent - we take value from weapon;
-    pub change_stat: HashMap<Stat, i8>, // Stat and percentage
+    // if +-10000 percent - we take value from weapon;
+    pub change_stat: HashMap<Stat, i16>, // Stat and percentage
     pub change_stat_time_effect: EffectTimeType,
     pub change_stat_revert_changes: bool,
 
-    pub change_extra_stat: HashMap<ExtraStat, i8>,
+    pub change_extra_stat: HashMap<ExtraStat, i16>,
     pub change_extra_stat_time_effect: EffectTimeType,
     pub change_extra_stat_revert_changes: bool,
 
-    pub change_damage_resist: HashMap<DamageResistType, i8>, // Damage Resist and percentage
+    pub change_damage_resist: HashMap<DamageType, i16>, // Damage Resist and percentage
     pub change_damage_resist_time_effect: EffectTimeType,
     pub change_damage_resist_revert_changes: bool,
 
-    pub change_effect_resist: HashMap<EffectResistType, i8>, // Effect resist and percentage
+    pub change_effect_resist: HashMap<EffectType, i16>, // Effect resist and percentage
     pub change_effect_resist_time_effect: EffectTimeType,
     pub change_effect_resist_revert_changes: bool,
 
-    pub change_passive_skill: HashMap<PassiveSkill, i8>, // Passive Skill and percentage 
-    pub change_passive_skill_time_effect: EffectTimeType,
-    pub change_passive_skill_revert_changes: bool,
+    pub change_ability: HashMap<Ability, i16>, // Passive Skill and percentage 
+    pub change_ability_time_effect: EffectTimeType,
+    pub change_ability_revert_changes: bool,
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
@@ -69,7 +72,10 @@ pub struct Effect {
     pub damage_type: DamageType,
     pub duration: u16,
     pub current_duration: u16,
-    pub triggered: u8,
+    pub triggered: u16,
+
+    pub extra_skill: Option<ActiveSkill>,
+    pub extra_skill_trigger: u8,
 
     pub change_stat: HashMap<Stat, i16>, // Stat and flat damage to stat
     pub change_stat_time_effect: EffectTimeType,
@@ -79,17 +85,17 @@ pub struct Effect {
     pub change_extra_stat_time_effect: EffectTimeType,
     pub change_extra_stat_revert_changes: bool,
 
-    pub change_damage_resist: HashMap<DamageResistType, i16>, // Damage Resist and flat damage to resist
+    pub change_damage_resist: HashMap<DamageType, i16>, // Damage Resist and flat damage to resist
     pub change_damage_resist_time_effect: EffectTimeType,
     pub change_damage_resist_revert_changes: bool,
 
-    pub change_effect_resist: HashMap<EffectResistType, i16>, // Effect resist and flat damage to resist
+    pub change_effect_resist: HashMap<EffectType, i16>, // Effect resist and flat damage to resist
     pub change_effect_resist_time_effect: EffectTimeType,
     pub change_effect_resist_revert_changes: bool,
 
-    pub change_passive_skill: HashMap<PassiveSkill, i16>, // Passive Skill and flat damage to skill 
-    pub change_passive_skill_time_effect: EffectTimeType,
-    pub change_passive_skill_revert_changes: bool,
+    pub change_ability: HashMap<Ability, i16>, // Passive Skill and flat damage to skill 
+    pub change_ability_time_effect: EffectTimeType,
+    pub change_ability_revert_changes: bool,
 }
 
 pub fn get_effect_type_by_damage_type(damage_type: &DamageType) -> Vec<EffectType> {

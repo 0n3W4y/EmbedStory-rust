@@ -1,21 +1,23 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use self::resists::{DamageResistType, EffectResistType};
+use self::abilities::Ability;
+use self::effects::Effect;
 use self::skills::{ActiveSkill, PassiveSkill};
 use self::stats::{ExtraStat, Stat};
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
+use super::stuff::damage_type::DamageType;
 use super::stuff::Stuff;
 
+pub mod abilities;
 pub mod cleanup;
 pub mod draw;
 pub mod effects;
 pub mod killed_charactor_handler;
 pub mod move_charactor;
 pub mod player_click_function;
-pub mod resists;
 pub mod skills;
 pub mod stats;
 
@@ -107,16 +109,19 @@ pub struct Charactor {
     pub stats_min_value: u8,
 
     pub extra_stats: HashMap<ExtraStat, i16>,
+    pub extra_stats_cache: HashMap<ExtraStat, i16>,
 
-    pub damage_resists: HashMap<DamageResistType, i16>,
-    pub damage_resists_cache: HashMap<DamageResistType, i16>,
+    pub damage_resists: HashMap<DamageType, i16>,
+    pub damage_resists_cache: HashMap<DamageType, i16>,
     pub damage_resists_min_value: i16,
     pub damage_resists_max_value: i16,
 
-    pub effect_resists: HashMap<EffectResistType, i16>,
-    pub effect_resists_cache: HashMap<EffectResistType, i16>,
+    pub effect_resists: HashMap<EffectType, i16>,
+    pub effect_resists_cache: HashMap<EffectType, i16>,
     pub effect_resist_min_value: i16,
     pub effect_resist_max_value: i16,
+
+    pub ability: HashMap<Ability, i16>,
 
     pub active_skills: HashMap<u8, Option<ActiveSkill>>,
     pub passive_skills: HashMap<PassiveSkill, i16>,
@@ -125,24 +130,45 @@ pub struct Charactor {
     pub stuff_storage_max_slots: u8,
     pub stuff_wear: HashMap<StuffWearSlot, usize>, // value is - stuff id;
 
-    pub short_time_effect: Vec<EffectType>,
-    pub long_time_effect: Vec<EffectType>,
+    pub time_effect: Vec<Effect>,
+    pub endless_effect: Vec<Effect>,
 }
 
-pub fn change_passive_skill(passive_skill_storage: &mut HashMap<PassiveSkill, i16>, passive_skill: &PassiveSkill, value: i16) {
-    passive_skill_storage.entry(passive_skill.clone()).and_modify(|old_value| *old_value += value).or_insert(value);
+pub fn change_passive_skill(
+    passive_skill_storage: &mut HashMap<PassiveSkill, i16>,
+    passive_skill: &PassiveSkill,
+    value: i16,
+) {
+    passive_skill_storage
+        .entry(passive_skill.clone())
+        .and_modify(|old_value| *old_value += value)
+        .or_insert(value);
+}
+
+pub fn change_ability(
+    ability_storage: &mut HashMap<Ability, i16>, 
+    ability: &Ability, 
+    value: i16
+) {
+    ability_storage
+        .entry(ability.clone())
+        .and_modify(|old_value| *old_value += value)
+        .or_insert(value);
 }
 
 pub fn change_effect_resist(
-    effect_resists_storage: &mut HashMap<EffectResistType, i16>, 
-    effect_resists_cache: &mut HashMap<EffectResistType, i16>,
-    effect_resist: &EffectResistType,
+    effect_resists_storage: &mut HashMap<EffectType, i16>,
+    effect_resists_cache: &mut HashMap<EffectType, i16>,
+    effect_resist: &EffectType,
     value: i16,
     effect_resist_max_value: i16,
     effect_resist_min_value: i16,
 ) {
     // if key is not in storage, we are added it to;
-    effect_resists_cache.entry(effect_resist.clone()).and_modify(|old_value| *old_value += value).or_insert(value);
+    effect_resists_cache
+        .entry(effect_resist.clone())
+        .and_modify(|old_value| *old_value += value)
+        .or_insert(value);
     let cache_value = effect_resists_cache.get(effect_resist).unwrap(); // safe
 
     let new_value = if *cache_value > effect_resist_max_value {
@@ -153,19 +179,25 @@ pub fn change_effect_resist(
         *cache_value
     };
 
-    effect_resists_storage.entry(effect_resist.clone()).and_modify(|old_value| *old_value = new_value).or_insert(new_value);
+    effect_resists_storage
+        .entry(effect_resist.clone())
+        .and_modify(|old_value| *old_value = new_value)
+        .or_insert(new_value);
 }
 
 pub fn change_damage_resist(
-    damage_resists_storage: &mut HashMap<DamageResistType, i16>,
-    damage_resists_cache: &mut HashMap<DamageResistType, i16>,
-    damage_resist: &DamageResistType,
+    damage_resists_storage: &mut HashMap<DamageType, i16>,
+    damage_resists_cache: &mut HashMap<DamageType, i16>,
+    damage_resist: &DamageType,
     value: i16,
     damage_resist_max_value: i16,
     damage_resist_min_value: i16,
 ) {
     // if key is not in storage, we are added it to;
-    damage_resists_cache.entry(damage_resist.clone()).and_modify(|old_value| *old_value += value).or_insert(value);
+    damage_resists_cache
+        .entry(damage_resist.clone())
+        .and_modify(|old_value| *old_value += value)
+        .or_insert(value);
     let cache_value = damage_resists_cache.get(damage_resist).unwrap(); // safe;
 
     let new_value = if *cache_value > damage_resist_max_value {
@@ -182,9 +214,12 @@ pub fn change_extra_stat(
     extra_stat: &ExtraStat,
     value: i16,
 ) {
-    extra_stats_storage.entry(extra_stat.clone()).and_modify(|old_value| *old_value += value).or_insert(value);
+    extra_stats_storage
+        .entry(extra_stat.clone())
+        .and_modify(|old_value| *old_value += value)
+        .or_insert(value);
     match extra_stats_storage.get_mut(extra_stat) {
-        Some(v) => {*v += value},
+        Some(v) => *v += value,
         _ => {
             println!(
                 "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}'", 
@@ -200,12 +235,12 @@ pub fn change_stat(
     stats_storage: &mut HashMap<Stat, i16>,
     stats_cache: &mut HashMap<Stat, i16>,
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
-    effect_resists_storage: &mut HashMap<EffectResistType, i16>, 
-    effect_resists_cache: &mut HashMap<EffectResistType, i16>,
+    effect_resists_storage: &mut HashMap<EffectType, i16>,
+    effect_resists_cache: &mut HashMap<EffectType, i16>,
     effect_resists_min_value: i16,
     effect_resists_max_value: i16,
-    damage_resists_storage: &mut HashMap<DamageResistType, i16>,
-    damage_resists_cache: &mut HashMap<DamageResistType, i16>,
+    damage_resists_storage: &mut HashMap<DamageType, i16>,
+    damage_resists_cache: &mut HashMap<DamageType, i16>,
     damage_resist_max_value: i16,
     damage_resist_min_value: i16,
     passive_skill_storage: &mut HashMap<PassiveSkill, i16>,
@@ -214,7 +249,7 @@ pub fn change_stat(
     stats_min_value: u8,
 ) {
     match stats_cache.get_mut(stat) {
-        Some(v) => {*v += value},
+        Some(v) => *v += value,
         _ => {
             println!(
                 "Can not change stat: '{:?}', because stat is not in storage. I create new entry with value: '{:?}'",
@@ -233,7 +268,10 @@ pub fn change_stat(
         *stat_value
     };
 
-    stats_storage.entry(stat.clone()).and_modify(|old_value| *old_value = new_value as i16).or_insert(new_value as i16);
+    stats_storage
+        .entry(stat.clone())
+        .and_modify(|old_value| *old_value = new_value as i16)
+        .or_insert(new_value as i16);
 
     do_stat_dependences(
         extra_stats_storage,
@@ -252,32 +290,31 @@ pub fn change_stat(
 }
 
 pub fn get_level_by_current_experience(experience: u32) -> u8 {
-   let level: u8 = (experience as f64).sqrt() / 6.0;
+    let level: u8 = (experience as f64).sqrt() / 6.0;
 }
 
 pub fn do_stat_dependences(
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
-    effect_resists_storage: &mut HashMap<EffectResistType, i16>, 
-    effect_resists_cache: &mut HashMap<EffectResistType, i16>,
+    effect_resists_storage: &mut HashMap<EffectType, i16>,
+    effect_resists_cache: &mut HashMap<EffectType, i16>,
     effect_resists_min_value: i16,
     effect_resists_max_value: i16,
-    damage_resists_storage: &mut HashMap<DamageResistType, i16>,
-    damage_resists_cache: &mut HashMap<DamageResistType, i16>,
+    damage_resists_storage: &mut HashMap<DamageType, i16>,
+    damage_resists_cache: &mut HashMap<DamageType, i16>,
     damage_resist_max_value: i16,
     damage_resist_min_value: i16,
     passive_skill_storage: &mut HashMap<PassiveSkill, i16>,
-    stat: &Stat, 
+    stat: &Stat,
     stat_value: i16,
-){
+) {
     match *stat {
-        Stat::Dexterity => {},
-        Stat::Endurance => {},
-        Stat::Intellect => {},
-        Stat::Luck => {},
-        Stat::Mobility => {},
-        Stat::Strength => {},
-        Stat::Vitality => {},
-        Stat::Wisdom => {},
+        Stat::Dexterity => {}
+        Stat::Endurance => {}
+        Stat::Intellect => {}
+        Stat::Luck => {}
+        Stat::Mobility => {}
+        Stat::Strength => {}
+        Stat::Vitality => {}
+        Stat::Wisdom => {}
     }
 }
-

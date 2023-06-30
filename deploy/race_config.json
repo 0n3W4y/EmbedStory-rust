@@ -1,86 +1,16 @@
 {
     "human": {
-        "resists":{
-            "Fire": 0, 
-            "Electric": 0, 
-            "Kinetic": 0, 
-            "Laser": 0, 
-            "Plasma": 0, 
-            "Poison": 0, 
-            "Knockdown": 0,
-            "Bleed": 0,
-            "Disease": 0,
-            "Pain": 0,
-            "Fatigue": 0
-        },
-        "resist_max_value": 75,
-        "resist_min_value": -75,
-        "stat_min_value": 1,
-        "body_structure":{
-            "Head": 100,
-            "LeftEye": 50,
-            "RightEye": 50,
-            "Nose": 40,
-            "Mouth": 40,
-            "Brain": 30,
-            "LeftArm": 100,
-            "LeftWrist": 70,
-            "RightArm": 100,
-            "Torso": 150,
-            "LeftLung": 50,
-            "RightLung": 50,
-            "Heart": 30,
-            "Groin": 30,
-            "LeftFoot": 100,
-            "LeftSole": 70,
-            "RightFoot": 100,
-            "RightSole": 70
-        },
-        "body_structure_part_type": "Natural"
-    },
-
-    "humanoid": {
-        "resists": {},
-        "resist_max_value": 75,
-        "resist_min_value": -75,
-        "stat_min_value": 1,
-        "body_structure": {},
-        "body_structure_part_type": "Natural"
-    },
-
-    "mutant": {
-        "resists": {},
-        "resist_max_value": 75,
-        "resist_min_value": -75,
-        "stat_min_value": 1,
-        "body_structure": {},
-        "body_structure_part_type": "Natural"
-    },
-
-    "super_mutant": {
-        "resists": {},
-        "resist_max_value": 75,
-        "resist_min_value": -75,
-        "stat_min_value": 1,
-        "body_structure": {},
-        "body_structure_part_type": "Natural"
-    },
-
-    "robot": {
-        "resists": {},
-        "resist_max_value": 75,
-        "resist_min_value": -75,
-        "stat_min_value": 1,
-        "body_structure": {},
-        "body_structure_part_type": "Natural"
-    },
-
-    "bogomol": {
-        "resists": {},
-        "resist_max_value": 75,
-        "resist_min_value": -75,
-        "stat_min_value": 1,
-        "body_structure": {},
-        "body_structure_part_type": "Natural"
+        "stats": {},
+        "stats_min_value": 1,
+        "extra_stats": {},
+        "damage_resists": {},
+        "damage_resists_min_value": -80,
+        "damage_resists_max_value": 80,
+        "effect_resists": {},
+        "effect_resist_min_value": -50,
+        "effect_resist_max_value": 50,
+        "ability": {},
+        "passive_skills": {},
+        "endless_effect": []
     }
 }

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::components::charactor_component::CharactorComponent;
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::profile::Profile;
-use crate::resources::scene_data::objects::charactor::{Charactor, CharactorType};
+use crate::resources::scene_data::charactor::{Charactor, CharactorType};
 
 pub fn cleanup(
     mut commands: Commands,

@@ -6,14 +6,13 @@ use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions, CoverType};
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
-use crate::resources::scene_data::objects::resists::Resist;
+use crate::resources::scene_data::resists::Resist;
 
 use super::charactor_manager;
 use super::deploy::Deploy;
 use super::deploy::game_scene_biome_deploy::BiomeThings;
-use super::scene_data::objects::body_part::{PartType, BodyPartType, BodyPart};
-use super::scene_data::objects::thing::{Thing, ThingType};
-use super::scene_data::objects::charactor;
+use super::scene_data::thing::{Thing, ThingType};
+use super::scene_data::charactor;
 
 
 #[derive(Default)]

@@ -1,35 +1,18 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
-pub enum ActiveSkill {
+#[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum ActiveSkillType {
     #[default]
     BasicWeaponAttack,
     BasicTrinketAttack,
 }
 
 
-pub enum PassiveSkill {
-    Evasion,
-    MovementSpeed,
-    AttackSpeed,
-    ActiveSkillsCoolDawn,
-    BlockChance,
-    BlockAmount,
-    CritChance,
-    CritDamage,
-    Accuracy,
-    StaminaRegen,
-    HealthRegen,
-    MeleeAttackDamage,
-    RangedAttackDamage,
-    MagicAttackDamage,
-    TrinketMeleeDamage,
-    TrinketRangeDamage,
-    TrinketMagicDamage,
-    ExperienceMultiplier,
-
+#[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum PassiveSkillType {
     LifeLich,
     StaminaLich,
+    #[default]
     Stun,
     Slow,
     Moveless,
@@ -42,3 +25,6 @@ pub enum PassiveSkill {
     Acid,
     Wet,
 }
+
+pub struct ActiveSkill;
+pub struct PassiveSkill;
