@@ -1,15 +1,15 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::resources::scene_data::objects::charactor::Charactor;
-use crate::resources::scene_data::objects::scene_effect::SceneEffect;
-use crate::resources::scene_data::objects::stuff::Stuff;
-use crate::resources::scene_data::objects::thing::Thing;
+use crate::resources::scene_data::charactor::Charactor;
+use crate::resources::scene_data::scene_effect::SceneEffect;
+use crate::resources::scene_data::stuff::Stuff;
+use crate::resources::scene_data::thing::Thing;
 use crate::resources::scene_manager::SceneType;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
-use crate::resources::scene_data::objects::thing;
-use crate::resources::scene_data::objects::charactor;
+use crate::resources::scene_data::thing;
+use crate::resources::scene_data::charactor;
 use crate::scenes::SceneState;
 
 
@@ -56,6 +56,7 @@ impl Plugin for GameScenePlugin {
             .with_system(charactor::move_charactor::move_charactor)
             .with_system(charactor::killed_charactor_handler::killed_charactor_handler)
             .with_system(charactor::player_click_function::player_click)
+            .with_system(charactor::update_effects::update_effects)
         );
 
         app.add_system_set(SystemSet::on_exit(SceneState::GameScene)

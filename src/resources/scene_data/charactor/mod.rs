@@ -20,6 +20,7 @@ pub mod move_charactor;
 pub mod player_click_function;
 pub mod skills;
 pub mod stats;
+pub mod update_effects;
 
 pub const STATS_EVERY_LEVEL: u8 = 2;
 
