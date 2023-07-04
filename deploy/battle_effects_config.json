@@ -4,6 +4,7 @@
         "damage_type": "Kinetic",
         "itself": false,
         "duration": 3000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -14,6 +15,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -33,6 +35,7 @@
         "damage_type": "Acid",
         "itself": false,
         "duration": 10000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -43,6 +46,7 @@
         "change_extra_stat": {"HealthPoints": -10000},
         "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {"Kinetic": -75},
         "change_damage_resist_time_effect": "Instant",
@@ -62,6 +66,7 @@
         "damage_type": "Kinetic",
         "itself": false,
         "duration": 3000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -72,6 +77,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -91,6 +97,7 @@
         "damage_type": "Kinetic",
         "itself": false,
         "duration": 6000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -101,6 +108,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -120,6 +128,7 @@
         "damage_type": "Kinetic",
         "itself": false,
         "duration": 10000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -130,6 +139,7 @@
         "change_extra_stat": {"HealthPoints": -10000},
         "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -149,6 +159,7 @@
         "damage_type": "Fire",
         "itself": false,
         "duration": 4000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -159,6 +170,7 @@
         "change_extra_stat": {"HealthPoints": -10000},
         "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {"Cold": 50},
         "change_damage_resist_time_effect": "Instant",
@@ -178,6 +190,7 @@
         "damage_type": "Electrical",
         "itself": false,
         "duration": 5000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -188,6 +201,7 @@
         "change_extra_stat": {"HealthPoints": -10000, "StaminaPoints": -10000},
         "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -207,6 +221,7 @@
         "damage_type": "Cold",
         "itself": false,
         "duration": 3000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -217,6 +232,7 @@
         "change_extra_stat": {"HealthPoints": -10000},
         "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {"Kinetic": 50},
         "change_damage_resist_time_effect": "Instant",
@@ -236,6 +252,7 @@
         "damage_type": "Kinetic",
         "itself": false,
         "duration": 2000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -246,6 +263,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -265,6 +283,7 @@
         "damage_type": "Poison",
         "itself": false,
         "duration": 7000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -275,6 +294,7 @@
         "change_extra_stat": {"HealthPoints": -10000},
         "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -294,6 +314,7 @@
         "damage_type": "Water",
         "itself": false,
         "duration": 10000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -304,6 +325,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {"Fire": 50, "Cold": -25, "Electric": -25},
         "change_damage_resist_time_effect": "Instant",
@@ -323,6 +345,7 @@
         "damage_type": "kinetic",
         "itself": false,
         "duration": 3000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -333,6 +356,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {"Fire": -50, "Cold": -50, "Electric": -50, "Water": -50, "Acid": -50, "Kinetic": -50, "SacredEnergy": -50, "DarkEnergy": -50},
         "change_damage_resist_time_effect": "Instant",
@@ -352,6 +376,7 @@
         "damage_type": "kinetic",
         "itself": false,
         "duration": 5000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -362,6 +387,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -381,6 +407,7 @@
         "damage_type": "kinetic",
         "itself": false,
         "duration": 2000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -391,6 +418,7 @@
         "change_extra_stat": {},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -410,6 +438,7 @@
         "damage_type": "DarkEnergy",
         "itself": true,
         "duration": 100,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -420,6 +449,7 @@
         "change_extra_stat": {"HealthPoints": 10000},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -439,6 +469,7 @@
         "damage_type": "SacredEnergy",
         "itself": true,
         "duration": 100,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -449,6 +480,7 @@
         "change_extra_stat": {"StaminaPoints": 10000},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -468,6 +500,7 @@
         "damage_type": "SacredEnergy",
         "itself": false,
         "duration": 5000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -478,6 +511,7 @@
         "change_extra_stat": {"StaminaPoints": -10000},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -497,6 +531,7 @@
         "damage_type": "DarkEnergy",
         "itself": true,
         "duration": 5000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -507,6 +542,7 @@
         "change_extra_stat": {"HealthPoints": 5},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",
@@ -526,6 +562,7 @@
         "damage_type": "SacredEnergy",
         "itself": true,
         "duration": 5000,
+        "trigger_time": 1000,
         "extra_skill": "None",
         "extra_skill_trigger": 0,
 
@@ -536,6 +573,7 @@
         "change_extra_stat": {"StaminaPoints": 5},
         "change_extra_stat_time_effect": "Instant",
         "change_extra_stat_revert_changes": false,
+        "change_extra_stat_is_damage": true,
 
         "change_damage_resist": {},
         "change_damage_resist_time_effect": "Instant",

@@ -120,8 +120,8 @@ pub struct Charactor {
 
     pub effect_resists: HashMap<EffectType, i16>,
     pub effect_resists_cache: HashMap<EffectType, i16>,
-    pub effect_resist_min_value: i16,
-    pub effect_resist_max_value: i16,
+    pub effect_resists_min_value: i16,
+    pub effect_resists_max_value: i16,
 
     pub ability: HashMap<Ability, f32>,
 
@@ -151,8 +151,8 @@ pub fn change_effect_resist(
     effect_resists_cache: &mut HashMap<EffectType, i16>,
     effect_resist: &EffectType,
     value: i16,
-    effect_resist_max_value: i16,
-    effect_resist_min_value: i16,
+    effect_resists_max_value: i16,
+    effect_resists_min_value: i16,
 ) {
     // if key is not in storage, we are added it to;
     effect_resists_cache
@@ -161,10 +161,10 @@ pub fn change_effect_resist(
         .or_insert(value);
     let cache_value = effect_resists_cache.get(effect_resist).unwrap(); // safe
 
-    let new_value = if *cache_value > effect_resist_max_value {
-        effect_resist_max_value
-    } else if *cache_value < effect_resist_min_value {
-        effect_resist_min_value
+    let new_value = if *cache_value > effect_resists_max_value {
+        effect_resists_max_value
+    } else if *cache_value < effect_resists_min_value {
+        effect_resists_min_value
     } else {
         *cache_value
     };
@@ -180,8 +180,8 @@ pub fn change_damage_resist(
     damage_resists_cache: &mut HashMap<DamageType, i16>,
     damage_resist: &DamageType,
     value: i16,
-    damage_resist_max_value: i16,
-    damage_resist_min_value: i16,
+    damage_resists_max_value: i16,
+    damage_resists_min_value: i16,
 ) {
     // if key is not in storage, we are added it to;
     damage_resists_cache
@@ -190,35 +190,132 @@ pub fn change_damage_resist(
         .or_insert(value);
     let cache_value = damage_resists_cache.get(damage_resist).unwrap(); // safe;
 
-    let new_value = if *cache_value > damage_resist_max_value {
-        damage_resist_max_value
-    } else if *cache_value < damage_resist_min_value {
-        damage_resist_min_value
+    let new_value = if *cache_value > damage_resists_max_value {
+        damage_resists_max_value
+    } else if *cache_value < damage_resists_min_value {
+        damage_resists_min_value
     } else {
         *cache_value
     };
 }
 
-pub fn change_extra_stat(
+pub fn change_extra_stat_cache(
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
+    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     extra_stat: &ExtraStat,
     value: i16,
 ) {
-    extra_stats_storage
-        .entry(extra_stat.clone())
-        .and_modify(|old_value| *old_value += value)
-        .or_insert(value);
-    match extra_stats_storage.get_mut(extra_stat) {
-        Some(v) => *v += value,
+    let old_value = match extra_stats_storage.get_mut(extra_stat) {
+        Some(v) => v,
         _ => {
             println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}'", 
+                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat STORAGE", 
                 extra_stat,
                 value
             );
             extra_stats_storage.insert(extra_stat.clone(), value);
+            extra_stats_storage.get_mut(extra_stat).unwrap()
         }
     };
+
+    let old_cahce_value = match extra_stats_cache.get_mut(extra_stat) {
+        Some(v) => v,
+        _ => {
+            println!(
+                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat CACHE", 
+                extra_stat,
+                value
+            );
+            extra_stats_cache.insert(extra_stat.clone(), value);
+            extra_stats_cache.get_mut(extra_stat).unwrap()
+        }
+    };
+
+    let new_value = *old_cahce_value + value;
+
+    if new_value <= 0 {
+        *old_cahce_value = 1;
+        *old_value = 1;
+    } else if new_value < *old_cahce_value{
+        *old_cahce_value = new_value;
+        if *old_value + value < 0 {
+            *old_value = 1;
+        } else {
+            *old_value += value;
+        }
+    } else {
+        *old_cahce_value = value;
+    }
+
+
+}
+
+pub fn change_extra_stat_current(
+    extra_stats_storage: &mut HashMap<ExtraStat, i16>,
+    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
+    extra_stat: &ExtraStat,
+    value: i16,
+){
+    let cache_value = match extra_stats_cache.get(extra_stat) {
+        Some(v) => *v,
+        _ => {
+            println!(
+                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat CACHE", 
+                extra_stat,
+                value
+            );
+            extra_stats_cache.insert(extra_stat.clone(), value);
+            value
+        }
+    };
+
+    let stat_value = match extra_stats_storage.get_mut(extra_stat) {
+        Some(v) => v,
+        _ => {
+            println!(
+                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat STORAGE", 
+                extra_stat,
+                value
+            );
+            extra_stats_storage.insert(extra_stat.clone(), value);
+            extra_stats_storage.get_mut(extra_stat).unwrap()
+        }
+    };
+
+    let new_value = *stat_value + value;
+    if new_value >= cache_value {
+        *stat_value = cache_value;
+    } else {
+        *stat_value = new_value;
+    }
+
+
+}
+
+pub fn change_extra_stat_by_regen(
+    extra_stats_storage: &mut HashMap<ExtraStat, i16>,
+    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
+    extra_stats_regen: &mut HashMap<ExtraStat, f32>,
+    extra_stat: &ExtraStat,
+    value: f32,
+){
+    let new_regen_value = match extra_stats_regen.get_mut(extra_stat) {
+        Some(v) => {*v += value; v},
+        _ => {
+            println!(
+                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat REGEN", 
+                extra_stat,
+                value
+            );
+            extra_stats_regen.insert(extra_stat.clone(), value);
+            extra_stats_regen.get_mut(extra_stat).unwrap()
+        }
+    };
+
+    let new_value = new_regen_value.floor() as i16;
+    if new_value > 0 {
+        change_extra_stat_current(extra_stats_storage, extra_stats_cache, extra_stat, new_value);
+    }
 }
 
 pub fn change_stat(
@@ -232,8 +329,9 @@ pub fn change_stat(
     effect_resists_max_value: i16,
     damage_resists_storage: &mut HashMap<DamageType, i16>,
     damage_resists_cache: &mut HashMap<DamageType, i16>,
-    damage_resist_max_value: i16,
-    damage_resist_min_value: i16,
+    damage_resists_max_value: i16,
+    damage_resists_min_value: i16,
+    ability_storage: &mut HashMap<Ability, i16>,
     stat: &Stat,
     value: i16,
     stats_min_value: u8,
@@ -271,10 +369,12 @@ pub fn change_stat(
         effect_resists_max_value,
         damage_resists_storage,
         damage_resists_cache,
-        damage_resist_max_value,
-        damage_resist_min_value,
+        damage_resists_max_value,
+        damage_resists_min_value,
+        ability_storage,
         stat,
         new_value,
+        value,
     );
 }
 
@@ -290,19 +390,21 @@ pub fn do_stat_dependences(
     effect_resists_max_value: i16,
     damage_resists_storage: &mut HashMap<DamageType, i16>,
     damage_resists_cache: &mut HashMap<DamageType, i16>,
-    damage_resist_max_value: i16,
-    damage_resist_min_value: i16,
+    damage_resists_max_value: i16,
+    damage_resists_min_value: i16,
+    ability_storage: &mut HashMap<Ability, i16>,
     stat: &Stat,
     stat_value: i16,
+    changed_value: i16,
 ) {
     match *stat {
-        Stat::Dexterity => {}
-        Stat::Endurance => {}
-        Stat::Intellect => {}
-        Stat::Luck => {}
-        Stat::Mobility => {}
-        Stat::Strength => {}
-        Stat::Vitality => {}
-        Stat::Wisdom => {}
+        Stat::Dexterity => {},
+        Stat::Endurance => {},
+        Stat::Intellect => {},
+        Stat::Luck => {},
+        Stat::Mobility => {},
+        Stat::Strength => {},
+        Stat::Vitality => {},
+        Stat::Wisdom => {},
     }
 }
