@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
-use crate::components::charactor_component::CharactorComponent;
+use crate::components::charactor_component::{CharactorComponent, PositionComponent};
 use crate::resources::scene_data::objects::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
@@ -17,7 +17,7 @@ const DEFAULT_MOVEMENT_SPEED: u16 = 1000;
 
 pub fn move_charactor(
     time: Res<Time>,
-    mut charactor_query: Query<(&mut CharactorComponent, &mut Transform, &mut TextureAtlasSprite), With<CharactorComponent>>,
+    mut charactor_query: Query<(&mut PositionComponent, &mut Transform, &mut TextureAtlasSprite), With<CharactorComponent>>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){

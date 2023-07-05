@@ -5,8 +5,7 @@ pub mod damage_type;
 
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
-use super::stuff::stuff_attributes::StuffAttribute;
-use crate::resources::scene_data::objects::charactor::StuffWearSlot;
+use crate::resources::scene_data::charactor::StuffWearSlot;
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
 pub enum StuffType{
@@ -36,7 +35,6 @@ pub enum StuffSubtype {
     Antibiotic, //vs disease
     Vitamins, // vs fatigue
     Picklock,
-    ElectronickPicklock,
     // разные баффы, наркотики
     // апгрейды для оружия
     // апгрейды для брони

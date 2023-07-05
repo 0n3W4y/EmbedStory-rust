@@ -14,4 +14,6 @@ pub struct Skill {
     pub trigger_chanse: u8,
     pub current_duration: f32,
     pub triggered: u32,
+    pub base_duration: u16,
+    pub duration: u16, // from base - base % of ability; ability value / 1000 
 }

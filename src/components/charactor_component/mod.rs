@@ -49,11 +49,6 @@ pub struct ResistsComponent {
     pub damage_resists_cache: HashMap<DamageType, i16>,
     pub damage_resists_min_value: i16,
     pub damage_resists_max_value: i16,
-
-    pub effect_resists: HashMap<EffectType, i16>,
-    pub effect_resists_cache: HashMap<EffectType, i16>,
-    pub effect_resists_min_value: i16,
-    pub effect_resists_max_value: i16,
 }
 
 #[derive(Component, Default)]
@@ -67,6 +62,7 @@ pub struct SkillComponent {
     pub passive_skills: HashMap<SkillType, Skill>,
 }
 
+#[derive(Component, Default)]
 pub struct InventoryComponent {
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,

@@ -23,10 +23,13 @@ pub enum EffectType{
     Wet,
     BrokeArmor,
     BrokeWeapon,
-    RunFast,
+    IncreaseMovement,
     Lifelich,
     Staminalich,
     StaminaDamage,
+    HealthRegen,
+    StaminaRegen,
+    Frostbite,
 }
 
 pub enum EffectTimeType {
@@ -142,7 +145,7 @@ pub fn get_effect_type_by_damage_type(damage_type: &DamageType) -> Vec<EffectTyp
         ],
         DamageType::Water => vec![
             EffectType::Bleeding,
-            EffectType::Lifelich,
+            //EffectType::,
             EffectType::Slow
         ]
     }

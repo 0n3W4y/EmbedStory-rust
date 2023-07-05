@@ -23,7 +23,6 @@ pub struct GameScene {
     pub stuff: Vec<Stuff>,
     pub charactors: Vec<Charactor>,
     pub effects: Vec<SceneEffect>,
-    //pub fog: Vec<>,
     //pub roof: Vec<>,
 }
 impl GameScene {

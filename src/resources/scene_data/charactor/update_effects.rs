@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use super::effects::EffectTimeType;
 use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent, ExtraStatsComponent, ResistsComponent,
-    SkillComponent, StatsComponent,
+    SkillComponent, StatsComponent, InventoryComponent,
 };
 use crate::resources::scene_data::charactor;
 
@@ -16,6 +16,7 @@ pub fn update_effects(
             &mut ResistsComponent,
             &mut AbilityComponent,
             &mut SkillComponent,
+            &mut InventoryComponent
         ),
         With<CharactorComponent>,
     >,
@@ -29,7 +30,8 @@ pub fn update_effects(
         mut extra_stats, 
         mut resists, 
         mut abilities, 
-        mut skills
+        mut skills,
+        mut inventory
     ) in charactors_query.iter_mut() {
         for (_, effect) in effects.temporary_effect.iter_mut() {
             if (effect.current_duration - effect.trigger_time as f32 * effect.triggered as f32)
@@ -43,6 +45,7 @@ pub fn update_effects(
                         charactor::change_stat(
                             &mut stats.stats,
                             &mut stats.stats_cache,
+                            &mut extra_stats.extra_stats_regen,
                             &mut extra_stats.extra_stats,
                             &mut extra_stats.extra_stats_cache,
                             &mut resists.effect_resists,
@@ -59,6 +62,7 @@ pub fn update_effects(
                             stats.stats_min_value,
                         );
                     }
+                    //TODO: Update Weapon, skills and trinket by ability storage;
                 };
 
                 if effect.change_extra_stat_time_effect == EffectTimeType::Pereodic {
@@ -86,23 +90,11 @@ pub fn update_effects(
                     }
                 };
 
-                if effect.change_effect_resist_time_effect == EffectTimeType::Pereodic {
-                    for (effect_resist, effect_resist_value) in effect.change_effect_resist {
-                        charactor::change_effect_resist(
-                            &mut resists.effect_resists,
-                            &mut resists.effect_resists_cache,
-                            &effect_resist,
-                            effect_resist_value,
-                            resists.effect_resists_max_value,
-                            resists.effect_resists_min_value,
-                        );
-                    }
-                };
-
                 if effect.change_ability_time_effect == EffectTimeType::Pereodic {
                     for (ability, ability_value) in effect.change_ability {
-                        charactor::change_ability(abilities.ability, &ability, ability_value);
+                        charactor::change_ability(&mut abilities.ability, &ability, ability_value as f32);
                     }
+                    //update weapon, trinket, skill by ability storage;
                 };
             } else if effect.current_duration == 0.0 {
                //do changes no matter instant or pereodic, just need to know - it start of effect do
@@ -112,6 +104,7 @@ pub fn update_effects(
                     charactor::change_stat(
                         &mut stats.stats,
                         &mut stats.stats_cache,
+                        &mut extra_stats.extra_stats_regen,
                         &mut extra_stats.extra_stats,
                         &mut extra_stats.extra_stats_cache,
                         &mut resists.effect_resists,
@@ -152,22 +145,12 @@ pub fn update_effects(
                     );
                 }
 
-                //change effects resists;
-                for (effect_resist, effect_resist_value) in effect.change_effect_resist {
-                    charactor::change_effect_resist(
-                        &mut resists.effect_resists,
-                        &mut resists.effect_resists_cache,
-                        &effect_resist,
-                        effect_resist_value,
-                        resists.effect_resists_max_value,
-                        resists.effect_resists_min_value,
-                    );
-                }
-
                 //change abilities;
                 for (ability, ability_value) in effect.change_ability {
-                    charactor::change_ability(abilities.ability, &ability, ability_value);
+                    charactor::change_ability(&mut abilities.ability, &ability, ability_value as f32);
                 }
+
+                //TODO: update weapon. trinket and skills by ability storage;
             }
 
             //add duration;
@@ -181,6 +164,7 @@ pub fn update_effects(
                         charactor::change_stat(
                             &mut stats.stats,
                             &mut stats.stats_cache,
+                            &mut extra_stats.extra_stats_regen,
                             &mut extra_stats.extra_stats,
                             &mut extra_stats.extra_stats_cache,
                             &mut resists.effect_resists,
@@ -197,6 +181,8 @@ pub fn update_effects(
                             stats.stats_min_value,
                         );
                     }
+                    //todo: udapte weapon. trinket and skill
+
                 }
             
                 if effect.change_extra_stat_revert_changes {
@@ -224,24 +210,12 @@ pub fn update_effects(
                     }
                 }
             
-                if effect.change_effect_resist_revert_changes {
-                    for (effect_resist, effect_resist_value) in effect.change_effect_resist {
-                        charactor::change_effect_resist(
-                            &mut resists.effect_resists,
-                            &mut resists.effect_resists_cache,
-                            &effect_resist,
-                            -effect_resist_value, // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                            resists.effect_resists_max_value,
-                            resists.effect_resists_min_value,
-                        );
-                    }
-                }
-            
                 if effect.change_ability_revert_changes {
                     for (ability, ability_value) in effect.change_ability {
-                        charactor::change_ability(abilities.ability, &ability, -ability_value);
+                        charactor::change_ability(&mut abilities.ability, &ability, -ability_value);
                         // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                     }
+                    //todo: udapte weapon. trinket and skill
                 }            
 
                 // remove passive skill if it present;

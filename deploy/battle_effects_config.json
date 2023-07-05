@@ -5,7 +5,7 @@
         "itself": false,
         "duration": 3000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -36,7 +36,7 @@
         "itself": false,
         "duration": 10000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -67,7 +67,7 @@
         "itself": false,
         "duration": 3000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -98,7 +98,7 @@
         "itself": false,
         "duration": 6000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -129,7 +129,7 @@
         "itself": false,
         "duration": 10000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {"Strength": -50},
@@ -160,7 +160,7 @@
         "itself": false,
         "duration": 4000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -191,7 +191,7 @@
         "itself": false,
         "duration": 5000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -222,7 +222,7 @@
         "itself": false,
         "duration": 3000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -253,7 +253,7 @@
         "itself": false,
         "duration": 2000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -284,7 +284,7 @@
         "itself": false,
         "duration": 7000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {"Strength": -50, "Dexterity": -50, "Mobility": -50, "Wisdom": -50, "Intellect": -50, "Luck": -50},
@@ -315,7 +315,7 @@
         "itself": false,
         "duration": 10000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -346,7 +346,7 @@
         "itself": false,
         "duration": 3000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -377,7 +377,7 @@
         "itself": false,
         "duration": 5000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -408,7 +408,7 @@
         "itself": false,
         "duration": 2000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -439,7 +439,7 @@
         "itself": true,
         "duration": 100,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -470,7 +470,7 @@
         "itself": true,
         "duration": 100,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -501,7 +501,7 @@
         "itself": false,
         "duration": 5000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
@@ -532,15 +532,15 @@
         "itself": true,
         "duration": 5000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
         "change_stat_time_effect": "Instant",
         "change_stat_revert_changes": true,
 
-        "change_extra_stat": {"HealthPoints": 5},
-        "change_extra_stat_time_effect": "Instant",
+        "change_extra_stat": {"HealthPoints": 10000},
+        "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
         "change_extra_stat_is_damage": true,
 
@@ -563,15 +563,15 @@
         "itself": true,
         "duration": 5000,
         "trigger_time": 1000,
-        "extra_skill": "None",
+        "extra_skill": null,
         "extra_skill_trigger": 0,
 
         "change_stat": {},
         "change_stat_time_effect": "Instant",
         "change_stat_revert_changes": true,
 
-        "change_extra_stat": {"StaminaPoints": 5},
-        "change_extra_stat_time_effect": "Instant",
+        "change_extra_stat": {"StaminaPoints": 10000},
+        "change_extra_stat_time_effect": "Pereodic",
         "change_extra_stat_revert_changes": false,
         "change_extra_stat_is_damage": true,
 
