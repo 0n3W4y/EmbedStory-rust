@@ -90,6 +90,7 @@ pub fn update_effects(
                     }
                 };
 
+
                 if effect.change_ability_time_effect == EffectTimeType::Pereodic {
                     for (ability, ability_value) in effect.change_ability {
                         charactor::change_ability(&mut abilities.ability, &ability, ability_value as f32);
@@ -142,6 +143,18 @@ pub fn update_effects(
                         damage_resists_value,
                         resists.damage_resists_max_value,
                         resists.damage_resists_min_value,
+                    );
+                }
+
+                //change effects resists;
+                for (effect_resist, effect_resist_value) in effect.change_effect_resist {
+                    charactor::change_effect_resist(
+                        &mut resists.effect_resists,
+                        &mut resists.effect_resists_cache,
+                        &effect_resist,
+                        effect_resist_value,
+                        resists.effect_resists_max_value,
+                        resists.effect_resists_min_value,
                     );
                 }
 
@@ -206,6 +219,19 @@ pub fn update_effects(
                             -damage_resists_value, // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                             resists.damage_resists_max_value,
                             resists.damage_resists_min_value,
+                        );
+                    }
+                }
+            
+                if effect.change_effect_resist_revert_changes {
+                    for (effect_resist, effect_resist_value) in effect.change_effect_resist {
+                        charactor::change_effect_resist(
+                            &mut resists.effect_resists,
+                            &mut resists.effect_resists_cache,
+                            &effect_resist,
+                            -effect_resist_value, // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
+                            resists.effect_resists_max_value,
+                            resists.effect_resists_min_value,
                         );
                     }
                 }

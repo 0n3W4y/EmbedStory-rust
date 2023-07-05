@@ -147,6 +147,9 @@ pub fn get_effect_type_by_damage_type(damage_type: &DamageType) -> Vec<EffectTyp
             EffectType::Bleeding,
             //EffectType::,
             EffectType::Slow
-        ]
+        ],
+        DamageType::Poison => vec![
+
+        ],
     }
 }

@@ -27,6 +27,9 @@
         },
         "damage_resists_min_value": -80,
         "damage_resists_max_value": 80,
+        "effect_resists": {},
+        "effect_resist_min_value": -50,
+        "effect_resist_max_value": 50,
         "ability": {},
         "passive_skills": {},
         "endless_effect": []

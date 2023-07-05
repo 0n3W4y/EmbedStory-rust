@@ -142,6 +142,35 @@ pub fn change_ability(
         .or_insert(value);
 }
 
+pub fn change_effect_resist(
+    effect_resists_storage: &mut HashMap<EffectType, i16>,
+    effect_resists_cache: &mut HashMap<EffectType, i16>,
+    effect_resist: &EffectType,
+    value: i16,
+    effect_resists_max_value: i16,
+    effect_resists_min_value: i16,
+) {
+    // if key is not in storage, we are added it to;
+    effect_resists_cache
+        .entry(effect_resist.clone())
+        .and_modify(|old_value| *old_value += value)
+        .or_insert(value);
+    let cache_value = effect_resists_cache.get(effect_resist).unwrap(); // safe
+
+    let new_value = if *cache_value > effect_resists_max_value {
+        effect_resists_max_value
+    } else if *cache_value < effect_resists_min_value {
+        effect_resists_min_value
+    } else {
+        *cache_value
+    };
+
+    effect_resists_storage
+        .entry(effect_resist.clone())
+        .and_modify(|old_value| *old_value = new_value)
+        .or_insert(new_value);
+}
+
 pub fn change_damage_resist(
     damage_resists_storage: &mut HashMap<DamageType, i16>,
     damage_resists_cache: &mut HashMap<DamageType, i16>,
