@@ -23,6 +23,7 @@ pub mod stats;
 pub mod update_effects;
 
 pub const STATS_EVERY_LEVEL: u8 = 2;
+pub const STATS_MIN_VALUE: u8 = 1;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -107,16 +108,14 @@ pub struct Charactor {
 
     pub stats: HashMap<Stat, i16>,
     pub stats_cache: HashMap<Stat, i16>,
-    pub stats_min_value: u8,
 
     pub extra_stats: HashMap<ExtraStat, i16>,
     pub extra_stats_cache: HashMap<ExtraStat, i16>,
     pub extra_stats_regen: HashMap<ExtraStat, f32>,
 
     pub damage_resists: HashMap<DamageType, i16>,
-    pub damage_resists_cache: HashMap<DamageType, i16>,
-    pub damage_resists_min_value: i16,
-    pub damage_resists_max_value: i16,
+
+    pub effect_resits: HashMap<EffectType, i16>,
 
     pub ability: HashMap<Ability, f32>,
 
@@ -127,8 +126,8 @@ pub struct Charactor {
     pub stuff_storage_max_slots: u8,
     pub stuff_wear: HashMap<StuffWearSlot, usize>, // value is - stuff id;
 
-    pub temporary_effect: Vec<Effect>,
-    pub endless_effect: Vec<Effect>,
+    pub temporary_effect: HashMap<EffectType, Effect>,
+    pub endless_effect: HashMap<EffectType, Effect>,
 }
 
 pub fn change_ability(
@@ -143,56 +142,27 @@ pub fn change_ability(
 }
 
 pub fn change_effect_resist(
-    effect_resists_storage: &mut HashMap<EffectType, i16>,
-    effect_resists_cache: &mut HashMap<EffectType, i16>,
+    effect_resists: &mut HashMap<EffectType, i16>,
     effect_resist: &EffectType,
     value: i16,
-    effect_resists_max_value: i16,
-    effect_resists_min_value: i16,
 ) {
     // if key is not in storage, we are added it to;
-    effect_resists_cache
+    effect_resists
         .entry(effect_resist.clone())
         .and_modify(|old_value| *old_value += value)
         .or_insert(value);
-    let cache_value = effect_resists_cache.get(effect_resist).unwrap(); // safe
-
-    let new_value = if *cache_value > effect_resists_max_value {
-        effect_resists_max_value
-    } else if *cache_value < effect_resists_min_value {
-        effect_resists_min_value
-    } else {
-        *cache_value
-    };
-
-    effect_resists_storage
-        .entry(effect_resist.clone())
-        .and_modify(|old_value| *old_value = new_value)
-        .or_insert(new_value);
 }
 
 pub fn change_damage_resist(
-    damage_resists_storage: &mut HashMap<DamageType, i16>,
-    damage_resists_cache: &mut HashMap<DamageType, i16>,
+    damage_resists: &mut HashMap<DamageType, i16>,
     damage_resist: &DamageType,
     value: i16,
-    damage_resists_max_value: i16,
-    damage_resists_min_value: i16,
 ) {
     // if key is not in storage, we are added it to;
-    damage_resists_cache
+    damage_resists
         .entry(damage_resist.clone())
         .and_modify(|old_value| *old_value += value)
         .or_insert(value);
-    let cache_value = damage_resists_cache.get(damage_resist).unwrap(); // safe;
-
-    let new_value = if *cache_value > damage_resists_max_value {
-        damage_resists_max_value
-    } else if *cache_value < damage_resists_min_value {
-        damage_resists_min_value
-    } else {
-        *cache_value
-    };
 }
 
 pub fn change_extra_stat_cache(
@@ -320,14 +290,8 @@ pub fn change_stat(
     extra_stats_regen: &mut HashMap<ExtraStat, f32>,
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
-    effect_resists_storage: &mut HashMap<EffectType, i16>,
-    effect_resists_cache: &mut HashMap<EffectType, i16>,
-    effect_resists_min_value: i16,
-    effect_resists_max_value: i16,
-    damage_resists_storage: &mut HashMap<DamageType, i16>,
-    damage_resists_cache: &mut HashMap<DamageType, i16>,
-    damage_resists_max_value: i16,
-    damage_resists_min_value: i16,
+    effect_resists: &mut HashMap<EffectType, i16>,
+    damage_resists: &mut HashMap<DamageType, i16>,
     ability_storage: &mut HashMap<Ability, i16>,
     stat: &Stat,
     value: i16,
@@ -362,14 +326,8 @@ pub fn change_stat(
         extra_stats_storage,
         extra_stats_cache,
         extra_stats_regen,
-        effect_resists_storage,
-        effect_resists_cache,
-        effect_resists_min_value,
-        effect_resists_max_value,
-        damage_resists_storage,
-        damage_resists_cache,
-        damage_resists_max_value,
-        damage_resists_min_value,
+        effect_resists,
+        damage_resists,
         ability_storage,
         stat,
         new_value,
@@ -385,14 +343,8 @@ pub fn do_stat_dependences(
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     extra_stats_regen: &mut HashMap<ExtraStat, f32>,
-    effect_resists_storage: &mut HashMap<EffectType, i16>,
-    effect_resists_cache: &mut HashMap<EffectType, i16>,
-    effect_resists_min_value: i16,
-    effect_resists_max_value: i16,
-    damage_resists_storage: &mut HashMap<DamageType, i16>,
-    damage_resists_cache: &mut HashMap<DamageType, i16>,
-    damage_resists_max_value: i16,
-    damage_resists_min_value: i16,
+    effect_resists: &mut HashMap<EffectType, i16>,
+    damage_resists: &mut HashMap<DamageType, i16>,
     ability_storage: &mut HashMap<Ability, i16>,
     stat: &Stat,
     stat_value: i16,
@@ -479,9 +431,16 @@ pub fn do_stat_dependences(
 
             //Stamina regen VIT /100
             let old_value_for_stamina_regen = (stat_value as f32 - changed_value as f32) / 100.0;
-
-            change_ability(ability_storage, &Ability::StaminaRegen, difference_for_stamina)
+            let new_value_for_stamina_regen: f32 = stat_value as f32 / 100.0;
+            let difference_for_stamina_regen = new_value_for_stamina_regen - old_value_for_stamina_regen;
+            change_ability(ability_storage, &Ability::StaminaRegen, difference_for_stamina_regen);
         },
-        Stat::Wisdom => {},
+        Stat::Wisdom => {
+            //ActiveSkillCD WIN * 10;
+            let old_value_for_active_skill_cd = (stat_value - changed_value) * 10;
+            let new_value_for_active_skill_cd = stat_value * 10;
+            let difference = new_value_for_active_skill_cd - old_value_for_active_skill_cd;
+            change_ability(ability_storage, &Ability::ActiveSkillsCoolDawn, difference);
+        },
     }
 }

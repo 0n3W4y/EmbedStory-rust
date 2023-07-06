@@ -586,5 +586,67 @@
         "change_ability": {},
         "change_ability_time_effect": "Instant",
         "change_ability_revert_changes": true
+    },
+
+    "frostbite":{
+        "effect_type": "Frostbite",
+        "damage_type": "Cold",
+        "itself": false,
+        "duration": 3000,
+        "trigger_time": 1000,
+        "extra_skill": null,
+        "extra_skill_trigger": 0,
+
+        "change_stat": {},
+        "change_stat_time_effect": "Instant",
+        "change_stat_revert_changes": true,
+
+        "change_extra_stat": {},
+        "change_extra_stat_time_effect": "Instant",
+        "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
+
+        "change_damage_resist": {},
+        "change_damage_resist_time_effect": "Instant",
+        "change_damage_resist_revert_changes": true,
+
+        "change_effect_resist": {"Freeze": -25, "Burn": 25},
+        "change_effect_resist_time_effect": "Instant",
+        "change_effect_resist_revert_changes": true,
+
+        "change_ability": {"MovementSpeed": -25,  "Evasion": -10},
+        "change_ability_time_effect": "Instant",
+        "change_ability_revert_changes": true
+    },
+
+    "can_not_be_froze":{
+        "effect_type": "CanNotBeFrozen",
+        "damage_type": "Cold",
+        "itself": true,
+        "duration": 0,
+        "trigger_time": 0,
+        "extra_skill": null,
+        "extra_skill_trigger": 0,
+
+        "change_stat": {},
+        "change_stat_time_effect": "Instant",
+        "change_stat_revert_changes": true,
+
+        "change_extra_stat": {},
+        "change_extra_stat_time_effect": "Instant",
+        "change_extra_stat_revert_changes": true,
+        "change_extra_stat_is_damage": true,
+
+        "change_damage_resist": {},
+        "change_damage_resist_time_effect": "Instant",
+        "change_damage_resist_revert_changes": true,
+
+        "change_effect_resist": {"Freeze": 100},
+        "change_effect_resist_time_effect": "Instant",
+        "change_effect_resist_revert_changes": true,
+
+        "change_ability": {},
+        "change_ability_time_effect": "Instant",
+        "change_ability_revert_changes": true
     }
 }

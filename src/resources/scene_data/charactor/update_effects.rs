@@ -49,13 +49,7 @@ pub fn update_effects(
                             &mut extra_stats.extra_stats,
                             &mut extra_stats.extra_stats_cache,
                             &mut resists.effect_resists,
-                            &mut resists.effect_resists_cache,
-                            resists.effect_resists_min_value,
-                            resists.effect_resists_max_value,
                             &mut resists.damage_resists,
-                            &mut resists.damage_resists_cache,
-                            resists.damage_resists_max_value,
-                            resists.damage_resists_min_value,
                             &mut abilities.ability,
                             &stat,
                             stat_damage,
@@ -81,11 +75,8 @@ pub fn update_effects(
                     for (damage_resist, damage_resists_value) in effect.change_damage_resist {
                         charactor::change_damage_resist(
                             &mut resists.damage_resists,
-                            &mut resists.damage_resists_cache,
                             &damage_resist,
                             damage_resists_value,
-                            resists.damage_resists_max_value,
-                            resists.damage_resists_min_value,
                         );
                     }
                 };
@@ -109,13 +100,7 @@ pub fn update_effects(
                         &mut extra_stats.extra_stats,
                         &mut extra_stats.extra_stats_cache,
                         &mut resists.effect_resists,
-                        &mut resists.effect_resists_cache,
-                        resists.effect_resists_min_value,
-                        resists.effect_resists_max_value,
                         &mut resists.damage_resists,
-                        &mut resists.damage_resists_cache,
-                        resists.damage_resists_max_value,
-                        resists.damage_resists_min_value,
                         &mut abilities.ability,
                         &stat,
                         stat_damage,
@@ -138,11 +123,8 @@ pub fn update_effects(
                 for (damage_resist, damage_resists_value) in effect.change_damage_resist {
                     charactor::change_damage_resist(
                         &mut resists.damage_resists,
-                        &mut resists.damage_resists_cache,
                         &damage_resist,
                         damage_resists_value,
-                        resists.damage_resists_max_value,
-                        resists.damage_resists_min_value,
                     );
                 }
 
@@ -150,11 +132,8 @@ pub fn update_effects(
                 for (effect_resist, effect_resist_value) in effect.change_effect_resist {
                     charactor::change_effect_resist(
                         &mut resists.effect_resists,
-                        &mut resists.effect_resists_cache,
                         &effect_resist,
                         effect_resist_value,
-                        resists.effect_resists_max_value,
-                        resists.effect_resists_min_value,
                     );
                 }
 
@@ -181,13 +160,7 @@ pub fn update_effects(
                             &mut extra_stats.extra_stats,
                             &mut extra_stats.extra_stats_cache,
                             &mut resists.effect_resists,
-                            &mut resists.effect_resists_cache,
-                            resists.effect_resists_min_value,
-                            resists.effect_resists_max_value,
                             &mut resists.damage_resists,
-                            &mut resists.damage_resists_cache,
-                            resists.damage_resists_max_value,
-                            resists.damage_resists_min_value,
                             &mut abilities.ability,
                             &stat,
                             -stat_damage, // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
@@ -214,11 +187,8 @@ pub fn update_effects(
                     for (damage_resist, damage_resists_value) in effect.change_damage_resist {
                         charactor::change_damage_resist(
                             &mut resists.damage_resists,
-                            &mut resists.damage_resists_cache,
                             &damage_resist,
                             -damage_resists_value, // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                            resists.damage_resists_max_value,
-                            resists.damage_resists_min_value,
                         );
                     }
                 }
@@ -227,11 +197,8 @@ pub fn update_effects(
                     for (effect_resist, effect_resist_value) in effect.change_effect_resist {
                         charactor::change_effect_resist(
                             &mut resists.effect_resists,
-                            &mut resists.effect_resists_cache,
                             &effect_resist,
                             -effect_resist_value, // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                            resists.effect_resists_max_value,
-                            resists.effect_resists_min_value,
                         );
                     }
                 }

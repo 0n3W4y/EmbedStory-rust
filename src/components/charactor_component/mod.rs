@@ -17,7 +17,7 @@ use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderTyp
 #[derive(Component, Default)]
 pub struct EffectComponent{
     pub temporary_effect: HashMap<EffectType, Effect>,
-    pub endless_effect: Vec<Effect>,
+    pub endless_effect: HashMap<EffectType, Effect>,
 }
 
 #[derive(Component, Default)]
