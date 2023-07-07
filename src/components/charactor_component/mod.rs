@@ -82,6 +82,7 @@ pub struct CharactorComponent{
     pub gender_type: GenderType,
 
     pub status: CharactorStatus,
+    pub target: Option<usize>,
 
     //pub fraction: CharactorFraction,
     pub level: u8,
