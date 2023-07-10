@@ -11,14 +11,14 @@ pub enum SkillType {
     BasicWeaponAttack,
 }
 
-#[derive(Deserialize, Default)]
+#[derive(Deserialize, Default, Debug)]
 pub enum CastSource {
     Mouse,
     #[default]
     Itself,
 }
 
-#[derive(Deserialize, Default)]
+#[derive(Deserialize, Default, Debug)]
 pub enum SkillDirectionType {
     #[default]
     Line,
@@ -28,7 +28,7 @@ pub enum SkillDirectionType {
     Point,
 }
 
-#[derive(Deserialize, Default)]
+#[derive(Deserialize, Default, Debug)]
 pub enum SkillTargetType {
     #[default]
     Enemy,
@@ -36,7 +36,7 @@ pub enum SkillTargetType {
     Any
 }
 
-#[derive(Default)]
+#[derive( Deserialize, Default, Debug)]
 pub struct Skill {
     pub skill_type: SkillType,
     pub skill_queue: u8,
@@ -44,8 +44,8 @@ pub struct Skill {
 
     pub trigger_chanse: u8,
     pub trigger_time: u16,    
-    pub base_cool_dawn: i16,
-    pub current_cool_dawn: i16,
+    pub base_cooldown: i16,
+    pub current_cooldown: i16,
     pub current_duration: f32,  
 
     pub projectiles: u8,
@@ -76,7 +76,7 @@ pub struct SkillDeploy {
 
     pub trigger_chanse: u8,
     pub trigger_time: u16,
-    pub base_cool_dawn: i16,
+    pub base_cooldown: i16,
 
     pub projectiles: u8,
     pub range: u8,

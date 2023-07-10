@@ -88,3 +88,15 @@ pub struct CharactorComponent{
     pub level: u8,
     pub experience: u32,
 }
+
+#[derive(Component, Default)]
+pub struct PlayerComponent;
+
+#[derive(Component, Default)]
+pub struct NPCComponent;
+
+#[derive(Component, Default)]
+pub struct MonsterComponent;
+
+#[derive(Component, Default)]
+pub struct CompanionComponent;
