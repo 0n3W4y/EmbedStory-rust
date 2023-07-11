@@ -26,7 +26,7 @@ pub fn player_click(
 ) {
     let (mut player, mut position) = player_query.single_mut();
     let window = windows.get_primary().unwrap();
-    let scene = scene_manager.get_current_game_scene();
+    //let scene = scene_manager.get_current_game_scene();
 
     if mouse_button_input.just_released(MouseButton::Left) {
         let mut x: f32 = 0.0;

@@ -34,8 +34,8 @@ pub fn update_effects(
         mut inventory
     ) in charactors_query.iter_mut() {
         for (_, effect) in effects.temporary_effect.iter_mut() {
-            if (effect.current_duration - effect.trigger_time as f32 * effect.triggered as f32)
-                >= effect.trigger_time as f32
+            if (effect.current_duration - effect.trigger_time * effect.triggered as f32)
+                >= effect.trigger_time
             {
                 effect.triggered += 1;
                 //trigger pereodic effect;
@@ -205,7 +205,7 @@ pub fn update_effects(
             
                 if effect.change_ability_revert_changes {
                     for (ability, ability_value) in effect.change_ability {
-                        charactor::change_ability(&mut abilities.ability, &ability, -ability_value);
+                        charactor::change_ability(&mut abilities.ability, &ability, -ability_value as f32);
                         // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                     }
                     //todo: udapte weapon. trinket and skill

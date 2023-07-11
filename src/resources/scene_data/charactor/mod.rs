@@ -16,11 +16,13 @@ pub mod cleanup;
 pub mod draw;
 pub mod effects;
 pub mod killed_charactor_handler;
-pub mod move_charactor;
+pub mod update_move;
 pub mod player_click_function;
 pub mod skills;
 pub mod stats;
 pub mod update_effects;
+pub mod update_passive_skills;
+pub mod Update_attack;
 
 pub const STATS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;
@@ -120,7 +122,7 @@ pub struct Charactor {
 
     pub ability: HashMap<Ability, f32>,
 
-    pub skills: HashMap<u8, Option<Skill>>,
+    pub skills: HashMap<u8, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 
     pub stuff_storage: Vec<Stuff>,

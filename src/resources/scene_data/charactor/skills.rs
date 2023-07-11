@@ -39,24 +39,28 @@ pub enum SkillTargetType {
 #[derive( Deserialize, Default, Debug)]
 pub struct Skill {
     pub skill_type: SkillType,
-    pub skill_queue: u8,
+   
+    //for passive skill;
     pub passive_skill: bool,
-
     pub trigger_chanse: u8,
-    pub trigger_time: u16,    
+    pub trigger_time: u16,
+    //-----------------
+
     pub base_cooldown: i16,
-    pub current_cooldown: i16,
-    pub current_duration: f32,  
+    pub current_cooldown: f32, // base + & from ability;
+    pub current_duration: f32,
 
     pub projectiles: u8,
     pub range: u8,
     pub cast_source: CastSource,
 
-    pub base_crit_chance: u8,
+    pub base_crit_chance: i8,
+    pub current_crit_chance: i8,
 
     pub base_damage: HashMap<DamageType, i16>,
 
     pub base_crit_multiplier: i16,
+    pub current_crit_multiplier: i16,
 
     pub stamina_cost: u8,
 

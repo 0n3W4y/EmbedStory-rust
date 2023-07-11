@@ -32,8 +32,10 @@ pub enum EffectType{
     Frostbite,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum EffectTimeType {
     Pereodic,
+    #[default]
     Instant,
 }
 
@@ -42,7 +44,7 @@ pub struct EffectDeploy {
     pub effect_type: EffectType,
     pub damage_type: DamageType,
     pub itself: bool,
-    pub duration: u16,
+    pub base_duration: u16,
     pub trigger_time: u16,
 
     pub extra_skill: Option<SkillType>,
@@ -75,8 +77,8 @@ pub struct EffectDeploy {
 pub struct Effect {
     pub effect_type: EffectType,
     pub damage_type: DamageType,
-    pub trigger_time: u16,
-    pub duration: u16,
+    pub trigger_time: f32,
+    pub duration: f32,
     pub current_duration: f32,
     pub triggered: u16,
 
@@ -104,6 +106,7 @@ pub struct Effect {
     pub change_ability_revert_changes: bool,
 }
 
+/*
 pub fn get_effect_type_by_damage_type(damage_type: &DamageType) -> Vec<EffectType> {
     match *damage_type{
         DamageType::Acid => vec![
@@ -153,3 +156,4 @@ pub fn get_effect_type_by_damage_type(damage_type: &DamageType) -> Vec<EffectTyp
         ],
     }
 }
+*/

@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::scene_data::objects::thing::{ThingConfig, ThingType};
+use crate::resources::scene_data::thing::{ThingConfig, ThingType};
 
 #[derive( Deserialize, Debug )]
 pub struct GameObjectsDeploy{

@@ -2,10 +2,10 @@ use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
 use crate::components::charactor_component::{CharactorComponent, PositionComponent};
-use crate::resources::scene_data::objects::charactor::CharactorStatus;
+use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
-use crate::resources::scene_data::objects::charactor::skills::Skill;
+use crate::resources::scene_data::charactor::skills::Skill;
 use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_manager::SceneManager;
 
@@ -17,12 +17,17 @@ const DEFAULT_MOVEMENT_SPEED: u16 = 1000;
 
 pub fn move_charactor(
     time: Res<Time>,
-    mut charactor_query: Query<(&mut PositionComponent, &mut Transform, &mut TextureAtlasSprite), With<CharactorComponent>>,
+    mut charactor_query: Query<(&mut CharactorComponent, &mut PositionComponent, &mut Transform, &mut TextureAtlasSprite), With<CharactorComponent>>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
-    for (mut component, mut transform, mut sprite) in charactor_query.iter_mut(){
-        if component.status != CharactorStatus::Moving {
+    for (
+        mut charactor, 
+        mut position, 
+        mut transform, 
+        mut sprite
+    ) in charactor_query.iter_mut(){
+        if charactor.status != CharactorStatus::Moving {
             continue;
         };
         let scene = scene_manager.get_current_game_scene();
@@ -32,10 +37,10 @@ pub fn move_charactor(
         //if component.charactor_type == CharactorType::Player && cam.camera_on_charator {move_camera_on_player = true;};
 
         if component.destination_path.len() == 0 {
-            try_path(&mut component, scene);
+            try_path(&mut position, scene);
             //after fucntion to create path we can't create a path - end moving, char reached his destination // TODO: Pathfinding;
             if component.destination_path.len() == 0 {
-                destination_reach(&mut component);
+                destination_reach(&mut position);
                 continue;
             }
             change_sprite_by_direction(&mut sprite, &component.destination_direction);

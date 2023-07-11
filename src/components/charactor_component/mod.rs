@@ -63,7 +63,7 @@ pub struct AbilityComponent {
 
 #[derive(Component, Default)]
 pub struct SkillComponent {
-    pub skills: HashMap<u8, Option<Skill>>,
+    pub skills: HashMap<u8, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 }
 

@@ -5,7 +5,7 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::Charactor;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Profile {
     pub last_save: String,
     pub playtime: i64,

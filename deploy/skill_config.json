@@ -6,7 +6,7 @@
 
         "trigger_chanse": 0,
         "trigger_time": 0,
-        "base_cooldown": 1000,
+        "base_cooldown": 100,
 
         "projectiles": 0,
         "range": 0,
