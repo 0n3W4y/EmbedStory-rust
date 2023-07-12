@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::components::charactor_component::ActionType;
 use crate::components::charactor_component::CharactorComponent;
 use crate::components::charactor_component::PlayerComponent;
 use crate::components::charactor_component::PositionComponent;
@@ -58,7 +59,7 @@ pub fn player_click(
                 if char_position_x == position_x && char_position_y == position_y {
                     match charactor_component.charactor_type {
                         CharactorType::Monster => {
-                            select_target_to_attack(&mut player, &mut position, charactor_component.id, position_x, position_y);
+                            select_target_to_attack(&mut player, charactor_component.id, position_x, position_y);
                             return;
                         },
                         _ => {
@@ -98,14 +99,13 @@ fn move_player_to(
 
 fn select_target_to_attack(
     player: &mut CharactorComponent,
-    position: &mut PositionComponent,
     id: usize,
     x: i32,
     y: i32,
 ) {
-    position.destination_point = Position { x, y };
     player.target = Some(id);
     player.status = CharactorStatus::Attacking;
+    player.action = ActionType::Attack;
 }
 
 fn select_item_to_pickup(
@@ -118,4 +118,9 @@ fn select_item_to_pickup(
     position.destination_point = Position { x, y };
     player.target = Some(id);
     player.status = CharactorStatus::PickupItem;
+    player.action = ActionType::Pickup;
 }
+
+fn select_door_to_open(){}
+
+fn select_npc_to_talk(){}

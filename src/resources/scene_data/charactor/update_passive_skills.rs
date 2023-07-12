@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 pub fn update_passive_skills(
-    charactors_queue: Queue<>,
+    charactors_queue: Query<>,
     
 ) {
 

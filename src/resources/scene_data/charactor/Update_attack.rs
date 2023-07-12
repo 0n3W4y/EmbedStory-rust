@@ -1,22 +1,21 @@
 use bevy::prelude::*;
 
-use crate::{components::charactor_component::{CharactorComponent, SkillComponent, AbilityComponent, InventoryComponent, PlayerComponent, MonsterComponent, ExtraStatsComponent, ResistsComponent, EffectComponent}, resources::deploy::Deploy};
+use crate::{components::charactor_component::{CharactorComponent, SkillComponent, AbilityComponent, InventoryComponent, PlayerComponent, MonsterComponent, ExtraStatsComponent, ResistsComponent, EffectComponent, CompanionComponent, PositionComponent}, resources::deploy::Deploy};
 
-use super::CharactorStatus;
+use super::{CharactorStatus, skills::Skill};
 
 pub fn player_attacking(
-    player_queue: Query<(&CharactorComponent, &mut SkillComponent, &AbilityComponent, &InventoryComponent), With<PlayerComponent>>,
-    monsters_queue: Query<(&CharactorComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<MonsterComponent>>,
-    time: Res<Time>,
+    mut player_query: Query<(&CharactorComponent, &mut SkillComponent, &AbilityComponent, &InventoryComponent, &PositionComponent), With<PlayerComponent>>,
+    mut monsters_query: Query<(&CharactorComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent, &PositionComponent), With<MonsterComponent>>,
     deploy: Res<Deploy>,
 ) {
-    let delta = time.delta_seconds();
     let (
         player, 
         mut player_skill,
         player_ability,
         player_inventory,
-    ) = player_queue.single_mut();
+        player_position
+    ) = player_query.single_mut();
     
     let player_target_id: usize = if player.status == CharactorStatus::Attacking {
         match player.target {
@@ -31,13 +30,22 @@ pub fn player_attacking(
     };
 
     for (
-        monster_component,  
-        mut monster_extra_stats_component,
-        monster_resist_component,
-        mut monster_effect_component
-    ) in monsters_queue.iter_mut() {
-        if monster_component.id == player_target_id {
-            try_to_attack(&mut player_skill, &player_ability, &monster_resist, &mut monster_extra_stats, &mut monster_effect, delta);
+        monster,  
+        mut monster_extra_stats,
+        monster_resist,
+        mut monster_effect,
+        monster_position
+    ) in monsters_query.iter_mut() {
+        if monster.id == player_target_id {
+            try_to_attack(
+                player_position,
+                monster_position,
+                &mut player_skill,
+                &player_ability,
+                &monster_resist,
+                &mut monster_extra_stats,
+                &mut monster_effect
+            );
             break;                
         };
     }
@@ -48,19 +56,19 @@ pub fn player_attacking(
 }
 
 pub fn companion_attacking(
-    companion_queue: Queue<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<CompanionComponent>>,
-    monsters_queue: Queue<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<MonsterComponent>>,
+    mut companion_query: Query<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<CompanionComponent>>,
+    mut monsters_query: Query<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<MonsterComponent>>,
 ) {
     let (
-        companion_component, 
-        companion_skill_component, 
-        mut companion_extra_stats_component,
-        companion_resist_component,
-        mut companion_effect_component
-    ) = companion_queue.single_mut();
+        companion, 
+        companion_skill, 
+        mut companion_extra_stats,
+        companion_resist,
+        mut companion_effect,
+    ) = companion_query.single_mut();
 
-    let companion_target_id: usize = if companion_component.status == CharactorStatus::Attacking {
-        match companion_component.target {
+    let companion_target_id: usize = if companion.status == CharactorStatus::Attacking {
+        match companion.target {
             Some(v) => v,
             _ => {
                 println!("Companion has no target, but status Attacking!");
@@ -72,23 +80,24 @@ pub fn companion_attacking(
     };
 }
 pub fn monster_attacking(
-    monsters_queue: Queue<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<MonsterComponent>>,
-    companion_queue: Queue<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<CompanionComponent>>,
-    player_queue: Queue<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<PlayerComponent>>,
+    mut monsters_query: Query<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<MonsterComponent>>,
+    mut companion_query: Query<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<CompanionComponent>>,
+    mut player_query: Query<(&CharactorComponent, &SkillComponent, &mut ExtraStatsComponent, &ResistsComponent, &mut EffectComponent), With<PlayerComponent>>,
 ){}
 
-
 fn try_to_attack(
+    position: &PositionComponent,
+    target_position: &PositionComponent,
     skill_component: &mut SkillComponent, 
     ability_component: &AbilityComponent, 
     target_resist_component: &ResistsComponent, 
     target_extra_stats: &mut ExtraStatsComponent,
     target_effect: &mut EffectComponent,
-    delta: f32,
-) {
-    let skill = match skill_component.skills.get(1) {
-        Some(v) => *v,
-        _ => Skill::Default()
+){
+    //get attacking skill;
+    let mut skill = match skill_component.skills.get(&1) {
+        Some(mut v) => v,
+        _ => &mut Skill{..Default::default()}
     };
 
     // check for default skill
@@ -97,8 +106,26 @@ fn try_to_attack(
         return;
     };
 
-    skill.current_duration += delta;
-    if skill.current_cooldown >= skill.current_duration
+    //check for position;
+    let skill_range = skill.range;
+    let diff_x = (position.position.x.abs() - target_position.position.x.abs()).abs(); // always positive value;
+    let diff_y = (position.position.y.abs() - target_position.position.y.abs()).abs(); // always positive value;
+    let diff = diff_x.max(diff_y);
+    if skill_range as i32 >= diff {
+        if skill.current_duration == 0.0 {
+            //if all finem we attack;
+            attack(skill_component, ability_component, target_resist_component, target_extra_stats, target_effect);
+        }
+    }
+}
+
+fn attack(
+    skill_component: &mut SkillComponent, 
+    ability_component: &AbilityComponent, 
+    target_resist_component: &ResistsComponent, 
+    target_extra_stats: &mut ExtraStatsComponent,
+    target_effect: &mut EffectComponent,
+) {   
 
 
 }

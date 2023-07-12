@@ -48,7 +48,7 @@ pub struct Skill {
 
     pub base_cooldown: i16,
     pub current_cooldown: f32, // base + & from ability;
-    pub current_duration: f32,
+    pub current_duration: f32, // == 0.0;
 
     pub projectiles: u8,
     pub range: u8,

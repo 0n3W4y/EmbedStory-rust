@@ -13,6 +13,17 @@ use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::charactor::StuffWearSlot;
 use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderType, CharactorStatus};
 
+#[derive(Default, Eq, PartialEq, Debug)]
+pub enum ActionType {
+    Attack,
+    Pickup,
+    Open,
+    Talk,
+    Move,
+    #[default]
+    None
+}
+
 
 #[derive(Component, Default)]
 pub struct EffectComponent{
@@ -83,6 +94,7 @@ pub struct CharactorComponent{
 
     pub status: CharactorStatus,
     pub target: Option<usize>,
+    pub action: ActionType,
 
     //pub fraction: CharactorFraction,
     pub level: u8,
