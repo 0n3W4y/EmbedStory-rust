@@ -4,12 +4,11 @@ use std::fs::File;
 use std::io::prelude::*;
 
 use crate::{
-    resources::scene_data::objects::{
+    resources::scene_data::{
         charactor::RaceType,
         thing::ThingType,
     },
-    scenes::game_scenes::tilemap::tile::{CoverType, GroundType},
-    resources::scene_data::objects::charactor::CharactorFraction,
+    scenes::game_scenes::tilemap::tile::{CoverType, GroundType}
 };
 
 #[derive(Deserialize, Clone, Debug)]
@@ -85,9 +84,7 @@ pub struct RiverSetting {
 #[derive(Deserialize, Clone, Debug)]
 pub struct BiomeCharacters {
     monster_race: Vec<RaceType>,
-    monsters_fraction: Vec<CharactorFraction>,
     npc_race: Vec<RaceType>,
-    npc_fraction: Vec<CharactorFraction>,
     
 }
 

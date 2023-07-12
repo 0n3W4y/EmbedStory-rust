@@ -44,7 +44,7 @@ pub struct EffectDeploy {
     pub effect_type: EffectType,
     pub damage_type: DamageType,
     pub itself: bool,
-    pub base_duration: u16,
+    pub duration: u16,
     pub trigger_time: u16,
 
     pub extra_skill: Option<SkillType>,
@@ -104,6 +104,36 @@ pub struct Effect {
     pub change_ability: HashMap<Ability, i16>, // Passive Skill and flat damage to skill 
     pub change_ability_time_effect: EffectTimeType,
     pub change_ability_revert_changes: bool,
+}
+
+impl Effect {
+    pub fn new(config: &EffectDeploy) -> Self {
+        Effect {
+            effect_type: config.effect_type.clone(),
+            damage_type: config.damage_type.clone(),
+            trigger_time: config.trigger_time as f32 / 10.0,
+            duration: config.duration as f32 / 10.0,
+            current_duration: 0.0,
+            triggered: 0,
+            extra_skill: config.extra_skill.clone(),
+            change_stat: config.change_stat.clone(),
+            change_stat_time_effect: config.change_stat_time_effect.clone(),
+            change_stat_revert_changes: config.change_stat_revert_changes,
+            change_extra_stat: config.change_extra_stat.clone(),
+            change_extra_stat_time_effect: config.change_extra_stat_time_effect.clone(),
+            change_extra_stat_revert_changes: config.change_extra_stat_revert_changes,
+            change_extra_stat_is_damage: config.change_extra_stat_is_damage,
+            change_damage_resist: config.change_damage_resist.clone(),
+            change_damage_resist_time_effect: config.change_damage_resist_time_effect.clone(),
+            change_damage_resist_revert_changes: config.change_damage_resist_revert_changes,
+            change_effect_resist: config.change_effect_resist.clone(),
+            change_effect_resist_time_effect: config.change_effect_resist_time_effect.clone(),
+            change_effect_resist_revert_changes: config.change_effect_resist_revert_changes,
+            change_ability: config.change_ability.clone(),
+            change_ability_time_effect: config.change_ability_time_effect.clone(),
+            change_ability_revert_changes: config.change_ability_revert_changes,
+        }
+    }
 }
 
 /*

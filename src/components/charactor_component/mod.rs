@@ -82,7 +82,7 @@ pub struct SkillComponent {
 pub struct InventoryComponent {
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
-    pub stuff_wear: HashMap<StuffWearSlot, usize>, // value is - stuff id;
+    pub stuff_wear: HashMap<StuffWearSlot, Option<Stuff>>, // value is - stuff id;
 }
 
 #[derive(Component, Default)]

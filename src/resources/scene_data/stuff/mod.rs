@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{ Serialize, Deserialize };
 
 pub mod stuff_attributes;
@@ -6,6 +8,8 @@ pub mod damage_type;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use crate::resources::scene_data::charactor::StuffWearSlot;
+
+use self::damage_type::DamageType;
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
 pub enum StuffType{
@@ -53,9 +57,10 @@ pub struct Stuff{
     pub amount: usize,
 
     pub position: Position<i32>,
-    pub graphic_position: Position<f32>,
-
     pub wear_slot: StuffWearSlot,
+
+    pub base_damage: HashMap<DamageType, i16>,
+    pub current_damage: HashMap<DamageType, i16>,
 
     //TODO: Stuff attributes with values
     //attributes: HashMap<StuffAttribute>,

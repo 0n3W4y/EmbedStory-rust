@@ -4,18 +4,14 @@ use std::collections::HashMap;
 
 use super::{
     deploy::Deploy,
-    scene_data::objects::{
-        body_part::PartType,
+    scene_data::{
         charactor::{
             self, stats::Stat, Charactor, CharactorSubType, CharactorType, ConditionType,
             GenderType, RaceType,
         },
     },
 };
-use crate::resources::deploy::charactor_deploy::{CharactorSubTypeConfig, RaceConfig};
-use crate::resources::scene_data::objects::body_part::BodyPart;
-use crate::resources::scene_data::objects::body_part::BodyPartType;
-use crate::resources::scene_data::objects::resists::Resist;
+use crate::resources::deploy::charactor_deploy::RaceConfig;
 use crate::scenes::game_scenes::{game_scene::GameScene, tilemap::tile::Tile};
 use crate::resources::deploy::game_scene_biome_deploy::BiomeCharacters;
 

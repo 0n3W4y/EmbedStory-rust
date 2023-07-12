@@ -92,7 +92,7 @@ pub enum CharactorStatus {
     PickupItem,
 }
 
-#[derive(Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct Charactor {
     pub id: usize,
     pub charactor_type: CharactorType,
@@ -128,7 +128,7 @@ pub struct Charactor {
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
-    pub stuff_wear: HashMap<StuffWearSlot, usize>, // value is - stuff id;
+    pub stuff_wear: HashMap<StuffWearSlot, Option<Stuff>>, // value is - stuff id;
 
     pub temporary_effect: HashMap<EffectType, Effect>,
     pub endless_effect: HashMap<EffectType, Effect>,

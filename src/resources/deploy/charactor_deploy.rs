@@ -46,22 +46,6 @@ impl CharactorDeploy {
             effects_deploy,
         };
     }
-
-    pub fn get_race_config(&self, race_type: &RaceType) -> &RaceConfig {
-        match race_type {
-            RaceType::Human => &self.race_deploy.human,
-            RaceType::Elf => &self.race_deploy.elf,
-            RaceType::Orc => &self.race_deploy.orc,
-            RaceType::Halfling => &self.race_deploy.halfling,
-            RaceType::Dwarf => &self.race_deploy.dwarf,
-            RaceType::Undead => &self.race_deploy.undead,
-            RaceType::Naga => &self.race_deploy.naga,
-            RaceType::Gnome => &self.race_deploy.gnome,
-            RaceType::Goblin => &self.race_deploy.goblin,
-            RaceType::Beast => &self.race_deploy.beast,
-            RaceType::Arahnid => &self.race_deploy.arahnid,
-        }
-    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -85,6 +69,35 @@ pub struct EffectsDeploy {
     stamina_damage: EffectDeploy,
     healthpoint_regen: EffectDeploy,
     stamina_regen: EffectDeploy,
+    frostbite: EffectDeploy,
+    increase_movement_speed: EffectDeploy,
+}
+
+impl EffectsDeploy {
+    pub fn get_effect_config(&self, effect_type: &EffectType) -> &EffectDeploy {
+        match *effect_type {
+            EffectType::Acid => &self.acid,
+            EffectType::Stun => &self.stun,
+            EffectType::Moveless => &self.moveless,
+            EffectType::Slow => &self.slow,
+            EffectType::Bleeding => &self.bleeding,
+            EffectType::Burn => &self.burn,
+            EffectType::Electrification => &self.electrification,
+            EffectType::Freeze => &self.freeze,
+            EffectType::Blind => &self.blind,
+            EffectType::Poison => &self.poison,
+            EffectType::Wet => &self.wet,
+            EffectType::BrokeArmor => &self.broke_armor,
+            EffectType::BrokeWeapon => &self.broke_weapon,
+            EffectType::IncreaseMovement => &self.increase_movement_speed,
+            EffectType::Lifelich => &self.lifelich,
+            EffectType::Staminalich => &self.staminalich,
+            EffectType::StaminaDamage => &self.stamina_damage,
+            EffectType::HealthRegen => &self.healthpoint_regen,
+            EffectType::StaminaRegen => &self.stamina_regen,
+            EffectType::Frostbite => &self.frostbite,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -100,6 +113,24 @@ pub struct RaceDeploy {
     pub goblin: RaceConfig,
     pub beast: RaceConfig,
     pub arahnid: RaceConfig,
+}
+
+impl RaceDeploy {
+    pub fn get_race_config(&self, race_type: &RaceType) -> &RaceConfig {
+        match race_type {
+            RaceType::Human => &self.human,
+            RaceType::Elf => &self.elf,
+            RaceType::Orc => &self.orc,
+            RaceType::Halfling => &self.halfling,
+            RaceType::Dwarf => &self.dwarf,
+            RaceType::Undead => &self.undead,
+            RaceType::Naga => &self.naga,
+            RaceType::Gnome => &self.gnome,
+            RaceType::Goblin => &self.goblin,
+            RaceType::Beast => &self.beast,
+            RaceType::Arahnid => &self.arahnid,
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]

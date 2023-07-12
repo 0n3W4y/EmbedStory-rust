@@ -36,7 +36,7 @@ pub enum SkillTargetType {
     Any
 }
 
-#[derive( Deserialize, Default, Debug)]
+#[derive(Default, Debug)]
 pub struct Skill {
     pub skill_type: SkillType,
    
@@ -58,6 +58,7 @@ pub struct Skill {
     pub current_crit_chance: i8,
 
     pub base_damage: HashMap<DamageType, i16>,
+    pub current_damage: HashMap<DamageType, i16>,
 
     pub base_crit_multiplier: i16,
     pub current_crit_multiplier: i16,
@@ -69,7 +70,7 @@ pub struct Skill {
     pub target: SkillTargetType,
     pub max_target: u8,
 
-    pub effect: Vec<EffectType>,
+    pub effect: HashMap<EffectType, u8>,
 }
 
 #[derive(Deserialize)]
@@ -99,5 +100,5 @@ pub struct SkillDeploy {
     pub target: SkillTargetType,
     pub max_target: u8,
 
-    pub effect: Vec<EffectType>,
+    pub effect: HashMap<EffectType, u8>,
 }

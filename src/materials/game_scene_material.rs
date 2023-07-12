@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
 use crate::{
-    resources::scene_data::objects::{
+    resources::scene_data::{
         charactor::{GenderType, RaceType},
         thing::ThingType,
     },

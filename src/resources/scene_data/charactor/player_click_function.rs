@@ -104,7 +104,6 @@ fn select_target_to_attack(
     y: i32,
 ) {
     player.target = Some(id);
-    player.status = CharactorStatus::Attacking;
     player.action = ActionType::Attack;
 }
 
@@ -117,7 +116,6 @@ fn select_item_to_pickup(
 ) {
     position.destination_point = Position { x, y };
     player.target = Some(id);
-    player.status = CharactorStatus::PickupItem;
     player.action = ActionType::Pickup;
 }
 
