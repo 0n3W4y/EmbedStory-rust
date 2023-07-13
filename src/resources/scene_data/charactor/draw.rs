@@ -4,7 +4,7 @@ use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::materials::material_manager::MaterialManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
-use crate::resources::scene_data::objects::charactor::{Charactor, CharactorType};
+use crate::resources::scene_data::charactor::{Charactor, CharactorType};
 use crate::components::charactor_component::{CharactorComponent, PlayerComponent, NPCComponent, MonsterComponent};
 use crate::resources::profile::Profile;
 

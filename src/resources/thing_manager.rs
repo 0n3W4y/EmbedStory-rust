@@ -1,18 +1,14 @@
 //use serde::{ Deserialize, Serialize };
 use rand::Rng;
-use std::collections::HashMap;
 
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermissions, CoverType};
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
-use crate::resources::scene_data::resists::Resist;
 
-use super::charactor_manager;
 use super::deploy::Deploy;
 use super::deploy::game_scene_biome_deploy::BiomeThings;
 use super::scene_data::thing::{Thing, ThingType};
-use super::scene_data::charactor;
 
 
 #[derive(Default)]
@@ -26,21 +22,12 @@ impl ThingManager {
         let id = self.create_id();
         let config = deploy.objects_deploy.get_config(thing_type);
 
-        let body_structure: HashMap<BodyPartType, BodyPart> = charactor_manager::create_body_structure(&config.body_structure, &PartType::Natural);
-        let total_health_points = charactor::calculate_total_health_points(&body_structure);
-        let current_health_points = charactor::calculate_current_health_points(&body_structure);
-
-        let resists: HashMap<Resist, i16> = charactor_manager::create_resists(&config.resists);
-
         let thing = Thing {
             id,
             thing_type: thing_type.clone(),
             permissions: config.permissions.to_vec(),
-            resists_cache: resists.clone(),
-            resists,            
-            body_structure,
-            total_health_points,
-            current_health_points,
+            resists: config.resists.clone(),
+            extra_stats: config.extra_stats.clone(),
             ..Default::default()
         };
 

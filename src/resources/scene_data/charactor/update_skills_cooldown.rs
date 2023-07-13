@@ -4,7 +4,7 @@ use crate::components::charactor_component::SkillComponent;
 
 use super::skills::Skill;
 
-pub fn update_skills_cooldown(mut charactors_query: Query<&SkillComponent>, time: Res<Time>) {
+pub fn update_active_skills_cooldown(mut charactors_query: Query<&SkillComponent>, time: Res<Time>) {
     let delta = time.delta_seconds();
     for skills in charactors_query.iter_mut() {
         for (_, skill) in skills.skills.iter_mut() {

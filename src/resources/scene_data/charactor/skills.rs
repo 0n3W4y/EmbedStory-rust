@@ -32,7 +32,7 @@ pub enum SkillDirectionType {
 pub enum SkillTargetType {
     #[default]
     Enemy,
-    Friendly,
+    Ally,
     Any
 }
 
@@ -43,7 +43,7 @@ pub struct Skill {
     //for passive skill;
     pub passive_skill: bool,
     pub trigger_chanse: u8,
-    pub trigger_time: u16,
+    pub trigger_time: f32,
     //-----------------
 
     pub base_cooldown: i16,

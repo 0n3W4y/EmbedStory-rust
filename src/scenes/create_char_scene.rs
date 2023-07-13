@@ -6,7 +6,7 @@ use crate::materials::material_manager::MaterialManager;
 use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
-use crate::resources::scene_data::objects::charactor::{CharactorType, CharactorSubType, GenderType, RaceType};
+use crate::resources::scene_data::charactor::{CharactorType, CharactorSubType, GenderType, RaceType};
 use crate::scenes::SceneState;
 use crate::resources::deploy::Deploy;
 

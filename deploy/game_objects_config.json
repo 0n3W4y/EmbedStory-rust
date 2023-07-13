@@ -1,12 +1,23 @@
 {
     "rock":{
-        "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 900},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Roof"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceStuff",
             "PlaceFloor",
@@ -17,13 +28,24 @@
     },
 
     "tree":{
-        "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": -20, "Electric": 90, "Kinetic": 10, "Laser": 0, "Plasma": 5},
-        "body_structure": {"Torso": 400},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -34,12 +56,23 @@
     },
     "fertile_tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": -20, "Electric": 90, "Kinetic": 10, "Laser": 0, "Plasma": 5},
-        "body_structure": {"Torso": 350},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -50,12 +83,23 @@
     },
     "bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": -30, "Electric": 90, "Kinetic": 0, "Laser": 0, "Plasma": 5},
-        "body_structure": {"Torso": 200},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
-            "Walk"
-            ],
+        "Walk"
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -66,12 +110,23 @@
     },
     "fertile_bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": -30, "Electric": 90, "Kinetic": 0, "Laser": 0, "Plasma": 5},
-        "body_structure": {"Torso": 150},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -82,11 +137,22 @@
     },
     "boulder":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 400},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
-            "Walk"
+        "Walk"
             ],
         "tile_deny_permissions": [
             "PlaceFloor", 
@@ -98,12 +164,23 @@
     },
     "log":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 300},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
-            "Walk"
-            ],
+        "Walk"
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -114,12 +191,23 @@
     },
     "copper_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 900},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Roof"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -130,12 +218,23 @@
     },
     "iron_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 900},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Roof"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -146,8 +245,20 @@
     },
     "wooden_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 650},
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
             "Fog"
             ],
@@ -160,9 +271,21 @@
         "tile_movement_ratio": 0
     },
     "stone_wall":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1100},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
             "Fog"
             ],
@@ -175,12 +298,23 @@
         "tile_movement_ratio": 0
     },
     "iron_wall":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1500},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -190,12 +324,23 @@
         "tile_movement_ratio": 0
     },
     "steel_wall":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1800},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -205,11 +350,22 @@
         "tile_movement_ratio": 0
     },
     "wooden_door":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 500},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
             ],
         "tile_deny_permissions": [
@@ -221,13 +377,24 @@
         "tile_movement_ratio": 0
     },
     "reinforced_wooden_door":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 750},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -237,13 +404,24 @@
         "tile_movement_ratio": 0
     },
     "iron_door":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1200},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -253,13 +431,24 @@
         "tile_movement_ratio": 0
     },
     "reinforced_iron_door":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1500},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -269,13 +458,24 @@
         "tile_movement_ratio": 0
     },
     "steel_door":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1500},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 
@@ -285,13 +485,24 @@
         "tile_movement_ratio": 0
     },
     "reinforced_steel_door":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
-        "resists":{"Fire": 90, "Electric": 90, "Kinetic": 50, "Laser": 20, "Plasma": 10},
-        "body_structure": {"Torso": 1900},
+        "permissions": ["CanBeDestroyed"],
+        "resists":{
+            "Fire": 0,
+            "Cold": 0,
+            "Electric": 0,
+            "Kinetic": 0,
+            "Water": 0,
+            "Acid": 0,
+            "Poison": 0,
+            "SacredEnergy": 0,
+            "DeathEnegry": 0
+        },
+        "extra_stats": {
+            "HealthPoints": 100
+        },
         "tile_allow_permissions": [
-            "Fog",
             "Walk"
-            ],
+        ],
         "tile_deny_permissions": [
             "PlaceFloor", 
             "PlaceThing", 

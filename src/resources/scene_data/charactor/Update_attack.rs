@@ -227,6 +227,7 @@ fn attack(
     skill.current_duration = skill.current_cooldown;
     //check for melee or ranged+magic attack;
     if skill.projectiles > 0 {
+        todo!();
         //TODO: create projectile;
     } else {
         // let check for aacuracy
@@ -379,7 +380,9 @@ fn attack(
 
             //check for ednless effect or temporary
             if effect.duration == 0.0 {
-                //endless
+                //try to insert, or ignore if effect already exist;
+                //Maybe change damage todo();
+                target_effect.endless_effect.entry(effect_type.clone()).or_insert(effect);
             } else {
                 //temporary
                 //get resist from target on this effect to change duration;
@@ -394,20 +397,24 @@ fn attack(
                     }
                 };
 
+                //check target resist; if it > 100% just ignore this effect;
+                if target_effect_resist > 100 {
+                    return;
+                }
+
                 //calculate new effect duration by target resist;
                 let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
                 effect.duration -= effect_duration;
 
-                target_effect.temporary_effect.entry(effect_type.clone())
-                .and_modify(|x| x.duration += effect.duration)
-                .or_insert(effect);
-
-                //TODO: change damge from min to max in 2 values;
-                /*
-                for (_, value) in target_effect.temporary_effect.get_mut(&effect_type).unwrap().change_extra_stat.iter_mut() {
-
+                let old_effect = target_effect.temporary_effect.entry(effect_type.clone()).or_insert(effect);
+                old_effect.duration += effect.duration;
+                for (key, value) in old_effect.change_extra_stat.iter_mut() {
+                    let effect_value = match effect.change_extra_stat.get(key) {
+                        Some(v) => *v,
+                        None => 0,
+                    };
+                    *value = (*value).max(effect_value);
                 }
-                */
             }
             
         }

@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 pub mod draw;
 pub mod cleanup;
-pub mod spawn;
 pub mod destroeyd_thing_handler;
 
 use serde::{Deserialize, Serialize};
@@ -47,6 +46,7 @@ pub enum ThingType {
 pub struct ThingConfig {
     pub permissions: Vec<ThingPermissions>,
     pub resists: HashMap<DamageType, i16>,
+    pub extra_stats: HashMap<ExtraStat, i16>,
     pub tile_allow_permissions: Vec<TilePermissions>,
     pub tile_deny_permissions: Vec<TilePermissions>,
     pub tile_movement_ratio: u16
@@ -58,6 +58,7 @@ pub struct Thing {
     pub thing_type: ThingType,
     pub position: Position<i32>,
     pub graphic_index: u8, // get image from material_manager;
+    pub tile_index: usize, // tile id;
 
     pub permissions: Vec<ThingPermissions>,
     pub resists: HashMap<DamageType, i16>,
