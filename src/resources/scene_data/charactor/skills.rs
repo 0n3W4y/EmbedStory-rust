@@ -53,6 +53,7 @@ pub struct Skill {
     pub projectiles: u8,
     pub range: u8,
     pub cast_source: CastSource,
+    pub skill_direction: SkillDirectionType,
 
     pub base_crit_chance: i8,
     pub current_crit_chance: i8,
@@ -64,8 +65,6 @@ pub struct Skill {
     pub current_crit_multiplier: i16,
 
     pub stamina_cost: u8,
-
-    pub skill_direction: SkillDirectionType,
 
     pub target: SkillTargetType,
     pub max_target: u8,

@@ -23,7 +23,7 @@ pub mod stats;
 pub mod update_effects;
 pub mod update_passive_skills;
 pub mod update_attack;
-pub mod update_skills_cooldown;
+pub mod update_cooldowns;
 
 pub const STATS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;

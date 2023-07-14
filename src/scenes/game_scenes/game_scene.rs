@@ -56,7 +56,7 @@ impl Plugin for GameScenePlugin {
             .with_system(charactor::killed_charactor_handler::killed_charactor_handler)
             .with_system(charactor::player_click_function::player_click)
             .with_system(charactor::update_effects::update_effects)
-            .with_system(charactor::update_skills_cooldown::update_skills_cooldown)
+            .with_system(charactor::update_cooldowns::update_active_skills_cooldown)
             .with_system(charactor::update_passive_skills::update_passive_skills)
             .with_system(charactor::update_attack::player_attacking)
         );

@@ -1,69 +1,70 @@
 use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
-use crate::components::charactor_component::{CharactorComponent, PositionComponent};
+use crate::components::charactor_component::{CharactorComponent, PositionComponent, AbilityComponent, PlayerComponent};
 use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
-use crate::resources::scene_data::charactor::skills::Skill;
 use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_manager::SceneManager;
+
+use super::abilities::Ability;
 
 //use crate::plugins::camera::Orthographic2DCamera;
 
 //use super::CharactorType;
 
-const DEFAULT_MOVEMENT_SPEED: u16 = 1000;
+const DEFAULT_MOVEMENT_SPEED: f32 = 1000.0;
 
 pub fn move_charactor(
     time: Res<Time>,
-    mut charactor_query: Query<(&mut CharactorComponent, &mut PositionComponent, &mut Transform, &mut TextureAtlasSprite), With<CharactorComponent>>,
+    mut charactor_query: Query<(&mut CharactorComponent, &mut PositionComponent, &AbilityComponent, &mut Transform, &mut TextureAtlasSprite), Without<PlayerComponent>>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
+    let delta = time.delta_seconds();
+    let scene = scene_manager.get_current_game_scene();
     for (
         mut charactor, 
         mut position, 
+        ability,
         mut transform, 
         mut sprite
     ) in charactor_query.iter_mut(){
-        if charactor.status != CharactorStatus::Moving {
-            continue;
-        };
-        let scene = scene_manager.get_current_game_scene();
-
+        //check for need to move;
+        match position.destination_point {
+            Some(_) => {charactor.status = CharactorStatus::Moving;},
+            None => continue,
+        }
         //let mut move_camera_on_player: bool = false;
         //let (mut camera_transform, cam, projection) = camera.single_mut();
         //if component.charactor_type == CharactorType::Player && cam.camera_on_charator {move_camera_on_player = true;};
 
-        if component.destination_path.len() == 0 {
+        if position.destination_path.len() == 0 {
             try_path(&mut position, scene);
-            //after fucntion to create path we can't create a path - end moving, char reached his destination // TODO: Pathfinding;
-            if component.destination_path.len() == 0 {
-                destination_reach(&mut position);
+            // TODO: Pathfinding;
+            if position.position.x == position.destination_point.unwrap().x //safe unwrap
+            && position.position.y == position.destination_point.unwrap().y { //safe unwrap
+                destination_reach(&mut charactor);
                 continue;
             }
-            change_sprite_by_direction(&mut sprite, &component.destination_direction);
+            change_sprite_by_direction(&mut sprite, &position.destination_direction);
         }
 
-        let movement_speed: u16 = match component.skills.get(&Skill::Movement){
+        let movement_speed: f32 = match ability.ability.get(&Ability::MovementSpeed){
             Some(v) => *v,
             None => {
                 println!(
-                    "Can't get movement speed skill from charactor with id: '{:?}', type: '{:?}', subtype: '{:?}'. Use default 1000", 
-                    component.id, 
-                    component.charactor_type,
-                    component.charactor_subtype,
+                    "Can't get movement speed ability from charactor with id: '{:?}', type: '{:?}'. Use default 1000", 
+                    charactor.id, 
+                    charactor.charactor_type
                 );
                 DEFAULT_MOVEMENT_SPEED
             }
         }; 
 
-        let d_x = component.destination_direction.x as f32 * movement_speed as f32;
-        let d_y = component.destination_direction.y as f32 * movement_speed as f32;
-
-        let new_x = d_x * time.delta_seconds();
-        let new_y = d_y * time.delta_seconds();
+        let new_x = position.destination_direction.x as f32 * movement_speed as f32 * delta;
+        let new_y = position.destination_direction.y as f32 * movement_speed as f32 * delta;
 
         transform.translation.x += new_x;
         transform.translation.y += new_y;
@@ -77,7 +78,7 @@ pub fn move_charactor(
         //    camera_transform.translation.y += new_y;
         //}
         
-        try_grid_moving(&mut component, &mut transform.translation, &mut sprite);
+        try_grid_moving(&mut charactor, &mut position, &mut transform.translation, &mut sprite);
     }
 }
 
@@ -126,16 +127,16 @@ fn change_sprite_by_direction(sprite: &mut Mut<TextureAtlasSprite>, direction: &
     };
 }
 
-fn destination_reach(component: &mut CharactorComponent){
-    component.status = CharactorStatus::Standing;
+fn destination_reach(charactor: &mut CharactorComponent){
+    charactor.status = CharactorStatus::Standing;
 }
 
-fn try_grid_moving(component: &mut CharactorComponent, translation: &mut Vec3, sprite: &mut Mut<TextureAtlasSprite>){
+fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionComponent, translation: &mut Vec3, sprite: &mut Mut<TextureAtlasSprite>){
     let grid_x = translation.x / TILE_SIZE as f32;
     let grid_y = translation.y / TILE_SIZE as f32;
 
-    let dir_x = component.destination_direction.x;
-    let dir_y = component.destination_direction.y;
+    let dir_x = position.destination_direction.x;
+    let dir_y = position.destination_direction.y;
 
     let calculated_x = if dir_x > 0 {
         grid_x.floor() as i32
@@ -151,28 +152,28 @@ fn try_grid_moving(component: &mut CharactorComponent, translation: &mut Vec3, s
 
     let mut grid_move:bool = false;
 
-    if component.position.x != calculated_x {
-        component.position.x = calculated_x;
+    if position.position.x != calculated_x {
+        position.position.x = calculated_x;
         grid_move = true;
     };
 
-    if component.position.y != calculated_y {
-        component.position.y = calculated_y;
+    if position.position.y != calculated_y {
+        position.position.y = calculated_y;
         grid_move = true;
     };
 
     if grid_move {
-        component.destination_path.remove(0); // remove reached grid point;
+        position.destination_path.remove(0); // remove reached grid point;
 
-        if component.destination_path.len() != 0 {
-            let next_point_x = component.destination_path[0].x;
-            let next_point_y = component.destination_path[0].y;
+        if position.destination_path.len() != 0 {
+            let next_point_x = position.destination_path[0].x;
+            let next_point_y = position.destination_path[0].y;
             let direction_xy = calculate_direction(calculated_x, calculated_y, next_point_x, next_point_y);
-            component.destination_direction.x = direction_xy.x;
-            component.destination_direction.y = direction_xy.y;
-            change_sprite_by_direction(sprite, &component.destination_direction);
+            position.destination_direction.x = direction_xy.x;
+            position.destination_direction.y = direction_xy.y;
+            change_sprite_by_direction(sprite, &position.destination_direction);
         }else{
-            destination_reach(component);
+            destination_reach(charactor);
             translation.x = grid_x * TILE_SIZE as f32;
             translation.y = grid_y * TILE_SIZE as f32;
             sprite.index = 0;
@@ -189,33 +190,33 @@ fn check_tile_for_moving(tile: &Tile) -> bool {
     }
 }
 
-fn try_path(component: &mut CharactorComponent, scene: &GameScene) {
-    let position_x = component.position.x;
-    let position_y = component.position.y;  
-    let destination_x = component.destination_point.x;
-    let destination_y = component.destination_point.y;
+fn try_path(position: &mut PositionComponent, scene: &GameScene) {
+    let position_x = position.position.x;
+    let position_y = position.position.y;  
+    let destination_x = position.destination_point.unwrap().x; //safe
+    let destination_y = position.destination_point.unwrap().y; //safe
 
     let path_tiles = ((destination_x - position_x).abs()).max((destination_y - position_y).abs());
     for _ in 0..path_tiles{
         let mut current_x = position_x;
         let mut current_y = position_y;
-        let path_len = component.destination_path.len();
+        let path_len = position.destination_path.len();
         if path_len != 0 { 
             //last index with position;
-            current_x = component.destination_path[path_len -1].x;
-            current_y = component.destination_path[path_len -1].y;
+            current_x = position.destination_path[path_len -1].x;
+            current_y = position.destination_path[path_len -1].y;
         };
 
         let direction_xy = calculate_direction(current_x, current_y, destination_x, destination_y);
-        if component.destination_direction.x == 0 && component.destination_direction.y == 0 { // first circle run;
-            component.destination_direction.x = direction_xy.x;
-            component.destination_direction.y = direction_xy.y;
+        if position.destination_direction.x == 0 && position.destination_direction.y == 0 { // first circle run;
+            position.destination_direction.x = direction_xy.x;
+            position.destination_direction.y = direction_xy.y;
         };
 
         let tile = scene.tilemap.get_tile_by_position(current_x + direction_xy.x as i32, current_y + direction_xy.y as i32);
 
         if check_tile_for_moving(tile) {
-            component.destination_path.push(Position {x: tile.position.x, y: tile.position.y});
+            position.destination_path.push(Position {x: tile.position.x, y: tile.position.y});
         } else {
             return;
         }

@@ -2,11 +2,11 @@ use bevy::prelude::*;
 
 use crate::components::charactor_component::ActionType;
 use crate::components::charactor_component::CharactorComponent;
+use crate::components::charactor_component::CharactorTargetComponent;
 use crate::components::charactor_component::PlayerComponent;
 use crate::components::charactor_component::PositionComponent;
 use crate::config::{MONITOR_HALF_HEIGHT, MONITOR_HALF_WIDTH, TILE_SIZE};
 use crate::plugins::camera::Orthographic2DCamera;
-use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
@@ -17,7 +17,7 @@ pub fn player_click(
     mouse_button_input: Res<Input<MouseButton>>,
     scene_manager: Res<SceneManager>,
     mut player_query: Query<
-        (&mut CharactorComponent, &mut PositionComponent),
+        (&mut CharactorComponent, &mut PositionComponent, &mut CharactorTargetComponent),
         With<PlayerComponent>,
     >,
     //thing_query: Query<(&ThingComponent, &ThingPositionComponent)>,
@@ -25,7 +25,7 @@ pub fn player_click(
     //stuff_component: Query<(&StuffComponent, &StuffPositionComponent)>,
     camera: Query<(&Transform, &OrthographicProjection), With<Orthographic2DCamera>>,
 ) {
-    let (mut player, mut position) = player_query.single_mut();
+    let (mut player, mut position, mut palyer_target) = player_query.single_mut();
     let window = windows.get_primary().unwrap();
     //let scene = scene_manager.get_current_game_scene();
 
@@ -59,11 +59,11 @@ pub fn player_click(
                 if char_position_x == position_x && char_position_y == position_y {
                     match charactor_component.charactor_type {
                         CharactorType::Monster => {
-                            select_target_to_attack(&mut player, charactor_component.id, position_x, position_y);
+                            select_target_to_attack(&mut palyer_target, charactor_component.id, position_x, position_y);
                             return;
                         },
                         _ => {
-                            move_player_to(&mut player, &mut position, position_x, position_y);
+                            move_player_to(&mut position, position_x, position_y);
                         }
                     };
                 };
@@ -80,7 +80,7 @@ pub fn player_click(
             };
             */
             //check coordinates have a property values;
-            move_player_to(&mut player, &mut position, position_x, position_y);
+            move_player_to(&mut position, position_x, position_y);
         } else {
             // cursor is not inside the window
         }
@@ -88,35 +88,33 @@ pub fn player_click(
 }
 
 fn move_player_to(
-    player: &mut CharactorComponent,
     position: &mut PositionComponent,
     x: i32,
     y: i32,
 ) {
-    position.destination_point = Position { x, y };
-    player.status = CharactorStatus::Moving;
+    position.destination_point = Some(Position { x, y });
 }
 
 fn select_target_to_attack(
-    player: &mut CharactorComponent,
+    player_target: &mut CharactorTargetComponent,
     id: usize,
     x: i32,
     y: i32,
 ) {
-    player.target = Some(id);
-    player.action = ActionType::Attack;
+    player_target.target = Some(id);
+    player_target.action = ActionType::Attack;
+    player_target.target_position = Some(Position{ x, y });
 }
 
 fn select_item_to_pickup(
-    player: &mut CharactorComponent,
-    position: &mut PositionComponent,
+    player_target: &mut CharactorTargetComponent,
     id: usize,
     x: i32,
     y: i32,
 ) {
-    position.destination_point = Position { x, y };
-    player.target = Some(id);
-    player.action = ActionType::Pickup;
+    player_target.target_position = Some(Position { x, y });
+    player_target.target = Some(id);
+    player_target.action = ActionType::Pickup;
 }
 
 fn select_door_to_open(){}

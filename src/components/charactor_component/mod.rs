@@ -34,7 +34,7 @@ pub struct EffectComponent{
 #[derive(Component, Default)]
 pub struct PositionComponent {
     pub position: Position<i32>,
-    pub destination_point: Position<i32>,
+    pub destination_point: Option<Position<i32>>,
     pub destination_path: Vec<Position<i32>>,
     pub destination_direction: Position<i8>,
 }
@@ -93,12 +93,16 @@ pub struct CharactorComponent{
     pub gender_type: GenderType,
 
     pub status: CharactorStatus,
-    pub target: Option<usize>,
-    pub action: ActionType,
-
     //pub fraction: CharactorFraction,
     pub level: u8,
     pub experience: u32,
+}
+
+#[derive(Component, Default)]
+pub struct CharactorTargetComponent {
+    pub target: Option<usize>,
+    pub target_position: Option<Position<i32>>,
+    pub action: ActionType,
 }
 
 #[derive(Component, Default)]

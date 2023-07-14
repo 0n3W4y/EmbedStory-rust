@@ -6,7 +6,7 @@ use crate::materials::material_manager::MaterialManager;
 use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
-use crate::resources::scene_data::charactor::{CharactorType, CharactorSubType, GenderType, RaceType};
+use crate::resources::scene_data::charactor::{CharactorType, GenderType, RaceType};
 use crate::scenes::SceneState;
 use crate::resources::deploy::Deploy;
 
@@ -164,7 +164,7 @@ fn setup(
     );
 
     let mut profile: Profile = Default::default();
-    profile.charactor = player;
+    profile.charactor = Some(player);
     commands.insert_resource(charactor_manager);
     commands.insert_resource(profile);
 }

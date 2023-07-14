@@ -12,7 +12,11 @@ pub struct Profile {
     pub profile_name: String,
     pub start_time: String,
     pub end_time: String,
+    #[serde(skip_serializing)]
+    #[serde(skip_deserializing)]
     pub charactor: Option<Charactor>,
+    #[serde(skip_serializing)]
+    #[serde(skip_deserializing)]
     pub companion: Option<Charactor>,
 }
 

@@ -4,7 +4,7 @@ use rand::Rng;
 use crate::components::charactor_component::{
     AbilityComponent, ActionType, CharactorComponent, CompanionComponent, EffectComponent,
     ExtraStatsComponent, InventoryComponent, MonsterComponent, PlayerComponent, PositionComponent,
-    ResistsComponent, SkillComponent,
+    ResistsComponent, SkillComponent, CharactorTargetComponent,
 };
 
 use crate::resources::deploy::Deploy;
@@ -19,6 +19,7 @@ pub fn player_attacking(
         (
             &CharactorComponent,
             &mut SkillComponent,
+            &CharactorTargetComponent,
             &AbilityComponent,
             &InventoryComponent,
             &PositionComponent,
@@ -38,14 +39,14 @@ pub fn player_attacking(
     >,
     deploy: Res<Deploy>,
 ) {
-    let (player, mut player_skill, player_ability, player_inventory, player_position) =
+    let (player, mut player_skill, player_target, player_ability, player_inventory, player_position) =
         player_query.single_mut();
 
-    if player.action != ActionType::Attack {
+    if player_target.action != ActionType::Attack {
         return;
     };
 
-    let player_target_id: usize = match player.target {
+    let player_target_id: usize = match player_target.target {
         Some(v) => v,
         _ => {
             println!("Player has no target, but status Attacking!");
@@ -65,7 +66,7 @@ pub fn player_attacking(
     ) in monsters_query.iter_mut()
     {
         if monster.id == player_target_id {
-            try_to_attack(
+            if try_to_attack(
                 player_position,
                 monster_position,
                 &mut player_skill,
@@ -76,7 +77,9 @@ pub fn player_attacking(
                 &mut monster_effect,
                 monster_ability,
                 effects_deploy
-            );
+            ) {
+                player.status = CharactorStatus::Attacking;
+            }
             break;
         };
     }
@@ -87,6 +90,7 @@ pub fn companion_attacking(
         (
             &CharactorComponent,
             &SkillComponent,
+            &CharactorTargetComponent,
             &mut ExtraStatsComponent,
             &ResistsComponent,
             &mut EffectComponent,
@@ -107,13 +111,14 @@ pub fn companion_attacking(
     let (
         companion,
         companion_skill,
+        companion_target,
         mut companion_extra_stats,
         companion_resist,
         mut companion_effect,
     ) = companion_query.single_mut();
 
     let companion_target_id: usize = if companion.status == CharactorStatus::Attacking {
-        match companion.target {
+        match companion_target.target {
             Some(v) => v,
             _ => {
                 println!("Companion has no target, but status Attacking!");
@@ -191,7 +196,7 @@ fn try_to_attack(
     let diff = diff_x.max(diff_y);
     if skill_range as i32 >= diff {
         if skill.current_duration == 0.0 {
-            //if all finem we attack;
+            //if all fine we attack;
             attack(
                 skill,
                 ability_component,
