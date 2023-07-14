@@ -11,14 +11,15 @@ pub enum SkillType {
     BasicWeaponAttack,
 }
 
-#[derive(Deserialize, Default, Debug)]
+#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
 pub enum CastSource {
     Mouse,
     #[default]
     Itself,
+    Target,
 }
 
-#[derive(Deserialize, Default, Debug)]
+#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
 pub enum SkillDirectionType {
     #[default]
     Line,
@@ -28,7 +29,7 @@ pub enum SkillDirectionType {
     Point,
 }
 
-#[derive(Deserialize, Default, Debug)]
+#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
 pub enum SkillTargetType {
     #[default]
     Enemy,
