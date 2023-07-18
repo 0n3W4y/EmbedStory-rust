@@ -375,9 +375,9 @@ fn attack(
                         0
                     },
                 };
-
+                
                 for (_, value) in effect.change_extra_stat.iter_mut() {
-                    *value = damage_from_weapon - (damage_from_weapon * resist_damage_from_target / 100) ;
+                    *value = damage_from_weapon - (damage_from_weapon * resist_damage_from_target / 100);
                 };
             }
 
@@ -411,8 +411,9 @@ fn attack(
                 let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
                 effect.duration -= effect_duration;
 
-                let old_effect = target_effect.temporary_effect.entry(effect_type.clone()).or_insert(effect);
-                old_effect.duration += effect.duration;
+                let old_effect = target_effect.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+                
+                //select > value of old effect and new effect;
                 for (key, value) in old_effect.change_extra_stat.iter_mut() {
                     let effect_value = match effect.change_extra_stat.get(key) {
                         Some(v) => *v,
@@ -420,8 +421,7 @@ fn attack(
                     };
                     *value = (*value).max(effect_value);
                 }
-            }
-            
+            }            
         }
     }
 }
