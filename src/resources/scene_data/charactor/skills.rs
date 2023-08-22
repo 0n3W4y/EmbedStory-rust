@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
-use super::effects::EffectType;
+use super::{effects::EffectType, CharactorType};
 
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillType {
@@ -23,18 +23,11 @@ pub enum CastSource {
 pub enum SkillDirectionType {
     #[default]
     Line,
+    Arc45,
     Arc90,
     Arc180,
-    Around360,
+    Arc360,
     Point,
-}
-
-#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
-pub enum SkillTargetType {
-    #[default]
-    Enemy,
-    Ally,
-    Any
 }
 
 #[derive(Default, Debug)]
@@ -45,11 +38,13 @@ pub struct Skill {
     pub passive_skill: bool,
     pub trigger_chanse: u8,
     pub trigger_time: f32,
+    pub trigger_duration: f32,
     //-----------------
 
     pub base_cooldown: i16,
     pub current_cooldown: f32, // base + & from ability;
     pub current_duration: f32, // == 0.0;
+    pub total_duration: f32,
 
     pub projectiles: u8,
     pub range: u8,
@@ -65,10 +60,10 @@ pub struct Skill {
     pub base_crit_multiplier: i16,
     pub current_crit_multiplier: i16,
 
-    pub stamina_cost: u8,
+    pub base_stamina_cost: u8,
+    pub current_stamina_cost: u8,
 
-    pub target: SkillTargetType,
-    pub max_target: u8,
+    pub target: CharactorType,
 
     pub effect: HashMap<EffectType, u8>,
 }
@@ -81,6 +76,7 @@ pub struct SkillDeploy {
 
     pub trigger_chanse: u8,
     pub trigger_time: u16,
+    pub trigger_duration: u16,
     pub base_cooldown: i16,
 
     pub projectiles: u8,
@@ -97,8 +93,7 @@ pub struct SkillDeploy {
 
     pub skill_direction: SkillDirectionType,
 
-    pub target: SkillTargetType,
-    pub max_target: u8,
+    pub target: CharactorType,
 
     pub effect: HashMap<EffectType, u8>,
 }
