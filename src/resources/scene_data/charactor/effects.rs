@@ -42,13 +42,11 @@ pub enum EffectTimeType {
 #[derive(Deserialize, Debug, Clone, Default)]
 pub struct EffectDeploy {
     pub effect_type: EffectType,
-    pub damage_type: DamageType,
     pub itself: bool,
     pub duration: u16,
     pub trigger_time: u16,
 
-    pub extra_skill: Option<SkillType>,
-    pub extra_skill_trigger: u8,
+    pub extra_skill: HashMap<SkillType, u8>, // extra skill ( passive ) and trigger percent;
     
     // if +-10000 percent - we take value from weapon;
     pub change_stat: HashMap<Stat, i16>, // Stat and percentage
@@ -76,13 +74,12 @@ pub struct EffectDeploy {
 #[derive(Deserialize, Debug, Clone, Default)]
 pub struct Effect {
     pub effect_type: EffectType,
-    pub damage_type: DamageType,
     pub trigger_time: f32,
     pub duration: f32,
     pub current_duration: f32,
-    pub triggered: u16,
+    pub total_duration: f32,
 
-    pub extra_skill: Option<SkillType>,
+    pub extra_skill: HashMap<SkillType, u8>,
 
     pub change_stat: HashMap<Stat, i16>, // Stat and flat damage to stat
     pub change_stat_time_effect: EffectTimeType,
@@ -110,11 +107,10 @@ impl Effect {
     pub fn new(config: &EffectDeploy) -> Self {
         Effect {
             effect_type: config.effect_type.clone(),
-            damage_type: config.damage_type.clone(),
             trigger_time: config.trigger_time as f32 / 10.0,
             duration: config.duration as f32 / 10.0,
             current_duration: 0.0,
-            triggered: 0,
+            total_duration: 0.0,
             extra_skill: config.extra_skill.clone(),
             change_stat: config.change_stat.clone(),
             change_stat_time_effect: config.change_stat_time_effect.clone(),
