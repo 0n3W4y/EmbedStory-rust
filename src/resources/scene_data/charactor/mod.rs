@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use self::abilities::Ability;
+use self::abilities::AbilityType;
 use self::effects::Effect;
 use self::skills::{Skill, SkillType};
-use self::stats::{ExtraStat, Stat};
+use self::stats::{Stat, ExtraStat};
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
@@ -115,28 +115,27 @@ pub struct Charactor {
 
     pub extra_stats: HashMap<ExtraStat, i16>,
     pub extra_stats_cache: HashMap<ExtraStat, i16>,
-    pub extra_stats_regen: HashMap<ExtraStat, f32>,
 
     pub damage_resists: HashMap<DamageType, i16>,
 
     pub effect_resits: HashMap<EffectType, i16>,
 
-    pub ability: HashMap<Ability, f32>,
+    pub ability: HashMap<AbilityType, i16>,
 
     pub skills: HashMap<u8, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
-    pub stuff_wear: HashMap<StuffWearSlot, Option<Stuff>>, // value is - stuff id;
+    pub stuff_wear: HashMap<StuffWearSlot, Option<Stuff>>,
 
     pub temporary_effect: HashMap<EffectType, Effect>,
     pub endless_effect: HashMap<EffectType, Effect>,
 }
 
 pub fn change_ability(
-    ability_storage: &mut HashMap<Ability, f32>, 
-    ability: &Ability,
+    ability_storage: &mut HashMap<AbilityType, f32>, 
+    ability: &AbilityType,
     value: f32
 ) {
     ability_storage
@@ -296,7 +295,7 @@ pub fn change_stat(
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     effect_resists: &mut HashMap<EffectType, i16>,
     damage_resists: &mut HashMap<DamageType, i16>,
-    ability_storage: &mut HashMap<Ability, f32>,
+    ability_storage: &mut HashMap<AbilityType, f32>,
     stat: &Stat,
     value: i16,
     stats_min_value: u8,
@@ -321,10 +320,13 @@ pub fn change_stat(
         *stat_value
     };
 
-    stats_storage
-        .entry(stat.clone())
-        .and_modify(|old_value| *old_value = new_value as i16)
-        .or_insert(new_value as i16);
+    match stats_storage.get_mut(stat) {
+        Some(v) => *v = new_value,
+        None => {
+            println!("There is no stat '{:?}' in storage, so i added new one with value '{:?}'", stat, new_value);
+            stats_storage.insert(stat.clone(), new_value);
+        },
+    }
 
     do_stat_dependences(
         extra_stats_storage,
@@ -349,7 +351,7 @@ pub fn do_stat_dependences(
     extra_stats_regen: &mut HashMap<ExtraStat, f32>,
     effect_resists: &mut HashMap<EffectType, i16>,
     damage_resists: &mut HashMap<DamageType, i16>,
-    ability_storage: &mut HashMap<Ability, f32>,
+    ability_storage: &mut HashMap<AbilityType, f32>,
     stat: &Stat,
     stat_value: i16,
     changed_value: i16,
@@ -361,20 +363,8 @@ pub fn do_stat_dependences(
             let old_stat_value_for_trinket_damage = (stat_value - changed_value) / 4;
             let new_stat_value_for_trinket_damage = stat_value / 4;
             let difference = new_stat_value_for_trinket_damage - old_stat_value_for_trinket_damage;
-            change_ability(ability_storage, &Ability::RangedTrinketDamage, difference as f32);
-            change_ability(ability_storage, &Ability::RangedWeaponDamage, difference as f32);
-
-            //attackspeed dex*4;
-            let old_stat_value_for_aspd = (stat_value - changed_value) * 5;
-            let new_stat_value_for_aspd = stat_value *5;
-            let difference_for_aspd = new_stat_value_for_aspd - old_stat_value_for_aspd;
-            change_ability(ability_storage, &Ability::AttackSpeed, difference_for_aspd as f32);
-
-            //evasion dex/4;
-            let old_stat_value_for_evasion = (stat_value - changed_value) / 2;
-            let new_stat_value_for_evasion = stat_value / 2;
-            let differece_for_evasion = new_stat_value_for_evasion - old_stat_value_for_evasion;
-            change_ability(ability_storage, &Ability::Evasion, differece_for_evasion as f32);
+            change_ability(ability_storage, &AbilityType::RangedTrinketDamage, difference as f32);
+            change_ability(ability_storage, &AbilityType::RangedWeaponDamage, difference as f32);
         },
         Stat::Endurance => {
             //for HealthPoints END * 5; 
@@ -386,8 +376,7 @@ pub fn do_stat_dependences(
             let old_stat_value_for_regen = (stat_value as f32 - changed_value as f32) / 100.0;
             let new_stat_value_for_regen = stat_value as f32 / 100.0;
             let differece_for_regen = new_stat_value_for_regen - old_stat_value_for_regen;
-            change_ability(ability_storage, &Ability::HealthRegen, differece_for_regen);
-
+            change_ability(ability_storage, &AbilityType::HealthRegen, differece_for_regen);
         },
         Stat::Intellect => {
             //MagicWeaponDamage, INT/4
@@ -395,36 +384,48 @@ pub fn do_stat_dependences(
             let old_stat_value_for_magic_damage = (stat_value - changed_value) /4;
             let new_stat_value_for_magic_damage = stat_value / 4;
             let difference = new_stat_value_for_magic_damage - old_stat_value_for_magic_damage;
-            change_ability(ability_storage, &Ability::MagicWeaponDamage, difference as f32);
-            change_ability(ability_storage, &Ability::MagicTrinketDamage, difference as f32);
+            change_ability(ability_storage, &AbilityType::MagicWeaponDamage, difference as f32);
+            change_ability(ability_storage, &AbilityType::MagicTrinketDamage, difference as f32);
         },
         Stat::Luck => {
             //crit chanse LUCK * 1.5
             let old_stat_value_for_crit_chanse = (stat_value - changed_value) / 2;
             let new_stat_value_for_crit_chanse = stat_value / 2;
             let difference = new_stat_value_for_crit_chanse - old_stat_value_for_crit_chanse;
-            change_ability(ability_storage, &Ability::CritChance, difference as f32);
+            change_ability(ability_storage, &AbilityType::CritChance, difference as f32);
         },
         Stat::Mobility => {
             //movement speed MOB*10;
             let old_value_for_move_speed = (stat_value - changed_value) * 10;
             let new_value_for_move_speed = stat_value * 10;
             let difference = new_value_for_move_speed - old_value_for_move_speed;
-            change_ability(ability_storage, &Ability::MovementSpeed, difference as f32);
+            change_ability(ability_storage, &AbilityType::MovementSpeed, difference as f32);
+
+            //attackspeed mob*4;
+            let old_stat_value_for_aspd = (stat_value - changed_value) * 5;
+            let new_stat_value_for_aspd = stat_value *5;
+            let difference_for_aspd = new_stat_value_for_aspd - old_stat_value_for_aspd;
+            change_ability(ability_storage, &AbilityType::AttackSpeed, difference_for_aspd as f32);
+
+            //evasion mob/4;
+            let old_stat_value_for_evasion = (stat_value - changed_value) / 2;
+            let new_stat_value_for_evasion = stat_value / 2;
+            let differece_for_evasion = new_stat_value_for_evasion - old_stat_value_for_evasion;
+            change_ability(ability_storage, &AbilityType::Evasion, differece_for_evasion as f32);
         },
         Stat::Strength => {
             //block amount STR/6;
             let old_value_for_block_amount = (stat_value - changed_value) / 6;
             let new_value_for_block_amount = stat_value / 6;
             let difference = new_value_for_block_amount - old_value_for_block_amount;
-            change_ability(ability_storage, &Ability::BlockAmount, difference as f32);
+            change_ability(ability_storage, &AbilityType::BlockAmount, difference as f32);
             //meleeWeaponDamage STR/4
             //MeleeTrinketDamage STR/4
             let old_value_for_melee_damage = (stat_value - changed_value) / 4;
             let new_value_for_melee_damage = stat_value / 4;
             let difference_for_melee_damage = new_value_for_melee_damage - old_value_for_melee_damage;
-            change_ability(ability_storage, &Ability::MeleeWeaponDamage, difference_for_melee_damage as f32);
-            change_ability(ability_storage, &Ability::MeleeTrinketDamage, difference_for_melee_damage as f32);
+            change_ability(ability_storage, &AbilityType::MeleeWeaponDamage, difference_for_melee_damage as f32);
+            change_ability(ability_storage, &AbilityType::MeleeTrinketDamage, difference_for_melee_damage as f32);
         },
         Stat::Vitality => {
             //Stamina VIT *6;
@@ -437,14 +438,19 @@ pub fn do_stat_dependences(
             let old_value_for_stamina_regen = (stat_value as f32 - changed_value as f32) / 100.0;
             let new_value_for_stamina_regen: f32 = stat_value as f32 / 100.0;
             let difference_for_stamina_regen = new_value_for_stamina_regen - old_value_for_stamina_regen;
-            change_ability(ability_storage, &Ability::StaminaRegen, difference_for_stamina_regen);
+            change_ability(ability_storage, &AbilityType::StaminaRegen, difference_for_stamina_regen);
         },
         Stat::Wisdom => {
-            //ActiveSkillCD WIN * 10;
+            //ActiveSkillCD WIS * 10;
             let old_value_for_active_skill_cd = (stat_value - changed_value) * 10;
             let new_value_for_active_skill_cd = stat_value * 10;
             let difference = new_value_for_active_skill_cd - old_value_for_active_skill_cd;
-            change_ability(ability_storage, &Ability::ActiveSkillsCoolDawn, difference as f32);
+            change_ability(ability_storage, &AbilityType::ActiveSkillsCoolDawn, difference as f32);
+            //Crit multiplier WIS * 2;
+            let old_value_for_crit_multiplier = (stat_value - changed_value) * 2;
+            let new_value_for_crit_multiplier = stat_value * 2;
+            let difference_ctir_multiplier = new_value_for_crit_multiplier - old_value_for_crit_multiplier;
+            change_ability(ability_storage, &AbilityType::CritDamage, difference as f32);
         },
     }
 }

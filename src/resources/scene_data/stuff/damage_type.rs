@@ -10,6 +10,4 @@ pub enum DamageType {
     Water,
     Acid,
     Poison,
-    SacredEnergy,
-    DeathEnegry,
 }

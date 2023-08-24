@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 
-use super::effects::EffectTimeType;
 use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent, ExtraStatsComponent, ResistsComponent,
     SkillComponent, StatsComponent, InventoryComponent,
@@ -36,11 +35,66 @@ pub fn update_effects(
         for (_, effect) in effects.temporary_effect.iter_mut() {
             //check for trigger
             if effect.current_duration >= effect.trigger_time || effect.total_duration == 0.0 {
-                //trigger pereodic effect;
+                //triggered first place on charactor or triggered by trigger time;
+                if effect.total_duration == 0.0 {
+                    for (stat, stat_damage) in effect.change_stat {
+                        charactor::change_stat(
+                            &mut stats.stats,
+                            &mut stats.stats_cache,
+                            &mut extra_stats.extra_stats_regen,
+                            &mut extra_stats.extra_stats,
+                            &mut extra_stats.extra_stats_cache,
+                            &mut resists.effect_resists,
+                            &mut resists.damage_resists,
+                            &mut abilities.ability,
+                            &stat,
+                            stat_damage,
+                            stats.stats_min_value,
+                        );
+                    }
 
-                //check for first trigger on;
-                if effect.total_duration != 0.0 {
+                    //change extra_stat_cache;
+                    //all effects change cache like buff or debuff health;
+                    for (extra_stat, damage_value) in effect.change_extra_stat {
+                        charactor::change_extra_stat_cache(
+                            &mut extra_stats.extra_stats, 
+                            &mut extra_stats.extra_stats_cache,
+                             &extra_stat, 
+                             damage_value
+                        );
+                    };
+
+                    //change damage resists;
+                    for (damage_resist, damage_resists_value) in effect.change_damage_resist {
+                        charactor::change_damage_resist(
+                            &mut resists.damage_resists,
+                            &damage_resist,
+                            damage_resists_value,
+                        );
+                    }
+
+                    //change effects resists;
+                    for (effect_resist, effect_resist_value) in effect.change_effect_resist {
+                        charactor::change_effect_resist(
+                            &mut resists.effect_resists,
+                            &effect_resist,
+                            effect_resist_value,
+                        );
+                    }
+
+                    //change abilities;
+                    for (ability, ability_value) in effect.change_ability {
+                        charactor::change_ability(&mut abilities.ability, &ability, ability_value as f32);
+                    }
+                    //update weapon, trinket, skill by ability storage;
+
+                    //TODO: update weapon. trinket and skills by ability storage;
+                    todo!();
+                } else {
+                    // first trigger after first run;
+                    //remove trigger time from current duration;
                     effect.current_duration -= effect.trigger_time;
+
                     if effect.change_stat_time_effect == EffectTimeType::Pereodic {
                         for (stat, stat_damage) in effect.change_stat {
                             charactor::change_stat(
@@ -90,71 +144,9 @@ pub fn update_effects(
                         //update weapon, trinket, skill by ability storage;
                         todo!();
                     };
-
-                } else {
-                    //do changes no matter instant or pereodic, just need to know - it start of effect do          
-            
-                    //change stat;
-                    for (stat, stat_damage) in effect.change_stat {
-                        charactor::change_stat(
-                            &mut stats.stats,
-                            &mut stats.stats_cache,
-                            &mut extra_stats.extra_stats_regen,
-                            &mut extra_stats.extra_stats,
-                            &mut extra_stats.extra_stats_cache,
-                            &mut resists.effect_resists,
-                            &mut resists.damage_resists,
-                            &mut abilities.ability,
-                            &stat,
-                            stat_damage,
-                            stats.stats_min_value,
-                        );
-                    }
-
-                    //change extra_stat
-                    if effect.change_extra_stat_is_damage {
-                        for (extra_stat, damage_value) in effect.change_extra_stat {
-                            charactor::change_extra_stat_current(&mut extra_stats.extra_stats, &mut extra_stats.extra_stats_cache, &extra_stat, damage_value);
-                        };
-                    }else {
-                        for (extra_stat, damage_value) in effect.change_extra_stat {
-                            charactor::change_extra_stat_cache(&mut extra_stats.extra_stats, &mut extra_stats.extra_stats_cache, &extra_stat, damage_value);
-                        };
-                    }
-
-                    //change ... damage resists;
-                    for (damage_resist, damage_resists_value) in effect.change_damage_resist {
-                        charactor::change_damage_resist(
-                            &mut resists.damage_resists,
-                            &damage_resist,
-                            damage_resists_value,
-                        );
-                    }
-
-                    //change effects resists;
-                    for (effect_resist, effect_resist_value) in effect.change_effect_resist {
-                        charactor::change_effect_resist(
-                            &mut resists.effect_resists,
-                            &effect_resist,
-                            effect_resist_value,
-                        );
-                    }
-
-                    //change abilities;
-                    for (ability, ability_value) in effect.change_ability {
-                        charactor::change_ability(&mut abilities.ability, &ability, ability_value as f32);
-                    }
-
-                    if effect.change_ability_time_effect == EffectTimeType::Pereodic {
-                        for (ability, ability_value) in effect.change_ability {
-                            charactor::change_ability(&mut abilities.ability, &ability, ability_value as f32);
-                        }
-                        //update weapon, trinket, skill by ability storage;
-                    };
-
-                    //TODO: update weapon. trinket and skills by ability storage;
-                    todo!();
                 }
+            } else {
+
             }
 
             //add time to effect duration;
