@@ -41,7 +41,6 @@ pub fn update_effects(
                         charactor::change_stat(
                             &mut stats.stats,
                             &mut stats.stats_cache,
-                            &mut extra_stats.extra_stats_regen,
                             &mut extra_stats.extra_stats,
                             &mut extra_stats.extra_stats_cache,
                             &mut resists.effect_resists,
@@ -59,8 +58,8 @@ pub fn update_effects(
                         charactor::change_extra_stat_cache(
                             &mut extra_stats.extra_stats, 
                             &mut extra_stats.extra_stats_cache,
-                             &extra_stat, 
-                             damage_value
+                            &extra_stat, 
+                            damage_value
                         );
                     };
 

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use self::abilities::AbilityType;
-use self::effects::Effect;
+use self::effects::{Effect, StatDamageType};
 use self::skills::{Skill, SkillType};
 use self::stats::{Stat, ExtraStat};
 use crate::resources::scene_data::charactor::effects::EffectType;
@@ -134,9 +134,9 @@ pub struct Charactor {
 }
 
 pub fn change_ability(
-    ability_storage: &mut HashMap<AbilityType, f32>, 
+    ability_storage: &mut HashMap<AbilityType, i16>, 
     ability: &AbilityType,
-    value: f32
+    value: i16
 ) {
     ability_storage
         .entry(ability.clone())
@@ -173,50 +173,67 @@ pub fn change_extra_stat_cache(
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     extra_stat: &ExtraStat,
     value: i16,
+    stat_damage_type: &StatDamageType,
 ) {
-    let old_value = match extra_stats_storage.get_mut(extra_stat) {
+    let default_extra_stat_value = 100;
+    //chech for stat in storage;
+    let stat_value = match extra_stats_storage.get_mut(extra_stat) {
         Some(v) => v,
         _ => {
             println!(
                 "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat STORAGE", 
                 extra_stat,
-                value
+                default_extra_stat_value
             );
-            extra_stats_storage.insert(extra_stat.clone(), value);
+            extra_stats_storage.insert(extra_stat.clone(), default_extra_stat_value);
             extra_stats_storage.get_mut(extra_stat).unwrap()
         }
     };
 
-    let old_cahce_value = match extra_stats_cache.get_mut(extra_stat) {
+    let old_stat_value = *stat_value;
+
+    //check for stat in cache;
+    let cache_value = match extra_stats_cache.get_mut(extra_stat) {
         Some(v) => v,
         _ => {
             println!(
                 "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat CACHE", 
                 extra_stat,
-                value
+                default_extra_stat_value
             );
-            extra_stats_cache.insert(extra_stat.clone(), value);
+            extra_stats_cache.insert(extra_stat.clone(), default_extra_stat_value);
             extra_stats_cache.get_mut(extra_stat).unwrap()
         }
     };
 
-    let new_value = *old_cahce_value + value;
+    let old_cache_value = *cache_value;
 
-    if new_value <= 0 {
-        *old_cahce_value = 1;
-        *old_value = 1;
-    } else if new_value < *old_cahce_value{
-        *old_cahce_value = new_value;
-        if *old_value + value < 0 {
-            *old_value = 1;
-        } else {
-            *old_value += value;
-        }
+    //calculating new cache value;
+    let new_cache_value = if *stat_damage_type == StatDamageType::Flat {
+        old_cache_value + value
     } else {
-        *old_cahce_value = value;
+        old_cache_value + old_cache_value * value / 100
+    };
+
+    if new_cache_value <= 0 {
+        println!("Extra stat cache value <= 0!");
+    };
+
+    //set new value to cache;
+    *cache_value = new_cache_value;
+
+    //calculating new stat value;
+    let new_stat_value = if *stat_damage_type == StatDamageType::Flat {
+        *stat_value + value
+    } else {
+        *stat_value + old_cache_value * value / 100
+    };
+
+    if new_stat_value < 1 {
+        *stat_value = 1;
+    } else {
+        *stat_value = new_stat_value;
     }
-
-
 }
 
 pub fn change_extra_stat_current(
@@ -224,7 +241,10 @@ pub fn change_extra_stat_current(
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     extra_stat: &ExtraStat,
     value: i16,
+    stat_damage_type: &StatDamageType,
 ){
+    let default_extra_stat_value = 100;
+
     let cache_value = match extra_stats_cache.get(extra_stat) {
         Some(v) => *v,
         _ => {
@@ -233,8 +253,8 @@ pub fn change_extra_stat_current(
                 extra_stat,
                 value
             );
-            extra_stats_cache.insert(extra_stat.clone(), value);
-            value
+            extra_stats_cache.insert(extra_stat.clone(), default_extra_stat_value);
+            default_extra_stat_value
         }
     };
 
@@ -244,100 +264,101 @@ pub fn change_extra_stat_current(
             println!(
                 "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat STORAGE", 
                 extra_stat,
-                value
+                default_extra_stat_value
             );
-            extra_stats_storage.insert(extra_stat.clone(), value);
+            extra_stats_storage.insert(extra_stat.clone(), default_extra_stat_value);
             extra_stats_storage.get_mut(extra_stat).unwrap()
         }
     };
 
-    let new_value = *stat_value + value;
-    if new_value >= cache_value {
-        *stat_value = cache_value;
+    let new_value: i16 = if *stat_damage_type == StatDamageType::Flat {
+        *stat_value + value
     } else {
-        *stat_value = new_value;
-    }
-
-
-}
-
-pub fn change_extra_stat_by_regen(
-    extra_stats_storage: &mut HashMap<ExtraStat, i16>,
-    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
-    extra_stats_regen: &mut HashMap<ExtraStat, f32>,
-    extra_stat: &ExtraStat,
-    value: f32,
-){
-    let new_regen_value = match extra_stats_regen.get_mut(extra_stat) {
-        Some(v) => {*v += value; v},
-        _ => {
-            println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat REGEN", 
-                extra_stat,
-                value
-            );
-            extra_stats_regen.insert(extra_stat.clone(), value);
-            extra_stats_regen.get_mut(extra_stat).unwrap()
-        }
+        *stat_value + *stat_value * value / 100
     };
 
-    let new_value = new_regen_value.floor() as i16;
-    if new_value > 0 {
-        change_extra_stat_current(extra_stats_storage, extra_stats_cache, extra_stat, new_value);
+    if new_value < cache_value {
+        *stat_value = new_value;
+    } else {
+        *stat_value = cache_value;
     }
 }
 
 pub fn change_stat(
     stats_storage: &mut HashMap<Stat, i16>,
     stats_cache: &mut HashMap<Stat, i16>,
-    extra_stats_regen: &mut HashMap<ExtraStat, f32>,
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
     effect_resists: &mut HashMap<EffectType, i16>,
     damage_resists: &mut HashMap<DamageType, i16>,
-    ability_storage: &mut HashMap<AbilityType, f32>,
+    ability_storage: &mut HashMap<AbilityType, i16>,
     stat: &Stat,
     value: i16,
+    stat_damage_type: &StatDamageType,
     stats_min_value: u8,
 ) {
-    match stats_cache.get_mut(stat) {
-        Some(v) => *v += value,
+    //first check for stat in cache storage;
+    let default_stat_value = 10;
+
+    let cache_value = match stats_cache.get_mut(stat) {
+        Some(v) => v,
         _ => {
             println!(
                 "Can not change stat: '{:?}', because stat is not in storage. I create new entry with value: '{:?}'",
                 stat,
-                value
+                default_stat_value
             );
-            stats_cache.insert(stat.clone(), value);
+            stats_cache.insert(stat.clone(), default_stat_value);
+            stats_cache.get_mut(stat).unwrap()
         }
     };
 
-    let stat_value = stats_cache.get(stat).unwrap(); //safe;
-
-    let new_value = if *stat_value < stats_min_value as i16 {
-        stats_min_value as i16
-    } else {
-        *stat_value
+    //check stat value in storage
+    let stat_value = match stats_storage.get_mut(stat) {
+        Some(v) => v,
+        None => {
+            println!(
+                "Can not change stat: '{:?}', because stat is not in storage. I create new entry with value: '{:?}'",
+                stat,
+                default_stat_value
+            );
+            stats_cache.insert(stat.clone(), default_stat_value);
+            stats_storage.get_mut(stat).unwrap()
+        },
     };
 
-    match stats_storage.get_mut(stat) {
-        Some(v) => *v = new_value,
-        None => {
-            println!("There is no stat '{:?}' in storage, so i added new one with value '{:?}'", stat, new_value);
-            stats_storage.insert(stat.clone(), new_value);
-        },
+    //set value to old;
+    let old_stat_value: i16 = *stat_value;
+
+    //calculating values and set them to cache;
+    if *stat_damage_type == StatDamageType::Flat {
+        *cache_value += value;
+    } else {
+        *cache_value += *stat_value * value / 100;
     }
+
+    //check stat to minimal value;
+    if *cache_value < stats_min_value as i16{
+        *stat_value = stats_min_value as i16;
+    } else {
+        *stat_value = *cache_value;
+    }   
+
+    //check for change dependences;
+    if *stat_value == old_stat_value {
+        //nothing to change;
+        return;
+    };
 
     do_stat_dependences(
         extra_stats_storage,
         extra_stats_cache,
-        extra_stats_regen,
         effect_resists,
         damage_resists,
         ability_storage,
         stat,
-        new_value,
-        value,
+        *stat_value,
+        old_stat_value,
     );
 }
 
@@ -348,109 +369,103 @@ pub fn get_level_by_current_experience(experience: u32) -> u8 {
 pub fn do_stat_dependences(
     extra_stats_storage: &mut HashMap<ExtraStat, i16>,
     extra_stats_cache: &mut HashMap<ExtraStat, i16>,
-    extra_stats_regen: &mut HashMap<ExtraStat, f32>,
     effect_resists: &mut HashMap<EffectType, i16>,
     damage_resists: &mut HashMap<DamageType, i16>,
-    ability_storage: &mut HashMap<AbilityType, f32>,
+    ability_storage: &mut HashMap<AbilityType, i16>,
     stat: &Stat,
-    stat_value: i16,
-    changed_value: i16,
+    new_value: i16,
+    old_value: i16,
 ) {
+    let old_values_for_abilities: HashMap<AbilityType, i16> = abilities::get_values_of_abilities_from_stat(stat, old_value);
+    let new_values_for_abilities: HashMap<AbilityType, i16> = abilities::get_values_of_abilities_from_stat(stat, new_value);
+    for (ability_type, value) in new_values_for_abilities.iter() {
+        //from new value substruct old value and add brand new value to abiliti storage;
+        let value_to_ability = value - old_values_for_abilities.get(ability_type).unwrap();
+        change_ability(ability_storage, ability_type, value_to_ability);
+    };
+
+    let old_values_for_extra_stat: HashMap<ExtraStat, i16> = stats::get_values_of_extra_stats_from_stat(stat, old_value);
+    let new_values_for_extra_stat: HashMap<ExtraStat, i16> = stats::get_values_of_extra_stats_from_stat(stat, new_value);
+    for (extra_stat, value) in new_values_for_extra_stat.iter() {
+        let value_to_extra_stat = value - old_values_for_extra_stat.get(extra_stat).unwrap();
+        change_extra_stat_cache(extra_stats_storage, extra_stats_cache, extra_stat, value_to_extra_stat, &StatDamageType::Flat);
+    };
+
+    let old_values_for_damage_resist: HashMap<DamageType, i16> = get_values_of_damage_resists_from_stat(stat, old_value);
+    let new_values_for_damage_resist: HashMap<DamageType, i16> = get_values_of_damage_resists_from_stat(stat, new_value);
+    for (damage_resist, value) in new_values_for_damage_resist.iter() {
+        let value_to_damage_resist = value - old_values_for_damage_resist.get(damage_resist).unwrap();
+        change_damage_resist(damage_resists, damage_resist, value_to_damage_resist);
+    };
+
+    let old_values_for_effect_resist: HashMap<EffectType, i16> = get_values_of_effect_resists_from_stat(stat, old_value);
+    let new_values_for_effect_resist: HashMap<EffectType, i16> = get_values_of_effect_resists_from_stat(stat, new_value);
+    for (effect_resist, value) in new_values_for_effect_resist.iter() {
+        let value_to_effect_resist = value - old_values_for_effect_resist.get(effect_resist).unwrap();
+        change_effect_resist(effect_resists, effect_resist, value_to_effect_resist);
+    };
+}
+
+//formulas
+pub fn get_values_of_damage_resists_from_stat(stat: &Stat, value: i16) -> HashMap<DamageType, i16> {
+    let mut result: HashMap<DamageType, i16> = HashMap::new();
     match *stat {
-        Stat::Dexterity => {
-            //RangedAttackDamage dex/6
-            //trinketRangedDamage dex/6
-            let old_stat_value_for_trinket_damage = (stat_value - changed_value) / 4;
-            let new_stat_value_for_trinket_damage = stat_value / 4;
-            let difference = new_stat_value_for_trinket_damage - old_stat_value_for_trinket_damage;
-            change_ability(ability_storage, &AbilityType::RangedTrinketDamage, difference as f32);
-            change_ability(ability_storage, &AbilityType::RangedWeaponDamage, difference as f32);
+        Stat::Strength => {},
+        Stat::Dexterity => {},
+        Stat::Mobility => {},
+        Stat::Wisdom => {},
+        Stat::Intellect => {},
+        Stat::Luck => {},
+        Stat::Vitality => {
+            //fire, cold, acid, electric, water vit/10;
+            let result_value = value / 10;
+            result.insert(DamageType::Acid, result_value);
+            result.insert(DamageType::Fire, result_value);
+            result.insert(DamageType::Cold, result_value);
+            result.insert(DamageType::Electric, result_value);
+            result.insert(DamageType::Water, result_value);
         },
         Stat::Endurance => {
-            //for HealthPoints END * 5; 
-            let old_stat_value_for_healthpoints = (stat_value - changed_value) * 5;
-            let new_stat_value_for_healthpoints = stat_value * 5;
-            let difference = new_stat_value_for_healthpoints - old_stat_value_for_healthpoints;
-            change_extra_stat_cache(extra_stats_storage, extra_stats_cache, &ExtraStat::HealthPoints, difference);
-            //For regen END/100;
-            let old_stat_value_for_regen = (stat_value as f32 - changed_value as f32) / 100.0;
-            let new_stat_value_for_regen = stat_value as f32 / 100.0;
-            let differece_for_regen = new_stat_value_for_regen - old_stat_value_for_regen;
-            change_ability(ability_storage, &AbilityType::HealthRegen, differece_for_regen);
-        },
-        Stat::Intellect => {
-            //MagicWeaponDamage, INT/4
-            //MagicTrinketDamage, INT/4
-            let old_stat_value_for_magic_damage = (stat_value - changed_value) /4;
-            let new_stat_value_for_magic_damage = stat_value / 4;
-            let difference = new_stat_value_for_magic_damage - old_stat_value_for_magic_damage;
-            change_ability(ability_storage, &AbilityType::MagicWeaponDamage, difference as f32);
-            change_ability(ability_storage, &AbilityType::MagicTrinketDamage, difference as f32);
-        },
-        Stat::Luck => {
-            //crit chanse LUCK * 1.5
-            let old_stat_value_for_crit_chanse = (stat_value - changed_value) / 2;
-            let new_stat_value_for_crit_chanse = stat_value / 2;
-            let difference = new_stat_value_for_crit_chanse - old_stat_value_for_crit_chanse;
-            change_ability(ability_storage, &AbilityType::CritChance, difference as f32);
-        },
-        Stat::Mobility => {
-            //movement speed MOB*10;
-            let old_value_for_move_speed = (stat_value - changed_value) * 10;
-            let new_value_for_move_speed = stat_value * 10;
-            let difference = new_value_for_move_speed - old_value_for_move_speed;
-            change_ability(ability_storage, &AbilityType::MovementSpeed, difference as f32);
-
-            //attackspeed mob*4;
-            let old_stat_value_for_aspd = (stat_value - changed_value) * 5;
-            let new_stat_value_for_aspd = stat_value *5;
-            let difference_for_aspd = new_stat_value_for_aspd - old_stat_value_for_aspd;
-            change_ability(ability_storage, &AbilityType::AttackSpeed, difference_for_aspd as f32);
-
-            //evasion mob/4;
-            let old_stat_value_for_evasion = (stat_value - changed_value) / 2;
-            let new_stat_value_for_evasion = stat_value / 2;
-            let differece_for_evasion = new_stat_value_for_evasion - old_stat_value_for_evasion;
-            change_ability(ability_storage, &AbilityType::Evasion, differece_for_evasion as f32);
-        },
-        Stat::Strength => {
-            //block amount STR/6;
-            let old_value_for_block_amount = (stat_value - changed_value) / 6;
-            let new_value_for_block_amount = stat_value / 6;
-            let difference = new_value_for_block_amount - old_value_for_block_amount;
-            change_ability(ability_storage, &AbilityType::BlockAmount, difference as f32);
-            //meleeWeaponDamage STR/4
-            //MeleeTrinketDamage STR/4
-            let old_value_for_melee_damage = (stat_value - changed_value) / 4;
-            let new_value_for_melee_damage = stat_value / 4;
-            let difference_for_melee_damage = new_value_for_melee_damage - old_value_for_melee_damage;
-            change_ability(ability_storage, &AbilityType::MeleeWeaponDamage, difference_for_melee_damage as f32);
-            change_ability(ability_storage, &AbilityType::MeleeTrinketDamage, difference_for_melee_damage as f32);
-        },
-        Stat::Vitality => {
-            //Stamina VIT *6;
-            let old_value_for_stamina = (stat_value - changed_value) * 6;
-            let new_value_for_stamina = stat_value * 6;
-            let difference_for_stamina = new_value_for_stamina - old_value_for_stamina;
-            change_extra_stat_cache(extra_stats_storage, extra_stats_cache, &ExtraStat::StaminaPoints, difference_for_stamina);
-
-            //Stamina regen VIT /100
-            let old_value_for_stamina_regen = (stat_value as f32 - changed_value as f32) / 100.0;
-            let new_value_for_stamina_regen: f32 = stat_value as f32 / 100.0;
-            let difference_for_stamina_regen = new_value_for_stamina_regen - old_value_for_stamina_regen;
-            change_ability(ability_storage, &AbilityType::StaminaRegen, difference_for_stamina_regen);
-        },
-        Stat::Wisdom => {
-            //ActiveSkillCD WIS * 10;
-            let old_value_for_active_skill_cd = (stat_value - changed_value) * 10;
-            let new_value_for_active_skill_cd = stat_value * 10;
-            let difference = new_value_for_active_skill_cd - old_value_for_active_skill_cd;
-            change_ability(ability_storage, &AbilityType::ActiveSkillsCoolDawn, difference as f32);
-            //Crit multiplier WIS * 2;
-            let old_value_for_crit_multiplier = (stat_value - changed_value) * 2;
-            let new_value_for_crit_multiplier = stat_value * 2;
-            let difference_ctir_multiplier = new_value_for_crit_multiplier - old_value_for_crit_multiplier;
-            change_ability(ability_storage, &AbilityType::CritDamage, difference as f32);
+            //piercing, crushing, cutting, poison end /10;
+            let result_value = value / 10;
+            result.insert(DamageType::Poison, result_value);
+            result.insert(DamageType::Piercing, result_value);
+            result.insert(DamageType::Crushing, result_value);
+            result.insert(DamageType::Cutting, result_value);
         },
     }
+    return result;
+}
+
+pub fn get_values_of_effect_resists_from_stat(stat: &Stat, value: i16) -> HashMap<EffectType, i16> {
+    let mut result: HashMap<EffectType, i16> = HashMap::new();
+    match *stat {
+        Stat::Strength => {},
+        Stat::Dexterity => {},
+        Stat::Mobility => {},
+        Stat::Wisdom => {},
+        Stat::Intellect => {},
+        Stat::Luck => {},
+        Stat::Vitality => {
+            //burn, electrification, freeze, wet, acid / 5;
+            let result_value = value / 5;
+            result.insert(EffectType::Acid, result_value);
+            result.insert(EffectType::Burn, result_value);
+            result.insert(EffectType::Electrification, result_value);
+            result.insert(EffectType::Freeze, result_value);
+            result.insert(EffectType::Wet, result_value);
+        },
+        Stat::Endurance => {
+            //stun, moveless, slow, incresemovementspeed, bleeding, posion, frostbite /5;
+            let result_value = value / 5;
+            result.insert(EffectType::Bleeding, result_value);
+            result.insert(EffectType::Stun, result_value);
+            result.insert(EffectType::Moveless, result_value);
+            result.insert(EffectType::IncreaseMovement, result_value);
+            result.insert(EffectType::Poison, result_value);
+            result.insert(EffectType::Frostbite, result_value);
+            result.insert(EffectType::Slow, result_value);
+        },
+    }
+    return result;
 }

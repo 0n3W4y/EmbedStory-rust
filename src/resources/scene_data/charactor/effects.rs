@@ -22,11 +22,6 @@ pub enum EffectType{
     BrokeArmor,
     BrokeWeapon,
     IncreaseMovement,
-    Lifelich,
-    Staminalich,
-    StaminaDamage,
-    HealthRegen,
-    StaminaRegen,
     Frostbite,
 }
 
@@ -52,13 +47,10 @@ pub struct EffectDeploy {
     pub change_extra_stat_damage_type: StatDamageType,
 
     pub change_damage_resist: HashMap<DamageType, i16>, // Damage Resist and percentage
-    pub change_damage_resist_damage_type: StatDamageType,
 
     pub change_effect_resist: HashMap<EffectType, i16>, // Effect resist and percentage
-    pub change_effect_resist_damage_type: StatDamageType,
 
     pub change_ability: HashMap<AbilityType, i16>, // Passive Skill and percentage 
-    pub change_ability_damage_type: StatDamageType,
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
@@ -78,13 +70,10 @@ pub struct Effect {
     pub change_extra_stat_damage_type: StatDamageType,
 
     pub change_damage_resist: HashMap<DamageType, i16>, // Damage Resist and flat damage to resist
-    pub change_damage_resist_damage_type: StatDamageType,
 
     pub change_effect_resist: HashMap<EffectType, i16>, // Effect resist and flat damage to resist
-    pub change_effect_resist_damage_type: StatDamageType,
 
     pub change_ability: HashMap<AbilityType, i16>, // Passive Skill and flat damage to skill
-    pub change_ability_damage_type: StatDamageType,
 }
 
 impl Effect {
@@ -103,9 +92,6 @@ impl Effect {
             change_ability: config.change_ability.clone(),
             change_stat_damage_type: config.change_stat_damage_type.clone(),
             change_extra_stat_damage_type: config.change_extra_stat_damage_type.clone(),
-            change_damage_resist_damage_type: config.change_damage_resist_damage_type.clone(),
-            change_effect_resist_damage_type: config.change_effect_resist_damage_type.clone(),
-            change_ability_damage_type: config.change_ability_damage_type.clone(),
         }
     }
 }

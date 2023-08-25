@@ -22,15 +22,15 @@ pub enum AbilityType{
     MeleeDamage,
     RangedDamage,
     MagicDamage,
-    KineticDamage,
+    CuttingDamage,
+    PiercingDamage,
+    CrushingDamage,
     FireDamage,
     ElectricDamage,
     WaterDamage,
     AcidDamage,
     PoisonDamage,
     ColdDamage,
-    SacredEnergyDamage,
-    DeathEnergyDamage,
     Moveless,
     Bleeding,
     Slow,
@@ -56,93 +56,62 @@ pub enum AbilityType{
 
 //formulas
 pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<AbilityType, i16> {
-    let mut result: HashMap<AbilityType, f32> = HashMap::new();
+    let mut result: HashMap<AbilityType, i16> = HashMap::new();
     match *stat {
         Stat::Dexterity => {
-            //RangedAttackDamage dex/6
-            //TrinketRangedDamage dex/6
-            let result_value = (value / 6) as f32;
+            //RangedAttackDamage dex/4
+            let result_value = value / 4;
             result.insert(AbilityType::RangedDamage, result_value);
         },
         Stat::Endurance => {
-            //For regen END/100; 
-            let result_value_hp_regen = (value as f32 / 100.0);
-            
-            change_ability(ability_storage, &AbilityType::HealthRegen, differece_for_regen);
+            //For hp regen END/5; 
+            let result_value_hp_regen = value / 5;            
+            result.insert(AbilityType::HealthRegen, result_value_hp_regen);
+            //block amount END/10;
+            let result_value_block_amount = value / 10;
+            result.insert(AbilityType::BlockAmount, result_value_block_amount);
         },
         Stat::Intellect => {
             //MagicWeaponDamage, INT/4
-            //MagicTrinketDamage, INT/4
-            let old_stat_value_for_magic_damage = (stat_value - changed_value) /4;
-            let new_stat_value_for_magic_damage = stat_value / 4;
-            let difference = new_stat_value_for_magic_damage - old_stat_value_for_magic_damage;
-            change_ability(ability_storage, &AbilityType::MagicWeaponDamage, difference as f32);
-            change_ability(ability_storage, &AbilityType::MagicTrinketDamage, difference as f32);
+            let result_value_magic_damage = value / 4;
+            result.insert(AbilityType::MagicDamage, result_value_magic_damage);
         },
         Stat::Luck => {
-            //crit chanse LUCK * 1.5
-            let old_stat_value_for_crit_chanse = (stat_value - changed_value) / 2;
-            let new_stat_value_for_crit_chanse = stat_value / 2;
-            let difference = new_stat_value_for_crit_chanse - old_stat_value_for_crit_chanse;
-            change_ability(ability_storage, &AbilityType::CritChance, difference as f32);
+            //crit chanse = LUCK / 2
+            let result_value = value / 2;
+            result.insert(AbilityType::CritChance, result_value);
+
+            // crit multiplier = luck *2;
+            let result_value_crit_multiplier = value * 2;
+            result.insert(AbilityType::CritDamage, result_value_crit_multiplier);
         },
         Stat::Mobility => {
-            //movement speed MOB*10;
-            let old_value_for_move_speed = (stat_value - changed_value) * 10;
-            let new_value_for_move_speed = stat_value * 10;
-            let difference = new_value_for_move_speed - old_value_for_move_speed;
-            change_ability(ability_storage, &AbilityType::MovementSpeed, difference as f32);
+            //movement speed MOB;
+            let result_value_movement = value;
+            result.insert(AbilityType::MovementSpeed, result_value_movement);
 
-            //attackspeed mob*4;
-            let old_stat_value_for_aspd = (stat_value - changed_value) * 5;
-            let new_stat_value_for_aspd = stat_value *5;
-            let difference_for_aspd = new_stat_value_for_aspd - old_stat_value_for_aspd;
-            change_ability(ability_storage, &AbilityType::AttackSpeed, difference_for_aspd as f32);
+            //attackspeed = mob / 2;
+            let result_value_attack_speed = value / 2;
+            result.insert(AbilityType::AttackSpeed, result_value_attack_speed);
 
             //evasion mob/4;
-            let old_stat_value_for_evasion = (stat_value - changed_value) / 2;
-            let new_stat_value_for_evasion = stat_value / 2;
-            let differece_for_evasion = new_stat_value_for_evasion - old_stat_value_for_evasion;
-            change_ability(ability_storage, &AbilityType::Evasion, differece_for_evasion as f32);
+            let result_value_evasion = value / 4;
+            result.insert(AbilityType::Evasion, result_value_evasion);
         },
         Stat::Strength => {
-            //block amount STR/6;
-            let old_value_for_block_amount = (stat_value - changed_value) / 6;
-            let new_value_for_block_amount = stat_value / 6;
-            let difference = new_value_for_block_amount - old_value_for_block_amount;
-            change_ability(ability_storage, &AbilityType::BlockAmount, difference as f32);
-            //meleeWeaponDamage STR/4
-            //MeleeTrinketDamage STR/4
-            let old_value_for_melee_damage = (stat_value - changed_value) / 4;
-            let new_value_for_melee_damage = stat_value / 4;
-            let difference_for_melee_damage = new_value_for_melee_damage - old_value_for_melee_damage;
-            change_ability(ability_storage, &AbilityType::MeleeWeaponDamage, difference_for_melee_damage as f32);
-            change_ability(ability_storage, &AbilityType::MeleeTrinketDamage, difference_for_melee_damage as f32);
+            //MeleeDamage STR/4
+            let result_value_melee_damage = value / 4;
+            result.insert(AbilityType::MeleeDamage, result_value_melee_damage);
         },
         Stat::Vitality => {
-            //Stamina VIT *6;
-            let old_value_for_stamina = (stat_value - changed_value) * 6;
-            let new_value_for_stamina = stat_value * 6;
-            let difference_for_stamina = new_value_for_stamina - old_value_for_stamina;
-            change_extra_stat_cache(extra_stats_storage, extra_stats_cache, &ExtraStat::StaminaPoints, difference_for_stamina);
-
-            //Stamina regen VIT /100
-            let old_value_for_stamina_regen = (stat_value as f32 - changed_value as f32) / 100.0;
-            let new_value_for_stamina_regen: f32 = stat_value as f32 / 100.0;
-            let difference_for_stamina_regen = new_value_for_stamina_regen - old_value_for_stamina_regen;
-            change_ability(ability_storage, &AbilityType::StaminaRegen, difference_for_stamina_regen);
+            //for sp regen vit/5;
+            let result_value_sp_regen = value / 5;
+            result.insert(AbilityType::StaminaRegen, result_value_sp_regen);
         },
         Stat::Wisdom => {
             //ActiveSkillCD WIS * 10;
-            let old_value_for_active_skill_cd = (stat_value - changed_value) * 10;
-            let new_value_for_active_skill_cd = stat_value * 10;
-            let difference = new_value_for_active_skill_cd - old_value_for_active_skill_cd;
-            change_ability(ability_storage, &AbilityType::ActiveSkillsCoolDawn, difference as f32);
-            //Crit multiplier WIS * 2;
-            let old_value_for_crit_multiplier = (stat_value - changed_value) * 2;
-            let new_value_for_crit_multiplier = stat_value * 2;
-            let difference_ctir_multiplier = new_value_for_crit_multiplier - old_value_for_crit_multiplier;
-            change_ability(ability_storage, &AbilityType::CritDamage, difference as f32);
+            let result_value_skill_cd = value / 10;
+            result.insert(AbilityType::ActiveSkillsCoolDawn, result_value_skill_cd);
         },
     }
     return result;
