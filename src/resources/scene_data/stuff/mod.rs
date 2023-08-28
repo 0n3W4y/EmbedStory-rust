@@ -11,6 +11,10 @@ use crate::resources::scene_data::charactor::StuffWearSlot;
 
 use self::damage_type::DamageType;
 
+use super::charactor::abilities::AbilityType;
+use super::charactor::skills::SkillType;
+use super::charactor::{stats::{Stat, ExtraStat}, effects::EffectType};
+
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
 pub enum StuffType{
     MeleeWeapon,
@@ -26,8 +30,6 @@ pub enum StuffType{
     Ammo,
     HealthPackKit,
     Food,
-    WeaponUpgrade,
-    ArmorUpgrade,
 }
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
@@ -47,7 +49,7 @@ pub enum StuffSubtype {
 }
 
 
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Stuff{
     pub id: usize,
     pub stuff_type: StuffType,
@@ -60,7 +62,22 @@ pub struct Stuff{
     pub wear_slot: StuffWearSlot,
 
     pub base_damage: HashMap<DamageType, i16>,
-    pub current_damage: HashMap<DamageType, i16>,
+    pub base_critical_hit_chanse: i16,
+    pub base_critical_multiplier: i16,
+    pub base_cooldown: i16,
+
+    pub effects: HashMap<EffectType, i16>,
+    pub passive_skills: HashMap<SkillType, i16>,
+
+    pub stats: HashMap<Stat, i16>,
+    pub extra_stats: HashMap<ExtraStat, i16>,
+    pub effect_resists: HashMap<EffectType, i16>,
+    pub damage_resists: HashMap<DamageType, i16>,
+    pub abilities: HashMap<AbilityType, i16>,
+
+    pub skills: Vec<SkillType>,
+
+    pub price: u32,
 
     //TODO: Stuff attributes with values
     //attributes: HashMap<StuffAttribute>,

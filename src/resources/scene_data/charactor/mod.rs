@@ -122,7 +122,7 @@ pub struct Charactor {
 
     pub ability: HashMap<AbilityType, i16>,
 
-    pub skills: HashMap<u8, Skill>,
+    pub skills: Vec<Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 
     pub stuff_storage: Vec<Stuff>,

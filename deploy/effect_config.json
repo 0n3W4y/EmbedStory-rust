@@ -9,25 +9,16 @@
         "extra_skill_trigger": 0,
 
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
+        "change_stat_damage_type": "Percent",
 
         "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
+        "change_extra_stat_damage_type": "Percent",
 
         "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
 
         "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
 
-        "change_ability": {"MovementSpeed": -100, "AttackSpeed": -100, "BlockChance": -100, "Evasion": -100},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "change_ability": {"MovementSpeed": -100, "AttackSpeed": -100, "BlockChance": -100, "Evasion": -100}
     },
 
     "acid":{
