@@ -13,8 +13,8 @@ pub enum AbilityType{
     ActiveSkillsCoolDawn,
     BlockChance,
     BlockAmount,
-    CritChance,
-    CritDamage,
+    CriticalHitChanse,
+    CriticalHitMultiplier,
     Accuracy,
     StaminaRegen,
     HealthRegen,
@@ -77,25 +77,25 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
             result.insert(AbilityType::MagicDamage, result_value_magic_damage);
         },
         Stat::Luck => {
-            //crit chanse = LUCK / 2
-            let result_value = value / 2;
-            result.insert(AbilityType::CritChance, result_value);
+            //crit chanse = LUCK / 10
+            let result_value = value / 10;
+            result.insert(AbilityType::CriticalHitChanse, result_value);
 
-            // crit multiplier = luck *2;
-            let result_value_crit_multiplier = value * 2;
-            result.insert(AbilityType::CritDamage, result_value_crit_multiplier);
+            // crit multiplier = luck / 5;
+            let result_value_crit_multiplier = value / 5;
+            result.insert(AbilityType::CriticalHitMultiplier, result_value_crit_multiplier);
         },
         Stat::Mobility => {
             //movement speed MOB;
             let result_value_movement = value;
             result.insert(AbilityType::MovementSpeed, result_value_movement);
 
-            //attackspeed = mob / 2;
-            let result_value_attack_speed = value / 2;
+            //attackspeed = mob / 10;
+            let result_value_attack_speed = value / 10;
             result.insert(AbilityType::AttackSpeed, result_value_attack_speed);
 
-            //evasion mob/4;
-            let result_value_evasion = value / 4;
+            //evasion mob/8;
+            let result_value_evasion = value / 8;
             result.insert(AbilityType::Evasion, result_value_evasion);
         },
         Stat::Strength => {

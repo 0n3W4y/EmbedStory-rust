@@ -61,10 +61,10 @@ pub struct Stuff{
     pub position: Position<i32>,
     pub wear_slot: StuffWearSlot,
 
-    pub base_damage: HashMap<DamageType, i16>,
-    pub base_critical_hit_chanse: i16,
-    pub base_critical_multiplier: i16,
-    pub base_cooldown: i16,
+    pub damage: HashMap<DamageType, i16>,
+    pub critical_hit_chanse: i16,
+    pub critical_multiplier: i16,
+    pub cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
 
     pub effects: HashMap<EffectType, i16>,
     pub passive_skills: HashMap<SkillType, i16>,

@@ -8,7 +8,15 @@ use super::{effects::EffectType, CharactorType, abilities::AbilityType, StuffWea
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillType {
     #[default]
-    BasicWeaponAttack,
+    Melee,
+    Ranged,
+    Magic,
+}
+
+#[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum SkillSubtype {
+    #[default]
+    SomeSkill,
 }
 
 #[derive(Deserialize, Default, Debug, Eq, PartialEq)]
@@ -33,6 +41,10 @@ pub enum SkillDirectionType {
 #[derive(Default, Debug)]
 pub struct Skill {
     pub skill_type: SkillType,
+    pub skill_subtype: SkillSubtype,
+    pub skill_queue: u8,
+    pub stuff_id: usize, // link to stuff in wear slot;
+    pub is_basic: bool, // is skill basic or not; basic for autoattack;
    
     //for passive skill;
     pub is_passive_skill: bool,
@@ -51,21 +63,13 @@ pub struct Skill {
     pub range: u8, // max range; min range = 1;
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
-
-    pub base_crit_chance: i8,
-    pub crit_chance: i8,
-
-    pub base_damage: HashMap<DamageType, i16>,
-    pub damage: HashMap<DamageType, i16>,
-
-    pub base_crit_multiplier: i16,
-    pub crit_multiplier: i16,
-
-    pub base_stamina_cost: u8,
-    pub stamina_cost: u8,
-
+    pub stamina_cost: i16,
     pub target: CharactorType,
 
+    pub crit_chance: i16,
+    pub crit_multiplier: i16,
+
+    pub damage: HashMap<DamageType, i16>,
     pub effect: HashMap<EffectType, u8>,
     pub passive_skill: HashMap<SkillType, u8>,
 }
@@ -73,34 +77,202 @@ pub struct Skill {
 #[derive(Deserialize)]
 pub struct SkillDeploy {
     pub skill_type: SkillType,
-    pub skill_queue: u8,
+    pub skill_subtype: SkillSubtype,
     pub is_passive_skill: bool,
+    pub stuff_id: usize, // link to stuff in wear slot;
+    pub is_basic: bool, // is skill basic or not; basic for autoattack;
 
     pub trigger_chanse: u8,
     pub trigger_time: u16,
     pub trigger_duration: u16,
-    pub base_cooldown: i16,
+    pub cooldown: i16,
 
     pub projectiles: u8,
     pub range: u8,
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
-
-    pub base_crit_chance: u8,
-
-    pub base_damage: HashMap<DamageType, i16>,
-
-    pub base_crit_multiplier: i16,
-
-    pub stamina_cost: u8,
-
+    pub stamina_cost: i16,
     pub target: CharactorType,
 
+    pub crit_chance: i16,
+    pub crit_multiplier: i16,
+
+    pub damage: HashMap<DamageType, i16>, 
     pub effect: HashMap<EffectType, u8>, // effect type and effect trigger chanse;
     pub passive_skill: HashMap<SkillType, u8>, // skill type and skill trigger chanse;
 }
 
 
-pub fn update_skill_by_ability(skills_storage: &mut Vec<Skill>, ability_storage: &HashMap<AbilityType, i16>, wear_stuff: &HashMap<StuffWearSlot, Option<Stuff>>) {
-    //TODO:
+pub fn update_basic_skill_by_changes_in_ability(skills_storage: &mut Vec<Skill>, ability_storage: &HashMap<AbilityType, i16>, wear_stuff: &HashMap<StuffWearSlot, Option<Stuff>>) {
+    for skill in skills_storage.iter_mut() {
+        if !skill.is_basic {
+            //skip not basic skill;
+            continue;
+        };
+
+        //clear for new entries;
+        skill.damage.clear();
+        skill.effect.clear();
+        skill.passive_skill.clear();
+
+        //first get damage multiplier by weapon type;
+        let skill_type_multiplier = match skill.skill_type {
+            SkillType::Melee => { 
+                match ability_storage.get(&AbilityType::MeleeDamage) {
+                    Some(v) => *v,
+                    None => {
+                        println!("Can not get Melee damage from ability, use 100% instead");
+                        100
+                    },
+                }
+            },
+            SkillType::Ranged => {
+                match ability_storage.get(&AbilityType::RangedDamage) {
+                    Some(v) => *v,
+                    None => {
+                        println!("Can not get Ranged damage from ability, use 100% instead");
+                        100
+                    },
+                }
+            },
+            SkillType::Magic => {
+                match ability_storage.get(&AbilityType::MagicDamage) {
+                    Some(v) => *v,
+                    None => {
+                        println!("Can not get Magic damage from ability, use 100% instead");
+                        100
+                    },
+                }
+            },
+        };
+
+        //get critical hit chanse from ability;
+        let critical_chanse_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {
+            Some(v) => *v,
+            None => {
+                println!("Can not get Critical Chanse from ability, use 0 instead");
+                0
+            },
+        };
+
+        //get critical hit multiplier from ability;
+        let critical_multiplier_from_ability = match ability_storage.get(&AbilityType::CriticalHitMultiplier) {
+            Some(v) => *v,
+            None => {
+                println!("Can not get Critical Multiplier from ability, use 0 instead");
+                0
+            }
+        };
+
+        let attack_speed_from_ability = match ability_storage.get(&AbilityType::AttackSpeed) {
+            Some(v) => *v,
+            None => {
+                println!("Can not get Atack Speed from ability, use 100% instead");
+                100
+            }
+        };
+
+        let mut skill_cooldown: i16 = 0;
+        let mut critical_chanse: i16 = 0;
+        let mut critical_multiplier: i16 = 0;
+        let mut damage_from_weapon: HashMap<DamageType, i16> = HashMap::new();
+        let mut effects_from_weapon: HashMap<EffectType, i16> = HashMap::new();
+        let mut passive_skills_from_weapon: HashMap<SkillType, i16> = HashMap::new();
+
+        //get weapon from right hand
+        match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {
+            Some(v) => {
+                critical_chanse = v.critical_hit_chanse;
+                critical_multiplier = v.critical_multiplier;
+                skill_cooldown = v.cooldown;
+                for (damage_type, value) in v.damage.iter() {
+                    damage_from_weapon.insert(damage_type.clone(), *value);
+                }
+
+                for(effect_type, value) in v.effects.iter() {
+                    effects_from_weapon.insert(effect_type.clone(), *value);
+                }
+
+                for(skill_type, value) in v.passive_skills.iter() {
+                    passive_skills_from_weapon.insert(skill_type.clone(), *value);
+                }
+            },
+            None => {
+                skill_cooldown = 100; // by default 1 shot per second;
+                damage_from_weapon.insert(DamageType::Crushing, 5); // default punch;
+            },
+        };
+
+        //get weapon from left hand
+        match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {
+            Some(v) => {
+                //middle value from 2 weapons;
+                critical_chanse =  if v.critical_hit_chanse > 0 {
+                    (critical_chanse + v.critical_hit_chanse) /2 
+                } else {
+                    critical_chanse
+                };
+
+                critical_multiplier = if v.critical_multiplier > 0 {
+                    (critical_multiplier + v.critical_multiplier) /2
+                } else {
+                    critical_multiplier
+                };
+                // middle value from 2 weapons;
+                skill_cooldown = if v.cooldown > 0 {
+                    (skill_cooldown + v.cooldown) / 2 // if 0 = we r have buckler or something same;
+                } else {
+                    skill_cooldown
+                };
+
+                for (damage_type, value) in v.damage.iter() {
+                    damage_from_weapon.entry(damage_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
+                }
+
+                for(effect_type, value) in v.effects.iter() {
+                    effects_from_weapon.entry(effect_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
+                }
+
+                for(skill_type, value) in v.passive_skills.iter() {
+                    passive_skills_from_weapon.entry(skill_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
+                }
+            },
+            None => {},
+        };
+
+        skill.cooldown = (skill_cooldown as f32 / 100.0) / (attack_speed_from_ability as f32 / 100.0); // weapon cooldown like 122 / 100; and attack speed like 100% / 100;
+        skill.crit_chance = critical_chanse + critical_chanse_from_ability;
+        skill.crit_multiplier = critical_multiplier + critical_multiplier_from_ability;
+        for (damage_type, value) in damage_from_weapon.iter() {
+            let new_value = match damage_type {
+                DamageType::Fire => {
+                    match ability_storage.get(&AbilityType::FireDamage) {
+                        Some(v) => *value * (*v / 100),
+                        None => *value,
+                    }
+                },
+                DamageType::Cold => todo!(),
+                DamageType::Electric => todo!(),
+                DamageType::Kinetic => todo!(),
+                DamageType::Cutting => todo!(),
+                DamageType::Piercing => todo!(),
+                DamageType::Crushing => todo!(),
+                DamageType::Water => todo!(),
+                DamageType::Acid => todo!(),
+                DamageType::Poison => todo!(),
+            };
+            skill.damage.insert(damage_type.clone(), new_value);
+        }
+
+        for (effect_type, value) in effects_from_weapon.iter() {
+            let new_value = *value;
+            skill.effect.insert(effect_type.clone(), new_value);
+        }
+
+        for (passive_skill_type, value) in passive_skills_from_weapon.iter(){
+            let new_value = *value;
+            skill.passive_skill.insert(passive_skill_type.clone(), new_value);
+        }
+
+    }
 }
