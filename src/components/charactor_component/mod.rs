@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
+use crate::resources::scene_data::charactor::SkillSlot;
+use crate::resources::scene_data::charactor::damage_text_informer::DamageTextInformer;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::Effect;
 use crate::resources::scene_data::charactor::stats::Stat;
@@ -24,6 +26,17 @@ pub enum ActionType {
     None
 }
 
+
+#[derive(Component, Default)]
+pub struct CharactorTextComponent {
+    pub text_upper_charactor: Vec<DamageTextInformer>,
+}
+
+#[derive(Component, Default)]
+pub struct CharactorAnimationComponent {
+    //pub animation_type: CharactorAnimationType,
+    pub duration: f32,
+}
 
 #[derive(Component, Default)]
 pub struct EffectComponent{
@@ -67,7 +80,7 @@ pub struct AbilityComponent {
 
 #[derive(Component, Default)]
 pub struct SkillComponent {
-    pub skills: Vec<Skill>,
+    pub skills: HashMap<SkillSlot, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 }
 

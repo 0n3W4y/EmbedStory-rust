@@ -24,9 +24,26 @@ pub mod update_effects;
 pub mod update_passive_skills;
 pub mod update_attack;
 pub mod update_cooldowns;
+pub mod damage_text_informer;
 
 pub const STATS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default, Hash)]
+pub enum SkillSlot {
+    #[default]
+    Base,
+    WeaponOne,
+    WeaponTwo,
+    WeaponThree,
+    WeaponFour,
+    BeltOne,
+    BeltTwo,
+    BeltThree,
+    BeltFour,
+    PotionHealth,
+    PotionStamina,
+}
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
@@ -88,6 +105,8 @@ pub enum CharactorStatus {
     Moving,
     #[default]
     Standing,
+    CanAttack,
+    TryAttack,
     Attacking,
     PickupItem,
 }
@@ -122,7 +141,7 @@ pub struct Charactor {
 
     pub ability: HashMap<AbilityType, i16>,
 
-    pub skills: Vec<Skill>,
+    pub skills: HashMap<SkillSlot, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 
     pub stuff_storage: Vec<Stuff>,

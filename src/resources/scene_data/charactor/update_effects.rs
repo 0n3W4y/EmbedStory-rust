@@ -6,7 +6,7 @@ use crate::components::charactor_component::{
 };
 use crate::resources::scene_data::charactor::{self, skills};
 
-use super::CharactorStatus;
+use super::{CharactorStatus, SkillSlot};
 
 pub fn update_effects(
     mut charactors_query: Query<
@@ -101,7 +101,7 @@ pub fn update_effects(
                     charactor::change_ability(&mut abilities.ability, &ability, ability_value as i16);
                 }
 
-                skills::update_basic_skill_by_changes_in_ability(&mut skills.skills, &abilities.ability, &inventory.stuff_wear);
+                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
             }
 
             //add time to effect duration;
@@ -163,7 +163,7 @@ pub fn update_effects(
                     // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                 }
 
-                skills::update_basic_skill_by_changes_in_ability(&mut skills.skills, &abilities.ability, &inventory.stuff_wear);   
+                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);  
 
                 effects.temporary_effect.remove(&effect.effect_type);
             };
@@ -223,7 +223,7 @@ pub fn update_effects(
                     // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                 }
 
-                skills::update_basic_skill_by_changes_in_ability(&mut skills.skills, &abilities.ability, &inventory.stuff_wear);
+                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
 
                 effects.endless_effect.remove(&endless_effect.effect_type);
             }
@@ -285,7 +285,7 @@ pub fn update_effects(
                     charactor::change_ability(&mut abilities.ability, &ability, ability_value as i16);
                 }
 
-                skills::update_basic_skill_by_changes_in_ability(&mut skills.skills, &abilities.ability, &inventory.stuff_wear);
+                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
             }
 
             endless_effect.current_duration += delta;

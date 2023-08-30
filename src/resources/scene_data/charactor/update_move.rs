@@ -8,7 +8,7 @@ use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
 use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_manager::SceneManager;
 
-use super::abilities::Ability;
+use super::abilities::AbilityType;
 
 //use crate::plugins::camera::Orthographic2DCamera;
 

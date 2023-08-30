@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::scene_data::charactor::abilities::Ability;
+use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
 use crate::resources::scene_data::charactor::stats::{ExtraStat, Stat};
 use crate::resources::scene_data::charactor::RaceType;
@@ -90,11 +90,6 @@ impl EffectsDeploy {
             EffectType::BrokeArmor => &self.broke_armor,
             EffectType::BrokeWeapon => &self.broke_weapon,
             EffectType::IncreaseMovement => &self.increase_movement_speed,
-            EffectType::Lifelich => &self.lifelich,
-            EffectType::Staminalich => &self.staminalich,
-            EffectType::StaminaDamage => &self.stamina_damage,
-            EffectType::HealthRegen => &self.healthpoint_regen,
-            EffectType::StaminaRegen => &self.stamina_regen,
             EffectType::Frostbite => &self.frostbite,
         }
     }
@@ -144,6 +139,6 @@ pub struct RaceConfig {
     pub effect_resists: HashMap<EffectType, i16>,
     pub effect_resist_min_value: i16,
     pub effect_resist_max_value: i16,
-    pub ability: HashMap<Ability, f32>,
+    pub ability: HashMap<AbilityType, f32>,
     pub endless_effect: Vec<EffectType>,
 }

@@ -2,262 +2,194 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use crate::components::charactor_component::{
-    AbilityComponent, ActionType, CharactorComponent, CompanionComponent, EffectComponent,
-    ExtraStatsComponent, InventoryComponent, MonsterComponent, PlayerComponent, PositionComponent,
-    ResistsComponent, SkillComponent, CharactorTargetComponent,
+    AbilityComponent, ActionType, CharactorComponent, EffectComponent,
+    ExtraStatsComponent, PositionComponent,
+    ResistsComponent, SkillComponent, CharactorTargetComponent, CharactorTextComponent,
 };
 
 use crate::resources::deploy::Deploy;
 use crate::resources::deploy::charactor_deploy::EffectsDeploy;
-use crate::resources::scene_data::charactor;
+use crate::resources::scene_data::charactor::{self, SkillSlot};
 
+use super::damage_text_informer::{DamageTextInformer, DamageColorType};
 use super::effects::Effect;
-use super::{abilities::Ability, skills::Skill, stats::ExtraStat, CharactorStatus};
+use super::{abilities::AbilityType, skills::Skill, stats::ExtraStat, CharactorStatus};
 
-pub fn player_attacking(
-    mut player_query: Query<
-        (
-            &CharactorComponent,
-            &mut SkillComponent,
-            &CharactorTargetComponent,
-            &AbilityComponent,
-            &InventoryComponent,
-            &PositionComponent,
-        ),
-        With<PlayerComponent>,
-    >,
-    mut monsters_query: Query<
-        (
-            &CharactorComponent,
-            &mut ExtraStatsComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-            &PositionComponent,
-            &AbilityComponent,
-        ),
-        With<MonsterComponent>,
-    >,
+pub fn attacking_from_basic_skill(
+    mut charactor_query: Query<(
+        &CharactorComponent,
+        &mut SkillComponent,
+        &CharactorTargetComponent,
+        &AbilityComponent,
+    )>,
+
+    mut target_query: Query<(
+        &CharactorComponent,
+        &mut ExtraStatsComponent,
+        &ResistsComponent,
+        &mut EffectComponent,
+        &PositionComponent,
+        &AbilityComponent,
+    )>,
+
     deploy: Res<Deploy>,
 ) {
-    let (player, mut player_skill, player_target, player_ability, player_inventory, player_position) =
-        player_query.single_mut();
-
-    if player_target.action != ActionType::Attack {
-        return;
-    };
-
-    let player_target_id: usize = match player_target.target {
-        Some(v) => v,
-        _ => {
-            println!("Player has no target, but status Attacking!");
-            0
-        }
-    };
-
     let effects_deploy = &deploy.charactor_deploy.effects_deploy;
-
     for (
-        monster,
-        mut monster_extra_stats,
-        monster_resist,
-        mut monster_effect,
-        monster_position,
-        monster_ability,
-    ) in monsters_query.iter_mut()
-    {
-        if monster.id == player_target_id {
-            if try_to_attack(
-                player_position,
-                monster_position,
-                &mut player_skill,
-                &player_ability,
-                &player_inventory,
-                &monster_resist,
-                &mut monster_extra_stats,
-                &mut monster_effect,
-                monster_ability,
-                effects_deploy
-            ) {
-                player.status = CharactorStatus::Attacking;
+        charactor, 
+        mut charactor_skill, 
+        charactor_target, 
+        charactor_ability, 
+    ) in charactor_query.iter_mut() {
+        //check for attack
+        if charactor.status != CharactorStatus::CanAttack {
+            continue;
+        }
+
+        //let's attack or create projectile to attack;
+        //for safe;
+        let target_id = match charactor_target.target {
+            Some(v) => v,
+            None => {
+                println!("Can not attack, because charactor '{:?}, {:?}, {:?}' have Attack action, but doesnt have a target", charactor.charactor_type, charactor.gender_type, charactor.race_type);
+                continue;
             }
-            break;
         };
+
     }
 }
 
-pub fn companion_attacking(
-    mut companion_query: Query<
-        (
-            &CharactorComponent,
-            &SkillComponent,
-            &CharactorTargetComponent,
-            &mut ExtraStatsComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-        ),
-        With<CompanionComponent>,
-    >,
-    mut monsters_query: Query<
-        (
-            &CharactorComponent,
-            &SkillComponent,
-            &mut ExtraStatsComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-        ),
-        With<MonsterComponent>,
-    >,
-) {
-    let (
-        companion,
-        companion_skill,
-        companion_target,
-        mut companion_extra_stats,
-        companion_resist,
-        mut companion_effect,
-    ) = companion_query.single_mut();
 
-    let companion_target_id: usize = if companion.status == CharactorStatus::Attacking {
-        match companion_target.target {
-            Some(v) => v,
-            _ => {
-                println!("Companion has no target, but status Attacking!");
-                0
-            }
-        }
-    } else {
-        0
-    };
-}
-pub fn monster_attacking(
-    mut monsters_query: Query<
-        (
-            &CharactorComponent,
-            &SkillComponent,
-            &mut ExtraStatsComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-        ),
-        With<MonsterComponent>,
-    >,
-    mut companion_query: Query<
-        (
-            &CharactorComponent,
-            &SkillComponent,
-            &mut ExtraStatsComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-        ),
-        With<CompanionComponent>,
-    >,
-    mut player_query: Query<
-        (
-            &CharactorComponent,
-            &SkillComponent,
-            &mut ExtraStatsComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-        ),
-        With<PlayerComponent>,
-    >,
+
+
+
+pub fn update_attack_from_basic_skill(
+    mut charactor_query: Query<(
+        &CharactorComponent,
+        &mut SkillComponent,
+        &CharactorTargetComponent,
+        &PositionComponent
+    )>,
+
+    mut target_query: Query<(
+        &CharactorComponent,
+        &PositionComponent,
+    )>
 ) {
+    
+
+    for (
+        charactor, 
+        mut charactor_skill, 
+        charactor_target, 
+        charactor_position
+    ) in charactor_query.iter_mut() {
+        if charactor_target.action != ActionType::Attack {
+            continue;
+        }        
+
+        let target_id = match charactor_target.target {
+            Some(v) => v,
+            None => {
+                println!("Can not attack, because charactor '{:?}, {:?}, {:?}' have Attack action, but doesnt have a target", charactor.charactor_type, charactor.gender_type, charactor.race_type);
+                continue;
+            }
+        };
+        //get base attack skill
+        match charactor_skill.skills.get_mut(&SkillSlot::Base) {
+            Some(skill) => {
+                //check for colldown
+                if skill.on_cooldown {
+                    //go to next charactor;
+                    continue;
+                }
+
+                for (
+                    target,
+                    target_position,
+                ) in target_query.iter_mut() {
+                    //check for target
+                    if target.id == target_id {
+                        //try to attack;
+                        if try_to_attack(charactor_position, target_position, skill) {
+                            //for animation; when animation ends = attacking change to None or Stand;
+                            charactor.status = CharactorStatus::CanAttack;
+                            break;
+                        }
+                        println!("Can not attacking target, becasue target not a monster, or player or companion or not NPC");
+                    }
+                }
+            },
+            None => {
+                println!("can't attacking target, because autoattack skill not found in skills storage");
+            },
+        }        
+    }
 }
 
 fn try_to_attack(
     position: &PositionComponent,
     target_position: &PositionComponent,
-    skill_component: &mut SkillComponent,
-    ability_component: &AbilityComponent,
-    inventory_component: &InventoryComponent,
-    target_resist: &ResistsComponent,
-    target_extra_stats: &mut ExtraStatsComponent,
-    target_effect: &mut EffectComponent,
-    target_ability: &AbilityComponent,
-    effects_deploy: &EffectsDeploy,
+    skill: &mut Skill,
 ) -> bool {
-    //get attacking skill;
-    let skill = match skill_component.skills.get_mut(&1) {
-        Some(v) => v,
-        _ => &mut Skill {
-            ..Default::default()
-        },
-    };
-
-    // check for default skill
-    if skill.base_cooldown == 0 {
-        println!("can't attacking target, because autoattack skill not found in skills storage");
-        return false;
-    };
-
-    //check for position;
+    //check for target position;
     let skill_range = skill.range;
-    let diff_x = (position.position.x.abs() - target_position.position.x.abs()).abs(); // always positive value;
-    let diff_y = (position.position.y.abs() - target_position.position.y.abs()).abs(); // always positive value;
+    let diff_x = (position.position.x - target_position.position.x).abs(); // always positive value;
+    let diff_y = (position.position.y - target_position.position.y).abs(); // always positive value;
     let diff = diff_x.max(diff_y);
+
+    //check for skill range;
     if skill_range as i32 >= diff {
-        if skill.current_duration == 0.0 {
-            //if all fine we attack;
-            attack(
-                skill,
-                ability_component,
-                inventory_component,
-                target_resist,
-                target_extra_stats,
-                target_effect,
-                target_ability,
-                effects_deploy
-            );
-        } else {
-            return false;
-        }
+            return true;
     } else {
         return false;
     }
-
-    return true;
 }
 
 fn attack(
     skill: &mut Skill,
     ability_component: &AbilityComponent,
-    inventory_component: &InventoryComponent,
+    target_text_component: &CharactorTextComponent,
     target_resists: &ResistsComponent,
     target_extra_stats: &mut ExtraStatsComponent,
     target_effect: &mut EffectComponent,
     target_ability: &AbilityComponent,
     effects_deploy: &EffectsDeploy,
 ) {
-    // value to start cooldown of attack;
     let mut rng = rand::thread_rng();
-    skill.current_duration = skill.current_cooldown;
+    //set skill on cooldown;
+    skill.on_cooldown = true;
+
     //check for melee or ranged+magic attack;
     if skill.projectiles > 0 {
         todo!();
         //TODO: create projectile;
     } else {
-        // let check for aacuracy
-        let accuracy = match ability_component.ability.get(&Ability::Accuracy) {
+        // let check for accuracy
+        let accuracy = match ability_component.ability.get(&AbilityType::Accuracy) {
             Some(v) => *v,
             _ => {
                 println!("Can't get Accuracy, use 0.0 instead, so 100% chance to miss");
-                0.0
+                0
             }
         };
 
-        if accuracy <= 0.0 {
+        if accuracy <= 0 {
             //TODO: take this value to target, interface ( sprite ) need to text it to user; "MISS";
+            target_text_component.text_upper_charactor.push( DamageTextInformer::new("MISS".to_string(), false, DamageColorType::Gray)); 
             return;
-        } else if accuracy >= 100.0 {
+        } else if accuracy >= 100 {
+
         } else {
             let random_accuracy_number: u8 = rng.gen_range(0..=99);
-            if accuracy <= random_accuracy_number as f32 {
+            if accuracy <= random_accuracy_number as i16 {
                 //TODO: take this value to target, interface ( sprite ) need to text it to user; "MISS";
                 return;
             }
         }
 
         // if we here, let chech the evasion of tagert;
-        let target_evasion = match target_ability.ability.get(&Ability::Evasion) {
+        let target_evasion = match target_ability.ability.get(&AbilityType::Evasion) {
             Some(v) => *v,
             _ => {
                 println!("Target has no ability Evasion, so i use 0 instead");
@@ -275,7 +207,7 @@ fn attack(
 
         //so if we are here, let's get damage types and resists
         //let chect for block chanse;
-        let block_amount: f32 = match target_ability.ability.get(&Ability::BlockAmount) {
+        let block_amount: f32 = match target_ability.ability.get(&AbilityType::BlockAmount) {
             Some(v) => *v,
             _ => {
                 println!("Target has no block amount, i use 0 instead");
@@ -283,7 +215,7 @@ fn attack(
             }
         };
 
-        let block_percent: f32 = match target_ability.ability.get(&Ability::BlockChance) {
+        let block_percent: f32 = match target_ability.ability.get(&AbilityType::BlockChance) {
             Some(v) => *v,
             _ => {
                 println!("Target has no block chance, i use 0 istead");

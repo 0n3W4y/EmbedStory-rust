@@ -10,6 +10,7 @@ use crate::plugins::camera::Orthographic2DCamera;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
+use super::CharactorStatus;
 use super::CharactorType;
 
 pub fn player_click(
@@ -53,15 +54,29 @@ pub fn player_click(
                 / (TILE_SIZE as f32 / camera_scale))
                 .round() as i32;
 
+
+
+            //TODO: может быть сделать проход по сетке tile, с заносом информации в tile каждое перемещение. Все объекты
+            // стационарны, кроме чаров
+
+
             for (charactor_component, position_component) in charactor_query.iter(){
                 let char_position_x = position_component.position.x;
                 let char_position_y = position_component.position.y;
                 if char_position_x == position_x && char_position_y == position_y {
                     match charactor_component.charactor_type {
                         CharactorType::Monster => {
-                            select_target_to_attack(&mut palyer_target, charactor_component.id, position_x, position_y);
+                            select_target_to_attack(&mut player, &mut palyer_target, charactor_component.id, position_x, position_y);
                             return;
                         },
+                        CharactorType::Companion => {
+                            println!("Clicked on Companion");
+                            move_player_to(&mut position, position_x, position_y);
+                        },
+                        CharactorType::NPC => {
+                            println!("Clicked on NPC");
+                            //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
+                        }
                         _ => {
                             move_player_to(&mut position, position_x, position_y);
                         }
@@ -96,11 +111,15 @@ fn move_player_to(
 }
 
 fn select_target_to_attack(
+    player: &mut CharactorComponent,
     player_target: &mut CharactorTargetComponent,
     id: usize,
     x: i32,
     y: i32,
 ) {
+    if player.status == CharactorStatus::Standing {
+        player.status = CharactorStatus::TryAttack;
+    }
     player_target.target = Some(id);
     player_target.action = ActionType::Attack;
     player_target.target_position = Some(Position{ x, y });
