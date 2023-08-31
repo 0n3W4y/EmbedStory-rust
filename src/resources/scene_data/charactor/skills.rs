@@ -19,7 +19,7 @@ pub enum SkillSubtype {
     SomeSkill,
 }
 
-#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum CastSource {
     Mouse,
     #[default]
@@ -27,7 +27,7 @@ pub enum CastSource {
     Target,
 }
 
-#[derive(Deserialize, Default, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum SkillDirectionType {
     #[default]
     Line,
@@ -43,8 +43,9 @@ pub struct Skill {
     pub skill_type: SkillType,
     pub skill_subtype: SkillSubtype,
     pub skill_name: String,
-    pub stuff_id: usize, // link to stuff in wear slot;
-    pub is_basic: bool, 
+    pub stuff_id: Option<usize>, // link to stuff in wear slot;
+    pub is_basic: bool,
+    pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
    
     //for passive skill;
     pub is_passive_skill: bool,
@@ -75,13 +76,47 @@ pub struct Skill {
     pub passive_skill: HashMap<SkillType, u8>,
 }
 
+impl Skill {
+    pub fn new (config: &SkillDeploy) -> Self {
+        Skill {
+            skill_type: config.skill_type.clone(),
+            skill_subtype: config.skill_subtype.clone(),
+            skill_name: config.skill_name.clone(),
+            stuff_id: None,
+            is_basic: config.is_basic,
+            is_activated: false,
+            is_passive_skill: config.is_passive_skill,
+            trigger_chanse: config.trigger_chanse,
+            trigger_time: config.trigger_time as f32 / 10.0,
+            trigger_duration: config.trigger_duration as f32 / 10.0,
+            base_cooldown: config.cooldown,
+            cooldown: config.cooldown as f32 / 100.0,
+            on_cooldown: false,
+            current_duration: 0.0,
+            total_duration: 0.0,
+            projectiles: config.projectiles,
+            range: config.range,
+            cast_source: config.cast_source,
+            skill_direction: config.skill_direction.clone(),
+            stamina_cost: config.stamina_cost,
+            target: config.target,
+            crit_chance: config.crit_chance,
+            crit_multiplier: config.crit_multiplier,
+            damage: config.damage.clone(),
+            effect: config.effect.clone(),
+            passive_skill: config.passive_skill.clone(),
+        }
+    }
+}
+
 #[derive(Deserialize)]
 pub struct SkillDeploy {
     pub skill_type: SkillType,
     pub skill_subtype: SkillSubtype,
     pub skill_name: String,
     pub is_passive_skill: bool,
-    pub stuff_id: usize, // link to stuff in wear slot;
+    pub is_basic: bool,
+    //pub stuff_id: usize, // link to stuff in wear slot;
 
     pub trigger_chanse: u8,
     pub trigger_time: u16,
@@ -252,7 +287,6 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                     },
                     DamageType::Cold => todo!(),
                     DamageType::Electric => todo!(),
-                    DamageType::Kinetic => todo!(),
                     DamageType::Cutting => todo!(),
                     DamageType::Piercing => todo!(),
                     DamageType::Crushing => todo!(),

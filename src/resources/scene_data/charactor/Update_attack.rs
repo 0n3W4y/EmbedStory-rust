@@ -8,14 +8,15 @@ use crate::components::charactor_component::{
 };
 
 use crate::resources::deploy::Deploy;
-use crate::resources::deploy::charactor_deploy::EffectsDeploy;
 use crate::resources::scene_data::charactor::{self, SkillSlot};
+use crate::resources::scene_data::stuff::damage_type::DamageType;
 
-use super::damage_text_informer::{DamageTextInformer, DamageColorType};
-use super::effects::Effect;
+use super::damage_text_informer::DamageTextInformer;
+use super::effects::{Effect, StatDamageType};
 use super::{abilities::AbilityType, skills::Skill, stats::ExtraStat, CharactorStatus};
 
 pub fn attacking_from_basic_skill(
+    mut commands: Commands,
     mut charactor_query: Query<(
         &CharactorComponent,
         &mut SkillComponent,
@@ -30,11 +31,11 @@ pub fn attacking_from_basic_skill(
         &mut EffectComponent,
         &PositionComponent,
         &AbilityComponent,
+        &mut CharactorTextComponent,
     )>,
 
     deploy: Res<Deploy>,
 ) {
-    let effects_deploy = &deploy.charactor_deploy.effects_deploy;
     for (
         charactor, 
         mut charactor_skill, 
@@ -47,7 +48,7 @@ pub fn attacking_from_basic_skill(
         }
 
         //let's attack or create projectile to attack;
-        //for safe;
+
         let target_id = match charactor_target.target {
             Some(v) => v,
             None => {
@@ -55,6 +56,36 @@ pub fn attacking_from_basic_skill(
                 continue;
             }
         };
+
+        //safe, we r already check for skill previosly;
+        let skill = charactor_skill.skills.get_mut(&SkillSlot::Base).unwrap();
+
+        for (
+            target_component, 
+            mut target_extra_stats, 
+            target_resists, 
+            mut target_effects, 
+            target_position, 
+            target_abilities,
+            mut target_text_component
+        ) in target_query.iter_mut() {
+            if target_id == target_component.id {
+                attack(
+                    &mut commands,
+                    skill, 
+                    charactor_ability,
+                    &mut target_text_component, 
+                    target_resists, 
+                    &mut target_extra_stats, 
+                    &mut target_effects, 
+                    target_abilities, 
+                    &deploy
+                );
+                break;
+            }
+        }
+
+
 
     }
 }
@@ -147,16 +178,20 @@ fn try_to_attack(
 }
 
 fn attack(
+    commands: &mut Commands,
     skill: &mut Skill,
-    ability_component: &AbilityComponent,
-    target_text_component: &CharactorTextComponent,
+    charactor_ability: &AbilityComponent,
+    target_text_component: &mut CharactorTextComponent,
     target_resists: &ResistsComponent,
     target_extra_stats: &mut ExtraStatsComponent,
     target_effect: &mut EffectComponent,
     target_ability: &AbilityComponent,
-    effects_deploy: &EffectsDeploy,
+    deploy: &Deploy,
 ) {
+    let effects_deploy = &deploy.charactor_deploy.effects_deploy;
+    let skills_deploy = &deploy.charactor_deploy.skills_deploy;
     let mut rng = rand::thread_rng();
+
     //set skill on cooldown;
     skill.on_cooldown = true;
 
@@ -166,26 +201,19 @@ fn attack(
         //TODO: create projectile;
     } else {
         // let check for accuracy
-        let accuracy = match ability_component.ability.get(&AbilityType::Accuracy) {
+        let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {
             Some(v) => *v,
             _ => {
-                println!("Can't get Accuracy, use 0.0 instead, so 100% chance to miss");
+                println!("Can't get Accuracy, use 0 instead, so 100% chance to miss");
                 0
             }
         };
 
-        if accuracy <= 0 {
+        let random_accuracy_number: u8 = rng.gen_range(0..=99);
+        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
             //TODO: take this value to target, interface ( sprite ) need to text it to user; "MISS";
-            target_text_component.text_upper_charactor.push( DamageTextInformer::new("MISS".to_string(), false, DamageColorType::Gray)); 
+            target_text_component.text_upper_charactor.push( DamageTextInformer::new("MISS".to_string(), false, None)); 
             return;
-        } else if accuracy >= 100 {
-
-        } else {
-            let random_accuracy_number: u8 = rng.gen_range(0..=99);
-            if accuracy <= random_accuracy_number as i16 {
-                //TODO: take this value to target, interface ( sprite ) need to text it to user; "MISS";
-                return;
-            }
         }
 
         // if we here, let chech the evasion of tagert;
@@ -193,46 +221,45 @@ fn attack(
             Some(v) => *v,
             _ => {
                 println!("Target has no ability Evasion, so i use 0 instead");
-                0.0
+                0
             }
         };
 
-        if target_evasion > 0.0 {
+        //check for target evasion;
+        if target_evasion > 0 {
             let random_evasion_number: u8 = rng.gen_range(0..=99);
-            if target_evasion >= random_evasion_number as f32 {
+            if target_evasion >= random_evasion_number as i16 {
                 //TODO: take this value to target, interface ( sprite ) need to text it to user; "EVADED";
+                target_text_component.text_upper_charactor.push( DamageTextInformer::new("EVADED".to_string(), false, None)); 
                 return;
             }
         }
 
         //so if we are here, let's get damage types and resists
-        //let chect for block chanse;
-        let block_amount: f32 = match target_ability.ability.get(&AbilityType::BlockAmount) {
-            Some(v) => *v,
-            _ => {
-                println!("Target has no block amount, i use 0 instead");
-                0.0
-            }
-        };
-
-        let block_percent: f32 = match target_ability.ability.get(&AbilityType::BlockChance) {
+        //let chect for block amount cnad chanse;
+        let mut block_amount: i16 = 0;
+        let block_chance: i16 = match target_ability.ability.get(&AbilityType::BlockChance) {
             Some(v) => *v,
             _ => {
                 println!("Target has no block chance, i use 0 istead");
-                0.0
+                0
             }
         };
 
         let block_chance_random_number: u8 = rng.gen_range(0..=99);
-        let is_blocked: bool = if block_percent >= block_chance_random_number as f32 {
-            true
-        } else {
-            false
-        };
+        if block_chance >= block_chance_random_number as i16 {
+            block_amount = match target_ability.ability.get(&AbilityType::BlockAmount) {
+                Some(v) => *v,
+                _ => {
+                    println!("Target has no block amount, i use 0 instead");
+                    0
+                }
+            };
+        }
 
         //create text damage, take it to target text into userinterface
         //create vec of damage ; Maybe i'll do color damage;
-        for (damage_type, value) in skill.current_damage {
+        for (damage_type, value) in skill.damage.iter() {
             let target_damage_resist = match target_resists.damage_resists.get(&damage_type) {
                 Some(v) => *v,
                 _ => {
@@ -243,23 +270,20 @@ fn attack(
                     0
                 }
             };
-            let damage_value = if is_blocked {
-                let new_value = value - (value as f32 * block_percent / 100.0) as i16;
-                new_value - (new_value * target_damage_resist / 100) as i16
-            } else {
-                value - (value * target_damage_resist / 100) as i16
-            };
+
+            let damage_value = value - (value * target_damage_resist / 100) - (value * block_amount / 100 );
 
             charactor::change_extra_stat_current(
                 &mut target_extra_stats.extra_stats,
                 &mut target_extra_stats.extra_stats_cache,
                 &ExtraStat::HealthPoints,
                 damage_value,
+                &StatDamageType::Flat,
             );
-            //TODO:: Take value to target;
+            target_text_component.text_upper_charactor.push( DamageTextInformer::new(damage_value.to_string(), false, Some(damage_type))); 
         }
 
-        //now we need to set effect to target;
+        //now we need to set effect to target if effects have on skill;
         for (effect_type, trigger_chace) in skill.effect.iter_mut() {
             //check for trigger effect
             let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
@@ -271,49 +295,6 @@ fn attack(
             //create new effect;
             let effect_config = effects_deploy.get_effect_config(effect_type);
             let mut effect = Effect::new(effect_config);
-
-            //check effect for damage to HP or SP {
-            if effect.change_extra_stat_is_damage {
-                // set damage to extra_stats;
-                //get weapon damage from inventory
-                let damage_from_weapon = match inventory_component.stuff_wear.get(&charactor::StuffWearSlot::Weapon) {
-                    Some(v) => {
-                        match *v {
-                            Some(f) => {
-                                match f.current_damage.get(&effect.damage_type) {
-                                    Some(d) => *d,
-                                    None => {
-                                        println!("Can not get damage from weapon damage type: '{:?}'. Weapon type: {:?}", &effect.damage_type, f.stuff_subtype );
-                                        0
-                                    },
-                                }
-                            },
-                            None => {
-                                println!("Can not get weapon from inventory storage in weapon slot. I use 0 instead");
-                                0
-                            },
-                        }
-                    },
-                    None => {
-                        println!("Can not get weapon slot from inventory storage. I use 0 instead");
-                        0
-                    },
-                };
-
-                let resist_damage_from_target = match target_resists.damage_resists.get(&effect.damage_type) {
-                    Some(v) => *v,
-                    None => {
-                        println!("Can not get damage resists: '{:?}' in target resists. I use 0", &effect.damage_type);
-                        0
-                    },
-                };
-                
-                for (_, value) in effect.change_extra_stat.iter_mut() {
-                    *value = damage_from_weapon - (damage_from_weapon * resist_damage_from_target / 100);
-                };
-            }
-
-            
 
             //check for ednless effect or temporary
             if effect.duration == 0.0 {
@@ -336,7 +317,7 @@ fn attack(
 
                 //check target resist; if it > 100% just ignore this effect;
                 if target_effect_resist > 100 {
-                    return;
+                    continue;
                 }
 
                 //calculate new effect duration by target resist;
@@ -344,16 +325,36 @@ fn attack(
                 effect.duration -= effect_duration;
 
                 let old_effect = target_effect.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
-                
-                //select > value of old effect and new effect;
-                for (key, value) in old_effect.change_extra_stat.iter_mut() {
-                    let effect_value = match effect.change_extra_stat.get(key) {
-                        Some(v) => *v,
-                        None => 0,
-                    };
-                    *value = (*value).max(effect_value);
+            }
+
+            //check for passivly skills on damage
+            for (skill_type, value) in skill.passive_skill.iter() {
+                let mut skill = Skill::new(skills_deploy.get_skill_deploy(skill_type));
+
+                for (damage_type, value) in skill.damage.iter_mut() {
+                    *value = match *damage_type {
+                        DamageType::Fire => {
+                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::FireDamage) {
+                                Some(v) => *v,
+                                None => 100,
+                            };
+                            let resist_from_target = match target_ability.ability.get(&AbilityType::FireDamage) {
+                                Some(v) => *v,
+                                None => 0,
+                            };
+                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
+                        },
+                        DamageType::Cold => todo!(),
+                        DamageType::Electric => todo!(),
+                        DamageType::Cutting => todo!(),
+                        DamageType::Piercing => todo!(),
+                        DamageType::Crushing => todo!(),
+                        DamageType::Water => todo!(),
+                        DamageType::Acid => todo!(),
+                        DamageType::Poison => todo!(),
+                    }
                 }
-            }            
+            }          
         }
     }
 }

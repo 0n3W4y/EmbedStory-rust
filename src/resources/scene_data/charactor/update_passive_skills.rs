@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use rand::Rng;
 
+use super::effects::StatDamageType;
 use super::{
     skills::CastSource,
     stats::ExtraStat,
@@ -79,9 +80,9 @@ pub fn update_passive_skills(
                 }
 
                 //calculate crit chance and crit multiplier;
-                let crit_chance = skill.current_crit_chance;
+                let crit_chance = skill.crit_chance;
                 let crit_chance_random_number = rng.gen_range(0..=99);
-                let crit_multiplier = skill.current_crit_multiplier;
+                let crit_multiplier = skill.crit_multiplier;
                 let crit_chance_triggered: bool = if crit_chance >= crit_chance_random_number {
                     true
                 } else {
@@ -129,7 +130,7 @@ pub fn update_passive_skills(
                     if skill.range == 0 {
 
                         // if skill have a damage to health to self
-                        for (damage_type, value) in skill.current_damage.iter() {
+                        for (damage_type, value) in skill.damage.iter() {
                             let self_resist = match resists_component.damage_resists.get(damage_type) {
                                 Some(v) => *v,
                                 None => {
@@ -150,6 +151,7 @@ pub fn update_passive_skills(
                                 &mut extra_stats_component.extra_stats_cache,
                                 &ExtraStat::HealthPoints,
                                 damage,
+                                &StatDamageType::Flat,
                             );
                         }
 

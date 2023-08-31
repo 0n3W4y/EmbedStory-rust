@@ -1,21 +1,20 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
+use crate::resources::scene_data::stuff::damage_type::DamageType;
 
-const RED_DAMAGE_TEXT: Color = Color::Rgba{ red:( 10.0 / 255.0 ), green:( 200.0 / 255.0 ) , blue:( 70.0 / 255.0 ) , alpha: 1.0 };
+
+const WHITE_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
+const WHITERED_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
+const RED_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
 const GREEN_DAMAGE_TEXT: Color = Color::Rgba{ red:( 150.0 / 255.0 ), green:( 75.0 / 255.0 ), blue:( 45.0 / 255.0 ), alpha: 1.0 };
 const BLUE_DAMAGE_TEXT: Color = Color::Rgba{ red:( 100.0 / 255.0 ), green:( 50.0 / 255.0 ) , blue:( 20.0 / 255.0 ) , alpha: 1.0 };
+const GRAY_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
+const ORANGE_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
+const CYAN_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
+const PURPULE_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
+const LIGHTGREEN_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
 
-pub enum DamageColorType {
-    Red,
-    Green,
-    Blue,
-    Purpule,
-    Yellow,
-    Orange,
-    Gray,
-    White,
-}
 
 #[derive(Deserialize, Debug)]
 pub struct DamageTextInformer {
@@ -25,16 +24,22 @@ pub struct DamageTextInformer {
 } 
 
 impl DamageTextInformer {
-    pub fn new( text: String, bold: bool, color: DamageColorType) -> Self {
-        let new_color: Color = match color {
-            DamageColorType::Red => RED_DAMAGE_TEXT,
-            DamageColorType::Green => GREEN_DAMAGE_TEXT,
-            DamageColorType::Blue => BLUE_DAMAGE_TEXT,
-            DamageColorType::Purpule => todo!(),
-            DamageColorType::Yellow => todo!(),
-            DamageColorType::Orange => todo!(),
-            DamageColorType::Gray => todo!(),
-            DamageColorType::White => todo!(),
+    pub fn new (text: String, bold: bool, damage_type: Option<&DamageType>) -> Self {
+        let new_color: Color = match damage_type {
+            Some(v) => { match *v {
+                DamageType::Fire => ORANGE_DAMAGE_TEXT,
+                DamageType::Cold => BLUE_DAMAGE_TEXT,
+                DamageType::Electric => PURPULE_DAMAGE_TEXT,
+                DamageType::Cutting => WHITERED_DAMAGE_TEXT,
+                DamageType::Piercing => RED_DAMAGE_TEXT,
+                DamageType::Crushing => WHITE_DAMAGE_TEXT,
+                DamageType::Water => CYAN_DAMAGE_TEXT,
+                DamageType::Acid => LIGHTGREEN_DAMAGE_TEXT,
+                DamageType::Poison => GREEN_DAMAGE_TEXT,
+            }
+
+            },
+            None => GRAY_DAMAGE_TEXT,
         };
 
         DamageTextInformer {

@@ -6,7 +6,6 @@ pub enum DamageType {
     Cold,
     Electric,
     #[default]
-    Kinetic,
     Cutting,
     Piercing,
     Crushing,

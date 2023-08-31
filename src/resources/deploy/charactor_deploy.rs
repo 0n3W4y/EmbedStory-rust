@@ -5,6 +5,7 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
+use crate::resources::scene_data::charactor::skills::{SkillType, SkillDeploy};
 use crate::resources::scene_data::charactor::stats::{ExtraStat, Stat};
 use crate::resources::scene_data::charactor::RaceType;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
@@ -13,12 +14,14 @@ use crate::resources::scene_data::stuff::damage_type::DamageType;
 pub struct CharactorDeploy {
     pub race_deploy: RaceDeploy,
     pub effects_deploy: EffectsDeploy,
+    pub skills_deploy: SkillsDeploy,
 }
 
 impl CharactorDeploy {
     pub fn new() -> Self {
         let race_config_deploy: &str = "deploy/race_config.json";
         let effects_config: &str = "deploy/battle_effects_config.json";
+        let skills_config: &str = "deploy/skills_config.json";
 
         let race_deploy: RaceDeploy = match File::open(race_config_deploy) {
             Ok(mut file) => {
@@ -41,9 +44,19 @@ impl CharactorDeploy {
             Err(e) => panic!("Can not open objects data file: {}, {}", e, effects_config),
         };
 
+        let skills_deploy: SkillsDeploy = match File::open(skills_config) {
+            Ok(mut file) => {
+                let mut content = String::new();
+                file.read_to_string(&mut content).unwrap();
+                serde_json::from_str(&content).expect("JSON was not well-formatted")
+            }
+            Err(e) => panic!("Can not open objects data file: {}, {}", e, effects_config),
+        };
+
         return CharactorDeploy {
             race_deploy,
             effects_deploy,
+            skills_deploy,
         };
     }
 }
@@ -142,3 +155,37 @@ pub struct RaceConfig {
     pub ability: HashMap<AbilityType, f32>,
     pub endless_effect: Vec<EffectType>,
 }
+
+#[derive(Deserialize, Debug)]
+pub struct SkillsDeploy{
+    
+}
+
+impl SkillsDeploy {
+    pub fn get_skill_deploy( &self, skill: &SkillType ) -> &SkillDeploy {
+        &SkillDeploy {
+            skill_type: todo!(),
+            skill_subtype: crate::resources::scene_data::charactor::skills::SkillSubtype::SomeSkill,
+            skill_name: todo!(),
+            is_passive_skill: todo!(),
+            stuff_id: todo!(),
+            trigger_chanse: todo!(),
+            trigger_time: todo!(),
+            trigger_duration: todo!(),
+            cooldown: todo!(),
+            projectiles: todo!(),
+            range: todo!(),
+            cast_source: todo!(),
+            skill_direction: todo!(),
+            stamina_cost: todo!(),
+            target: todo!(),
+            crit_chance: todo!(),
+            crit_multiplier: todo!(),
+            damage: todo!(),
+            effect: todo!(),
+            passive_skill: todo!(),
+        }
+    }
+}
+
+
