@@ -214,7 +214,6 @@ fn attack(
 
         let random_accuracy_number: u8 = rng.gen_range(0..=99);
         if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
-            //TODO: take this value to target, interface ( sprite ) need to text it to user; "MISS";
             target_text_component.text_upper_charactor.push( DamageTextInformer::new("MISS".to_string(), false, None)); 
             return;
         }
@@ -232,7 +231,6 @@ fn attack(
         if target_evasion > 0 {
             let random_evasion_number: u8 = rng.gen_range(0..=99);
             if target_evasion >= random_evasion_number as i16 {
-                //TODO: take this value to target, interface ( sprite ) need to text it to user; "EVADED";
                 target_text_component.text_upper_charactor.push( DamageTextInformer::new("EVADED".to_string(), false, None)); 
                 return;
             }
@@ -260,8 +258,7 @@ fn attack(
             };
         }
 
-        //create text damage, take it to target text into userinterface
-        //create vec of damage ; Maybe i'll do color damage;
+        //create  damage 
         for (damage_type, value) in skill.damage.iter() {
             let target_damage_resist = match target_resists.damage_resists.get(&damage_type) {
                 Some(v) => *v,
@@ -287,10 +284,10 @@ fn attack(
         }
 
         //now we need to set effect to target if effects have on skill;
-        for (effect_type, trigger_chace) in skill.effect.iter_mut() {
+        for (effect_type, trigger_chance) in skill.effect.iter_mut() {
             //check for trigger effect
             let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
-            if *trigger_chace < trigger_chance_random_number{
+            if *trigger_chance < trigger_chance_random_number {
                 //skip effect, because not triggered;
                 continue;
             };
@@ -329,117 +326,79 @@ fn attack(
 
                 let old_effect = target_effect.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
             }
-
-            //check for passivly skills on damage
-            for (skill_type, value) in skill.passive_skill.iter() {
-                let mut skill = Skill::new(skills_deploy.get_skill_deploy(skill_type));
-
-                for (damage_type, value) in skill.damage.iter_mut() {
-                    *value = match *damage_type {
-                        DamageType::Fire => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::FireDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::FireDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Cold => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::ColdDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::ColdDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Electric => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::ElectricDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::ElectricDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Cutting => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::CuttingDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::CuttingDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Piercing => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::PiercingDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::PiercingDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Crushing => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::CrushingDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::CrushingDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Water => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::WaterDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::WaterDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Acid => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::AcidDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::AcidDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                        DamageType::Poison => {
-                            let damage_multuplier_from_ability = match charactor_ability.ability.get(&AbilityType::PoisonDamage) {
-                                Some(v) => *v,
-                                None => 100,
-                            };
-                            let resist_from_target = match target_ability.ability.get(&AbilityType::PoisonDamage) {
-                                Some(v) => *v,
-                                None => 0,
-                            };
-                            (*value * damage_multuplier_from_ability / 100) - (*value * resist_from_target / 100)
-                        },
-                    }; 
-                    //add skill time;
-                    target_skills.passive_skills.entry(skill_type.clone()).and_modify(|x| x.trigger_time += skill.trigger_time).or_insert(skill);                    
-                }
-            }          
         }
+        
+        //check for passivly skills on damage
+        for (skill_type, value) in skill.passive_skill.iter() {
+            let mut skill = Skill::new(skills_deploy.get_skill_deploy(skill_type));
+
+            for (damage_type, value) in skill.damage.iter_mut() {
+                let target_resist_multiplier = match target_resists.damage_resists.get(damage_type) {
+                    Some(v) => *v,
+                    None => 0,
+                };
+                let damage_multuplier_from_ability = match *damage_type {
+                    DamageType::Fire => {
+                        match charactor_ability.ability.get(&AbilityType::FireDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Cold => {
+                        match charactor_ability.ability.get(&AbilityType::ColdDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Electric => {
+                        match charactor_ability.ability.get(&AbilityType::ElectricDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Cutting => {
+                        match charactor_ability.ability.get(&AbilityType::CuttingDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Piercing => {
+                        match charactor_ability.ability.get(&AbilityType::PiercingDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Crushing => {
+                        match charactor_ability.ability.get(&AbilityType::CrushingDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Water => {
+                            match charactor_ability.ability.get(&AbilityType::WaterDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Acid => {
+                        match charactor_ability.ability.get(&AbilityType::AcidDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                    DamageType::Poison => {
+                        match charactor_ability.ability.get(&AbilityType::PoisonDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        };
+                    },
+                }; 
+                let temp_value = (*value as f32 + (*value as f32 * damage_multuplier_from_ability as f32 / 100.0)) as i16;
+                *value = temp_value - (temp_value as f32 * target_resist_multiplier as f32 / 100.0) as i16;
+                                    
+            }
+            //add skill time;
+            target_skills.passive_skills.entry(skill_type.clone()).and_modify(|x| x.trigger_time += skill.trigger_time).or_insert(skill);
+        } 
     }
 }
