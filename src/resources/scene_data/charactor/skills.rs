@@ -16,7 +16,7 @@ pub enum SkillType {
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillSubtype {
     #[default]
-    SomeSkill,
+    BaseSkill,
 }
 
 #[derive(Deserialize, Default, Debug, Eq, PartialEq, Clone)]
@@ -44,7 +44,6 @@ pub struct Skill {
     pub skill_subtype: SkillSubtype,
     pub skill_name: String,
     pub stuff_id: Option<usize>, // link to stuff in wear slot;
-    pub is_basic: bool,
     pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
    
     //for passive skill;
@@ -59,7 +58,6 @@ pub struct Skill {
     pub on_cooldown: bool, // can use this skill now;
     pub current_duration: f32, // == 0.0;
     pub total_duration: f32,
-    //pub activated: bool,
 
     pub projectiles: u8,
     pub range: u8, // max range; min range = 1;
@@ -83,7 +81,6 @@ impl Skill {
             skill_subtype: config.skill_subtype.clone(),
             skill_name: config.skill_name.clone(),
             stuff_id: None,
-            is_basic: config.is_basic,
             is_activated: false,
             is_passive_skill: config.is_passive_skill,
             trigger_chanse: config.trigger_chanse,
@@ -115,8 +112,6 @@ pub struct SkillDeploy {
     pub skill_subtype: SkillSubtype,
     pub skill_name: String,
     pub is_passive_skill: bool,
-    pub is_basic: bool,
-    //pub stuff_id: usize, // link to stuff in wear slot;
 
     pub trigger_chanse: u8,
     pub trigger_time: u16,
@@ -148,7 +143,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             skill.passive_skill.clear();
 
             //first get damage multiplier by weapon type;
-            let skill_type_multiplier = match skill.skill_type {
+            let skill_type_damage_multiplier = match skill.skill_type {
                 SkillType::Melee => { 
                     match ability_storage.get(&AbilityType::MeleeDamage) {
                         Some(v) => *v,
@@ -278,22 +273,63 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
 
 
             for (damage_type, value) in damage_from_weapon.iter() {
-                let new_value = match damage_type {
+                let damage_multiplier_from_ability = match damage_type {
                     DamageType::Fire => {
                         match ability_storage.get(&AbilityType::FireDamage) {
-                            Some(v) => *value * (*v / 100),
-                            None => *value,
+                            Some(v) => *v,
+                            None => 100,
                         }
                     },
-                    DamageType::Cold => todo!(),
-                    DamageType::Electric => todo!(),
-                    DamageType::Cutting => todo!(),
-                    DamageType::Piercing => todo!(),
-                    DamageType::Crushing => todo!(),
-                    DamageType::Water => todo!(),
-                    DamageType::Acid => todo!(),
-                    DamageType::Poison => todo!(),
+                    DamageType::Cold => {
+                        match ability_storage.get(&AbilityType::ColdDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Electric => {
+                        match ability_storage.get(&AbilityType::ElectricDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Cutting => {
+                        match ability_storage.get(&AbilityType::CuttingDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Piercing => {
+                        match ability_storage.get(&AbilityType::PiercingDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Crushing => {
+                        match ability_storage.get(&AbilityType::CrushingDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Water => {
+                        match ability_storage.get(&AbilityType::WaterDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Acid => {
+                        match ability_storage.get(&AbilityType::AcidDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
+                    DamageType::Poison => {
+                        match ability_storage.get(&AbilityType::PoisonDamage) {
+                            Some(v) => *v,
+                            None => 100,
+                        }
+                    },
                 };
+                let new_value = (*value as f32 + ( *value as f32 * damage_multiplier_from_ability as f32 / 100.0) + (  *value as f32 * skill_type_damage_multiplier as f32 / 100.0)) as i16;
                 skill.damage.insert(damage_type.clone(), new_value);
             }
 
@@ -315,20 +351,48 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                             temp_value as u8
                         }
                     },
-                    EffectType::Acid => todo!(),
-                    EffectType::Moveless => todo!(),
-                    EffectType::Slow => todo!(),
-                    EffectType::Bleeding => todo!(),
-                    EffectType::Burn => todo!(),
-                    EffectType::Electrification => todo!(),
-                    EffectType::Freeze => todo!(),
-                    EffectType::Blind => todo!(),
-                    EffectType::Poison => todo!(),
-                    EffectType::Wet => todo!(),
-                    EffectType::BrokeArmor => todo!(),
-                    EffectType::BrokeWeapon => todo!(),
-                    EffectType::IncreaseMovement => todo!(),
-                    EffectType::Frostbite => todo!(),
+                    EffectType::Acid => {
+
+                    },
+                    EffectType::Moveless => {
+
+                    },
+                    EffectType::Slow => {
+
+                    },
+                    EffectType::Bleeding => {
+
+                    },
+                    EffectType::Burn => {
+
+                    },
+                    EffectType::Electrification => {
+
+                    },
+                    EffectType::Freeze => {
+
+                    },
+                    EffectType::Blind => {
+
+                    },
+                    EffectType::Poison => {
+
+                    },
+                    EffectType::Wet => {
+
+                    },
+                    EffectType::BrokeArmor => {
+
+                    },
+                    EffectType::BrokeWeapon => {
+
+                    },
+                    EffectType::IncreaseMovement => {
+
+                    },
+                    EffectType::Frostbite => {
+                        
+                    },
                 };
     
                 skill.effect.insert(effect_type.clone(), new_value);
