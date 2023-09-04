@@ -352,46 +352,228 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                         }
                     },
                     EffectType::Acid => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Acid) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Moveless => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Moveless) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Slow => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Slow) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Bleeding => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Bleeding) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Burn => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Burn) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Electrification => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Electrification) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Freeze => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Freeze) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Blind => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Blind) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Poison => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Poison) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Wet => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::Wet) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::BrokeArmor => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::BrokeArmor) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::BrokeWeapon => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::BrokeWeapon) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::IncreaseMovement => {
-
+                        let temp_value = match ability_storage.get(&AbilityType::IncreseMovementSpeed) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                     EffectType::Frostbite => {
-                        
+                        let temp_value = match ability_storage.get(&AbilityType::Frostbite) {
+                            Some(v) => {
+                                *value + v
+                            },
+                            None => *value,
+                        };
+    
+                        if temp_value < 0 {
+                            0
+                        } else if  temp_value > 100 {
+                            100
+                        } else {
+                            temp_value as u8
+                        }
                     },
                 };
     

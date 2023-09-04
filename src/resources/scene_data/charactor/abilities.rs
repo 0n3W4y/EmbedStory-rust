@@ -37,7 +37,7 @@ pub enum AbilityType{
     Stun,
     Freeze,
     Burn,
-    Electifical,
+    Electrification,
     Blind,
     Acid,
     Poison,

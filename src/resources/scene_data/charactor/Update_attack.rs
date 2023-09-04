@@ -337,60 +337,60 @@ fn attack(
                     Some(v) => *v,
                     None => 0,
                 };
-                let damage_multuplier_from_ability = match *damage_type {
+                let damage_multuplier_from_ability: i16 = match *damage_type {
                     DamageType::Fire => {
                         match charactor_ability.ability.get(&AbilityType::FireDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Cold => {
                         match charactor_ability.ability.get(&AbilityType::ColdDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Electric => {
                         match charactor_ability.ability.get(&AbilityType::ElectricDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Cutting => {
                         match charactor_ability.ability.get(&AbilityType::CuttingDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Piercing => {
                         match charactor_ability.ability.get(&AbilityType::PiercingDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Crushing => {
                         match charactor_ability.ability.get(&AbilityType::CrushingDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Water => {
                             match charactor_ability.ability.get(&AbilityType::WaterDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Acid => {
                         match charactor_ability.ability.get(&AbilityType::AcidDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                     DamageType::Poison => {
                         match charactor_ability.ability.get(&AbilityType::PoisonDamage) {
                             Some(v) => *v,
                             None => 100,
-                        };
+                        }
                     },
                 }; 
                 let temp_value = (*value as f32 + (*value as f32 * damage_multuplier_from_ability as f32 / 100.0)) as i16;
