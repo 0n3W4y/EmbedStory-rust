@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::resources::scene_data::stuff::{damage_type::DamageType, Stuff};
+use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType};
 
 use super::{effects::EffectType, CharactorType, abilities::AbilityType, StuffWearSlot};
 
@@ -60,6 +60,7 @@ pub struct Skill {
     pub total_duration: f32,
 
     pub projectiles: u8,
+    pub projectile_type: Option<ProjectileType>,
     pub range: u8, // max range; min range = 1;
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
@@ -92,6 +93,7 @@ impl Skill {
             current_duration: 0.0,
             total_duration: 0.0,
             projectiles: config.projectiles,
+            projectile_type:  if config.projectile_type == ProjectileType::None { None }else{ Some(config.projectile_type) },
             range: config.range,
             cast_source: config.cast_source,
             skill_direction: config.skill_direction.clone(),
@@ -119,6 +121,7 @@ pub struct SkillDeploy {
     pub cooldown: i16,
 
     pub projectiles: u8,
+    pub projectile_type: ProjectileType,
     pub range: u8,
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,

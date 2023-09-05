@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use super::{stats::{Stat, ExtraStat}, skills::SkillType, abilities::AbilityType};
+use super::{stats::{Stat, ExtraStat}, abilities::AbilityType};
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
@@ -36,9 +36,6 @@ pub enum StatDamageType {
 pub struct EffectDeploy {
     pub effect_type: EffectType,
     pub duration: u16,
-    pub trigger_time: u16,
-
-    pub extra_skill: HashMap<SkillType, u8>, // extra skill ( passive ) and trigger percent;
     
     pub change_stat: HashMap<Stat, i16>, // Stat and percentage
     pub change_stat_damage_type: StatDamageType,
@@ -56,12 +53,8 @@ pub struct EffectDeploy {
 #[derive(Deserialize, Debug, Clone, Default)]
 pub struct Effect {
     pub effect_type: EffectType,
-    pub trigger_time: f32,
     pub duration: f32,
     pub current_duration: f32,
-    pub total_duration: f32,
-
-    pub extra_skill: HashMap<SkillType, u8>,
 
     pub change_stat: HashMap<Stat, i16>, // Stat and flat damage to stat
     pub change_stat_damage_type: StatDamageType,
@@ -80,11 +73,8 @@ impl Effect {
     pub fn new(config: &EffectDeploy) -> Self {
         Effect {
             effect_type: config.effect_type.clone(),
-            trigger_time: config.trigger_time as f32 / 10.0,
             duration: config.duration as f32 / 10.0,
             current_duration: 0.0,
-            total_duration: 0.0,
-            extra_skill: config.extra_skill.clone(),
             change_stat: config.change_stat.clone(),
             change_extra_stat: config.change_extra_stat.clone(),
             change_damage_resist: config.change_damage_resist.clone(),

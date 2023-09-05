@@ -1,21 +1,13 @@
-use std::collections::HashMap;
+use serde::Deserialize;
 
-use crate::scenes::game_scenes::tilemap::tile::Position;
+pub mod update_projectile;
 
-use super::{stuff::damage_type::DamageType, charactor::effects::EffectType};
-
+#[derive(Default, Debug, Deserialize, PartialEq, Eq, Clone)]
 pub enum ProjectileType {
+    #[default]
     Arrow,
     Bullet,
-    
+    Sphere,
+    None,
 }
 
-pub struct Projectile {
-    projectile_type: ProjectileType,
-    damage: HashMap<DamageType, u16>,
-    active_effect: Vec<EffectType>,
-    passive_effect: Vec<EffectType>,
-
-    starting_position: Position<i32>,
-    destination_point: Position<i32>,
-}

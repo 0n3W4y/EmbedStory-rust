@@ -7,8 +7,11 @@ use crate::components::charactor_component::{
     ResistsComponent, SkillComponent, CharactorTargetComponent, CharactorTextComponent,
 };
 
+use crate::components::projectile_component::Projectile;
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::charactor::{self, SkillSlot};
+use crate::resources::scene_data::projectiles::ProjectileType;
+use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
 use super::damage_text_informer::DamageTextInformer;
@@ -19,6 +22,7 @@ pub fn attacking_from_basic_skill(
     mut commands: Commands,
     mut charactor_query: Query<(
         &CharactorComponent,
+        &PositionComponent,
         &mut SkillComponent,
         &CharactorTargetComponent,
         &AbilityComponent,
@@ -39,6 +43,7 @@ pub fn attacking_from_basic_skill(
 ) {
     for (
         charactor, 
+        charactor_position,
         mut charactor_skill, 
         charactor_target, 
         charactor_ability, 
@@ -62,7 +67,7 @@ pub fn attacking_from_basic_skill(
         let skill = charactor_skill.skills.get_mut(&SkillSlot::Base).unwrap();
 
         for (
-            target_component, 
+            target_component,
             mut target_extra_stats, 
             target_resists, 
             mut target_effects, 
@@ -73,9 +78,11 @@ pub fn attacking_from_basic_skill(
         ) in target_query.iter_mut() {
             if target_id == target_component.id {
                 attack(
-                    &mut commands,
+                    commands,
                     skill, 
                     charactor_ability,
+                    charactor_position,
+                    target_position,
                     &mut target_text_component, 
                     target_resists, 
                     &mut target_extra_stats, 
@@ -87,9 +94,6 @@ pub fn attacking_from_basic_skill(
                 break;
             }
         }
-
-
-
     }
 }
 
@@ -181,9 +185,11 @@ fn try_to_attack(
 }
 
 fn attack(
-    commands: &mut Commands,
+    mut commands: Commands,
     skill: &mut Skill,
     charactor_ability: &AbilityComponent,
+    charactor_position: &PositionComponent,
+    target_position: &PositionComponent,
     target_text_component: &mut CharactorTextComponent,
     target_resists: &ResistsComponent,
     target_extra_stats: &mut ExtraStatsComponent,
@@ -201,7 +207,68 @@ fn attack(
 
     //check for melee or ranged+magic attack;
     if skill.projectiles > 0 {
-        .
+        //create default projectile component;
+        let mut projectile_component = Projectile {
+            ..Default::default()
+        };
+
+        //change projectile type by weapon type 
+        projectile_component.projectile_type = match skill.projectile_type {
+            Some(v) => v.clone(),
+            None => {
+                println!("Can not get projectile type from Base skill: '{:?}', '{:?}, {:?}', use 'Arrow' projectile type", skill.skill_name, skill.skill_type, skill.skill_subtype);
+                ProjectileType::Arrow
+            },
+        };
+
+        //insert to projectile starting point and destination point;
+        projectile_component.starting_position.x = charactor_position.position.x;
+        projectile_component.starting_position.y = charactor_position.position.y;
+        projectile_component.destination_point.x = target_position.position.x;
+        projectile_component.destination_point.y = target_position.position.y;
+
+        //let check for accuracy
+        let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {
+            Some(v) => *v,
+            _ => {
+                println!("Can't get Accuracy, use 0 instead, so 100% chance to miss");
+                0
+            }
+        };
+
+        let random_accuracy_number: u8 = rng.gen_range(0..=99);
+        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
+            projectile_component.is_missed = true;
+            create_projectile(commands, projectile_component, deploy);
+            //if accuracy <= 0 we r create projectile with @miss field; and return from func;
+            return;
+        };
+
+        //if not missed
+        //clone damage values;
+        projectile_component.damage = skill.damage.clone();
+
+        //check for trigger effects and passive skills;
+        for (effect_type, trigger_chance) in skill.effect.iter() {
+            if *trigger_chance <= 0 {
+                continue;
+            }
+
+            let random_trigger_chance_number: u8 = rng.gen_range(0..=99);
+
+            if random_trigger_chance_number > *trigger_chance {
+                continue;
+            }
+
+            projectile_component.effects.push(effect_type.clone());                  
+        }
+
+        for (skill_type, trigger_chance) in skill.passive_skill.iter() {
+            if *trigger_chance < 100 && *trigger_chance > 0 {
+
+            }
+        }
+
     } else {
         // let check for accuracy
         let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {

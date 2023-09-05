@@ -42,14 +42,8 @@ pub fn update_effects(
 
         //update temporary effects;
         for (_, effect) in effects.temporary_effect.iter_mut() {
-            //check for trigger
-            if effect.current_duration >= effect.trigger_time || effect.total_duration == 0.0 {
-
-                //if triggered by trigger time, substruct from current duration;
-                if effect.total_duration != 0.0 {
-                    effect.current_duration -= effect.trigger_time;
-                }
-
+            //first run;
+            if effect.current_duration == 0.0 {
                 for (stat, stat_damage) in effect.change_stat {
                     charactor::change_stat(
                         &mut stats.stats,
@@ -101,19 +95,11 @@ pub fn update_effects(
                     charactor::change_ability(&mut abilities.ability, &ability, ability_value as i16);
                 }
 
+                //update base skill by changes in abilities and stats;
                 skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
-            }
 
-            //add time to effect duration;
-            effect.current_duration += delta;
-            effect.total_duration += delta;
-
-            //remove this;
-            println!("From effect update. current duration: {:?}, total duration: {:?}, delta: {:?}", effect.current_duration, effect.total_duration, delta);
-
-            //check for effects end;
-            if effect.total_duration >= effect.duration {
-                // remove effect;
+            } else if effect.current_duration >= effect.duration {
+                // effect is end; revert changes and remove effect
                 for (stat, stat_damage) in effect.change_stat {
                     charactor::change_stat(
                         &mut stats.stats,
@@ -166,13 +152,19 @@ pub fn update_effects(
                 skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);  
 
                 effects.temporary_effect.remove(&effect.effect_type);
-            };
+            } else {
+                //add time to effect duration;
+                effect.current_duration += delta;
+                //remove this;
+                println!("From effect update. current duration: {:?}, delta: {:?}", effect.current_duration, delta);
+            }                
         }
 
         //update endless effect;
         for(_, endless_effect) in effects.endless_effect.iter_mut(){
             //check for remove endless_effect
-            if endless_effect.total_duration < 0.0 {
+            //we remove endless effect if duration changes to negative value;
+            if endless_effect.current_duration < 0.0 {
                 //remove endless effect;
                 for (stat, stat_damage) in endless_effect.change_stat {
                     charactor::change_stat(
@@ -226,14 +218,9 @@ pub fn update_effects(
                 skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
 
                 effects.endless_effect.remove(&endless_effect.effect_type);
-            }
-            //first run or triggered;
-            if endless_effect.current_duration >= endless_effect.trigger_time || endless_effect.total_duration == 0.0 {
-                if endless_effect.total_duration != 0.0 {
-                    //if not first run substruct time from current duration;
-                    endless_effect.current_duration - endless_effect.trigger_time;
-                }
 
+            //first run
+            } else if endless_effect.current_duration == 0.0 {
                 for (stat, stat_damage) in endless_effect.change_stat {
                     charactor::change_stat(
                         &mut stats.stats,
@@ -286,14 +273,10 @@ pub fn update_effects(
                 }
 
                 skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
-            }
-
-            endless_effect.current_duration += delta;
-            endless_effect.total_duration += delta;
+            } else {
+                endless_effect.current_duration += delta;
+            }            
         }
     }
-
-    //update 
-
 }
 
