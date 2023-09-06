@@ -37,6 +37,8 @@ pub enum SkillSlot {
     WeaponTwo,
     WeaponThree,
     WeaponFour,
+    TrinketOne,
+    TrinketTwo,
     BeltOne,
     BeltTwo,
     BeltThree,
@@ -102,6 +104,7 @@ pub enum StuffWearSlot {
 #[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
 pub enum CharactorStatus {
     Dead,
+    TryMove,
     Moving,
     #[default]
     Standing,
@@ -143,6 +146,7 @@ pub struct Charactor {
 
     pub skills: HashMap<SkillSlot, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
+    pub passive_skills_on_attack: HashMap<SkillType, i16>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
@@ -150,6 +154,7 @@ pub struct Charactor {
 
     pub temporary_effect: HashMap<EffectType, Effect>,
     pub endless_effect: HashMap<EffectType, Effect>,
+    pub effects_on_attaqck: HashMap<EffectType, i16>,
 }
 
 pub fn change_ability(

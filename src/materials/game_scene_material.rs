@@ -171,8 +171,8 @@ impl ThingMaterial {
 
 #[derive(Debug, Clone)]
 pub struct CharactorsMaterial {
-    human_female_atlas: Handle<TextureAtlas>,
-    human_male_atlas: Handle<TextureAtlas>,
+    pub human_female_atlas: Handle<TextureAtlas>,
+    pub human_male_atlas: Handle<TextureAtlas>,
 }
 
 impl CharactorsMaterial {
@@ -195,10 +195,18 @@ impl CharactorsMaterial {
 }
 
 #[derive(Debug, Clone)]
+pub struct ProjectilesMaterial {
+    pub arrow_atlas: Handle<TextureAtlas>,
+    pub bullet_atlas: Handle<TextureAtlas>,
+    pub sphere_atlas: Handle<TextureAtlas>,
+}
+
+#[derive(Debug, Clone)]
 pub struct GameSceneMaterial {
     pub tile: TileMaterial,
     pub things: ThingMaterial,
     pub charactors: CharactorsMaterial,
+    pub projectiles: ProjectilesMaterial,
 }
 
 impl GameSceneMaterial {
@@ -210,7 +218,46 @@ impl GameSceneMaterial {
             tile: GameSceneMaterial::load_tile_material(asset_server, texture_atlases),
             things: GameSceneMaterial::load_things_material(asset_server, texture_atlases),
             charactors: GameSceneMaterial::load_charactors_material(asset_server, texture_atlases),
+            projectiles: GameSceneMaterial::load_projectiles_material(asset_server, texture_atlases),
         };
+    }
+
+    fn load_projectiles_material(
+        asset_server: &Res<AssetServer>,
+        texture_atlases: &mut ResMut<Assets<TextureAtlas>>,
+    ) -> ProjectilesMaterial {
+        let arrow_texture_handle: Handle<Image> = asset_server.load("textures/projectile/arrow.png");
+        let bullet_texture_handle: Handle<Image> = asset_server.load("textures/projectile/bullet.png");
+        let sphere_texture_handle: Handle<Image> = asset_server.load("textures/projectile/sphere.png");
+
+        let arrow_texture_atlas = TextureAtlas::from_grid(
+            arrow_texture_handle,
+            Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+            1,
+            1,
+        );
+        let bullet_texture_atlas = TextureAtlas::from_grid(
+            bullet_texture_handle,
+            Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+            1,
+            1,
+        );
+        let sphere_texture_atlas = TextureAtlas::from_grid(
+            sphere_texture_handle,
+            Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+            1,
+            1,
+        );
+
+        let arrow_atlas = texture_atlases.add(arrow_texture_atlas);
+        let bullet_atlas = texture_atlases.add(bullet_texture_atlas);
+        let sphere_atlas = texture_atlases.add(sphere_texture_atlas);
+
+        ProjectilesMaterial {
+            arrow_atlas,
+            bullet_atlas,
+            sphere_atlas,
+        }
     }
 
     fn load_tile_material(

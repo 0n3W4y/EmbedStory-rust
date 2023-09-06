@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType};
 
-use super::{effects::EffectType, CharactorType, abilities::AbilityType, StuffWearSlot};
+use super::{effects::EffectType, CharactorType, abilities::{AbilityType, self}, StuffWearSlot};
 
 #[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillType {
@@ -72,7 +72,7 @@ pub struct Skill {
 
     pub damage: HashMap<DamageType, i16>,
     pub effect: HashMap<EffectType, u8>,
-    pub passive_skill: HashMap<SkillType, u8>,
+    pub passive_skill: HashMap<SkillSubtype, u8>,
 }
 
 impl Skill {
@@ -108,7 +108,7 @@ impl Skill {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct SkillDeploy {
     pub skill_type: SkillType,
     pub skill_subtype: SkillSubtype,
@@ -133,7 +133,7 @@ pub struct SkillDeploy {
 
     pub damage: HashMap<DamageType, i16>, 
     pub effect: HashMap<EffectType, u8>, // effect type and effect trigger chanse;
-    pub passive_skill: HashMap<SkillType, u8>, // skill type and skill trigger chanse;
+    pub passive_skill: HashMap<SkillSubtype, u8>, // skill type and skill trigger chanse;
 }
 
 
@@ -203,16 +203,16 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             };
 
             let mut skill_cooldown: i16 = 0;
-            let mut critical_chanse: i16 = 0;
+            let mut critical_chance: i16 = 0;
             let mut critical_multiplier: i16 = 0;
             let mut damage_from_weapon: HashMap<DamageType, i16> = HashMap::new();
             let mut effects_from_weapon: HashMap<EffectType, i16> = HashMap::new();
-            let mut passive_skills_from_weapon: HashMap<SkillType, i16> = HashMap::new();
+            let mut passive_skills_from_weapon: HashMap<SkillSubtype, i16> = HashMap::new();
 
             //get weapon from right hand
             match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {
                 Some(v) => {
-                    critical_chanse = v.critical_hit_chanse;
+                    critical_chance = v.critical_hit_chanse;
                     critical_multiplier = v.critical_multiplier;
                     skill_cooldown = v.cooldown;
                     for (damage_type, value) in v.damage.iter() {
@@ -237,10 +237,10 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {
                 Some(v) => {
                     //middle value from 2 weapons;
-                    critical_chanse =  if v.critical_hit_chanse > 0 {
-                        (critical_chanse + v.critical_hit_chanse) /2 
+                    critical_chance =  if v.critical_hit_chanse > 0 {
+                        (critical_chance + v.critical_hit_chanse) /2 
                     } else {
-                        critical_chanse
+                        critical_chance
                     };
 
                     critical_multiplier = if v.critical_multiplier > 0 {
@@ -271,316 +271,28 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             };
 
             skill.cooldown = (skill_cooldown as f32 / 100.0) / (attack_speed_from_ability as f32 / 100.0); // weapon cooldown like 122 / 100; and attack speed like 100% / 100;
-            skill.crit_chance = critical_chanse + critical_chanse_from_ability;
+            skill.crit_chance = critical_chance + critical_chanse_from_ability;
             skill.crit_multiplier = critical_multiplier + critical_multiplier_from_ability;
 
 
             for (damage_type, value) in damage_from_weapon.iter() {
-                let damage_multiplier_from_ability = match damage_type {
-                    DamageType::Fire => {
-                        match ability_storage.get(&AbilityType::FireDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Cold => {
-                        match ability_storage.get(&AbilityType::ColdDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Electric => {
-                        match ability_storage.get(&AbilityType::ElectricDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Cutting => {
-                        match ability_storage.get(&AbilityType::CuttingDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Piercing => {
-                        match ability_storage.get(&AbilityType::PiercingDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Crushing => {
-                        match ability_storage.get(&AbilityType::CrushingDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Water => {
-                        match ability_storage.get(&AbilityType::WaterDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Acid => {
-                        match ability_storage.get(&AbilityType::AcidDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Poison => {
-                        match ability_storage.get(&AbilityType::PoisonDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                };
+                let damage_multiplier_from_ability = abilities::get_damage_type_from_ability(ability_storage, damage_type);
                 let new_value = (*value as f32 + ( *value as f32 * damage_multiplier_from_ability as f32 / 100.0) + (  *value as f32 * skill_type_damage_multiplier as f32 / 100.0)) as i16;
                 skill.damage.insert(damage_type.clone(), new_value);
             }
 
             for (effect_type, value) in effects_from_weapon.iter() {
-                let new_value = match *effect_type {
-                    EffectType::Stun => { 
-                        let temp_value = match ability_storage.get(&AbilityType::Stun) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Acid => {
-                        let temp_value = match ability_storage.get(&AbilityType::Acid) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Moveless => {
-                        let temp_value = match ability_storage.get(&AbilityType::Moveless) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Slow => {
-                        let temp_value = match ability_storage.get(&AbilityType::Slow) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Bleeding => {
-                        let temp_value = match ability_storage.get(&AbilityType::Bleeding) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Burn => {
-                        let temp_value = match ability_storage.get(&AbilityType::Burn) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Electrification => {
-                        let temp_value = match ability_storage.get(&AbilityType::Electrification) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Freeze => {
-                        let temp_value = match ability_storage.get(&AbilityType::Freeze) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Blind => {
-                        let temp_value = match ability_storage.get(&AbilityType::Blind) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Poison => {
-                        let temp_value = match ability_storage.get(&AbilityType::Poison) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Wet => {
-                        let temp_value = match ability_storage.get(&AbilityType::Wet) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::BrokeArmor => {
-                        let temp_value = match ability_storage.get(&AbilityType::BrokeArmor) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::BrokeWeapon => {
-                        let temp_value = match ability_storage.get(&AbilityType::BrokeWeapon) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::IncreaseMovement => {
-                        let temp_value = match ability_storage.get(&AbilityType::IncreseMovementSpeed) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
-                    EffectType::Frostbite => {
-                        let temp_value = match ability_storage.get(&AbilityType::Frostbite) {
-                            Some(v) => {
-                                *value + v
-                            },
-                            None => *value,
-                        };
-    
-                        if temp_value < 0 {
-                            0
-                        } else if  temp_value > 100 {
-                            100
-                        } else {
-                            temp_value as u8
-                        }
-                    },
+                let effect_chance_multiplier = abilities::get_effect_type_from_ability(ability_storage, effect_type);
+                let new_value = value + ( value * effect_chance_multiplier / 100);
+                let new_value_u8 = if new_value < 0 {
+                    0
+                } else if new_value > 100 {
+                    100
+                } else {
+                    new_value as u8
                 };
-    
-                skill.effect.insert(effect_type.clone(), new_value);
+
+                skill.effect.insert(effect_type.clone(), new_value_u8);
             }
     
             for (passive_skill_type, value) in passive_skills_from_weapon.iter(){

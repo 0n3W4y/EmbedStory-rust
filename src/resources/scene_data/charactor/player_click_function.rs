@@ -71,42 +71,43 @@ pub fn player_click(
                         },
                         CharactorType::Companion => {
                             println!("Clicked on Companion");
-                            move_player_to(&mut position, position_x, position_y);
+                            move_player_to_position(&mut player, &mut position, position_x, position_y);
                         },
                         CharactorType::NPC => {
                             println!("Clicked on NPC");
                             //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
                         }
                         _ => {
-                            move_player_to(&mut position, position_x, position_y);
+                            move_player_to_position(&mut player, &mut position, position_x, position_y);
                         }
                     };
                 };
             };
             /*
-            //check for click on stuff item in ground;
-            for (stuff_component, position_component) in stuff_query.iter() {
-                let stuff_position_x = position_component.position.x;
-                let stuff_position_y = position_component.position.y;
-                if stuff_position_x == position_x && stuff_position_y == position_y {
-                    select_item_to_pickup( &mut player, &mut position, stuff_component.id, position_x, position_y);
-                    return;
+            //check click thing on ground
+            for (thing_component, position_component) in thing_query.iter() {
+                let thing_position_x = posotion_component.position.x;
+                let thing_position_y = position_component.position.y;
+                let thing_type = thing_component.thing_type;
+                if thing_position_x == position_x && thing_position_y == position_y {
+                    select_thing_to_use( &mut player, &mut position, thing_type, thing_component.id, position_x, position_y)
                 };
-            };
+            }
             */
             //check coordinates have a property values;
-            move_player_to(&mut position, position_x, position_y);
         } else {
             // cursor is not inside the window
         }
     }
 }
 
-fn move_player_to(
+fn move_player_to_position(
+    player: &mut CharactorComponent,
     position: &mut PositionComponent,
     x: i32,
     y: i32,
 ) {
+    player.status = CharactorStatus::TryMove;
     position.destination_point = Some(Position { x, y });
 }
 
@@ -124,18 +125,3 @@ fn select_target_to_attack(
     player_target.action = ActionType::Attack;
     player_target.target_position = Some(Position{ x, y });
 }
-
-fn select_item_to_pickup(
-    player_target: &mut CharactorTargetComponent,
-    id: usize,
-    x: i32,
-    y: i32,
-) {
-    player_target.target_position = Some(Position { x, y });
-    player_target.target = Some(id);
-    player_target.action = ActionType::Pickup;
-}
-
-fn select_door_to_open(){}
-
-fn select_npc_to_talk(){}

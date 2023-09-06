@@ -12,7 +12,7 @@ use crate::resources::scene_data::charactor::StuffWearSlot;
 use self::damage_type::DamageType;
 
 use super::charactor::abilities::AbilityType;
-use super::charactor::skills::SkillType;
+use super::charactor::skills::SkillSubtype;
 use super::charactor::{stats::{Stat, ExtraStat}, effects::EffectType};
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash )]
@@ -67,7 +67,7 @@ pub struct Stuff{
     pub cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
 
     pub effects: HashMap<EffectType, i16>,
-    pub passive_skills: HashMap<SkillType, i16>,
+    pub passive_skills: HashMap<SkillSubtype, i16>,
 
     pub stats: HashMap<Stat, i16>,
     pub extra_stats: HashMap<ExtraStat, i16>,
@@ -75,7 +75,7 @@ pub struct Stuff{
     pub damage_resists: HashMap<DamageType, i16>,
     pub abilities: HashMap<AbilityType, i16>,
 
-    pub skills: Vec<SkillType>,
+    pub skills: Vec<SkillSubtype>,
 
     pub price: u32,
 

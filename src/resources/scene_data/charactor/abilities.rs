@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use serde::Deserialize;
 
-use super::stats::Stat;
+use crate::resources::scene_data::stuff::damage_type::DamageType;
+
+use super::{stats::Stat, effects::EffectType, skills::SkillType};
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, Deserialize)]
 pub enum AbilityType{
@@ -115,4 +117,149 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
         },
     }
     return result;
+}
+
+pub fn get_effect_type_from_ability (ability_storage: &HashMap<AbilityType, i16>, effect_type: &EffectType) -> i16 {
+    return match *effect_type {
+        EffectType::Stun => match ability_storage.get(&AbilityType::Stun) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Stun => match ability_storage.get(&AbilityType::Stun) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Acid =>  match ability_storage.get(&AbilityType::Acid) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Moveless => match ability_storage.get(&AbilityType::Moveless) {
+            Some(v) => *v,
+            None => 0,   
+        },
+        EffectType::Slow =>  match ability_storage.get(&AbilityType::Slow) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Bleeding => match ability_storage.get(&AbilityType::Bleeding) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Burn => match ability_storage.get(&AbilityType::Burn) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Electrification => match ability_storage.get(&AbilityType::Electrification) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Freeze => match ability_storage.get(&AbilityType::Freeze) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Blind => match ability_storage.get(&AbilityType::Blind) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Poison => match ability_storage.get(&AbilityType::Poison) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Wet => match ability_storage.get(&AbilityType::Wet) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::BrokeArmor => match ability_storage.get(&AbilityType::BrokeArmor) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::BrokeWeapon => match ability_storage.get(&AbilityType::BrokeWeapon) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::IncreaseMovement => match ability_storage.get(&AbilityType::IncreseMovementSpeed) {
+            Some(v) => *v,
+            None => 0,
+        },
+        EffectType::Frostbite => match ability_storage.get(&AbilityType::Frostbite) {
+            Some(v) => *v,
+            None => 0,
+        },
+    }
+}
+
+pub fn get_damage_type_from_ability (ability_storage: &HashMap<AbilityType, i16>, damage_type: &DamageType) -> i16 {
+    return match *damage_type {
+        DamageType::Fire => {
+            match ability_storage.get(&AbilityType::FireDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Cold => {
+            match ability_storage.get(&AbilityType::ColdDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Electric => {
+            match ability_storage.get(&AbilityType::ElectricDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Cutting => {
+            match ability_storage.get(&AbilityType::CuttingDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Piercing => {
+            match ability_storage.get(&AbilityType::PiercingDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Crushing => {
+            match ability_storage.get(&AbilityType::CrushingDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Water => {
+                match ability_storage.get(&AbilityType::WaterDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Acid => {
+            match ability_storage.get(&AbilityType::AcidDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+        DamageType::Poison => {
+            match ability_storage.get(&AbilityType::PoisonDamage) {
+                Some(v) => *v,
+                None => 0,
+            }
+        },
+    }
+}
+
+pub fn get_skill_damage_from_ability (ability_storage: &HashMap<AbilityType, i16>, skill_type: &SkillType) -> i16 {
+    match *skill_type {
+        SkillType::Melee => match ability_storage.get(&AbilityType::MeleeDamage) {
+            Some(v) => *v,
+            None => 0,
+        },
+        SkillType::Ranged => match ability_storage.get(&AbilityType::RangedDamage) {
+            Some(v) => *v,
+            None => 0,
+        },
+        SkillType::Magic => match ability_storage.get(&AbilityType::MagicDamage) {
+            Some(v) => *v,
+            None => 0,
+        },
+    }
 }

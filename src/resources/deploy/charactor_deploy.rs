@@ -5,7 +5,7 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
-use crate::resources::scene_data::charactor::skills::{SkillType, SkillDeploy};
+use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillSubtype};
 use crate::resources::scene_data::charactor::stats::{ExtraStat, Stat};
 use crate::resources::scene_data::charactor::RaceType;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
@@ -158,32 +158,13 @@ pub struct RaceConfig {
 
 #[derive(Deserialize, Debug)]
 pub struct SkillsDeploy{
-    
+    pub base_skill: SkillDeploy,
 }
 
 impl SkillsDeploy {
-    pub fn get_skill_deploy( &self, skill: &SkillType ) -> &SkillDeploy {
-        &SkillDeploy {
-            skill_type: todo!(),
-            skill_subtype: crate::resources::scene_data::charactor::skills::SkillSubtype::SomeSkill,
-            skill_name: todo!(),
-            is_passive_skill: todo!(),
-            stuff_id: todo!(),
-            trigger_chanse: todo!(),
-            trigger_time: todo!(),
-            trigger_duration: todo!(),
-            cooldown: todo!(),
-            projectiles: todo!(),
-            range: todo!(),
-            cast_source: todo!(),
-            skill_direction: todo!(),
-            stamina_cost: todo!(),
-            target: todo!(),
-            crit_chance: todo!(),
-            crit_multiplier: todo!(),
-            damage: todo!(),
-            effect: todo!(),
-            passive_skill: todo!(),
+    pub fn get_skill_deploy( &self, skill: &SkillSubtype ) -> &SkillDeploy {
+        match *skill {
+            SkillSubtype::BaseSkill => &self.base_skill,
         }
     }
 }

@@ -8,12 +8,13 @@ use crate::components::charactor_component::{
 };
 
 use crate::components::projectile_component::Projectile;
+use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::charactor::{self, SkillSlot};
 use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
-use crate::resources::scene_data::stuff::damage_type::DamageType;
 
+use super::abilities;
 use super::damage_text_informer::DamageTextInformer;
 use super::effects::{Effect, StatDamageType};
 use super::{abilities::AbilityType, skills::Skill, stats::ExtraStat, CharactorStatus};
@@ -40,6 +41,7 @@ pub fn attacking_from_basic_skill(
     )>,
 
     deploy: Res<Deploy>,
+    materail_manager: Res<MaterialManager>,
 ) {
     for (
         charactor, 
@@ -79,7 +81,7 @@ pub fn attacking_from_basic_skill(
             if target_id == target_component.id {
                 attack(
                     commands,
-                    skill, 
+                    skill,
                     charactor_ability,
                     charactor_position,
                     target_position,
@@ -89,7 +91,8 @@ pub fn attacking_from_basic_skill(
                     &mut target_effects, 
                     target_abilities, 
                     &mut target_skills,
-                    &deploy
+                    &deploy,
+                    &materail_manager,
                 );
                 break;
             }
@@ -124,7 +127,11 @@ pub fn update_attack_from_basic_skill(
     ) in charactor_query.iter_mut() {
         if charactor_target.action != ActionType::Attack {
             continue;
-        }        
+        }
+
+        if charactor.status != CharactorStatus::TryAttack {
+            continue;
+        }
 
         let target_id = match charactor_target.target {
             Some(v) => v,
@@ -197,6 +204,7 @@ fn attack(
     target_ability: &AbilityComponent,
     target_skills: &mut SkillComponent,
     deploy: &Deploy,
+    material_manager: &MaterialManager,
 ) {
     let effects_deploy = &deploy.charactor_deploy.effects_deploy;
     let skills_deploy = &deploy.charactor_deploy.skills_deploy;
@@ -239,7 +247,7 @@ fn attack(
         let random_accuracy_number: u8 = rng.gen_range(0..=99);
         if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
             projectile_component.is_missed = true;
-            create_projectile(commands, projectile_component, deploy);
+            create_projectile(commands, projectile_component, deploy, material_manager);
             //if accuracy <= 0 we r create projectile with @miss field; and return from func;
             return;
         };
@@ -251,12 +259,13 @@ fn attack(
         //check for trigger effects and passive skills;
         for (effect_type, trigger_chance) in skill.effect.iter() {
             if *trigger_chance <= 0 {
+                //not triggered;
                 continue;
             }
 
             let random_trigger_chance_number: u8 = rng.gen_range(0..=99);
-
             if random_trigger_chance_number > *trigger_chance {
+                //not triggered;
                 continue;
             }
 
@@ -391,7 +400,7 @@ fn attack(
                 let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
                 effect.duration -= effect_duration;
 
-                let old_effect = target_effect.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+                target_effect.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
             }
         }
         
@@ -404,62 +413,7 @@ fn attack(
                     Some(v) => *v,
                     None => 0,
                 };
-                let damage_multuplier_from_ability: i16 = match *damage_type {
-                    DamageType::Fire => {
-                        match charactor_ability.ability.get(&AbilityType::FireDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Cold => {
-                        match charactor_ability.ability.get(&AbilityType::ColdDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Electric => {
-                        match charactor_ability.ability.get(&AbilityType::ElectricDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Cutting => {
-                        match charactor_ability.ability.get(&AbilityType::CuttingDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Piercing => {
-                        match charactor_ability.ability.get(&AbilityType::PiercingDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Crushing => {
-                        match charactor_ability.ability.get(&AbilityType::CrushingDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Water => {
-                            match charactor_ability.ability.get(&AbilityType::WaterDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Acid => {
-                        match charactor_ability.ability.get(&AbilityType::AcidDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                    DamageType::Poison => {
-                        match charactor_ability.ability.get(&AbilityType::PoisonDamage) {
-                            Some(v) => *v,
-                            None => 100,
-                        }
-                    },
-                }; 
+                let damage_multuplier_from_ability: i16 = abilities::get_damage_type_from_ability(&charactor_ability.ability, damage_type);
                 let temp_value = (*value as f32 + (*value as f32 * damage_multuplier_from_ability as f32 / 100.0)) as i16;
                 *value = temp_value - (temp_value as f32 * target_resist_multiplier as f32 / 100.0) as i16;
                                     

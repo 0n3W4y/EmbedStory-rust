@@ -3,6 +3,7 @@ use std::collections::HashMap;
 
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::damage_text_informer::DamageTextInformer;
+use crate::resources::scene_data::charactor::skills::SkillSubtype;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::Effect;
 use crate::resources::scene_data::charactor::stats::Stat;
@@ -10,7 +11,7 @@ use crate::resources::scene_data::charactor::stats::ExtraStat;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::resources::scene_data::charactor::abilities::AbilityType;
-use crate::resources::scene_data::charactor::skills::{Skill, SkillType};
+use crate::resources::scene_data::charactor::skills::Skill;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::charactor::StuffWearSlot;
 use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderType, CharactorStatus};
@@ -81,7 +82,7 @@ pub struct AbilityComponent {
 #[derive(Component, Default)]
 pub struct SkillComponent {
     pub skills: HashMap<SkillSlot, Skill>,
-    pub passive_skills: HashMap<SkillType, Skill>,
+    pub passive_skills: HashMap<SkillSubtype, Skill>,
 }
 
 #[derive(Component, Default)]
