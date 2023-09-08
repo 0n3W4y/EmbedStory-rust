@@ -18,7 +18,7 @@ const DEFAULT_MOVEMENT_SPEED: f32 = 1000.0;
 
 pub fn move_charactor(
     time: Res<Time>,
-    mut charactor_query: Query<(&mut CharactorComponent, &mut PositionComponent, &AbilityComponent, &mut Transform, &mut TextureAtlasSprite), Without<PlayerComponent>>,
+    mut charactor_query: Query<(&mut CharactorComponent, &mut PositionComponent, &AbilityComponent, &mut Transform, &mut TextureAtlasSprite)>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
@@ -31,9 +31,20 @@ pub fn move_charactor(
         mut transform, 
         mut sprite
     ) in charactor_query.iter_mut(){
-        //check for need to move;
+
+        //check for moving logic;
+        if charactor.status == CharactorStatus::Moving {
+            moving();
+        } else if charactor.status == CharactorStatus::TryMove {
+            try_move();
+        } else {
+            continue;
+        }
+        
         match position.destination_point {
-            Some(_) => {charactor.status = CharactorStatus::Moving;},
+            Some(_) => {
+                
+            },
             None => continue,
         }
         //let mut move_camera_on_player: bool = false;
@@ -51,7 +62,7 @@ pub fn move_charactor(
             change_sprite_by_direction(&mut sprite, &position.destination_direction);
         }
 
-        let movement_speed: f32 = match ability.ability.get(&Ability::MovementSpeed){
+        let movement_speed = match ability.ability.get(&AbilityType::MovementSpeed){
             Some(v) => *v,
             None => {
                 println!(
@@ -80,6 +91,14 @@ pub fn move_charactor(
         
         try_grid_moving(&mut charactor, &mut position, &mut transform.translation, &mut sprite);
     }
+}
+
+pub fn try_move() {
+
+}
+
+pub fn moving(){
+
 }
 
 fn calculate_direction(position_x: i32, position_y: i32, destination_x: i32, destination_y: i32) -> Position<i8> {
