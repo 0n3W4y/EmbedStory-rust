@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
-use crate::components::charactor_component::{CharactorComponent, PositionComponent, AbilityComponent, PlayerComponent};
+use crate::components::charactor_component::{CharactorComponent, PositionComponent, AbilityComponent};
 use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
@@ -34,9 +34,9 @@ pub fn move_charactor(
 
         //check for moving logic;
         if charactor.status == CharactorStatus::Moving {
-            moving();
+            moving(); // move next
         } else if charactor.status == CharactorStatus::TryMove {
-            try_move();
+            try_move(&mut position, scene); // check for moving and create path;
         } else {
             continue;
         }
@@ -51,16 +51,13 @@ pub fn move_charactor(
         //let (mut camera_transform, cam, projection) = camera.single_mut();
         //if component.charactor_type == CharactorType::Player && cam.camera_on_charator {move_camera_on_player = true;};
 
-        if position.destination_path.len() == 0 {
-            try_path(&mut position, scene);
-            // TODO: Pathfinding;
-            if position.position.x == position.destination_point.unwrap().x //safe unwrap
-            && position.position.y == position.destination_point.unwrap().y { //safe unwrap
-                destination_reach(&mut charactor);
-                continue;
-            }
-            change_sprite_by_direction(&mut sprite, &position.destination_direction);
+
+        if position.position.x == position.destination_point.unwrap().x //safe unwrap
+        && position.position.y == position.destination_point.unwrap().y { //safe unwrap
+            destination_reach(&mut charactor);
+            continue;
         }
+        change_sprite_by_direction(&mut sprite, &position.destination_direction);
 
         let movement_speed = match ability.ability.get(&AbilityType::MovementSpeed){
             Some(v) => *v,
@@ -93,7 +90,15 @@ pub fn move_charactor(
     }
 }
 
-pub fn try_move() {
+//first click on ground;
+pub fn try_move(position: &mut PositionComponent, scene: &GameScene) {
+    if position.destination_path.len() == 0 {
+        try_path(position, scene);
+        // TODO: Pathfinding;
+    } else {
+        // if destination_path is in, we need to remove all but no 0 index;
+        let next_point = position.destination_path[0];
+    }
 
 }
 
@@ -202,12 +207,7 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
     } 
 }
 
-fn check_tile_for_moving(tile: &Tile) -> bool {
-    match tile.permissions.iter().find(|x|{x == &&TilePermissions::Walk}){
-        Some(_) => true,
-        None => false,
-    }
-}
+
 
 fn try_path(position: &mut PositionComponent, scene: &GameScene) {
     let position_x = position.position.x;
@@ -215,30 +215,37 @@ fn try_path(position: &mut PositionComponent, scene: &GameScene) {
     let destination_x = position.destination_point.unwrap().x; //safe
     let destination_y = position.destination_point.unwrap().y; //safe
 
+    //maximum tiles to reaach destination; line;
     let path_tiles = ((destination_x - position_x).abs()).max((destination_y - position_y).abs());
-    for _ in 0..path_tiles{
-        let mut current_x = position_x;
-        let mut current_y = position_y;
+    for i in 0..path_tiles{
         let path_len = position.destination_path.len();
-        if path_len != 0 { 
-            //last index with position;
-            current_x = position.destination_path[path_len -1].x;
-            current_y = position.destination_path[path_len -1].y;
+        let next_point = if path_len == 0 {
+            //get start point;
+            Position{x: position_x, y: position_y}
+        } else {
+            //get last point;
+            Position{
+                x: position.destination_path[path_len -1].x, 
+                y: position.destination_path[path_len -1].y
+            }
         };
 
-        let direction_xy = calculate_direction(current_x, current_y, destination_x, destination_y);
-        if position.destination_direction.x == 0 && position.destination_direction.y == 0 { // first circle run;
-            position.destination_direction.x = direction_xy.x;
-            position.destination_direction.y = direction_xy.y;
-        };
-
-        let tile = scene.tilemap.get_tile_by_position(current_x + direction_xy.x as i32, current_y + direction_xy.y as i32);
+        let direction_xy = calculate_direction(next_point.x, next_point.y, destination_x, destination_y);
+        let tile = scene.tilemap.get_tile_by_position(next_point.x + direction_xy.x as i32, next_point.y + direction_xy.y as i32);
 
         if check_tile_for_moving(tile) {
             position.destination_path.push(Position {x: tile.position.x, y: tile.position.y});
         } else {
+            //break circle;
             return;
         }
+    }
+}
+
+fn check_tile_for_moving(tile: &Tile) -> bool {
+    match tile.permissions.iter().find(|x|{x == &&TilePermissions::Walk}){
+        Some(_) => true,
+        None => false,
     }
 }
 
