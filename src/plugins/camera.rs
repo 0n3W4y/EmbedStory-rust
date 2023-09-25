@@ -12,7 +12,7 @@ pub struct UserInterfaceCamera;
 #[derive( Component )]
 pub struct Orthographic2DCamera{
     pub cursor_position: Vec2,
-    pub camera_on_charator: bool,
+    pub camera_on_player: bool,
 }
 
 pub struct CameraPlugin;
@@ -46,7 +46,7 @@ fn spawn_2d_camera( mut commands: Commands ){
 
     commands
         .spawn_bundle(camera)
-        .insert(Orthographic2DCamera{ cursor_position: Vec2::new( 0.0, 0.0 ), camera_on_charator: true, })
+        .insert(Orthographic2DCamera{ cursor_position: Vec2::new( 0.0, 0.0 ), camera_on_player: false, })
         .insert(Name::new("Orthographic2DCamera"));
 }
 
