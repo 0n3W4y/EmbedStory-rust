@@ -15,7 +15,7 @@ use super::abilities::AbilityType;
 
 //use super::CharactorType;
 
-const DEFAULT_MOVEMENT_SPEED: f32 = 10.0;
+const DEFAULT_MOVEMENT_SPEED: f32 = 100.0;
 
 pub fn move_charactor(
     time: Res<Time>,
@@ -62,17 +62,17 @@ pub fn move_charactor(
 //first click on ground;
 pub fn try_move(charactor: &mut CharactorComponent, position: &mut PositionComponent, scene: &GameScene) {
     if position.destination_path.len() == 0 {
+        //first move or moving while char standing;
         try_path(position, scene);
         // TODO: Pathfinding;
     } else {
         // if destination_path is in, we need to remove all but no 0 index;
         let next_point = position.destination_path[0];
-        let current_point = position.position.clone();
         position.destination_path.clear();
+        position.destination_path.push(next_point);
         try_path(position, scene);
         // add old point to 1-st 
-        charactor.status = CharactorStatus::Moving;
-        //position.destination_path.append(next_point);
+        charactor.status = CharactorStatus::Moving;        
     }
 
 }
@@ -106,12 +106,6 @@ pub fn moving(charactor: &mut CharactorComponent, position: &mut PositionCompone
     change_sprite_by_direction(sprite, &position.destination_direction);
 
     try_grid_moving(charactor, position, translation, sprite);
-
-    if position.position.x == position.destination_point.unwrap().x //safe unwrap
-    && position.position.y == position.destination_point.unwrap().y { //safe unwrap
-        destination_reach(charactor);
-    };
-
 }
 
 fn calculate_and_set_direction(position_x: i32, position_y: i32, destination_x: i32, destination_y: i32, position: &mut Position<i8>) {
@@ -200,6 +194,7 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
             //reset sprite;
             sprite.index = 0;
             sprite.flip_x = false;
+            position.destination_point = None;
         } else {
             let next_point_x = position.destination_path[0].x;
             let next_point_y = position.destination_path[0].y;
@@ -233,12 +228,13 @@ fn try_path(position: &mut PositionComponent, scene: &GameScene) {
         };
 
         calculate_and_set_direction(next_point.x, next_point.y, destination_x, destination_y, &mut position.destination_direction);
-        let tile = scene.tilemap.get_tile_by_position(next_point.x + direction_xy.x as i32, next_point.y + direction_xy.y as i32);
+        let tile = scene.tilemap.get_tile_by_position(next_point.x + position.destination_direction.x as i32, next_point.y + position.destination_direction.y as i32);
 
         if check_tile_for_moving(tile) {
             position.destination_path.push(Position {x: tile.position.x, y: tile.position.y});
         } else {
             //break circle;
+            //break if tile can't walked, without pathfinding;
             return;
         }
     }
