@@ -93,7 +93,7 @@ fn camera_move_by_left_button(
     //let mut min_y = -(map_height / 2.0 * tile_size);
     if mouse_button_input.pressed( MouseButton::Left ) {
         for ( mut transform, mut cam, projection ) in camera.iter_mut(){
-            if cam.camera_on_charator {
+            if cam.camera_on_player {
                 return;
             };
             
@@ -153,7 +153,7 @@ pub fn move_by_player_moving(
     let (mut cam_transform, cam, cam_projection) = camera.single_mut();
     let player_transform = player.single();
 
-    if cam.camera_on_charator {
+    if cam.camera_on_player {
         cam_transform.translation.x = player_transform.translation.x;
         cam_transform.translation.y = player_transform.translation.y;
     };
