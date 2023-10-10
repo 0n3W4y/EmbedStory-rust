@@ -40,37 +40,43 @@ pub fn update_passive_skills(
 ) {
     let delta = time.delta_seconds();
     let mut rng = rand::thread_rng();
-    for (charactor_component, mut skill_component, position_component, target_component, resists_component, mut extra_stats_component, mut effect_component) in
-        skills_query.iter_mut()
-    {
+    for (
+        charactor_component, 
+        mut skill_component, 
+        position_component, 
+        target_component, 
+        resists_component, 
+        mut extra_stats_component, 
+        mut effect_component
+    ) in skills_query.iter_mut() {
+
         //if char is dead we skip all passive skills;
         if charactor_component.status == CharactorStatus::Dead {
             continue;
         }
 
         for (skill_type, skill) in skill_component.passive_skills.iter_mut() {
-            let trigger_time = skill.trigger_time;
-            let current_duration = skill.current_duration;
-            let total_duration = skill.total_duration;
-            let trigger_duration = skill.trigger_duration;
+            let trigger_time = skill.trigger_time; // time to trigger skill;
+            let current_duration = skill.current_duration; // current tick time
+            let total_duration = skill.total_duration; // time every tick
+            let trigger_duration = skill.trigger_duration; // full time of skill 
 
             //first check for end of this skill;
             if total_duration <= trigger_duration {
                 //skill is end and removed from skills storage;
                 skill_component.passive_skills.remove(skill_type);
-                //todo: remove endless effect;
-                todo!();
                 continue;
             }
 
+            //first run or trigger by time;
             if current_duration >= trigger_time || total_duration == 0.0 {
                 //do skill
                 if total_duration > 0.0 {
                     skill.current_duration -= trigger_time;
                 }                
-                let trigger_chance = skill.trigger_chanse;
-
+                
                 //check for trigger chance
+                let trigger_chance = skill.trigger_chanse;
                 if trigger_chance < 100 {
                     let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
                     if trigger_chance < trigger_chance_random_number {
