@@ -12,4 +12,6 @@ pub enum DamageType {
     Water,
     Acid,
     Poison,
+    Health,
+    Stamina,
 }

@@ -274,12 +274,12 @@ fn attack(
 
         for (skill_type, trigger_chance) in skill.passive_skill.iter() {
             if *trigger_chance < 100 && *trigger_chance > 0 {
-
+                !
             }
         }
 
     } else {
-        // let check for accuracy
+        // lets check for accuracy
         let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {
             Some(v) => *v,
             _ => {
