@@ -123,7 +123,7 @@ pub fn update_passive_skills(
                 if skill.projectiles > 0 {
                     let projectiles = skill.projectiles;
                     // passive skills can casts only from Itself;
-    
+                    !
                     match skill.skill_direction {
                         SkillDirectionType::Point => {},
                         SkillDirectionType::Arc180 => {},
@@ -132,7 +132,6 @@ pub fn update_passive_skills(
                         SkillDirectionType::Line => {},
                         SkillDirectionType::Arc45 => {},
                     }
-                    
                 } else {
                     
                     //buff or debuff skill; if skill range == 0 then we understand skill can buff or debuff self when triggered. We must ignore target_type;
