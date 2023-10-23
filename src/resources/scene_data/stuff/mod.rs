@@ -4,6 +4,7 @@ use serde::{ Serialize, Deserialize };
 
 pub mod stuff_attributes;
 pub mod damage_type;
+pub mod resists_types;
 
 use crate::scenes::game_scenes::tilemap::tile::Position;
 

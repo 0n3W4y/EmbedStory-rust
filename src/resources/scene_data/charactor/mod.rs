@@ -9,6 +9,7 @@ use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::stuff::damage_type::DamageType;
+use super::stuff::resists_types::ResistType;
 use super::stuff::Stuff;
 
 pub mod abilities;
@@ -135,18 +136,12 @@ pub struct Charactor {
     pub stats: HashMap<Stat, i16>,
     pub stats_cache: HashMap<Stat, i16>,
 
-    pub extra_stats: HashMap<ExtraStat, i16>,
-    pub extra_stats_cache: HashMap<ExtraStat, i16>,
-
-    pub damage_resists: HashMap<DamageType, i16>,
-
-    pub effect_resits: HashMap<EffectType, i16>,
+    pub resists: HashMap<ResistType, i16>,
 
     pub ability: HashMap<AbilityType, i16>,
 
     pub skills: HashMap<SkillSlot, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
-    pub passive_skills_on_attack: HashMap<SkillType, i16>,
 
     pub stuff_storage: Vec<Stuff>,
     pub stuff_storage_max_slots: u8,
@@ -154,9 +149,11 @@ pub struct Charactor {
 
     pub temporary_effect: HashMap<EffectType, Effect>,
     pub endless_effect: HashMap<EffectType, Effect>,
-    pub effects_on_attaqck: HashMap<EffectType, i16>,
 }
 
+
+
+//by default: if we have positive value -> we do damage; if we have negative value -> we add value;
 pub fn change_ability(
     ability_storage: &mut HashMap<AbilityType, i16>, 
     ability: &AbilityType,
@@ -164,93 +161,71 @@ pub fn change_ability(
 ) {
     ability_storage
         .entry(ability.clone())
-        .and_modify(|old_value| *old_value += value)
+        .and_modify(|old_value| *old_value -= value)
         .or_insert(value);
 }
 
-pub fn change_effect_resist(
-    effect_resists: &mut HashMap<EffectType, i16>,
-    effect_resist: &EffectType,
+pub fn change_resist(
+    resists: &mut HashMap<ResistType, i16>,
+    resist_type: &ResistType,
     value: i16,
 ) {
     // if key is not in storage, we are added it to;
-    effect_resists
-        .entry(effect_resist.clone())
-        .and_modify(|old_value| *old_value += value)
+    resists
+        .entry(resist_type.clone())
+        .and_modify(|old_value| *old_value -= value)
         .or_insert(value);
 }
 
-pub fn change_damage_resist(
-    damage_resists: &mut HashMap<DamageType, i16>,
-    damage_resist: &DamageType,
-    value: i16,
-) {
-    // if key is not in storage, we are added it to;
-    damage_resists
-        .entry(damage_resist.clone())
-        .and_modify(|old_value| *old_value += value)
-        .or_insert(value);
-}
-
-pub fn change_extra_stat_cache(
-    extra_stats_storage: &mut HashMap<ExtraStat, i16>,
-    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
-    extra_stat: &ExtraStat,
+pub fn change_health_stamina_points_cache(
+    stats: &mut HashMap<Stat, i16>,
+    stats_cache: &mut HashMap<Stat, i16>,
+    stat: &Stat,
     value: i16,
     stat_damage_type: &StatDamageType,
 ) {
-    let default_extra_stat_value = 100;
-    //chech for stat in storage;
-    let stat_value = match extra_stats_storage.get_mut(extra_stat) {
+    let stat_value = match stats.get_mut(stat) {        //chech for stat
         Some(v) => v,
         _ => {
             println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat STORAGE", 
-                extra_stat,
-                default_extra_stat_value
+                "Can not modify stat: '{:?}', because stat is not in storage. Returned from the function", 
+                stat,
             );
-            extra_stats_storage.insert(extra_stat.clone(), default_extra_stat_value);
-            extra_stats_storage.get_mut(extra_stat).unwrap()
+            return;         // if we don't have this value -> returning;
         }
     };
 
-    let old_stat_value = *stat_value;
-
-    //check for stat in cache;
-    let cache_value = match extra_stats_cache.get_mut(extra_stat) {
+    let old_stat_value = *stat_value;       //set stat value to new value for calculating and comparing;
+    
+    let cache_value = match stats_cache.get_mut(stat) {     //check for stat in cache;
         Some(v) => v,
         _ => {
             println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat CACHE", 
-                extra_stat,
-                default_extra_stat_value
+                "Can not modify stat: '{:?}', because stat is not in storage. Returned from function", 
+                stat,
             );
-            extra_stats_cache.insert(extra_stat.clone(), default_extra_stat_value);
-            extra_stats_cache.get_mut(extra_stat).unwrap()
+            return;         // if we don't have this value -> returning;
         }
     };
 
-    let old_cache_value = *cache_value;
-
-    //calculating new cache value;
-    let new_cache_value = if *stat_damage_type == StatDamageType::Flat {
-        old_cache_value + value
+    let old_cache_value = *cache_value;         //set cache stat value to new value for calculating and comparing;
+    
+    let new_cache_value = if *stat_damage_type == StatDamageType::Flat {        //calculating new cache value;
+        old_cache_value - value
     } else {
-        old_cache_value + old_cache_value * value / 100
+        old_cache_value - old_cache_value * value / 100
     };
 
-    if new_cache_value <= 0 {
+    if new_cache_value <= 0 {           //check for negative cahce stat;
         println!("Extra stat cache value <= 0!");
     };
+    
+    *cache_value = new_cache_value;         //set new value to cache;
 
-    //set new value to cache;
-    *cache_value = new_cache_value;
-
-    //calculating new stat value;
-    let new_stat_value = if *stat_damage_type == StatDamageType::Flat {
-        *stat_value + value
+    let new_stat_value = if *stat_damage_type == StatDamageType::Flat {     //calculating new stat value;
+        *stat_value - value
     } else {
-        *stat_value + old_cache_value * value / 100
+        *stat_value - old_cache_value * value / 100
     };
 
     if new_stat_value < 1 {
@@ -260,51 +235,47 @@ pub fn change_extra_stat_cache(
     }
 }
 
-pub fn change_extra_stat_current(
-    extra_stats_storage: &mut HashMap<ExtraStat, i16>,
-    extra_stats_cache: &mut HashMap<ExtraStat, i16>,
-    extra_stat: &ExtraStat,
+pub fn change_health_stamina_points(
+    stats: &mut HashMap<ExtraStat, i16>,
+    stats_cache: &mut HashMap<ExtraStat, i16>,
+    stat: &ExtraStat,
     value: i16,
     stat_damage_type: &StatDamageType,
 ){
-    let default_extra_stat_value = 100;
-
-    let cache_value = match extra_stats_cache.get(extra_stat) {
+    let cache_value = match stats_cache.get(stat) {         //get cache value from stats;
         Some(v) => *v,
         _ => {
             println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat CACHE", 
-                extra_stat,
-                value
+                "Can not change stat: '{:?}', because stat is not in storage. Returned from this fucntion", 
+                stat
             );
-            extra_stats_cache.insert(extra_stat.clone(), default_extra_stat_value);
-            default_extra_stat_value
+            return;         //if we don't have this value -> return from this and text message;
         }
     };
 
-    let stat_value = match extra_stats_storage.get_mut(extra_stat) {
+    let stat_value = match stats.get_mut(stat) {        //get current value from stat;
         Some(v) => v,
         _ => {
             println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. I created new entry with value:'{:?}' in stat STORAGE", 
-                extra_stat,
-                default_extra_stat_value
+                "Can not modify stat: '{:?}', because stat is not in storage. Returned from this function", 
+                stat,
             );
-            extra_stats_storage.insert(extra_stat.clone(), default_extra_stat_value);
-            extra_stats_storage.get_mut(extra_stat).unwrap()
+            return;         //if we don't have this calue -> return from this and text message;
         }
     };
 
-    let new_value: i16 = if *stat_damage_type == StatDamageType::Flat {
-        *stat_value + value
+    let new_value: i16 = if *stat_damage_type == StatDamageType::Flat {             //calculating value to change stat;
+        *stat_value - value
     } else {
-        *stat_value + *stat_value * value / 100
+        *stat_value - *stat_value * value / 100
     };
 
-    if new_value < cache_value {
-        *stat_value = new_value;
-    } else {
+    if new_value > cache_value && cache_value > 0{            //check value 
         *stat_value = cache_value;
+    } else if cache_value < 1 && new_value > 0{
+        *stat_value = 1;
+    } else {
+        *stat_value = new_value;
     }
 }
 
@@ -447,15 +418,12 @@ pub fn get_values_of_damage_resists_from_stat(stat: &Stat, value: i16) -> HashMa
             result.insert(DamageType::Fire, result_value);
             result.insert(DamageType::Cold, result_value);
             result.insert(DamageType::Electric, result_value);
-            result.insert(DamageType::Water, result_value);
         },
         Stat::Endurance => {
             //piercing, crushing, cutting, poison end /10;
             let result_value = value / 10;
             result.insert(DamageType::Poison, result_value);
-            result.insert(DamageType::Piercing, result_value);
-            result.insert(DamageType::Crushing, result_value);
-            result.insert(DamageType::Cutting, result_value);
+
         },
     }
     return result;

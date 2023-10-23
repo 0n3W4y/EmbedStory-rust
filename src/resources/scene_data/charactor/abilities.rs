@@ -226,12 +226,6 @@ pub fn get_damage_type_from_ability (ability_storage: &HashMap<AbilityType, i16>
                 None => 0,
             }
         },
-        DamageType::Water => {
-                match ability_storage.get(&AbilityType::WaterDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
         DamageType::Acid => {
             match ability_storage.get(&AbilityType::AcidDamage) {
                 Some(v) => *v,

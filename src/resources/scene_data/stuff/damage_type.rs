@@ -5,16 +5,10 @@ pub enum DamageType {
     Fire,
     Cold,
     Electric,
-    Cutting,
-    Piercing,
-    Crushing,
-    Water,
     Acid,
     Poison,
     Health,
     Stamina,
     #[default]
-    Melee,
-    Ranged,
-    Magic,
+    Phisical
 }
