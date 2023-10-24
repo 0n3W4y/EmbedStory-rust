@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
-use super::{stats::Stat, effects::EffectType, skills::SkillType};
+use super::stats::Stat;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, Deserialize)]
 pub enum AbilityType{
@@ -21,39 +21,39 @@ pub enum AbilityType{
     StaminaRegen,
     HealthRegen,
     ExperienceMultiplier,
-    MeleeDamage,
-    RangedDamage,
-    MagicDamage,
-    CuttingDamage,
-    PiercingDamage,
-    CrushingDamage,
+    PhisicalDamage,
     FireDamage,
     ElectricDamage,
     WaterDamage,
     AcidDamage,
     PoisonDamage,
     ColdDamage,
-    Moveless,
-    Bleeding,
-    Slow,
-    Stun,
-    Freeze,
-    Burn,
-    Electrification,
-    Blind,
-    Acid,
-    Poison,
-    Wet,
-    BrokeArmor,
-    BrokeWeapon,
-    StaminaDamage,
-    Staminalich,
-    Lifelich,
-    StaminaRegenEffect,
-    HealthRegenEffect,
-    Frostbite,
-    IncreseMovementSpeed,
-    DecreaseMovementSpeed,
+}
+
+impl AbilityType {
+    pub fn all_values() -> impl Iterator<Item = Self> {
+        vec![
+            AbilityType::Evasion,
+            AbilityType::MovementSpeed,
+            AbilityType::AttackSpeed,
+            AbilityType::ActiveSkillsCoolDawn,
+            AbilityType::BlockAmount,
+            AbilityType::BlockChance,
+            AbilityType::CriticalHitChanse,
+            AbilityType::CriticalHitMultiplier,
+            AbilityType::Accuracy,
+            AbilityType::StaminaRegen,
+            AbilityType::HealthRegen,
+            AbilityType::ExperienceMultiplier,
+            AbilityType::PhisicalDamage,
+            AbilityType::FireDamage,
+            AbilityType::ElectricDamage,
+            AbilityType::WaterDamage,
+            AbilityType::AcidDamage,
+            AbilityType::PoisonDamage,
+            AbilityType::ColdDamage
+        ].into_iter()
+    }
 }
 
 //formulas
@@ -61,131 +61,38 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
     let mut result: HashMap<AbilityType, i16> = HashMap::new();
     match *stat {
         Stat::Dexterity => {
-            //RangedAttackDamage dex/4
-            let result_value = value / 4;
-            result.insert(AbilityType::RangedDamage, result_value);
-        },
-        Stat::Endurance => {
-            //For hp regen END/5; 
-            let result_value_hp_regen = value / 5;            
-            result.insert(AbilityType::HealthRegen, result_value_hp_regen);
-            //block amount END/10;
-            let result_value_block_amount = value / 10;
-            result.insert(AbilityType::BlockAmount, result_value_block_amount);
+            let evasion = value / 15;             //evasion:  dex/15
+            let movement_speed = value / 10;      //move speed: dex/10;
+            let attack_speed = value / 10;        //atk speed: dex/10;
+            result.insert(AbilityType::Evasion, evasion);
+            result.insert(AbilityType::MovementSpeed, movement_speed);
+            result.insert(AbilityType::AttackSpeed, attack_speed);
         },
         Stat::Intellect => {
-            //MagicWeaponDamage, INT/4
-            let result_value_magic_damage = value / 4;
-            result.insert(AbilityType::MagicDamage, result_value_magic_damage);
+            let cooldown_active_skill = value / 10;           //cd of active skills: INT /10;
+            let critical_multiplier = value / 2;              // Crit Multi : INT / 5;
+            let stamina_regen = value / 10;             //stamina regen: INT / 10
+            result.insert(AbilityType::ActiveSkillsCoolDawn, cooldown_active_skill);
+            result.insert(AbilityType::CriticalHitMultiplier, critical_multiplier);
+            result.insert(AbilityType::StaminaRegen, stamina_regen);
         },
         Stat::Luck => {
-            //crit chanse = LUCK / 10
-            let result_value = value / 10;
-            result.insert(AbilityType::CriticalHitChanse, result_value);
-
-            // crit multiplier = luck / 5;
-            let result_value_crit_multiplier = value / 5;
-            result.insert(AbilityType::CriticalHitMultiplier, result_value_crit_multiplier);
-        },
-        Stat::Mobility => {
-            //movement speed MOB;
-            let result_value_movement = value;
-            result.insert(AbilityType::MovementSpeed, result_value_movement);
-
-            //attackspeed = mob / 10;
-            let result_value_attack_speed = value / 10;
-            result.insert(AbilityType::AttackSpeed, result_value_attack_speed);
-
-            //evasion mob/8;
-            let result_value_evasion = value / 8;
-            result.insert(AbilityType::Evasion, result_value_evasion);
+            let critical_hit_chance = value / 10;               //crit chance: LCK / 10;
+            let block_chance = value / 10;                      //block chance: LCK /10;
+            let accuracy = value / 10;                      //accuracy: LCK / 10;
+            result.insert(AbilityType::CriticalHitChanse, critical_hit_chance);
+            result.insert(AbilityType::BlockChance, block_chance);
+            result.insert(AbilityType::Accuracy, accuracy);
         },
         Stat::Strength => {
-            //MeleeDamage STR/4
-            let result_value_melee_damage = value / 4;
-            result.insert(AbilityType::MeleeDamage, result_value_melee_damage);
+            let health_regen = value / 10;              //health reneg: STR / 10;
+            let block_amount = value / 10;              //block amount: STR / 10;
+            result.insert(AbilityType::HealthRegen, health_regen);
+            result.insert(AbilityType::BlockAmount, block_amount);
         },
-        Stat::Vitality => {
-            //for sp regen vit/5;
-            let result_value_sp_regen = value / 5;
-            result.insert(AbilityType::StaminaRegen, result_value_sp_regen);
-        },
-        Stat::Wisdom => {
-            //ActiveSkillCD WIS * 10;
-            let result_value_skill_cd = value / 10;
-            result.insert(AbilityType::ActiveSkillsCoolDawn, result_value_skill_cd);
-        },
+        _ => {},
     }
     return result;
-}
-
-pub fn get_effect_type_from_ability (ability_storage: &HashMap<AbilityType, i16>, effect_type: &EffectType) -> i16 {
-    return match *effect_type {
-        EffectType::Stun => match ability_storage.get(&AbilityType::Stun) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Stun => match ability_storage.get(&AbilityType::Stun) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Acid =>  match ability_storage.get(&AbilityType::Acid) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Moveless => match ability_storage.get(&AbilityType::Moveless) {
-            Some(v) => *v,
-            None => 0,   
-        },
-        EffectType::Slow =>  match ability_storage.get(&AbilityType::Slow) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Bleeding => match ability_storage.get(&AbilityType::Bleeding) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Burn => match ability_storage.get(&AbilityType::Burn) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Electrification => match ability_storage.get(&AbilityType::Electrification) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Freeze => match ability_storage.get(&AbilityType::Freeze) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Blind => match ability_storage.get(&AbilityType::Blind) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Poison => match ability_storage.get(&AbilityType::Poison) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Wet => match ability_storage.get(&AbilityType::Wet) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::BrokeArmor => match ability_storage.get(&AbilityType::BrokeArmor) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::BrokeWeapon => match ability_storage.get(&AbilityType::BrokeWeapon) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::IncreaseMovement => match ability_storage.get(&AbilityType::IncreseMovementSpeed) {
-            Some(v) => *v,
-            None => 0,
-        },
-        EffectType::Frostbite => match ability_storage.get(&AbilityType::Frostbite) {
-            Some(v) => *v,
-            None => 0,
-        },
-    }
 }
 
 pub fn get_damage_type_from_ability (ability_storage: &HashMap<AbilityType, i16>, damage_type: &DamageType) -> i16 {
@@ -208,20 +115,8 @@ pub fn get_damage_type_from_ability (ability_storage: &HashMap<AbilityType, i16>
                 None => 0,
             }
         },
-        DamageType::Cutting => {
-            match ability_storage.get(&AbilityType::CuttingDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Piercing => {
-            match ability_storage.get(&AbilityType::PiercingDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Crushing => {
-            match ability_storage.get(&AbilityType::CrushingDamage) {
+        DamageType::Phisical => {
+            match ability_storage.get(&AbilityType::PhisicalDamage) {
                 Some(v) => *v,
                 None => 0,
             }
@@ -238,22 +133,6 @@ pub fn get_damage_type_from_ability (ability_storage: &HashMap<AbilityType, i16>
                 None => 0,
             }
         },
-    }
-}
-
-pub fn get_skill_damage_from_ability (ability_storage: &HashMap<AbilityType, i16>, skill_type: &SkillType) -> i16 {
-    match *skill_type {
-        SkillType::Melee => match ability_storage.get(&AbilityType::MeleeDamage) {
-            Some(v) => *v,
-            None => 0,
-        },
-        SkillType::Ranged => match ability_storage.get(&AbilityType::RangedDamage) {
-            Some(v) => *v,
-            None => 0,
-        },
-        SkillType::Magic => match ability_storage.get(&AbilityType::MagicDamage) {
-            Some(v) => *v,
-            None => 0,
-        },
+        _ => 0
     }
 }

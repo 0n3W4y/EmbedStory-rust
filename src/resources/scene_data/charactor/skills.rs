@@ -144,57 +144,22 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             skill.damage.clear();
             skill.effect.clear();
             skill.passive_skill.clear();
-
-            //first get damage multiplier by weapon type;
-            let skill_type_damage_multiplier = match skill.skill_type {
-                SkillType::Melee => { 
-                    match ability_storage.get(&AbilityType::MeleeDamage) {
-                        Some(v) => *v,
-                        None => {
-                            println!("Can not get Melee damage from ability, use 100% instead");
-                            100
-                        },
-                    }
-                },
-                SkillType::Ranged => {
-                    match ability_storage.get(&AbilityType::RangedDamage) {
-                        Some(v) => *v,
-                        None => {
-                            println!("Can not get Ranged damage from ability, use 100% instead");
-                            100
-                        },
-                    }
-                },
-                SkillType::Magic => {
-                    match ability_storage.get(&AbilityType::MagicDamage) {
-                        Some(v) => *v,
-                        None => {
-                            println!("Can not get Magic damage from ability, use 100% instead");
-                            100
-                        },
-                    }
-                },
-            };
-
-            //get critical hit chanse from ability;
-            let critical_chanse_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {
+            
+            let critical_hit_chanse_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {     //get critical hit chanse from ability;
                 Some(v) => *v,
                 None => {
                     println!("Can not get Critical Chanse from ability, use 0 instead");
                     0
                 },
             };
-
-            //get critical hit multiplier from ability;
-            let critical_multiplier_from_ability = match ability_storage.get(&AbilityType::CriticalHitMultiplier) {
+            let critical_hit_multiplier_from_ability = match ability_storage.get(&AbilityType::CriticalHitMultiplier) {     //get critical hit multiplier from ability;
                 Some(v) => *v,
                 None => {
                     println!("Can not get Critical Multiplier from ability, use 0 instead");
                     0
                 }
             };
-
-            let attack_speed_from_ability = match ability_storage.get(&AbilityType::AttackSpeed) {
+            let attack_speed_from_ability = match ability_storage.get(&AbilityType::AttackSpeed) {      //get atk speed from ability;
                 Some(v) => *v,
                 None => {
                     println!("Can not get Atack Speed from ability, use 100% instead");
@@ -209,32 +174,23 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             let mut effects_from_weapon: HashMap<EffectType, i16> = HashMap::new();
             let mut passive_skills_from_weapon: HashMap<SkillSubtype, i16> = HashMap::new();
 
-            //get weapon from right hand
-            match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {
-                Some(v) => {
-                    critical_chance = v.critical_hit_chanse;
-                    critical_multiplier = v.critical_multiplier;
-                    skill_cooldown = v.cooldown;
-                    for (damage_type, value) in v.damage.iter() {
-                        damage_from_weapon.insert(damage_type.clone(), *value);
-                    }
+            match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {          //get weapon from right hand
+                Some(weapon) => {
+                    critical_chance = weapon.critical_hit_chance;
+                    critical_multiplier = weapon.critical_hit_multiplier;
+                    skill_cooldown = weapon.cooldown;
+                    damage_from_weapon = weapon.damage.clone();
+                    effects_from_weapon = weapon.effects.clone();
+                    passive_skills_from_weapon = weapon.passive_skills.clone();
 
-                    for(effect_type, value) in v.effects.iter() {
-                        effects_from_weapon.insert(effect_type.clone(), *value);
-                    }
-
-                    for(skill_type, value) in v.passive_skills.iter() {
-                        passive_skills_from_weapon.insert(skill_type.clone(), *value);
-                    }
                 },
                 None => {
-                    skill_cooldown = 100; // by default 1 shot per second;
-                    damage_from_weapon.insert(DamageType::Crushing, 5); // default punch;
+                    skill_cooldown = 100;                                       // by default 1 shot per second;
+                    damage_from_weapon.insert(DamageType::Phisical, 5);         // default punch;
                 },
             };
 
-            //get weapon from left hand
-            match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {
+            match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {            //get weapon from left hand
                 Some(v) => {
                     //middle value from 2 weapons;
                     critical_chance =  if v.critical_hit_chanse > 0 {

@@ -27,3 +27,33 @@ pub enum ResistType {
     IncreaseMovementEffect,
     FrostbiteEffect,
 }
+
+impl ResistType {
+    pub fn all_values() -> impl Iterator<Item = Self> {
+        vec![
+            ResistType::FireDamage,
+            ResistType::ColdDamage,
+            ResistType::ElectricDamage,
+            ResistType::AcidDamage,
+            ResistType::PoisonDamage,
+            ResistType::HealthDamage,
+            ResistType::StaminaDamage,
+            ResistType::PhisicalDamage,
+            ResistType::StunEffect,
+            ResistType::AcidEffect,
+            ResistType::MovelessEffect,
+            ResistType::SlowEffect,
+            ResistType::BleedingEffect,
+            ResistType::BurnEffect,
+            ResistType::ElectrificationEffect,
+            ResistType::FreezeEffect,
+            ResistType::BlindEffect,
+            ResistType::PoisonEffect,
+            ResistType::WetEffect,
+            ResistType::BrokenArmorEffect,
+            ResistType::BrokenWeaponEffect,
+            ResistType::IncreaseMovementEffect,
+            ResistType::FrostbiteEffect
+        ].into_iter()
+    }
+}
