@@ -65,8 +65,8 @@ pub struct Stuff{
     pub critical_hit_multiplier: i16,
     pub cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
 
-    pub effects: HashMap<EffectType, i16>,
-    pub passive_skills: HashMap<SkillSubtype, i16>,
+    pub effects: HashMap<EffectType, u8>,
+    pub passive_skills: HashMap<SkillSubtype, u8>,
 
     pub stats: HashMap<Stat, i16>,
     pub resists: HashMap<ResistType, i16>,

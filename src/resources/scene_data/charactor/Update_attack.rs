@@ -3,8 +3,8 @@ use rand::Rng;
 
 use crate::components::charactor_component::{
     AbilityComponent, ActionType, CharactorComponent, EffectComponent,
-    ExtraStatsComponent, PositionComponent,
-    ResistsComponent, SkillComponent, CharactorTargetComponent, CharactorTextComponent,
+    PositionComponent,
+    ResistsComponent, SkillComponent, CharactorTargetComponent, CharactorTextComponent, StatsComponent,
 };
 
 use crate::components::projectile_component::Projectile;
@@ -16,8 +16,8 @@ use crate::resources::scene_data::projectiles::update_projectile::create_project
 
 use super::abilities;
 use super::damage_text_informer::DamageTextInformer;
-use super::effects::{Effect, StatDamageType};
-use super::{abilities::AbilityType, skills::Skill, stats::ExtraStat, CharactorStatus};
+use super::effects::{Effect};
+use super::{abilities::AbilityType, skills::Skill, CharactorStatus};
 
 pub fn attacking_from_basic_skill(
     mut commands: Commands,
@@ -31,7 +31,7 @@ pub fn attacking_from_basic_skill(
 
     mut target_query: Query<(
         &CharactorComponent,
-        &mut ExtraStatsComponent,
+        &StatsComponent,
         &ResistsComponent,
         &mut EffectComponent,
         &PositionComponent,
@@ -69,8 +69,8 @@ pub fn attacking_from_basic_skill(
         let skill = charactor_skill.skills.get_mut(&SkillSlot::Base).unwrap();
 
         for (
-            target_component,
-            mut target_extra_stats, 
+            target_component, 
+            mut target_stats,
             target_resists, 
             mut target_effects, 
             target_position, 
@@ -87,7 +87,6 @@ pub fn attacking_from_basic_skill(
                     target_position,
                     &mut target_text_component, 
                     target_resists, 
-                    &mut target_extra_stats, 
                     &mut target_effects, 
                     target_abilities, 
                     &mut target_skills,
@@ -199,7 +198,6 @@ fn attack(
     target_position: &PositionComponent,
     target_text_component: &mut CharactorTextComponent,
     target_resists: &ResistsComponent,
-    target_extra_stats: &mut ExtraStatsComponent,
     target_effect: &mut EffectComponent,
     target_ability: &AbilityComponent,
     target_skills: &mut SkillComponent,

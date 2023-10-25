@@ -10,5 +10,6 @@ pub enum DamageType {
     Health,
     Stamina,
     #[default]
-    Phisical
+    Phisical,
+    Water,
 }

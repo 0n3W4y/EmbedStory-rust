@@ -30,12 +30,12 @@ impl DamageTextInformer {
                 DamageType::Fire => ORANGE_DAMAGE_TEXT,
                 DamageType::Cold => BLUE_DAMAGE_TEXT,
                 DamageType::Electric => PURPULE_DAMAGE_TEXT,
-                DamageType::Cutting => WHITERED_DAMAGE_TEXT,
-                DamageType::Piercing => RED_DAMAGE_TEXT,
-                DamageType::Crushing => WHITE_DAMAGE_TEXT,
+                DamageType::Phisical => WHITE_DAMAGE_TEXT,
                 DamageType::Water => CYAN_DAMAGE_TEXT,
                 DamageType::Acid => LIGHTGREEN_DAMAGE_TEXT,
                 DamageType::Poison => GREEN_DAMAGE_TEXT,
+                DamageType::Health => RED_DAMAGE_TEXT,
+                DamageType::Stamina => GRAY_DAMAGE_TEXT,
             }
 
             },

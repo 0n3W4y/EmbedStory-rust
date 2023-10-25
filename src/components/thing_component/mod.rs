@@ -3,8 +3,8 @@ use std::collections::HashMap;
 
 pub mod thing_animation_component;
 
-use crate::resources::scene_data::charactor::stats::ExtraStat;
-use crate::resources::scene_data::stuff::damage_type::DamageType;
+use crate::resources::scene_data::charactor::stats::Stat;
+use crate::resources::scene_data::stuff::resists_types::ResistType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::thing::ThingType;
 use crate::resources::scene_data::thing::ThingPermissions;
@@ -25,6 +25,6 @@ pub struct ThingPositionComponent {
 
 #[derive(Component, Default)]
 pub struct ThingStatsComponent {
-    pub extra_stats: HashMap<ExtraStat, i16>,
-    pub resists: HashMap<DamageType, i16>,
+    pub stats: HashMap<Stat, i16>,
+    pub resists: HashMap<ResistType, i16>,
 }

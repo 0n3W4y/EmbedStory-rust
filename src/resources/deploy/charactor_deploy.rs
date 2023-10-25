@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
 use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillSubtype};
-use crate::resources::scene_data::charactor::stats::{ExtraStat, Stat};
+use crate::resources::scene_data::charactor::stats::Stat;
 use crate::resources::scene_data::charactor::RaceType;
-use crate::resources::scene_data::stuff::damage_type::DamageType;
+use crate::resources::scene_data::stuff::resists_types::ResistType;
 
 #[derive(Deserialize, Debug)]
 pub struct CharactorDeploy {
@@ -145,15 +145,8 @@ impl RaceDeploy {
 pub struct RaceConfig {
     pub stats: HashMap<Stat, i16>,
     pub stats_min_value: u8,
-    pub extra_stats: HashMap<ExtraStat, i16>,
-    pub damage_resists: HashMap<DamageType, i16>,
-    pub damage_resists_min_value: i16,
-    pub damage_resists_max_value: i16,
-    pub effect_resists: HashMap<EffectType, i16>,
-    pub effect_resist_min_value: i16,
-    pub effect_resist_max_value: i16,
-    pub ability: HashMap<AbilityType, f32>,
-    pub endless_effect: Vec<EffectType>,
+    pub resists: HashMap<ResistType, i16>,
+    pub ability: HashMap<AbilityType, i16>,
 }
 
 #[derive(Deserialize, Debug)]

@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use super::{stats::{Stat, ExtraStat}, abilities::AbilityType};
+use super::{stats::Stat, abilities::AbilityType};
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
@@ -26,7 +26,7 @@ pub enum EffectType{
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
-pub enum StatDamageType {
+pub enum EffectDamageType {
     Percent,
     #[default]
     Flat,
@@ -38,15 +38,9 @@ pub struct EffectDeploy {
     pub duration: u16,
     
     pub change_stat: HashMap<Stat, i16>, // Stat and percentage
-    pub change_stat_damage_type: StatDamageType,
-
-    pub change_extra_stat: HashMap<ExtraStat, i16>,
-    pub change_extra_stat_damage_type: StatDamageType,
-
+    pub change_stat_damage_type: EffectDamageType,
     pub change_damage_resist: HashMap<DamageType, i16>, // Damage Resist and percentage
-
     pub change_effect_resist: HashMap<EffectType, i16>, // Effect resist and percentage
-
     pub change_ability: HashMap<AbilityType, i16>, // Passive Skill and percentage 
 }
 
@@ -57,15 +51,9 @@ pub struct Effect {
     pub current_duration: f32,
 
     pub change_stat: HashMap<Stat, i16>, // Stat and flat damage to stat
-    pub change_stat_damage_type: StatDamageType,
-
-    pub change_extra_stat: HashMap<ExtraStat, i16>,
-    pub change_extra_stat_damage_type: StatDamageType,
-
+    pub change_stat_damage_type: EffectDamageType,
     pub change_damage_resist: HashMap<DamageType, i16>, // Damage Resist and flat damage to resist
-
     pub change_effect_resist: HashMap<EffectType, i16>, // Effect resist and flat damage to resist
-
     pub change_ability: HashMap<AbilityType, i16>, // Passive Skill and flat damage to skill
 }
 
@@ -76,12 +64,10 @@ impl Effect {
             duration: config.duration as f32 / 10.0,
             current_duration: 0.0,
             change_stat: config.change_stat.clone(),
-            change_extra_stat: config.change_extra_stat.clone(),
             change_damage_resist: config.change_damage_resist.clone(),
             change_effect_resist: config.change_effect_resist.clone(),
             change_ability: config.change_ability.clone(),
             change_stat_damage_type: config.change_stat_damage_type.clone(),
-            change_extra_stat_damage_type: config.change_extra_stat_damage_type.clone(),
         }
     }
 }
@@ -113,18 +99,13 @@ pub fn get_effect_type_by_damage_type(damage_type: &DamageType) -> Vec<EffectTyp
             EffectType::BrokeWeapon,
             EffectType::BrokeArmor
         ],
-        DamageType::Kinetic => vec![
+        DamageType::Phisical => vec![
             EffectType::Stun,
             EffectType::Moveless,
             EffectType::Slow,
             EffectType::Bleeding,
             EffectType::Blind,
             EffectType::StaminaDamage
-        ],
-        DamageType::SacredEnergy => vec![
-            EffectType::Blind,
-            EffectType::Staminalich,
-            EffectType::Stun
         ],
         DamageType::Water => vec![
             EffectType::Bleeding,

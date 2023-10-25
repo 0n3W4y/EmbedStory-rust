@@ -73,6 +73,6 @@ pub fn copy_from_thing_to_entity_component(
     thing_position.permissions = thing.permissions.to_vec();
 
     thing_stats.resists = thing.resists.clone();
-    thing_stats.extra_stats = thing.extra_stats.clone();
+    thing_stats.stats = thing.stats.clone();
 
 }

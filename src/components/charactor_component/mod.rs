@@ -4,11 +4,10 @@ use std::collections::HashMap;
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::charactor::skills::SkillSubtype;
+use crate::resources::scene_data::stuff::resists_types::ResistType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::Effect;
 use crate::resources::scene_data::charactor::stats::Stat;
-use crate::resources::scene_data::charactor::stats::ExtraStat;
-use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::skills::Skill;
@@ -60,18 +59,10 @@ pub struct StatsComponent {
     pub stats_min_value: u8,
 }
 
-#[derive(Component, Default)]
-pub struct ExtraStatsComponent {
-    pub extra_stats: HashMap<ExtraStat, i16>,
-    pub extra_stats_cache: HashMap<ExtraStat, i16>,
-}
-
 
 #[derive(Component, Default)]
 pub struct ResistsComponent {
-    pub damage_resists: HashMap<DamageType, i16>,
-    pub effect_resists: HashMap<EffectType, i16>,
-    // just ignore more than 100 and -100; if resist 100 - have 0 damage and have 0 time to effect, if resist -100 - have double damage and double time effect;
+    pub resists: HashMap<ResistType, i16>
 }
 
 #[derive(Component, Default)]

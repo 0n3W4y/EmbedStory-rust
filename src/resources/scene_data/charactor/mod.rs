@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use self::abilities::AbilityType;
-use self::effects::{Effect, StatDamageType};
+use self::effects::{Effect, EffectDamageType};
 use self::skills::{Skill, SkillType};
 use self::stats::Stat;
 use crate::resources::scene_data::charactor::effects::EffectType;
@@ -182,7 +182,7 @@ pub fn change_health_stamina_points_cache(
     stats_cache: &mut HashMap<Stat, i16>,
     stat: &Stat,
     value: i16,
-    stat_damage_type: &StatDamageType,
+    stat_damage_type: &EffectDamageType,
 ) {
     let stat_value = match stats.get_mut(stat) {        //chech for stat
         Some(v) => v,
@@ -210,7 +210,7 @@ pub fn change_health_stamina_points_cache(
 
     let old_cache_value = *cache_value;         //set cache stat value to new value for calculating and comparing;
     
-    let new_cache_value = if *stat_damage_type == StatDamageType::Flat {        //calculating new cache value;
+    let new_cache_value = if *stat_damage_type == EffectDamageType::Flat {        //calculating new cache value;
         old_cache_value - value
     } else {
         old_cache_value - old_cache_value * value / 100
@@ -222,7 +222,7 @@ pub fn change_health_stamina_points_cache(
     
     *cache_value = new_cache_value;         //set new value to cache;
 
-    let new_stat_value = if *stat_damage_type == StatDamageType::Flat {     //calculating new stat value;
+    let new_stat_value = if *stat_damage_type == EffectDamageType::Flat {     //calculating new stat value;
         *stat_value - value
     } else {
         *stat_value - old_cache_value * value / 100
@@ -240,7 +240,7 @@ pub fn change_health_stamina_points(
     stats_cache: &mut HashMap<Stat, i16>,
     stat: &Stat,
     value: i16,
-    stat_damage_type: &StatDamageType,
+    stat_damage_type: &EffectDamageType,
 ){
     let cache_value = match stats_cache.get(stat) {         //get cache value from stats;
         Some(v) => *v,
@@ -264,7 +264,7 @@ pub fn change_health_stamina_points(
         }
     };
 
-    let new_value: i16 = if *stat_damage_type == StatDamageType::Flat {             //calculating value to change stat;
+    let new_value: i16 = if *stat_damage_type == EffectDamageType::Flat {             //calculating value to change stat;
         *stat_value - value
     } else {
         *stat_value - *stat_value * value / 100
@@ -286,7 +286,7 @@ pub fn change_stat(
     abilities: &mut HashMap<AbilityType, i16>,
     stat: &Stat,
     value: i16,
-    stat_damage_type: &StatDamageType,
+    stat_damage_type: &EffectDamageType,
     stats_min_value: u8,
 ) {
     let cache_value = match stats_cache.get_mut(stat) {             //get cache value;
@@ -313,7 +313,7 @@ pub fn change_stat(
 
     let old_stat_value: i16 = *stat_value;
     
-    if *stat_damage_type == StatDamageType::Flat {          //calculating values and set them to cache;
+    if *stat_damage_type == EffectDamageType::Flat {          //calculating values and set them to cache;
         *cache_value += value;
     } else {
         *cache_value += *stat_value * value / 100;
