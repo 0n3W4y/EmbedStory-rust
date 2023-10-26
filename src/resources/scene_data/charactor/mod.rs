@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use self::abilities::AbilityType;
-use self::effects::{Effect, EffectDamageType};
+use self::effects::Effect;
 use self::skills::{Skill, SkillType};
 use self::stats::Stat;
 use crate::resources::scene_data::charactor::effects::EffectType;
@@ -37,8 +37,6 @@ pub enum SkillSlot {
     WeaponTwo,
     WeaponThree,
     WeaponFour,
-    TrinketOne,
-    TrinketTwo,
     BeltOne,
     BeltTwo,
     BeltThree,
@@ -115,7 +113,7 @@ pub enum CharactorStatus {
     PickupItem,
 }
 
-#[derive(Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Charactor {
     pub id: usize,
     pub charactor_type: CharactorType,
@@ -153,7 +151,7 @@ pub struct Charactor {
 
 
 
-//by default: if we have positive value -> we do damage; if we have negative value -> we add value;
+//by default: if we have positive value -> we do damage; if we have negative value -> we add value (cure);
 pub fn change_ability(
     ability_storage: &mut HashMap<AbilityType, i16>, 
     ability: &AbilityType,
@@ -170,7 +168,6 @@ pub fn change_resist(
     resist_type: &ResistType,
     value: i16,
 ) {
-    // if key is not in storage, we are added it to;
     resists
         .entry(resist_type.clone())
         .and_modify(|old_value| *old_value -= value)
@@ -182,56 +179,36 @@ pub fn change_health_stamina_points_cache(
     stats_cache: &mut HashMap<Stat, i16>,
     stat: &Stat,
     value: i16,
-    stat_damage_type: &EffectDamageType,
-) {
-    let stat_value = match stats.get_mut(stat) {        //chech for stat
+){
+    let stat_value = match stats.get_mut(stat) {                    //chech for stat
         Some(v) => v,
         _ => {
             println!(
                 "Can not modify stat: '{:?}', because stat is not in storage. Returned from the function", 
                 stat,
             );
-            return;         // if we don't have this value -> returning;
+            return;                                                         // if we don't have this value -> returning;
         }
-    };
-
-    let old_stat_value = *stat_value;       //set stat value to new value for calculating and comparing;
-    
-    let cache_value = match stats_cache.get_mut(stat) {     //check for stat in cache;
+    };   
+    let cache_value = match stats_cache.get_mut(stat) {                 //check for stat in cache;
         Some(v) => v,
         _ => {
             println!(
                 "Can not modify stat: '{:?}', because stat is not in storage. Returned from function", 
                 stat,
             );
-            return;         // if we don't have this value -> returning;
+            return;                                                              // if we don't have this value -> returning;
         }
     };
-
-    let old_cache_value = *cache_value;         //set cache stat value to new value for calculating and comparing;
     
-    let new_cache_value = if *stat_damage_type == EffectDamageType::Flat {        //calculating new cache value;
-        old_cache_value - value
-    } else {
-        old_cache_value - old_cache_value * value / 100
-    };
+    *cache_value -= value;                                                  //set new value to cache;
+    *stat_value -= value;                                                   // set new value to stat;
 
-    if new_cache_value <= 0 {           //check for negative cache stat;
+    if *cache_value <= 0 {                                                  //check for negative cache stat;
         println!("stat cache value <= 0!'{:?}'", stat);
     };
-    
-    *cache_value = new_cache_value;         //set new value to cache;
-
-    let new_stat_value = if *stat_damage_type == EffectDamageType::Flat {     //calculating new stat value;
-        *stat_value - value
-    } else {
-        *stat_value - old_cache_value * value / 100
-    };
-
-    if new_stat_value < 1 {
-        *stat_value = 1;
-    } else {
-        *stat_value = new_stat_value;
+    if *stat_value < 1 {                                                 //check for minimal values for current values
+       *stat_value = 1;                                                   // use this value, because we r changing CAHCE values;
     }
 }
 
@@ -240,43 +217,38 @@ pub fn change_health_stamina_points(
     stats_cache: &mut HashMap<Stat, i16>,
     stat: &Stat,
     value: i16,
-    stat_damage_type: &EffectDamageType,
 ){
-    let cache_value = match stats_cache.get(stat) {         //get cache value from stats;
+    let cache_value = match stats_cache.get(stat) {                     //get cache value from stats;
         Some(v) => *v,
         _ => {
             println!(
-                "Can not change stat: '{:?}', because stat is not in storage. Returned from this fucntion", 
+                "Can not change stat: '{:?}', because stat is not in storage. Returning", 
                 stat
             );
             return;         //if we don't have this value -> return from this and text message;
         }
     };
-
     let stat_value = match stats.get_mut(stat) {        //get current value from stat;
         Some(v) => v,
         _ => {
             println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. Returned from this function", 
+                "Can not modify stat: '{:?}', because stat is not in storage. Returning", 
                 stat,
             );
             return;         //if we don't have this calue -> return from this and text message;
         }
     };
+    let temp_value = *stat_value - value;           //calculating stat value;
 
-    let new_value: i16 = if *stat_damage_type == EffectDamageType::Flat {             //calculating value to change stat;
-        *stat_value - value
-    } else {
-        *stat_value - *stat_value * value / 100
-    };
-
-    if new_value > cache_value && cache_value > 0{            //check value 
+    if temp_value > cache_value && cache_value > 0{            //check value 
         *stat_value = cache_value;
-    } else if cache_value < 1 && new_value > 0{
+    } else if cache_value < 1 && temp_value > 0{
         *stat_value = 1;
     } else {
-        *stat_value = new_value;
+        *stat_value = temp_value;
     }
+
+    return;
 }
 
 pub fn change_stat(
@@ -286,20 +258,18 @@ pub fn change_stat(
     abilities: &mut HashMap<AbilityType, i16>,
     stat: &Stat,
     value: i16,
-    stat_damage_type: &EffectDamageType,
     stats_min_value: u8,
-) {
+){
     let cache_value = match stats_cache.get_mut(stat) {             //get cache value;
         Some(v) => v,
         _ => {
             println!(
-                "Can not change stat: '{:?}', because stat is not in cache storage. Returning from the function",
+                "Can not change stat: '{:?}', because stat is not in cache storage. Returning",
                 stat,
             );
             return;
         }
     };
-
     let stat_value = match stats_storage.get_mut(stat) {            //get stat;
         Some(v) => v,
         None => {
@@ -311,32 +281,19 @@ pub fn change_stat(
         },
     };
 
-    let old_stat_value: i16 = *stat_value;
-    
-    if *stat_damage_type == EffectDamageType::Flat {          //calculating values and set them to cache;
-        *cache_value += value;
-    } else {
-        *cache_value += *stat_value * value / 100;
-    }
+    *cache_value -= value;                           //set new value to cache;
+    let old_stat_value = *stat_value;           //storing old value to compare with new stat value;
+    *stat_value -= value;                            //set new value to stat;
 
-    if *cache_value < stats_min_value as i16{           //check stat to minimal value;
+    if *cache_value < stats_min_value as i16{                   //check stat to minimal value;
         *stat_value = stats_min_value as i16;
     } else {
         *stat_value = *cache_value;
     }   
-
     
-    if *stat_value == old_stat_value {          //check for change dependences;
-        return;     //nothing to change;
-    };
-
-    do_stat_dependences(
-        resists,
-        abilities,
-        stat,
-        *stat_value,
-        old_stat_value,
-    );
+    if *stat_value != old_stat_value {                          //check for do dependences;
+        do_stat_dependences(resists, abilities, stat,*stat_value,old_stat_value);
+    }
 }
 
 pub fn do_stat_dependences(

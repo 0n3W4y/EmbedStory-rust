@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
 use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType};
@@ -7,7 +7,7 @@ use super::{effects::EffectType, CharactorType, abilities::{AbilityType, self}, 
 
 pub const MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL: f32 = 0.25;
 
-#[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillType {
     #[default]
     Melee,
@@ -15,13 +15,13 @@ pub enum SkillType {
     Magic,
 }
 
-#[derive(Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillSubtype {
     #[default]
     BaseSkill,
 }
 
-#[derive(Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum CastSource {
     Mouse,
     #[default]
@@ -29,7 +29,7 @@ pub enum CastSource {
     Target,
 }
 
-#[derive(Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum SkillDirectionType {
     #[default]
     Line,
@@ -40,7 +40,7 @@ pub enum SkillDirectionType {
     Point,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct Skill {
     pub skill_type: SkillType,
     pub skill_subtype: SkillSubtype,

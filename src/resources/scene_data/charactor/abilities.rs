@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 
 use super::stats::Stat;
 
-#[derive(Clone, Eq, PartialEq, Debug, Hash, Default, Deserialize)]
+#[derive(Clone, Eq, PartialEq, Debug, Hash, Default, Deserialize, Serialize)]
 pub enum AbilityType{
     Evasion,
     #[default]

@@ -48,7 +48,7 @@ pub enum WeaponType {
 }
 
 
-#[derive(Deserialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Stuff{
     pub id: usize,
     pub stuff_type: StuffType,
