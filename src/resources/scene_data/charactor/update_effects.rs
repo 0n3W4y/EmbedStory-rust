@@ -131,55 +131,30 @@ pub fn update_effects(
 
             //first run
             } else if endless_effect.current_duration == 0.0 {
-                for (stat, stat_damage) in endless_effect.change_stat {
+                for (stat, stat_damage) in endless_effect.change_stat.iter() {
                     charactor::change_stat(
                         &mut stats.stats,
                         &mut stats.stats_cache,
-                        &mut extra_stats.extra_stats,
-                        &mut extra_stats.extra_stats_cache,
-                        &mut resists.effect_resists,
-                        &mut resists.damage_resists,
+                        &mut resists.resists,
                         &mut abilities.ability,
-                        &stat,
-                        stat_damage,
-                        &endless_effect.change_stat_damage_type,
+                        stat,
+                        *stat_damage,
                         stats.stats_min_value,
                     );
                 }
 
-                //change extra_stat_cache;
-                //all effects change cache like buff or debuff health;
-                for (extra_stat, damage_value) in endless_effect.change_extra_stat {
-                    charactor::change_extra_stat_cache(
-                        &mut extra_stats.extra_stats, 
-                        &mut extra_stats.extra_stats_cache,
-                        &extra_stat, 
-                        damage_value,
-                        &endless_effect.change_extra_stat_damage_type,
-                    );
-                };
-
-                //change damage resists;
-                for (damage_resist, damage_resists_value) in endless_effect.change_damage_resist {
-                    charactor::change_damage_resist(
-                        &mut resists.damage_resists,
-                        &damage_resist,
-                        damage_resists_value,
-                    );
-                }
-
-                //change effects resists;
-                for (effect_resist, effect_resist_value) in endless_effect.change_effect_resist {
-                    charactor::change_effect_resist(
-                        &mut resists.effect_resists,
-                        &effect_resist,
-                        effect_resist_value,
+                //change resists;
+                for (resist_type, resist_damage) in endless_effect.change_resist.iter() {
+                    charactor::change_resist(
+                        &mut resists.resists,
+                        resist_type,
+                        *resist_damage,
                     );
                 }
 
                 //change abilities;
-                for (ability, ability_value) in endless_effect.change_ability {
-                    charactor::change_ability(&mut abilities.ability, &ability, ability_value as i16);
+                for (ability, ability_value) in endless_effect.change_ability.iter() {
+                    charactor::change_ability(&mut abilities.ability, ability, *ability_value);
                 }
 
                 skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
