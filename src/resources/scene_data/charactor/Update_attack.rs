@@ -13,10 +13,13 @@ use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::charactor::{self, SkillSlot};
 use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
+use crate::resources::scene_data::stuff::damage_type::DamageType;
+use crate::resources::scene_data::stuff::resists_types;
 
 use super::abilities;
 use super::damage_text_informer::DamageTextInformer;
-use super::effects::{Effect};
+use super::effects::Effect;
+use super::stats::Stat;
 use super::{abilities::AbilityType, skills::Skill, CharactorStatus};
 
 pub fn attacking_from_basic_skill(
@@ -85,7 +88,8 @@ pub fn attacking_from_basic_skill(
                     charactor_ability,
                     charactor_position,
                     target_position,
-                    &mut target_text_component, 
+                    &mut target_text_component,
+                    &mut target_stats,
                     target_resists, 
                     &mut target_effects, 
                     target_abilities, 
@@ -197,9 +201,10 @@ fn attack(
     charactor_position: &PositionComponent,
     target_position: &PositionComponent,
     target_text_component: &mut CharactorTextComponent,
+    target_stats: &mut StatsComponent,
     target_resists: &ResistsComponent,
-    target_effect: &mut EffectComponent,
-    target_ability: &AbilityComponent,
+    target_effects: &mut EffectComponent,
+    target_abilities: &AbilityComponent,
     target_skills: &mut SkillComponent,
     deploy: &Deploy,
     material_manager: &MaterialManager,
@@ -208,66 +213,49 @@ fn attack(
     let skills_deploy = &deploy.charactor_deploy.skills_deploy;
     let mut rng = rand::thread_rng();
 
-    //set skill on cooldown;
-    skill.on_cooldown = true;
+    skill.on_cooldown = true;                                                                    //set skill on cooldown;
+
+    let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {            //get accuracy
+        Some(v) => *v,
+        _ => {
+            println!("Can't get Accuracy, use 0 instead, so 100% chance to miss");
+            0
+        }
+    };
+
+    let random_accuracy_number: u8 = rng.gen_range(0..=99);
+    let missed: bool = if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
+        true
+    } else {
+        false
+    };
 
     //check for melee or ranged+magic attack;
     if skill.projectiles > 0 {
         //create default projectile component;
         let mut projectile_component = Projectile {
+            projectile_type: skill.projectile_type.clone(),
+            starting_position: charactor_position.position.clone(),
+            destination_point: target_position.position.clone(),
             ..Default::default()
         };
 
-        //change projectile type by weapon type 
-        projectile_component.projectile_type = match skill.projectile_type {
-            Some(v) => v.clone(),
-            None => {
-                println!("Can not get projectile type from Base skill: '{:?}', '{:?}, {:?}', use 'Arrow' projectile type", skill.skill_name, skill.skill_type, skill.skill_subtype);
-                ProjectileType::Arrow
-            },
-        };
-
-        //insert to projectile starting point and destination point;
-        projectile_component.starting_position.x = charactor_position.position.x;
-        projectile_component.starting_position.y = charactor_position.position.y;
-        projectile_component.destination_point.x = target_position.position.x;
-        projectile_component.destination_point.y = target_position.position.y;
-
-        //let check for accuracy
-        let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {
-            Some(v) => *v,
-            _ => {
-                println!("Can't get Accuracy, use 0 instead, so 100% chance to miss");
-                0
-            }
-        };
-
-        let random_accuracy_number: u8 = rng.gen_range(0..=99);
-        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
+        if missed {
             projectile_component.is_missed = true;
-            create_projectile(commands, projectile_component, deploy, material_manager);
-            //if accuracy <= 0 we r create projectile with @miss field; and return from func;
-            return;
-        };
+            create_projectile(&mut commands, projectile_component, material_manager);
+            return;                                                                         //return, because attack is missed;
+        }
 
-        //if not missed
-        //clone damage values;
-        projectile_component.damage = skill.damage.clone();
+        
+        projectile_component.damage = skill.damage.clone();                                 //clone damage values;
 
-        //check for trigger effects and passive skills;
-        for (effect_type, trigger_chance) in skill.effect.iter() {
-            if *trigger_chance <= 0 {
+        for (effect_type, trigger_chance) in skill.effect.iter() {          //check for triggered effects;
+            let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
+            if *trigger_chance < trigger_chance_random_number {
                 //not triggered;
                 continue;
             }
-
-            let random_trigger_chance_number: u8 = rng.gen_range(0..=99);
-            if random_trigger_chance_number > *trigger_chance {
-                //not triggered;
-                continue;
-            }
-
-            projectile_component.effects.push(effect_type.clone());                  
+            projectile_component.effects.push(effect_type.clone());                             //store triggered effects to projectile;
         }
 
         for (skill_type, trigger_chance) in skill.passive_skill.iter() {
@@ -277,64 +265,54 @@ fn attack(
         }
 
     } else {
-        // lets check for accuracy
-        let accuracy = match charactor_ability.ability.get(&AbilityType::Accuracy) {
-            Some(v) => *v,
-            _ => {
-                println!("Can't get Accuracy, use 0 instead, so 100% chance to miss");
-                0
-            }
-        };
-
-        let random_accuracy_number: u8 = rng.gen_range(0..=99);
-        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
-            target_text_component.text_upper_charactor.push( DamageTextInformer::new("MISS".to_string(), false, None)); 
+        if missed {                                                             // if missed we put text into target and return from the function - no need to do next;
+            target_text_component.text_upper_charactor.push(DamageTextInformer::new("MISSED".to_string(), false, None));
             return;
         }
 
-        // if we here, let chech the evasion of tagert;
-        let target_evasion = match target_ability.ability.get(&AbilityType::Evasion) {
-            Some(v) => *v,
-            _ => {
-                println!("Target has no ability Evasion, so i use 0 instead");
-                0
-            }
+        match target_abilities.ability.get(&AbilityType::Evasion) {             //check for target evasion;
+            Some(v) => {
+                if *v > 0 {
+                    let random_evasion_number: u8 = rng.gen_range(0..=99);
+                    if *v >= random_evasion_number as i16 {                     //target evaded shot, put text into target and return from the function;
+                        target_text_component.text_upper_charactor.push(DamageTextInformer::new("EVADED".to_string(), false, None)); 
+                        return;
+                    }
+                }
+            },
+            _ => {}
         };
 
-        //check for target evasion;
-        if target_evasion > 0 {
-            let random_evasion_number: u8 = rng.gen_range(0..=99);
-            if target_evasion >= random_evasion_number as i16 {
-                target_text_component.text_upper_charactor.push( DamageTextInformer::new("EVADED".to_string(), false, None)); 
-                return;
-            }
-        }
-
-        //so if we are here, let's get damage types and resists
-        //let chect for block amount cnad chanse;
-        let mut block_amount: i16 = 0;
-        let block_chance: i16 = match target_ability.ability.get(&AbilityType::BlockChance) {
-            Some(v) => *v,
-            _ => {
-                println!("Target has no block chance, i use 0 istead");
-                0
-            }
-        };
-
-        let block_chance_random_number: u8 = rng.gen_range(0..=99);
-        if block_chance >= block_chance_random_number as i16 {
-            block_amount = match target_ability.ability.get(&AbilityType::BlockAmount) {
-                Some(v) => *v,
-                _ => {
-                    println!("Target has no block amount, i use 0 instead");
+        let block_amount: i16 = match target_abilities.ability.get(&AbilityType::BlockChance) {       //set block amount if block chance triggered, otherwise use 0;
+            Some(v) => {
+                let block_chance_random_number: u8 = rng.gen_range(0..=99);
+                if *v >= block_chance_random_number as i16 {
+                    match target_abilities.ability.get(&AbilityType::BlockAmount) {
+                        Some(v) => *v,
+                        _ => {
+                            println!("Target has no block amount and have block chance, i use 0 instead");
+                            0
+                        }
+                    }
+                } else {
                     0
                 }
-            };
-        }
+            },
+            _ => {
+                0
+            }
+        };
 
-        //create  damage 
-        for (damage_type, value) in skill.damage.iter() {
-            let target_damage_resist = match target_resists.damage_resists.get(&damage_type) {
+        let critical_hit_random_number = rng.gen_range(0..=99);
+        let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {           //calculating critical multiplier;
+            skill.crit_multiplier
+        } else {
+            100
+        };
+        
+        for (damage_type, value) in skill.damage.iter() {                       //create and apply damage to target;
+            let resist_type = resists_types::get_resist_from_damage_type(damage_type);
+            let target_damage_resist = match target_resists.resists.get(&resist_type) {
                 Some(v) => *v,
                 _ => {
                     println!(
@@ -344,41 +322,50 @@ fn attack(
                     0
                 }
             };
+            //do not need to use damage multiplier from ability, cause already applied from  ability when skill is created;
 
-            let damage_value = value - (value * target_damage_resist / 100) - (value * block_amount / 100 );
+            let value_with_multiplier = value * critical_hit_multiplier / 100;                    //calculating new damage value with multiplier from critical hit;
+            let damage = value_with_multiplier - (value_with_multiplier * target_damage_resist / 100) - (value_with_multiplier * block_amount / 100 );  // calculating damage;
+            let stat = if *damage_type == DamageType::Stamina {                                 //which health or stamina points get damaged;
+                Stat::StaminaPoints
+            } else {
+                Stat::HealthPoints
+            };
 
-            charactor::change_extra_stat_current(
-                &mut target_extra_stats.extra_stats,
-                &mut target_extra_stats.extra_stats_cache,
-                &ExtraStat::HealthPoints,
-                damage_value,
-                &StatDamageType::Flat,
+            if damage <= 0 {                                                                    //check for negative damage (excluding healing by damage xD);
+                continue;
+            }
+
+            charactor::change_health_stamina_points(                                        //do damage;
+                &mut target_stats.stats,
+                &mut target_stats.stats_cache,
+                &stat,
+                damage,
             );
-            target_text_component.text_upper_charactor.push( DamageTextInformer::new(damage_value.to_string(), false, Some(damage_type))); 
+
+            let bold: bool = if critical_hit_multiplier > 100 {                                 //check for bigger text or not for inform to ui;
+                true
+            } else {
+                false
+            };
+
+            target_text_component.text_upper_charactor.push(DamageTextInformer::new(damage.to_string(), bold, Some(damage_type)));  //set damage to target informer;
         }
 
-        //now we need to set effect to target if effects have on skill;
-        for (effect_type, trigger_chance) in skill.effect.iter_mut() {
-            //check for trigger effect
+        for (effect_type, trigger_chance) in skill.effect.iter_mut() {          //set effects on target, if triggered;
             let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
             if *trigger_chance < trigger_chance_random_number {
-                //skip effect, because not triggered;
-                continue;
+                continue;                                                                              //skip effect, because not triggered;
             };
-            
-            //create new effect;
-            let effect_config = effects_deploy.get_effect_config(effect_type);
+
+            let effect_config = effects_deploy.get_effect_config(effect_type);          //create default effect;
             let mut effect = Effect::new(effect_config);
 
-            //check for ednless effect or temporary
             if effect.duration == 0.0 {
-                //try to insert, or ignore if effect already exist;
-                //Maybe change damage todo();
-                target_effect.endless_effect.entry(effect_type.clone()).or_insert(effect);
+                target_effects.endless_effect.entry(effect_type.clone()).or_insert(effect);      //try to insert, or ignore if effect already exist;
             } else {
-                //temporary
-                //get resist from target on this effect to change duration;
-                let target_effect_resist = match target_resists.effect_resists.get(effect_type) {
+                let effect_resist = resists_types::get_resist_from_effect_type(effect_type);  //convert effect type to resist type;
+                let target_effect_resist = match target_resists.resists.get(&effect_resist) {       //get resist from target on this effect to change duration;
                     Some(v) => *v,
                     _ => {
                         println!(
@@ -388,9 +375,8 @@ fn attack(
                         0
                     }
                 };
-
-                //check target resist; if it > 100% just ignore this effect;
-                if target_effect_resist > 100 {
+                
+                if target_effect_resist > 100 {                                                        //check target resist; if it > 100% just ignore this effect;
                     continue;
                 }
 
@@ -398,26 +384,49 @@ fn attack(
                 let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
                 effect.duration -= effect_duration;
 
-                target_effect.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+                target_effects.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
             }
         }
         
         //check for passivly skills on damage
-        for (skill_type, value) in skill.passive_skill.iter() {
-            let mut skill = Skill::new(skills_deploy.get_skill_deploy(skill_type));
+        for (skill_type, trigger_chance) in skill.passive_skill.iter() {
+            let skill_trigger_chance_random_number: u8 = rng.gen_range(0..=99);
+            if *trigger_chance < skill_trigger_chance_random_number {
+                continue;                                                               // skip passive skill, not triggered;
+            }
 
+            let mut skill = Skill::new(skills_deploy.get_skill_deploy(skill_type));         //create new default skill;
             for (damage_type, value) in skill.damage.iter_mut() {
-                let target_resist_multiplier = match target_resists.damage_resists.get(damage_type) {
+                let resist_type = resists_types::get_resist_from_damage_type(damage_type);
+                let target_resist_multiplier = match target_resists.resists.get(&resist_type) {
                     Some(v) => *v,
                     None => 0,
                 };
-                let damage_multuplier_from_ability: i16 = abilities::get_damage_type_from_ability(&charactor_ability.ability, damage_type);
-                let temp_value = (*value as f32 + (*value as f32 * damage_multuplier_from_ability as f32 / 100.0)) as i16;
-                *value = temp_value - (temp_value as f32 * target_resist_multiplier as f32 / 100.0) as i16;
-                                    
+
+                let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
+                let damage_multiplier = match charactor_ability.ability.get(&ability_type) {
+                    Some(v) => *v,
+                    None => 0
+                };
+
+                let damage_with_multiplier = *value + *value * damage_multiplier / 100;
+                let temp_value = damage_with_multiplier - damage_with_multiplier * target_resist_multiplier / 100;
+
+                if temp_value < 0 {
+                    *value = 0;
+                } else {
+                    *value = temp_value;
+                }                                    
+            } 
+            match target_skills.passive_skills.get_mut(skill_type) {
+                Some(v) => {
+                    skill.trigger_duration += v.trigger_duration;                       // prolong time duration;
+                    *v = skill;
+                },
+                None => {
+                    target_skills.passive_skills.insert(skill_type.clone(), skill);
+                },
             }
-            //add skill time;
-            target_skills.passive_skills.entry(skill_type.clone()).and_modify(|x| x.trigger_time += skill.trigger_time).or_insert(skill);
         } 
     }
 }

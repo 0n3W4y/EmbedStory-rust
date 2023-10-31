@@ -28,6 +28,8 @@ pub enum AbilityType{
     AcidDamage,
     PoisonDamage,
     ColdDamage,
+    HealthDamage,
+    StaminaDamage,
 }
 
 impl AbilityType {
@@ -51,7 +53,9 @@ impl AbilityType {
             AbilityType::WaterDamage,
             AbilityType::AcidDamage,
             AbilityType::PoisonDamage,
-            AbilityType::ColdDamage
+            AbilityType::ColdDamage,
+            AbilityType::HealthDamage,
+            AbilityType::StaminaDamage,
         ].into_iter()
     }
 }
@@ -95,44 +99,17 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
     return result;
 }
 
-pub fn get_damage_type_from_ability (ability_storage: &HashMap<AbilityType, i16>, damage_type: &DamageType) -> i16 {
+pub fn get_ability_type_from_damage_type (damage_type: &DamageType) -> AbilityType {
     return match *damage_type {
-        DamageType::Fire => {
-            match ability_storage.get(&AbilityType::FireDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Cold => {
-            match ability_storage.get(&AbilityType::ColdDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Electric => {
-            match ability_storage.get(&AbilityType::ElectricDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Phisical => {
-            match ability_storage.get(&AbilityType::PhisicalDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Acid => {
-            match ability_storage.get(&AbilityType::AcidDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        DamageType::Poison => {
-            match ability_storage.get(&AbilityType::PoisonDamage) {
-                Some(v) => *v,
-                None => 0,
-            }
-        },
-        _ => 0
+        DamageType::Fire => AbilityType::FireDamage,
+        DamageType::Cold => AbilityType::ColdDamage,
+        DamageType::Electric => AbilityType::ElectricDamage,
+        DamageType::Phisical => AbilityType::PhisicalDamage,
+        DamageType::Acid => AbilityType::AcidDamage,
+        DamageType::Poison => AbilityType::PoisonDamage,
+        DamageType::Water => AbilityType::WaterDamage,
+        DamageType::Health => AbilityType::HealthDamage,
+        DamageType::Stamina => AbilityType::StaminaDamage,
+        
     }
 }

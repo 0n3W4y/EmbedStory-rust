@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-use crate::{resources::scene_data::{stuff::damage_type::DamageType, charactor::{effects::EffectType, skills::{Skill, SkillDirectionType}}, projectiles::ProjectileType}, scenes::game_scenes::tilemap::tile::Position};
+use crate::{resources::scene_data::{stuff::damage_type::DamageType, charactor::{effects::EffectType, skills::Skill}, projectiles::ProjectileType}, scenes::game_scenes::tilemap::tile::Position};
 
 #[derive( Default, Debug, Component)]
 pub struct Projectile {
@@ -16,5 +16,4 @@ pub struct Projectile {
     pub can_pierce: bool,
     pub pierce_chance: u8,
     pub velocity: u16,
-    pub direction: SkillDirectionType,
 }

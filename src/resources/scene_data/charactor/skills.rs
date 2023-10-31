@@ -50,7 +50,7 @@ pub struct Skill {
    
     //for passive skill;
     pub is_passive_skill: bool,
-    pub trigger_chanse: u8, // chanse to trigger that skill
+    pub trigger_chance: u8, // chanse to trigger that skill
     pub trigger_time: f32, // 1 per second
     pub trigger_duration: f32, // full time to skill live;
     //-----------------
@@ -62,7 +62,7 @@ pub struct Skill {
     pub total_duration: f32,
 
     pub projectiles: u8,
-    pub projectile_type: Option<ProjectileType>,
+    pub projectile_type: ProjectileType,
     pub range: u8, // max range; min range = 1;
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
@@ -86,7 +86,7 @@ impl Skill {
             stuff_id: None,
             is_activated: false,
             is_passive_skill: config.is_passive_skill,
-            trigger_chanse: config.trigger_chanse,
+            trigger_chance: config.trigger_chance,
             trigger_time: config.trigger_time as f32 / 10.0,
             trigger_duration: config.trigger_duration as f32 / 10.0,
             base_cooldown: config.cooldown,
@@ -95,7 +95,7 @@ impl Skill {
             current_duration: 0.0,
             total_duration: 0.0,
             projectiles: config.projectiles,
-            projectile_type:  if config.projectile_type == ProjectileType::None { None }else{ Some(config.projectile_type) },
+            projectile_type: config.projectile_type,
             range: config.range,
             cast_source: config.cast_source,
             skill_direction: config.skill_direction.clone(),
@@ -117,7 +117,7 @@ pub struct SkillDeploy {
     pub skill_name: String,
     pub is_passive_skill: bool,
 
-    pub trigger_chanse: u8,
+    pub trigger_chance: u8,
     pub trigger_time: u16,
     pub trigger_duration: u16,
     pub cooldown: i16,
@@ -147,7 +147,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             skill.effect.clear();
             skill.passive_skill.clear();
             
-            let critical_hit_chanse_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {     //get critical hit chanse from ability;
+            let critical_hit_chance_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {     //get critical hit chance from ability;
                 Some(v) => *v,
                 None => {
                     println!("Can not get Critical Chance from ability, use 0 instead");
@@ -226,13 +226,17 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                 interim_cooldown
             };
 
-            skill.crit_chance = critical_chance + critical_hit_chanse_from_ability;             //set to skill crit chance;
+            skill.crit_chance = critical_chance + critical_hit_chance_from_ability;             //set to skill crit chance;
             skill.crit_multiplier = critical_multiplier + critical_hit_multiplier_from_ability;             //set to skill crit multiplier;
 
 
             for (damage_type, value) in damage_from_weapon.iter() {             //collect damage from abilities and calculate new values;
-                let damage_multiplier_from_ability = abilities::get_damage_type_from_ability(ability_storage, damage_type);
-                let new_value = *value + ((*value * damage_multiplier_from_ability) / 100);
+                let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
+                let damage_multiplier_from_ability = match ability_storage.get(&ability_type){
+                    Some(v) => *v,
+                    None => 0,
+                };
+                let new_value = *value + (*value * damage_multiplier_from_ability / 100);
                 skill.damage.insert(damage_type.clone(), new_value);            //insert new damage values into skill;
             }
 

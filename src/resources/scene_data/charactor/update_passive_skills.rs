@@ -3,18 +3,18 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use rand::Rng;
 
-use super::effects::{StatDamageType, EffectType};
+use super::effects::EffectType;
 use super::{
     skills::CastSource,
-    stats::ExtraStat,
     CharactorType, effects::Effect, CharactorStatus,
 };
+use crate::components::charactor_component::StatsComponent;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::{self, skills::SkillDirectionType};
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::{
     components::charactor_component::{
-        CharactorComponent, CharactorTargetComponent, EffectComponent, ExtraStatsComponent,
+        CharactorComponent, CharactorTargetComponent, EffectComponent,
         PositionComponent, ResistsComponent, SkillComponent,
     },
     resources::deploy::Deploy,
@@ -29,14 +29,14 @@ pub fn update_passive_skills(
         &PositionComponent,
         &CharactorTargetComponent,
         &ResistsComponent,
-        &mut ExtraStatsComponent,
+        &StatsComponent,
         &mut EffectComponent,
     )>,
     mut charactors_query: Query<(
         &CharactorComponent,
         &PositionComponent,
         &ResistsComponent,
-        &mut ExtraStatsComponent,
+        &mut StatsComponent,
         &mut EffectComponent,
     )>,
     time: Res<Time>,
@@ -51,7 +51,7 @@ pub fn update_passive_skills(
         position_component, 
         target_component, 
         resists_component, 
-        mut extra_stats_component, 
+        mut stats_component, 
         mut effect_component
     ) in skills_query.iter_mut() {
 
@@ -153,7 +153,7 @@ pub fn update_passive_skills(
                             target,
                             target_position,
                             target_resists,
-                            mut target_exra_stat,
+                            mut target_stats,
                             mut target_effects,
                         ) in charactors_query.iter_mut()
                         {

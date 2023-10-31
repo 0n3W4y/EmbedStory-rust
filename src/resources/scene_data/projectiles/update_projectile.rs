@@ -6,6 +6,6 @@ pub fn update_projectiles(projectile_query: Query<&Projectile>) {
 
 }
 
-pub fn create_projectile(commands: Commands, projectile: Projectile, deploy: &Deploy, material_manager: &MaterialManager) {
+pub fn create_projectile(commands: &mut Commands, projectile: Projectile, material_manager: &MaterialManager) {
     
 }
