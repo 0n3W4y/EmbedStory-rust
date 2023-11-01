@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{components::projectile_component::Projectile, resources::deploy::Deploy, materials::material_manager::MaterialManager};
+use crate::{components::projectile_component::Projectile, materials::material_manager::MaterialManager};
 
 pub fn update_projectiles(projectile_query: Query<&Projectile>) {
 

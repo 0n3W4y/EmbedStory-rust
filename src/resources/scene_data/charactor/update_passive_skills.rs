@@ -4,14 +4,16 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::effects::EffectType;
+use super::skills::{SkillSubtype, TargetType};
 use super::{
     skills::CastSource,
     CharactorType, effects::Effect, CharactorStatus,
 };
 use crate::components::charactor_component::StatsComponent;
 use crate::materials::material_manager::MaterialManager;
-use crate::resources::scene_data::charactor::{self, skills::SkillDirectionType};
+use crate::resources::scene_data::charactor::{skills::SkillDirectionType};
 use crate::resources::scene_data::stuff::damage_type::DamageType;
+use crate::resources::scene_data::stuff::resists_types::{ResistType, get_resist_from_damage_type};
 use crate::{
     components::charactor_component::{
         CharactorComponent, CharactorTargetComponent, EffectComponent,
@@ -60,43 +62,38 @@ pub fn update_passive_skills(
             continue;
         }
 
-        for (skill_type, skill) in skill_component.passive_skills.iter_mut() {
-            let trigger_time = skill.trigger_time; // time to trigger skill;
-            let current_duration = skill.current_duration; // current tick time
-            let total_duration = skill.total_duration; // time every tick
-            let trigger_duration = skill.trigger_duration; // full time of skill 
+        let skills_for_remove: Vec<SkillSubtype> = vec![];              //skills for remove;
 
-            //first check for end of this skill;
-            if total_duration <= trigger_duration {
-                //skill is end and removed from skills storage;
-                skill_component.passive_skills.remove(skill_type);
+        for (skill_type, skill) in skill_component.passive_skills.iter_mut() {
+            let trigger_time = skill.trigger_time;                  // time to trigger skill;
+            let current_duration = skill.current_duration;          // current tick time
+            let total_duration = skill.total_duration;              //total time every tick
+            let trigger_duration = skill.trigger_duration;          // full life time of skill before remove
+
+            if total_duration <= trigger_duration {                     //check for passive skill ends;
+                skills_for_remove.push(skill_type.clone());             //store skill sub type for next remove;
                 continue;
             }
 
-            //first run or trigger by time;
-            if current_duration >= trigger_time || total_duration == 0.0 {
-                //do skill
-                if total_duration > 0.0 {
+            if current_duration >= trigger_time || total_duration == 0.0 {      //first run or trigger by time;
+                if total_duration > 0.0 {                                   //check for trigger time and substruct trigger time from current duration;
                     skill.current_duration -= trigger_time;
                 }                
                 
-                //check for trigger chance
-                let trigger_chance = skill.trigger_chanse;
+                let trigger_chance = skill.trigger_chance;              //check for trigger chance
                 if trigger_chance < 100 {
                     let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
-                    if trigger_chance < trigger_chance_random_number {
-                        //not triggered
-                        continue;
+                    if trigger_chance < trigger_chance_random_number {  
+                        continue;                                           //not triggered
                     }
                 }
 
-                //calculate crit chance and crit multiplier;
                 let crit_chance = skill.crit_chance;
                 let crit_chance_random_number = rng.gen_range(0..=99);
                 let crit_multiplier = if crit_chance >= crit_chance_random_number {
                     skill.crit_multiplier
                 } else {
-                    0
+                    100
                 };
 
                 let skill_target_type = &skill.target;
@@ -106,24 +103,11 @@ pub fn update_passive_skills(
                 let cast_position = match *skill_cast_source {
                     CastSource::Itself => position_component.position.clone(),
                     CastSource::Mouse => panic!("Can not trigger passive skill: {:?}, because cast position is on Mouse!!! Only Active skills can casts from mouse", skill_type),
-                    CastSource::Target => {
-                        match target_component.target_position {
-                            Some(v) => Position { x: v.x, y: v.y },
-                            None => {
-                                println!(
-                                    "Can not trigger passive skill: '{:?}', because it casts from target and target position is empty! I use @Itself position",
-                                    skill.skill_type
-                                );
-                                position_component.position.clone()
-                            }
-                        }
-                    },
                 };
 
                 if skill.projectiles > 0 {
                     let projectiles = skill.projectiles;
                     // passive skills can casts only from Itself;
-                    !
                     match skill.skill_direction {
                         SkillDirectionType::Point => {},
                         SkillDirectionType::Arc180 => {},
@@ -136,17 +120,25 @@ pub fn update_passive_skills(
                     
                     //buff or debuff skill; if skill range == 0 then we understand skill can buff or debuff self when triggered. We must ignore target_type;
                     if skill.range == 0 {
-                        do_damage(&skill.damage, &mut extra_stats_component, crit_multiplier, &resists_component.damage_resists);
-                        // if skill have an effect, place effect;
-                        add_effect(&skill.effect, &deploy, &resists_component.effect_resists, &mut effect_component);
-                        
+                        match *skill_cast_source {
+                            CastSource::Itself => {
+                                do_damage(&skill.damage, &mut stats_component, crit_multiplier, &resists_component.resists);
+                                add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);
+                            },
+                            CastSource::Mouse => { 
+                                println!(
+                                    "Can't cast passive skill into MOUSE position! Charactor info: Type:{:?}, RaceType:{:?}, Id:{:?}", 
+                                    charactor_component.charactor_type, charactor_component.race_type, charactor_component.id
+                                );
+                            },
+                        }       
                     } else {
                         // AOE Aura
 
                         //for check target in range of skill
-                        let x_min = cast_position.x - (skill.range as i32);
+                        let x_min = cast_position.x - skill.range as i32;
                         let x_max = cast_position.x + skill.range as i32;
-                        let y_min = cast_position.y - (skill.range as i32);
+                        let y_min = cast_position.y - skill.range as i32;
                         let y_max = cast_position.y + skill.range as i32;
     
                         for (
@@ -159,20 +151,45 @@ pub fn update_passive_skills(
                         {
                             //check for target
                             match skill_target_type {
-                                CharactorType::Player => {
-                                    if target.charactor_type != CharactorType::Player || target.charactor_type != CharactorType::Companion {
-                                        continue;
+                                TargetType::Enemies=> {
+                                    match charactor_component.charactor_type {
+                                        CharactorType::Player | CharactorType::Companion => {
+                                            match target.charactor_type {
+                                                CharactorType::Player | CharactorType::Companion => continue,
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => {},
+                                            }
+                                        },
+                                        CharactorType::NPC => continue,
+                                        CharactorType::Monster => {
+                                            match target.charactor_type {
+                                                CharactorType::Player | CharactorType::Companion => {},
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => continue,
+                                            }
+                                        },
                                     }
                                 },
-                                CharactorType::Monster => {
-                                    if target.charactor_type != CharactorType::Monster {
-                                        continue;
+                                TargetType::Allies => {
+                                    match charactor_component.charactor_type {
+                                        CharactorType::Player | CharactorType::Companion => {
+                                            match target.charactor_type {
+                                                CharactorType::Player | CharactorType::Companion => {},
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => continue,
+                                            }
+                                        },
+                                        CharactorType::NPC => continue,
+                                        CharactorType::Monster => {
+                                            match target.charactor_type {
+                                                CharactorType::Player | CharactorType::Companion => continue,
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => {},
+                                            }
+                                        },
                                     }
                                 },
-                                _ => { 
-                                    println!("Skill taget type should be Player or Enemy. Skill type: {:?}", skill_type);
-                                    continue;
-                                },
+                                TargetType::All => {},
                             }
     
                             //ok if we r here, check the position of target;
@@ -184,8 +201,8 @@ pub fn update_passive_skills(
                                 traget_position_y <= y_max {
 
                                 //bingo, we have a target;
-                                do_damage(&skill.damage, &mut target_exra_stat, crit_multiplier, &target_resists.damage_resists);
-                                add_effect(&skill.effect, &deploy, &target_resists.effect_resists, &mut target_effects);
+                                do_damage(&skill.damage, &mut stats_component, crit_multiplier, &target_resists.resists);
+                                add_effect(&skill.effect, &deploy, &target_resists.resists, &mut target_effects);
                             } else {
                                 //position of target not in range;
                                 continue;
@@ -201,23 +218,20 @@ pub fn update_passive_skills(
     }
 }
 
-pub fn do_damage(damage: &HashMap<DamageType, i16>, target_extra_stat: &mut ExtraStatsComponent, crit_multiplier: i16, damage_resists: &HashMap<DamageType, i16>){
+pub fn do_damage(damage: &HashMap<DamageType, i16>, stats: &mut StatsComponent, crit_multiplier: i16, resists: &HashMap<ResistType, i16>){
     for (damage_type, value) in damage.iter() {
-        let self_resist: i16 = if *damage_type == DamageType::Health || *damage_type == DamageType::Stamina {
-            0
-        } else {
-            match damage_resists.get(damage_type) {
-                Some(v) => *v,
-                None => {
-                    println!("Update_passive_skills. Can not get self resist, self have no resist '{:?}' in storage.", damage_type);
-                    0
-                }
+        let resist_type = get_resist_from_damage_type(damage_type);
+        let self_resist: i16 =  match resists.get(&resist_type) {
+            Some(v) => *v,
+            None => {
+                println!("Update_passive_skills. Can not get self resist, self have no resist '{:?}' in storage.", resist_type);
+                0
             }
         };
 
-        let mut damage = value + (value * crit_multiplier / 100);
+        let mut damage = value * crit_multiplier / 100;
         damage -= damage * self_resist / 100;
-        damage = if (*damage_type == DamageType::Health || *damage_type == DamageType::Stamina) && damage < 0 {
+        damage = if (*damage_type == DamageType::Health || *damage_type == DamageType::Stamina) || damage > 0 {
             damage
         } else {
             0
@@ -230,8 +244,8 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, target_extra_stat: &mut Extr
         };
 
         //do damage on HealthPoints;
-        charactor::change_extra_stat_current(
-            &mut target_extra_stat.extra_stats,
+        charactor::change_health_stamina_points(
+            &mut ,
             &mut target_extra_stat.extra_stats_cache,
             &extra_stat,
             damage,
@@ -240,7 +254,7 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, target_extra_stat: &mut Extr
     }
 }
 
-pub fn add_effect(effect: &HashMap<EffectType, u8>, deploy: &Deploy, effect_resists: &HashMap<EffectType, i16>, effect_component: &mut EffectComponent){
+pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, resists: &HashMap<ResistType, i16>, effect_component: &mut EffectComponent){
     let mut rng = rand::thread_rng();
     for (effect_type, effect_trigger) in effect.iter() {
         let trigger_effect_random_number: u8 = rng.gen_range(0..=99);

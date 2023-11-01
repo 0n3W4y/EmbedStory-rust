@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::damage_text_informer::DamageTextInformer;
-use crate::resources::scene_data::charactor::skills::SkillSubtype;
+use crate::resources::scene_data::charactor::skills::SkillType;
 use crate::resources::scene_data::stuff::resists_types::ResistType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::Effect;
@@ -73,7 +73,7 @@ pub struct AbilityComponent {
 #[derive(Component, Default)]
 pub struct SkillComponent {
     pub skills: HashMap<SkillSlot, Skill>,
-    pub passive_skills: HashMap<SkillSubtype, Skill>,
+    pub passive_skills: HashMap<SkillType, Skill>,
 }
 
 #[derive(Component, Default)]

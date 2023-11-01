@@ -5,7 +5,7 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
-use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillSubtype};
+use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillType};
 use crate::resources::scene_data::charactor::stats::Stat;
 use crate::resources::scene_data::charactor::RaceType;
 use crate::resources::scene_data::stuff::resists_types::ResistType;
@@ -155,9 +155,9 @@ pub struct SkillsDeploy{
 }
 
 impl SkillsDeploy {
-    pub fn get_skill_deploy( &self, skill: &SkillSubtype ) -> &SkillDeploy {
+    pub fn get_skill_deploy( &self, skill: &SkillType ) -> &SkillDeploy {
         match *skill {
-            SkillSubtype::BaseSkill => &self.base_skill,
+            SkillType::BaseSkill => &self.base_skill,
         }
     }
 }

@@ -14,7 +14,7 @@ use self::damage_type::DamageType;
 use self::resists_types::ResistType;
 
 use super::charactor::abilities::AbilityType;
-use super::charactor::skills::SkillSubtype;
+use super::charactor::skills::SkillType;
 use super::charactor::{stats::Stat, effects::EffectType};
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Hash )]
@@ -52,13 +52,12 @@ pub enum WeaponType {
 pub struct Stuff{
     pub id: usize,
     pub stuff_type: StuffType,
-    pub stuff_subtype: StuffSubtype,
 
     pub max_amount: usize,
     pub amount: usize,
 
-    pub position: Position<i32>,
-    pub wear_slot: StuffWearSlot,
+    pub position: Option<Position<i32>>,
+    pub wear_slot: Option<StuffWearSlot>,
 
     pub damage: HashMap<DamageType, i16>,
     pub critical_hit_chance: i16,
@@ -66,13 +65,12 @@ pub struct Stuff{
     pub cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
 
     pub effects: HashMap<EffectType, u8>,
-    pub passive_skills: HashMap<SkillSubtype, u8>,
+    pub skills: Vec<SkillType>,
+    pub passive_skills: HashMap<SkillType, u8>,
 
     pub stats: HashMap<Stat, i16>,
     pub resists: HashMap<ResistType, i16>,
     pub abilities: HashMap<AbilityType, i16>,
-
-    pub skills: Vec<SkillSubtype>,
 
     pub price: u32,
 

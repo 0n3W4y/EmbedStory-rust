@@ -3,37 +3,39 @@ use std::collections::HashMap;
 
 use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType};
 
-use super::{effects::EffectType, CharactorType, abilities::{AbilityType, self}, StuffWearSlot};
+use super::{effects::EffectType, abilities::{AbilityType, self}, StuffWearSlot};
 
 pub const MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL: f32 = 0.25;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillType {
     #[default]
-    Melee,
-    Ranged,
-    Magic,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
-pub enum SkillSubtype {
-    #[default]
-    BaseSkill,
+    BaseSkill
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum CastSource {
     Mouse,
     #[default]
-    Itself,
-    Target,
+    Itself
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum TargetType {
+    #[default]
+    Allies,
+    Enemies,
+    All,
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum SkillDirectionType {
     #[default]
     Line,
+    Arc15,
+    Arc30,
     Arc45,
+    Arc60,
     Arc90,
     Arc180,
     Arc360,
@@ -43,7 +45,6 @@ pub enum SkillDirectionType {
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct Skill {
     pub skill_type: SkillType,
-    pub skill_subtype: SkillSubtype,
     pub skill_name: String,
     pub stuff_id: Option<usize>, // link to stuff in wear slot;
     pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
@@ -67,21 +68,20 @@ pub struct Skill {
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
     pub stamina_cost: i16,
-    pub target: CharactorType,
+    pub target: TargetType,
 
     pub crit_chance: i16,
     pub crit_multiplier: i16,
 
     pub damage: HashMap<DamageType, i16>,
     pub effect: HashMap<EffectType, u8>,
-    pub passive_skill: HashMap<SkillSubtype, u8>,
+    pub passive_skill: HashMap<SkillType, u8>,
 }
 
 impl Skill {
     pub fn new (config: &SkillDeploy) -> Self {
         Skill {
             skill_type: config.skill_type.clone(),
-            skill_subtype: config.skill_subtype.clone(),
             skill_name: config.skill_name.clone(),
             stuff_id: None,
             is_activated: false,
@@ -113,7 +113,6 @@ impl Skill {
 #[derive(Deserialize, Debug)]
 pub struct SkillDeploy {
     pub skill_type: SkillType,
-    pub skill_subtype: SkillSubtype,
     pub skill_name: String,
     pub is_passive_skill: bool,
 
@@ -128,14 +127,14 @@ pub struct SkillDeploy {
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
     pub stamina_cost: i16,
-    pub target: CharactorType,
+    pub target: TargetType,
 
     pub crit_chance: i16,
     pub crit_multiplier: i16,
 
     pub damage: HashMap<DamageType, i16>, 
     pub effect: HashMap<EffectType, u8>, // effect type and effect trigger chanse;
-    pub passive_skill: HashMap<SkillSubtype, u8>, // skill type and skill trigger chanse;
+    pub passive_skill: HashMap<SkillType, u8>, // skill type and skill trigger chanse;
 }
 
 
@@ -174,7 +173,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             let mut critical_multiplier: i16 = 0;
             let mut damage_from_weapon: HashMap<DamageType, i16> = HashMap::new();
             let mut effects_from_weapon: HashMap<EffectType, u8> = HashMap::new();
-            let mut passive_skills_from_weapon: HashMap<SkillSubtype, u8> = HashMap::new();
+            let mut passive_skills_from_weapon: HashMap<SkillType, u8> = HashMap::new();
             let mut skip_left_hand: bool = false;             //check for TwoHanded weapon;
 
             let weapon = match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {          //get weapon from right hand
@@ -185,7 +184,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                     damage_from_weapon = weapon.damage.clone();
                     effects_from_weapon = weapon.effects.clone();
                     passive_skills_from_weapon = weapon.passive_skills.clone();
-                    if weapon.wear_slot == StuffWearSlot::RightAndLeftHand {
+                    if weapon.wear_slot.unwrap() == StuffWearSlot::RightAndLeftHand {           //safe unwrap;
                         skip_left_hand = true;
                     }
 
