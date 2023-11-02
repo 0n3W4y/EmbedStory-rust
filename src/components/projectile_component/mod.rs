@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::{resources::scene_data::{stuff::damage_type::DamageType, charactor::{effects::EffectType, skills::Skill}, projectiles::ProjectileType}, scenes::game_scenes::tilemap::tile::Position};
 
-#[derive( Default, Debug, Component)]
+#[derive( Default, Debug, Component, Clone)]
 pub struct Projectile {
     pub projectile_type: ProjectileType,
     pub damage: HashMap<DamageType, i16>,

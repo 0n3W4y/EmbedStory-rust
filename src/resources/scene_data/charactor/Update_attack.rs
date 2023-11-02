@@ -11,7 +11,6 @@ use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::charactor::{self, SkillSlot};
-use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::resources::scene_data::stuff::resists_types;
@@ -230,10 +229,8 @@ fn attack(
         false
     };
 
-    //check for melee or ranged+magic attack;
     if skill.projectiles > 0 {
-        //create default projectile component;
-        let mut projectile_component = Projectile {
+        let mut projectile_component = Projectile {             //create default projectile component;
             projectile_type: skill.projectile_type.clone(),
             starting_position: charactor_position.position.clone(),
             destination_point: target_position.position.clone(),
@@ -245,24 +242,47 @@ fn attack(
             create_projectile(&mut commands, projectile_component, material_manager);
             return;                                                                         //return, because attack is missed;
         }
-
         
         projectile_component.damage = skill.damage.clone();                                 //clone damage values;
 
         for (effect_type, trigger_chance) in skill.effect.iter() {          //check for triggered effects;
             let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
             if *trigger_chance < trigger_chance_random_number {
-                //not triggered;
-                continue;
+                continue;                                                                   //not triggered;
             }
             projectile_component.effects.push(effect_type.clone());                             //store triggered effects to projectile;
         }
 
         for (skill_type, trigger_chance) in skill.passive_skill.iter() {
-            if *trigger_chance < 100 && *trigger_chance > 0 {
-                !
+            let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
+            if *trigger_chance < trigger_chance_random_number {
+                continue;                                                                   //not triggered;
             }
+
+            let skill_config = deploy.charactor_deploy.skills_deploy.get_skill_deploy(skill_type);
+            let mut skill = Skill::new(skill_config);
+
+            let critical_hit_random_number = rng.gen_range(0..=99);
+            let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {           //calculating critical multiplier;
+                skill.crit_multiplier
+            } else {
+                100
+            };
+
+            for (damage_type, damage) in skill.damage.iter_mut() {
+                let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
+                let damage_multiplier = match charactor_ability.ability.get(&ability_type) {
+                    Some(v) => *v,
+                    None => 0,
+                };
+                let multiplier_damage = *damage * damage_multiplier / 100;
+                let total_damage = multiplier_damage * critical_hit_multiplier;
+                *damage = total_damage;
+            }
+
+            projectile_component.passive_skills.push(skill);
         }
+        create_projectile(&mut commands, projectile_component, material_manager);                       // at base skill attack we have only 1 projectile;
 
     } else {
         if missed {                                                             // if missed we put text into target and return from the function - no need to do next;

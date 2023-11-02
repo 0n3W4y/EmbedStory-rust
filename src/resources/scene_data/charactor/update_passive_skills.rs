@@ -4,24 +4,27 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use super::effects::EffectType;
-use super::skills::{SkillSubtype, TargetType};
+use super::skills::{TargetType, SkillType, Skill};
+use super::stats::Stat;
 use super::{
     skills::CastSource,
     CharactorType, effects::Effect, CharactorStatus,
 };
 use crate::components::charactor_component::StatsComponent;
+use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
-use crate::resources::scene_data::charactor::{skills::SkillDirectionType};
+use crate::resources::scene_data::charactor::skills::SkillDirectionType;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
-use crate::resources::scene_data::stuff::resists_types::{ResistType, get_resist_from_damage_type};
+use crate::resources::scene_data::stuff::resists_types::{self, get_resist_from_damage_type, ResistType};
 use crate::{
     components::charactor_component::{
         CharactorComponent, CharactorTargetComponent, EffectComponent,
         PositionComponent, ResistsComponent, SkillComponent,
     },
-    resources::deploy::Deploy,
-    scenes::game_scenes::tilemap::tile::Position,
+    resources::deploy::Deploy
 };
+use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
+use crate::resources::scene_data::charactor;
 
 pub fn update_passive_skills(
     mut commands: Commands,
@@ -57,12 +60,11 @@ pub fn update_passive_skills(
         mut effect_component
     ) in skills_query.iter_mut() {
 
-        //if char is dead we skip all passive skills;
-        if charactor_component.status == CharactorStatus::Dead {
+        if charactor_component.status == CharactorStatus::Dead {        //if char is dead we skip all passive skills;
             continue;
         }
 
-        let skills_for_remove: Vec<SkillSubtype> = vec![];              //skills for remove;
+        let mut skills_for_remove: Vec<SkillType> = vec![];              //skills for remove;
 
         for (skill_type, skill) in skill_component.passive_skills.iter_mut() {
             let trigger_time = skill.trigger_time;                  // time to trigger skill;
@@ -107,17 +109,52 @@ pub fn update_passive_skills(
 
                 if skill.projectiles > 0 {
                     let projectiles = skill.projectiles;
+                    let skill_range = skill.range;
+                    let mut projectile = Projectile{
+                        projectile_type: skill.projectile_type,
+                        starting_position: cast_position,
+                        is_missed: false,
+                        damage: skill.damage.clone(),
+                        ..Default::default()
+                    };
+
+                    for (skill_type, chance) in skill.passive_skill.iter() {
+                        let random_trigger_chance: u8 = rng.gen_range(0..=99);
+                        if *chance < random_trigger_chance {
+                            continue;                                           //not triggered;
+                        }
+
+                        let skill_config = deploy.charactor_deploy.skills_deploy.get_skill_deploy(skill_type);
+                        let skill = Skill::new(skill_config);
+                        projectile.passive_skills.push(skill);
+                    }
+
+                    for (effect_type, chance) in skill.effect.iter() {
+                        let random_trigger_chance: u8 = rng.gen_range(0..=99);
+                        if *chance < random_trigger_chance {
+                            continue;
+                        }
+                        projectile.effects.push(effect_type.clone());
+                    }
+
                     // passive skills can casts only from Itself;
                     match skill.skill_direction {
                         SkillDirectionType::Point => {},
-                        SkillDirectionType::Arc180 => {},
+                        SkillDirectionType::Arc180 => {
+                            let degree_between_rpojectiles = 180 / projectiles as i16;
+                            !
+                        },
                         SkillDirectionType::Arc90 => {},
                         SkillDirectionType::Arc360 => {},
                         SkillDirectionType::Line => {},
                         SkillDirectionType::Arc45 => {},
+                        SkillDirectionType::Arc15 => {},
+                        SkillDirectionType::Arc30 => {},
+                        SkillDirectionType::Arc60 => {},
                     }
+
+
                 } else {
-                    
                     //buff or debuff skill; if skill range == 0 then we understand skill can buff or debuff self when triggered. We must ignore target_type;
                     if skill.range == 0 {
                         match *skill_cast_source {
@@ -215,13 +252,18 @@ pub fn update_passive_skills(
             skill.current_duration += delta;
             skill.total_duration += delta;
         }
+
+        for skill_type in skills_for_remove.iter() {            //remove ended skills;
+            skill_component.passive_skills.remove(skill_type);
+        }
+        skills_for_remove.clear();
     }
 }
 
 pub fn do_damage(damage: &HashMap<DamageType, i16>, stats: &mut StatsComponent, crit_multiplier: i16, resists: &HashMap<ResistType, i16>){
     for (damage_type, value) in damage.iter() {
         let resist_type = get_resist_from_damage_type(damage_type);
-        let self_resist: i16 =  match resists.get(&resist_type) {
+        let resist: i16 =  match resists.get(&resist_type) {
             Some(v) => *v,
             None => {
                 println!("Update_passive_skills. Can not get self resist, self have no resist '{:?}' in storage.", resist_type);
@@ -229,53 +271,49 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, stats: &mut StatsComponent, 
             }
         };
 
-        let mut damage = value * crit_multiplier / 100;
-        damage -= damage * self_resist / 100;
-        damage = if (*damage_type == DamageType::Health || *damage_type == DamageType::Stamina) || damage > 0 {
-            damage
+        let mut damage_value = value * crit_multiplier / 100;
+        damage_value -= damage_value * resist / 100;
+        damage_value = if (*damage_type == DamageType::Health || *damage_type == DamageType::Stamina) || damage_value > 0 {
+            damage_value
         } else {
             0
         };
 
-        let extra_stat = if *damage_type == DamageType::Stamina {
-            ExtraStat::StaminaPoints
+        let stat = if *damage_type == DamageType::Stamina {
+            Stat::StaminaPoints
         } else {
-            ExtraStat::HealthPoints
+            Stat::HealthPoints
         };
 
-        //do damage on HealthPoints;
         charactor::change_health_stamina_points(
-            &mut ,
-            &mut target_extra_stat.extra_stats_cache,
-            &extra_stat,
-            damage,
-            &StatDamageType::Flat,
+            &mut stats.stats,
+            &mut stats.stats_cache,
+            &stat,
+            damage_value,
         );
     }
 }
 
 pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, resists: &HashMap<ResistType, i16>, effect_component: &mut EffectComponent){
     let mut rng = rand::thread_rng();
-    for (effect_type, effect_trigger) in effect.iter() {
+    for (effect_type, effect_trigger) in effects.iter() {
         let trigger_effect_random_number: u8 = rng.gen_range(0..=99);
-        if *effect_trigger >= trigger_effect_random_number {
-            //effect is triggered;
+        if *effect_trigger >= trigger_effect_random_number {                    //check triegger on effect;
             let effect_config = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
             let mut effect = Effect::new(effect_config);
 
-            let effect_resist = match effect_resists.get(&effect.effect_type) {
+            let resist_type = resists_types::get_resist_from_effect_type(effect_type);
+            let effect_resist = match resists.get(&resist_type) {
                 Some(v) => *v,
-                None => 0, // if not exist, use 0;
+                None => 0,                                             // if not exist, use 0;
             };
 
-            //check for resist this effect;
-            if effect_resist >= 100 {
-                //ignore that effect;
-                continue;
+            
+            if effect_resist >= 100 {                               //check for resist this effect
+                continue;                                               //ignore that effect;
             };
 
-            if effect.duration == 0.0 {
-                //try to insert, or ignore if effect already exist;
+            if effect.duration == 0.0 {                             //check for endless effect;
                 effect_component.endless_effect.entry(effect_type.clone()).or_insert(effect);
             } else {
                 //temporary effect;
