@@ -5,7 +5,7 @@ use crate::resources::scene_manager::SceneManager;
 use crate::materials::material_manager::MaterialManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
-use crate::components::charactor_component::{CharactorComponent, PlayerComponent, NPCComponent, MonsterComponent};
+use crate::components::charactor_component::{CharactorComponent, PlayerComponent, NPCComponent, MonsterComponent, ResistsComponent, SkillComponent, CharactorTextComponent, PositionComponent, EffectComponent, CharactorAnimationComponent, StatsComponent, AbilityComponent, InventoryComponent};
 use crate::resources::profile::Profile;
 
 pub const Z_POSITION: f32 = 3.9; // fourth layer;
@@ -84,6 +84,16 @@ pub fn draw_player(
     let transform = Transform::from_xyz(x, y, new_z_position);
 
     let mut charactor_component: CharactorComponent = Default::default();
+    let mut resist_component: ResistsComponent = Default::default();
+    let mut skill_component: SkillComponent = Default::default();
+    let mut text_component: CharactorTextComponent = Default::default();
+    let mut position_component: PositionComponent = Default::default();
+    let mut effect_compontn: EffectComponent = Default::default();
+    let mut animation_component: CharactorAnimationComponent = Default::default();
+    let mut stat_component: StatsComponent = Default::default();
+    let mut ability_component: AbilityComponent = Default::default();
+    let mut inventory_component: InventoryComponent = Default::default();
+
     copy_from_charactor_to_component(player, &mut charactor_component);
 
     commands.spawn_bundle(SpriteSheetBundle{
