@@ -45,8 +45,7 @@ pub struct EffectComponent{
 }
 
 #[derive(Component, Default)]
-pub struct PositionComponent {
-    pub position: Position<i32>,
+pub struct DestinationComponent {
     pub destination_point: Option<Position<i32>>,
     pub destination_path: Vec<Position<i32>>,
     pub destination_direction: Position<i8>,
@@ -56,7 +55,6 @@ pub struct PositionComponent {
 pub struct StatsComponent {
     pub stats: HashMap<Stat, i16>,
     pub stats_cache: HashMap<Stat, i16>,
-    pub stats_min_value: u8,
 }
 
 
@@ -85,7 +83,6 @@ pub struct InventoryComponent {
 
 #[derive(Component, Default)]
 pub struct CharactorComponent{
-    pub id: usize,
     pub charactor_type: CharactorType,
     pub race_type: RaceType,
     pub gender_type: GenderType,

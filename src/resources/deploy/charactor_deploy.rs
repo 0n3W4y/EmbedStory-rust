@@ -144,7 +144,6 @@ impl RaceDeploy {
 #[derive(Deserialize, Debug)]
 pub struct RaceConfig {
     pub stats: HashMap<Stat, i16>,
-    pub stats_min_value: u8,
     pub resists: HashMap<ResistType, i16>,
     pub ability: HashMap<AbilityType, i16>,
 }

@@ -5,7 +5,7 @@ use crate::resources::scene_manager::SceneManager;
 use crate::materials::material_manager::MaterialManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
-use crate::components::charactor_component::{CharactorComponent, PlayerComponent, NPCComponent, MonsterComponent, ResistsComponent, SkillComponent, CharactorTextComponent, PositionComponent, EffectComponent, CharactorAnimationComponent, StatsComponent, AbilityComponent, InventoryComponent};
+use crate::components::charactor_component::{CharactorComponent, PlayerComponent, NPCComponent, MonsterComponent, ResistsComponent, SkillComponent, CharactorTextComponent, PositionComponent, EffectComponent, CharactorAnimationComponent, StatsComponent, AbilityComponent, InventoryComponent, CompanionComponent};
 use crate::resources::profile::Profile;
 
 pub const Z_POSITION: f32 = 3.9; // fourth layer;
@@ -31,9 +31,28 @@ pub fn draw(
         let transform = Transform::from_xyz(x, y, new_z_position);
 
         let mut charactor_component: CharactorComponent = Default::default();
-        copy_from_charactor_to_component(charactor, &mut charactor_component);
+        let mut resist_component: ResistsComponent = Default::default();
+        let mut skill_component: SkillComponent = Default::default();
+        let mut text_component: CharactorTextComponent = Default::default();
+        let mut position_component: PositionComponent = Default::default();
+        let mut effect_component: EffectComponent = Default::default();
+        let mut animation_component: CharactorAnimationComponent = Default::default();
+        let mut stats_component: StatsComponent = Default::default();
+        let mut ability_component: AbilityComponent = Default::default();
+        let mut inventory_component: InventoryComponent = Default::default();
+        copy_from_charactor_to_component(
+            charactor,
+            &mut charactor_component,
+            &mut resist_component,
+            &mut skill_component,
+            &mut position_component,
+            &mut effect_component,
+            &mut stats_component,
+            &mut ability_component,
+            &mut inventory_component,
+        );
 
-        match *charactor_type {
+        let charactor_type_component = match *charactor_type {
             CharactorType::Player => {
                 commands.spawn_bundle(SpriteSheetBundle{
                     texture_atlas: texture,
@@ -41,7 +60,16 @@ pub fn draw(
                     ..default()
                 })
                 .insert(charactor_component)
-                .insert(PlayerComponent);
+                .insert(resist_component)
+                .insert(skill_component)
+                .insert(text_component)
+                .insert(position_component)
+                .insert(effect_component)
+                .insert(animation_component)
+                .insert(stats_component)
+                .insert(ability_component)
+                .insert(inventory_component)
+                .insert(PlayerComponent); 
             },
             CharactorType::NPC => {
                 commands.spawn_bundle(SpriteSheetBundle{
@@ -50,7 +78,16 @@ pub fn draw(
                     ..default()
                 })
                 .insert(charactor_component)
-                .insert(NPCComponent);
+                .insert(resist_component)
+                .insert(skill_component)
+                .insert(text_component)
+                .insert(position_component)
+                .insert(effect_component)
+                .insert(animation_component)
+                .insert(stats_component)
+                .insert(ability_component)
+                .insert(inventory_component)
+                .insert(NPCComponent); 
             },
             CharactorType::Monster => {
                 commands.spawn_bundle(SpriteSheetBundle{
@@ -59,11 +96,37 @@ pub fn draw(
                     ..default()
                 })
                 .insert(charactor_component)
-                .insert(MonsterComponent);
+                .insert(resist_component)
+                .insert(skill_component)
+                .insert(text_component)
+                .insert(position_component)
+                .insert(effect_component)
+                .insert(animation_component)
+                .insert(stats_component)
+                .insert(ability_component)
+                .insert(inventory_component)
+                .insert(MonsterComponent); 
             },
-        };        
+            CharactorType::Companion => {
+                commands.spawn_bundle(SpriteSheetBundle{
+                    texture_atlas: texture,
+                    transform,
+                    ..default()
+                })
+                .insert(charactor_component)
+                .insert(resist_component)
+                .insert(skill_component)
+                .insert(text_component)
+                .insert(position_component)
+                .insert(effect_component)
+                .insert(animation_component)
+                .insert(stats_component)
+                .insert(ability_component)
+                .insert(inventory_component)
+                .insert(CompanionComponent); 
+            }
+        }; 
     }
-
 }
 
 pub fn draw_player(
@@ -71,7 +134,7 @@ pub fn draw_player(
     profile: Res<Profile>,
     material_manager: Res<MaterialManager>,
 ){
-    let player: &Charactor = &profile.charactor;
+    let player: &Charactor = &profile.charactor.unwrap();
     let x: f32 = (player.position.x * TILE_SIZE as i32) as f32;
     let y: f32 = (player.position.y * TILE_SIZE as i32) as f32;
     let charactor_gender = &player.gender_type;
@@ -88,13 +151,23 @@ pub fn draw_player(
     let mut skill_component: SkillComponent = Default::default();
     let mut text_component: CharactorTextComponent = Default::default();
     let mut position_component: PositionComponent = Default::default();
-    let mut effect_compontn: EffectComponent = Default::default();
+    let mut effect_component: EffectComponent = Default::default();
     let mut animation_component: CharactorAnimationComponent = Default::default();
-    let mut stat_component: StatsComponent = Default::default();
+    let mut stats_component: StatsComponent = Default::default();
     let mut ability_component: AbilityComponent = Default::default();
     let mut inventory_component: InventoryComponent = Default::default();
 
-    copy_from_charactor_to_component(player, &mut charactor_component);
+    copy_from_charactor_to_component(
+        player, 
+        &mut charactor_component,
+        &mut resist_component,
+        &mut skill_component,
+        &mut position_component,
+        &mut effect_component,
+        &mut stats_component,
+        &mut ability_component,
+        &mut inventory_component,
+    );
 
     commands.spawn_bundle(SpriteSheetBundle{
         texture_atlas: texture,
@@ -108,39 +181,42 @@ pub fn draw_player(
 pub fn copy_from_charactor_to_component(
     charactor: &Charactor,
     charactor_component: &mut CharactorComponent,
+    resist_component: &mut ResistsComponent,
+    skill_component: &mut SkillComponent,
+    position_component: &mut PositionComponent,
+    effect_component: &mut EffectComponent,
+    stats_component: &mut StatsComponent,
+    ability_component: &mut AbilityComponent,
+    inventory_component: &mut InventoryComponent,
 ){
     charactor_component.id = charactor.id;
     charactor_component.charactor_type = charactor.charactor_type.clone();
-    charactor_component.charactor_subtype = charactor.charactor_subtype.clone();
-    charactor_component.attitude_to_player = charactor.attitude_to_player.clone();
-    charactor_component.fraction = charactor.fraction.clone();
     charactor_component.race_type = charactor.race_type.clone();
+    charactor_component.gender_type = charactor.gender_type.clone();
+    charactor_component.status = charactor.status.clone();
+    //charactor_component.fraction: charactor.fraction.clone();
+    charactor_component.level = charactor.level;
+    charactor_component.experience = charactor.experience;
 
-    charactor_component.position = charactor.position.clone();
-    charactor_component.destination_point = charactor.destination_point.clone();
-    charactor_component.destination_path = charactor.destination_path.to_vec();
-    charactor_component.destination_direction = charactor.destination_direction.clone();
+    resist_component.resists = charactor.resists.clone();
 
-    charactor_component.resists = charactor.resists.clone();
-    charactor_component.resists_cache = charactor.resists_cache.clone();
-    charactor_component.resist_min_value = charactor.resist_min_value;
-    charactor_component.resist_max_value = charactor.resist_max_value;
+    skill_component.skills = charactor.skills.clone();
+    skill_component.passive_skills = charactor.passive_skills.clone();
 
-    charactor_component.stats = charactor.stats.clone();
-    charactor_component.stats_cache = charactor.stats_cache.clone();
-    charactor_component.stat_min_value = charactor.stat_min_value;
+    position_component.position = charactor.position.clone();
+    position_component.destination_direction = charactor.destination_direction.clone();
+    position_component.destination_path = charactor.destination_path.clone();
+    position_component.destination_point = charactor.destination_point.clone();
 
-    charactor_component.skills = charactor.skills.clone();
-    charactor_component.skills_cache = charactor.skills_cache.clone();
+    effect_component.temporary_effect = charactor.temporary_effect.clone();
+    effect_component.endless_effect = charactor.endless_effect.clone();
 
-    charactor_component.stuff_storage = charactor.stuff_storage.to_vec();
-    charactor_component.stuff_storage_max_slots = charactor.stuff_storage_max_slots;
-    charactor_component.stuff_wear = charactor.stuff_wear.clone();
+    stats_component.stats = charactor.stats.clone();
+    stats_component.stats_cache = charactor.stats_cache.clone();
 
-    //charactor_component.charactor_effect: Vec<CharactorEffect>,
+    ability_component.ability = charactor.ability.clone();
 
-    charactor_component.body_structure = charactor.body_structure.clone();
-    charactor_component.current_health_points = charactor.current_health_points;
-    charactor_component.total_health_points = charactor.total_health_points;
-
+    inventory_component.stuff_storage = charactor.stuff_storage.clone();
+    inventory_component.stuff_wear = charactor.stuff_wear.clone();
+    inventory_component.stuff_storage_max_slots = charactor.stuff_storage_max_slots;
 }

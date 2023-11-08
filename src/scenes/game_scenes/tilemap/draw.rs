@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
-use crate::components::tile_component::{TileGroundComponent, TileCoverComponent};
+use crate::components::{PositionComponent, IdenteficationComponent, ObjectType};
+use crate::components::tile_component::{TileComponent, PermissionsComponent};
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -22,52 +23,57 @@ pub fn draw(
         let x = tile.position.x as f32 * TILE_SIZE as f32;
         let y = tile.position.y as f32 * TILE_SIZE as f32;
         let ground_type = &tile.ground_type;
-        let ground_transform = Transform::from_xyz(x, y, GROUND_Z_POSITION);
-        let ground_texture: Handle<TextureAtlas> = material_manager
-            .game_scene
-            .tile
-            .get_ground_atlas(ground_type);
+        let cover_type = &tile.cover_type;
+        let transform = Transform::from_xyz(x, y, COVER_Z_POSITION);
+        let texture: Handle<TextureAtlas> = material_manager.game_scene.tile.get_cover_atlas(cover_type);
 
-        let mut ground_component: TileGroundComponent = Default::default();
-        let mut cover_component: TileCoverComponent = Default::default();
-        copy_from_tile_to_component( &mut ground_component, &mut cover_component, tile);
+        let mut tile_component: TileComponent = Default::default();
+        let mut position_component: PositionComponent = Default::default();
+        let mut identification_component: IdenteficationComponent = Default::default();
+        let mut permissions_component: PermissionsComponent = Default::default();
+        copy_from_tile_to_component( &mut tile_component, &mut position_component, &mut identification_component, &mut permissions_component, tile);
 
         commands
             .spawn_bundle(SpriteSheetBundle {
-                transform: ground_transform,
-                sprite: TextureAtlasSprite::new(tile.ground_graphic_index as usize),
-                texture_atlas: ground_texture,
-                ..Default::default()
-            })
-            .insert(ground_component);
-
-        let cover_type = &tile.cover_type;
-        let cover_tranform: Transform = Transform::from_xyz(x, y, COVER_Z_POSITION);
-
-      
-        let cover_texture: Handle<TextureAtlas> = material_manager
-        .game_scene
-        .tile
-        .get_cover_atlas(cover_type);
-        
-        commands
-            .spawn_bundle(SpriteSheetBundle{
-                transform: cover_tranform,
+                transform,
                 sprite: TextureAtlasSprite::new(tile.cover_graphic_index as usize),
-                texture_atlas: cover_texture,
+                texture_atlas: texture,
                 ..Default::default()
             })
-            .insert(cover_component);
-        
+            .with_children(|parent| {
+                let ground_texture: Handle<TextureAtlas> = material_manager.game_scene.tile.get_ground_atlas(ground_type);
+                let ground_transform = Transform::from_xyz(0.0, 0.0, GROUND_Z_POSITION);
+                parent.spawn_bundle(SpriteSheetBundle{
+                    transform: ground_transform,
+                    sprite: TextureAtlasSprite::new(tile.ground_graphic_index as usize),
+                    texture_atlas: ground_texture,
+                    ..Default::default()
+                });
+            })
+            .insert(tile_component)
+            .insert(position_component)
+            .insert(identification_component)
+            .insert(permissions_component);
     }
 }
 
-pub fn copy_from_tile_to_component(ground_component: &mut TileGroundComponent, cover_component: &mut TileCoverComponent, tile: &Tile) {
-    ground_component.ground_type = tile.ground_type.clone();
-    ground_component.index = tile.index;
-    ground_component.ground_graphic_index = tile.ground_graphic_index;
+pub fn copy_from_tile_to_component(
+    tile_component: &mut TileComponent, 
+    position_component: &mut PositionComponent, 
+    identification_component: &mut IdenteficationComponent,
+    permissions_component: &mut PermissionsComponent,
+    tile: &Tile
+) {
+    tile_component.ground_type = tile.ground_type.clone();
+    tile_component.ground_graphic_index = tile.ground_graphic_index;
+    tile_component.cover_graphic_index = tile.cover_graphic_index;
+    tile_component.cover_type = tile.cover_type.clone();
 
-    cover_component.cover_graphic_index = tile.cover_graphic_index;
-    cover_component.cover_type = tile.cover_type.clone();
-    cover_component.index = tile.index;
+    position_component.position = tile.position.clone();
+
+    identification_component.id = tile.index;
+    identification_component.object_type = ObjectType::Tile;
+
+    permissions_component.permissions = tile.permissions.clone();
+    permissions_component.momevement_ratio = tile.movement_ratio;
 }

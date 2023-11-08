@@ -58,11 +58,6 @@ pub struct Tile{
     pub position: Position<i32>,
 
     pub permissions: Vec<TilePermissions>,
-
-    pub thing_type: Option<usize>, // (id of thing);
-    pub stuff_type: Option<usize>,
-    pub charactor_type: Option<usize>,
-    pub effect_type: Option<usize>
 }
 
 #[derive(Deserialize, Clone, Debug)]

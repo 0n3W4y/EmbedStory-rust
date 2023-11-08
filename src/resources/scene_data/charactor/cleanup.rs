@@ -1,33 +1,61 @@
 use bevy::prelude::*;
 
-use crate::components::charactor_component::CharactorComponent;
+use crate::components::charactor_component::{CharactorComponent, ResistsComponent, SkillComponent, PositionComponent, EffectComponent, StatsComponent, AbilityComponent, InventoryComponent};
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::profile::Profile;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
 
 pub fn cleanup(
     mut commands: Commands,
-    mut charactor_query: Query<(Entity, &CharactorComponent), With<CharactorComponent>>,
+    mut charactor_query: Query<(
+        Entity, 
+        &CharactorComponent,
+        &ResistsComponent,
+        &SkillComponent,
+        &PositionComponent,
+        &EffectComponent,
+        &StatsComponent,
+        &AbilityComponent,
+        &InventoryComponent,
+    ), With<CharactorComponent>>,
     mut scene_manager: ResMut<SceneManager>,
     mut profile: ResMut<Profile>,
 ){
     let scene = scene_manager.get_current_game_scene_mut();
-    for (entity, component) in charactor_query.iter_mut(){
-        if component.charactor_type == CharactorType::Player {
-            copy_from_component_to_charactor(&mut profile.charactor, component);
-        }else{
-            let charactor_id = component.id;
-            let charactor = match scene.get_charactor_by_id_mut(charactor_id) {
-                Some(v) => v,
-                None => {
-                    println!("Can't find charactor with id '{}'. So i create default()", charactor_id );
-                    let new_charactor: Charactor = Charactor {id: charactor_id, ..Default::default()};
-                    scene.charactors.push(new_charactor);
-                    let index = scene.charactors.len();
-                    &mut scene.charactors[index -1]
-                },
-            };
-            copy_from_component_to_charactor(charactor, component);
+    scene.charactors.clear();
+    for (
+        entity, 
+        charactor_component, 
+        resist_component, 
+        skill_component, 
+        position_component,
+        effect_component,
+        stats_component,
+        ability_component,
+        inventory_component,
+    ) in charactor_query.iter_mut(){
+        let mut charactor = Charactor::default();
+        copy_from_component_to_charactor(
+            &mut charactor, 
+            charactor_component, 
+            resist_component, 
+            skill_component, 
+            position_component, 
+            effect_component, 
+            stats_component, 
+            ability_component,
+            inventory_component
+        );
+        match charactor_component.charactor_type {
+            CharactorType::Player => {
+                profile.charactor = Some(charactor);
+            },
+            CharactorType::Companion => {
+                profile.companion = Some(charactor);
+            },
+            CharactorType::Monster | CharactorType::NPC => {
+                scene.charactors.push(charactor);
+            },
         }
         commands.entity(entity).despawn_recursive();
     }    
@@ -36,37 +64,42 @@ pub fn cleanup(
 pub fn copy_from_component_to_charactor(
     charactor: &mut Charactor,
     charactor_component: &CharactorComponent,
+    resist_component: &ResistsComponent,
+    skill_component: &SkillComponent,
+    position_component: &PositionComponent,
+    effect_component: &EffectComponent,
+    stats_component: &StatsComponent,
+    ability_component: &AbilityComponent,
+    inventory_component: &InventoryComponent,
 ){
     charactor.id = charactor_component.id;
     charactor.charactor_type = charactor_component.charactor_type.clone();
-    charactor.attitude_to_player = charactor_component.attitude_to_player.clone();
-    charactor.fraction = charactor_component.fraction.clone();
     charactor.race_type = charactor_component.race_type.clone();
+    charactor.gender_type = charactor_component.gender_type.clone();
+    charactor.status = charactor_component.status.clone();
+    //charactor.fraction = charactor_component.fraction.clone();
+    charactor.level = charactor_component.level;
+    charactor.experience = charactor_component.experience;
 
-    charactor.position = charactor_component.position.clone();
-    charactor.destination_point = charactor_component.destination_point.clone();
-    charactor.destination_path = charactor_component.destination_path.to_vec();
-    charactor.destination_direction = charactor_component.destination_direction.clone();
+    charactor.resists = resist_component.resists.clone();
 
-    charactor.resists = charactor_component.resists.clone();
-    charactor.resists_cache = charactor_component.resists_cache.clone();
-    charactor.resist_min_value = charactor_component.resist_min_value;
-    charactor.resist_max_value = charactor_component.resist_max_value;
+    charactor.skills = skill_component.skills.clone();
+    charactor.passive_skills = skill_component.passive_skills.clone();
 
-    charactor.stats = charactor_component.stats.clone();
-    charactor.stats_cache = charactor_component.stats_cache.clone();
-    charactor.stat_min_value = charactor_component.stat_min_value;
+    charactor.position = position_component.position.clone();
+    charactor.destination_direction = position_component.destination_direction.clone();
+    charactor.destination_path = position_component.destination_path.clone();
+    charactor.destination_point = position_component.destination_point.clone();
 
-    charactor.skills = charactor_component.skills.clone();
-    charactor.skills_cache = charactor_component.skills_cache.clone();
+    charactor.temporary_effect = effect_component.temporary_effect.clone();
+    charactor.endless_effect = effect_component.endless_effect.clone();
 
-    charactor.stuff_storage = charactor_component.stuff_storage.to_vec();
-    charactor.stuff_storage_max_slots = charactor_component.stuff_storage_max_slots;
-    charactor.stuff_wear = charactor_component.stuff_wear.clone();
+    charactor.stats = stats_component.stats.clone();
+    charactor.stats_cache = stats_component.stats_cache.clone();
 
-    //charactor.charactor_effect: Vec<CharactorEffect>,
+    charactor.ability = ability_component.ability.clone();
 
-    charactor.body_structure = charactor_component.body_structure.clone();
-    charactor.current_health_points = charactor_component.current_health_points;
-    charactor.total_health_points = charactor_component.total_health_points;
+    charactor.stuff_storage = inventory_component.stuff_storage.clone();
+    charactor.stuff_wear = inventory_component.stuff_wear.clone();
+    charactor.stuff_storage_max_slots = inventory_component.stuff_storage_max_slots;
 }

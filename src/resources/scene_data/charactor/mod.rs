@@ -124,7 +124,7 @@ pub struct Charactor {
 
     //pub fraction: CharactorFraction,
     pub position: Position<i32>,
-    pub destination_point: Position<i32>,
+    pub destination_point: Option<Position<i32>>,
     pub destination_path: Vec<Position<i32>>,
     pub destination_direction: Position<i8>,
 
@@ -258,7 +258,6 @@ pub fn change_stat(
     abilities: &mut HashMap<AbilityType, i16>,
     stat: &Stat,
     value: i16,
-    stats_min_value: u8,
 ){
     let cache_value = match stats_cache.get_mut(stat) {             //get cache value;
         Some(v) => v,
@@ -285,8 +284,8 @@ pub fn change_stat(
     let old_stat_value = *stat_value;           //storing old value to compare with new stat value;
     *stat_value -= value;                            //set new value to stat;
 
-    if *cache_value < stats_min_value as i16{                   //check stat to minimal value;
-        *stat_value = stats_min_value as i16;
+    if *cache_value < STATS_MIN_VALUE as i16{                   //check stat to minimal value;
+        *stat_value = STATS_MIN_VALUE as i16;
     } else {
         *stat_value = *cache_value;
     }   

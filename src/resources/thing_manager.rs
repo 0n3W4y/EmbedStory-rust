@@ -66,9 +66,7 @@ impl ThingManager {
 
         thing.position.x = tile.position.x;
         thing.position.y = tile.position.y;
-        thing.tile_index = tile.index;
 
-        tile.thing_type = Some(thing.id);
         return thing;
     }
 

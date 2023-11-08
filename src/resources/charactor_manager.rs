@@ -6,7 +6,7 @@ use super::{
     deploy::Deploy,
     scene_data::{
         charactor::{
-            self, stats::Stat, Charactor, CharactorSubType, CharactorType, ConditionType,
+            self, stats::Stat, Charactor, CharactorType, ConditionType,
             GenderType, RaceType,
         },
     },
@@ -21,12 +21,11 @@ pub struct CharactorManager {
 }
 
 impl CharactorManager {
-    //TODO: Function
+    //TODO: Functions
     pub fn create_charactor(
         &mut self,
         deploy: &Deploy,
         charactor_type: &CharactorType,
-        charactor_subtype: &CharactorSubType,
         race_type: &RaceType,
         gender: &GenderType,
     ) -> Charactor {
@@ -79,11 +78,6 @@ impl CharactorManager {
         initialize_character_after_creation(&mut charactor);
 
         return charactor;
-    }
-
-    pub fn palce_charator_on_tile(&self, charactor: &mut Charactor, tile: &mut Tile) {
-        charactor.position = tile.position.clone();
-        tile.charactor_type = Some(charactor.id);
     }
 
     pub fn generate_mosnters_for_scene(

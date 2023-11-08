@@ -157,9 +157,8 @@ fn setup(
     let mut charactor_manager: CharactorManager = Default::default();
     let player = charactor_manager.create_charactor(
         &deploy, 
-        &CharactorType::Player, 
-        &CharactorSubType::Civilian, 
-        &RaceType::Human, 
+        &CharactorType::Player,
+        &RaceType::Human,
         &GenderType::Male,
     );
 

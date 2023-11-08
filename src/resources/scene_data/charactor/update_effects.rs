@@ -49,7 +49,6 @@ pub fn update_effects(
                         &mut abilities.ability,
                         &stat,
                         *stat_damage,
-                        stats.stats_min_value,
                     );
                 }
                 
@@ -73,7 +72,6 @@ pub fn update_effects(
                         &mut abilities.ability,
                         stat,
                         -stat_damage,                                                                           // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                        stats.stats_min_value,
                     );
                 }
 
@@ -113,7 +111,6 @@ pub fn update_effects(
                         &mut abilities.ability,
                         stat,
                         -stat_damage,                                           // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                        stats.stats_min_value,
                     );
                 }
 
@@ -139,7 +136,6 @@ pub fn update_effects(
                         &mut abilities.ability,
                         stat,
                         *stat_damage,
-                        stats.stats_min_value,
                     );
                 }
 
