@@ -33,7 +33,7 @@ pub fn copy_from_ground_component_to_tile(
     tile.cover_graphic_index = tile_component.cover_graphic_index;
     tile.cover_type = tile_component.cover_type.clone();
 
-    tile.index = identification_component.id;
+    tile.id = identification_component.id;
 
     tile.permissions = permissions_component.permissions.clone();
     tile.movement_ratio = permissions_component.momevement_ratio;

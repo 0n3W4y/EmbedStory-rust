@@ -10,6 +10,7 @@ use super::{
     skills::CastSource,
     CharactorType, effects::Effect, CharactorStatus,
 };
+use crate::components::{PositionComponent, IdenteficationComponent};
 use crate::components::charactor_component::StatsComponent;
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
@@ -19,7 +20,7 @@ use crate::resources::scene_data::stuff::resists_types::{self, get_resist_from_d
 use crate::{
     components::charactor_component::{
         CharactorComponent, CharactorTargetComponent, EffectComponent,
-        PositionComponent, ResistsComponent, SkillComponent,
+        ResistsComponent, SkillComponent,
     },
     resources::deploy::Deploy
 };
@@ -29,6 +30,7 @@ use crate::resources::scene_data::charactor;
 pub fn update_passive_skills(
     mut commands: Commands,
     mut skills_query: Query<(
+        &IdenteficationComponent,
         &CharactorComponent,
         &mut SkillComponent,
         &PositionComponent,
@@ -51,6 +53,7 @@ pub fn update_passive_skills(
     let delta = time.delta_seconds();
     let mut rng = rand::thread_rng();
     for (
+        identification_component,
         charactor_component, 
         mut skill_component, 
         position_component, 
@@ -165,7 +168,7 @@ pub fn update_passive_skills(
                             CastSource::Mouse => { 
                                 println!(
                                     "Can't cast passive skill into MOUSE position! Charactor info: Type:{:?}, RaceType:{:?}, Id:{:?}", 
-                                    charactor_component.charactor_type, charactor_component.race_type, charactor_component.id
+                                    charactor_component.charactor_type, charactor_component.race_type, identification_component.id
                                 );
                             },
                         }       

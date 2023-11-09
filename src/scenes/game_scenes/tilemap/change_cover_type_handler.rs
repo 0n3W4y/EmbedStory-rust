@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
-use crate::{components::tile_component::TileCoverComponent, materials::material_manager::MaterialManager};
+use crate::{components::tile_component::TileComponent, materials::material_manager::MaterialManager};
 
 
 pub fn change_cover_type_handler(
-    mut tile_query: Query<(&TileCoverComponent, &mut TextureAtlasSprite, &mut Handle<TextureAtlas>,), (Changed<TileCoverComponent>, With<TileCoverComponent>)>,
+    mut tile_query: Query<(&TileComponent, &mut TextureAtlasSprite, &mut Handle<TextureAtlas>,), (Changed<TileComponent>, With<TileComponent>)>,
     material_manager: Res<MaterialManager>,
     
 ){

@@ -37,7 +37,8 @@ pub fn generate_tilemap(
 
     generate_solids_liquids(tilemap, &biome_setting.spots, &biome_setting.rivers, deploy);
 
-    generate_environment(tilemap, deploy, 2);
+    generate_environment_for_water_cover(tilemap, deploy, 2);
+    generate_environment_for_rock_ground(tilemap, deploy, 2);
     spread_indexes_for_cover_tiles(tilemap);
 }
 
@@ -56,10 +57,10 @@ fn generate_ground(
         for j in 0..tilemap.tilemap_width {
             let x: i32 = -half_tilmap_width + j as i32;
             let y: i32 = -half_tilmap_height + i as i32;
-            let index = i as usize * tilemap_height as usize + j as usize;
+            let id = i as usize * tilemap_height as usize + j as usize;
 
             let mut tile = Tile {
-                index,
+                id,
                 ground_type: tile_setting.ground_type.clone(),
                 cover_type: tile_setting.cover_type.clone(),
                 position: Position { x, y },
@@ -233,7 +234,8 @@ fn generate_additional_cover(
 fn generate_spots(
     tilemap: &mut Tilemap, 
     spot_vector: &Vec<SpotSetting>, 
-    deploy: &Deploy) {
+    deploy: &Deploy
+) {
     let vec_len = spot_vector.len();
     if vec_len == 0 {
         return;
@@ -345,6 +347,15 @@ fn generate_spot(
                         tile.cover_type = cover_type.clone();
                         tile.movement_ratio = ground_data.movement_ratio;
                         tile.permissions = ground_data.permissions.to_vec();
+
+                        match ground_type {
+                            GroundType::Rock => {
+                                tile.permissions.clear();
+                                tile.permissions.push(TilePermissions::Fog);
+                            },
+                            _ => {},
+                        }
+                        
                     }
                     CoverType::Flowers | CoverType::Grass => match tile.ground_type {
                         GroundType::Earth => {
@@ -406,6 +417,14 @@ fn generate_spot(
                         tile.cover_type = cover_type.clone();
                         tile.movement_ratio = ground_data.movement_ratio;
                         tile.permissions = ground_data.permissions.to_vec();
+
+                        match ground_type {
+                            GroundType::Rock => {
+                                tile.permissions.clear();
+                                tile.permissions.push(TilePermissions::Fog);
+                            },
+                            _ => {},
+                        }
                     }
                     CoverType::Flowers | CoverType::Grass => match tile.ground_type {
                         GroundType::Earth => {
@@ -592,10 +611,65 @@ fn generate_river(
     }
 }
 
-fn generate_environment(
+pub fn generate_environment_for_rock_ground(tilemap: &mut Tilemap, deploy: &Deploy, environment_value: u8) {
+    let tilemap_height: u16 = tilemap.tilemap_height;
+    let tilemap_width: u16 = tilemap.tilemap_width;
+    let half_tilemap_height = (tilemap_height / 2) as u16;
+    let half_tilemap_width = (tilemap_width / 2) as u16;
+    let mut rng = rand::thread_rng();
+
+    let max_envirounment: u8 = environment_value;
+
+    let data_tile = deploy.tile.get_ground_tile_deploy(&GroundType::Rock);
+
+    for i in 0..tilemap.tilemap_tile_storage.len() {
+        let x = tilemap.tilemap_tile_storage[i].position.x;
+        let y = tilemap.tilemap_tile_storage[i].position.y;
+
+        if tilemap.tilemap_tile_storage[i].ground_type != GroundType::Rock {
+            continue;                                                           //skip non rock ground tile;
+        }
+
+        match tilemap.tilemap_tile_storage[i].permissions.iter().find(|&&x| x == TilePermissions::Walk) {
+            Some(_) => {},
+            None => continue,                                                   //skip non rock things;
+        }
+
+        let current_envirounment = rng.gen_range(0..=max_envirounment);          //рандомно выбираем "подложку"
+        if current_envirounment == 0 {
+            continue;
+        };
+
+        let grid_multiplier = current_envirounment * 2 + 1;                         // окружность вокруг тайла ( CurEnv = 1; x = 3, y = 3 ( 3 x 3 ) );
+
+        for i in 0..grid_multiplier {
+            for j in 0..grid_multiplier {
+                let new_x = x - current_envirounment as i32 + j as i32 + half_tilemap_width as i32;
+                let new_y = y - current_envirounment as i32 + i as i32 + half_tilemap_height as i32;
+                if new_x >= tilemap_width as i32 || new_x < 0 || new_y < 0 || new_y >= tilemap_height as i32 {
+                    continue;                                                           //skip values not in range of tilemap;
+                };
+
+                let index: usize = new_y as usize * tilemap_height as usize + new_x as usize;
+                let mut environment_tile: &mut Tile = tilemap.get_tile_by_index_mut(index);
+
+                if environment_tile.ground_type == GroundType::Rock {
+                    continue;                                                           //skip already rock environment or rock thing;
+                }
+
+                environment_tile.ground_type = data_tile.ground_type.clone();
+                environment_tile.cover_type = data_tile.cover_type.clone();
+                environment_tile.permissions = data_tile.permissions.to_vec();
+                environment_tile.movement_ratio = data_tile.movement_ratio;
+            }
+        }
+    }
+}
+
+fn generate_environment_for_water_cover(
     tilemap: &mut Tilemap, 
     deploy: &Deploy, 
-    enviroument: u8
+    environment_value: u8
 ) {
     let tilemap_height: u16 = tilemap.tilemap_height;
     let tilemap_width: u16 = tilemap.tilemap_width;
@@ -603,16 +677,17 @@ fn generate_environment(
     let half_tilemap_width = (tilemap_width / 2) as u16;
     let mut rng = rand::thread_rng();
 
-    let max_envirounment: u8 = enviroument;
+    let max_envirounment: u8 = environment_value;
+    let data_tile = deploy.tile.get_cover_tile_deploy(&CoverType::Shallow);
 
     for i in 0..tilemap.tilemap_tile_storage.len() {
         let x = tilemap.tilemap_tile_storage[i].position.x;
         let y = tilemap.tilemap_tile_storage[i].position.y;
-        let tile_cover_type: CoverType = tilemap.tilemap_tile_storage[i].cover_type.clone();
-        let tile_ground_type: GroundType = tilemap.tilemap_tile_storage[i].ground_type.clone();
-
-        //рандомно выбираем "подложку" 0 - 1 - 2 по умолчанию
-        let current_envirounment = rng.gen_range(0..max_envirounment + 1);
+        if tilemap.tilemap_tile_storage[i].cover_type != CoverType::Water {
+            continue;                                                       //skip non water cover tiles;
+        }
+        
+        let current_envirounment = rng.gen_range(0..=max_envirounment);      //рандомно выбираем "подложку"
         if current_envirounment == 0 {
             continue;
         };
@@ -621,65 +696,32 @@ fn generate_environment(
 
         for i in 0..grid_multiplier {
             for j in 0..grid_multiplier {
-                let new_x = x as i32 - current_envirounment as i32
-                    + j as i32
-                    + half_tilemap_width as i32;
-                let new_y = y as i32 - current_envirounment as i32
-                    + i as i32
-                    + half_tilemap_height as i32;
-                if new_x >= tilemap_width as i32
-                    || new_x < 0
-                    || new_y < 0
-                    || new_y >= half_tilemap_height as i32
-                {
+                let new_x = x - current_envirounment as i32 + j as i32 + half_tilemap_width as i32;
+                let new_y = y - current_envirounment as i32 + i as i32 + half_tilemap_height as i32;
+                if new_x >= tilemap_width as i32 || new_x < 0 || new_y < 0 || new_y >= tilemap_height as i32 {
                     continue;
                 };
 
                 let index: usize = new_y as usize * tilemap_height as usize + new_x as usize;
                 let mut environment_tile: &mut Tile = tilemap.get_tile_by_index_mut(index);
 
-                match tile_ground_type {
+                match environment_tile.ground_type {
                     GroundType::Rock => {
-                        //do rock_environment;
-                        match environment_tile.permissions.iter().find(|x|{ x == &&TilePermissions::Walk}){
-                            Some(_) => {
-                                if environment_tile.ground_type == GroundType::Rock {continue;};
-                                let data_tile: &TileDeploy = deploy
-                                    .tile
-                                    .get_ground_tile_deploy(&GroundType::Rock);
-                                environment_tile.ground_type = GroundType::Rock;
-                                environment_tile.cover_type = CoverType::None;
-
-                                environment_tile.movement_ratio = data_tile.movement_ratio;
-                                environment_tile.permissions = data_tile.permissions.to_vec();
-                                environment_tile.permissions.push(TilePermissions::Walk); // as default Rock doesn't have walk permission;
-                                continue;
-                            },
-                            None => { continue; // water or rock},
-                            }
+                        match environment_tile.permissions.iter().find(|&&x| x == TilePermissions::Walk) {
+                            Some(_) => {},
+                            None => continue,                                               //skip rock thing;
                         }
                     },
-                    _ => {}
-                };
+                    _ => {},
+                }
 
-                match tile_cover_type {
-                    CoverType::Water => {
-                        //do water invironment;
-                        if environment_tile.cover_type == CoverType::Water
-                            || environment_tile.cover_type == CoverType::Shallow
-                            || environment_tile.ground_type == GroundType::Rock
-                        {
-                            continue;
-                        } else {
-                            let cover_type = CoverType::Shallow;
-                            let data_tile = deploy.tile.get_cover_tile_deploy(&cover_type);
-                            environment_tile.cover_type = cover_type;
-                            environment_tile.movement_ratio = data_tile.movement_ratio;
-                            environment_tile.permissions = data_tile.permissions.to_vec();
-                        }
-                    }
-                    _ => {}
-                };
+                if environment_tile.cover_type == CoverType::Water || environment_tile.cover_type == CoverType::Shallow {
+                    continue;                                                               //skip water or shallow cover type tile;
+                }
+
+                environment_tile.cover_type = data_tile.cover_type.clone();
+                environment_tile.permissions = data_tile.permissions.to_vec();
+                environment_tile.movement_ratio = data_tile.movement_ratio;
             }
         }
     }

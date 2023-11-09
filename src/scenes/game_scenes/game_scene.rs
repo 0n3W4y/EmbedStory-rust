@@ -5,12 +5,38 @@ use crate::resources::scene_data::charactor::Charactor;
 use crate::resources::scene_data::scene_effect::SceneEffect;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::thing::Thing;
+use crate::resources::scene_data::thing::ThingType;
 use crate::resources::scene_manager::SceneType;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::thing;
 use crate::resources::scene_data::charactor;
 use crate::scenes::SceneState;
+
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct ThingsStorage {
+    pub rocks_and_ores: Vec<Thing>,
+    pub trees: Vec<Thing>,
+    pub bushes: Vec<Thing>,
+    pub walls: Vec<Thing>,
+    pub doors: Vec<Thing>,
+    pub natural_barriers: Vec<Thing>,
+}
+
+impl ThingsStorage {
+    pub fn store(&mut self, thing: Thing) {
+        match thing.thing_type {
+            ThingType::Tree | ThingType::FertileTree  => self.trees.push(thing),
+            ThingType::Bush | ThingType::FertileBush => self.bushes.push(thing),
+            ThingType::Rock => self.rocks_and_ores.push(thing),
+            ThingType::Boulder | ThingType::Log => self.natural_barriers.push(thing),
+            ThingType::CopperOre | ThingType::IronOre => self.rocks_and_ores.push(thing),
+            ThingType::WoodenWall | ThingType::StoneWall |ThingType::IronWall | ThingType::SteelWall => self.walls.push(thing),
+            ThingType::WoodenDoor | ThingType::ReinforcedWoodenDoor | ThingType::IronDoor | 
+            ThingType::ReinforcedIronDoor | ThingType::SteelDoor | ThingType::ReinforcedSteelDoor => self.doors.push(thing),
+        }
+    }
+}
 
 
 #[derive(Serialize, Deserialize, Clone, Default)]
@@ -19,20 +45,11 @@ pub struct GameScene {
     pub scene_id: usize,
     pub index: usize, // vector index in scene_manager.ground_scene;
     pub tilemap: Tilemap,
-    pub things: Vec<Thing>,
+    pub things: ThingsStorage,
     pub stuff: Vec<Stuff>,
     pub charactors: Vec<Charactor>,
     pub effects: Vec<SceneEffect>,
     //pub roof: Vec<>,
-}
-impl GameScene {
-    pub fn get_thing_by_id_mut(&mut self, id: usize) -> Option<&mut Thing> {
-        self.things.iter_mut().find(|x|{x.id == id})
-    }
-
-    pub fn get_charactor_by_id_mut(&mut self, id: usize) -> Option<&mut Charactor> {
-        self.charactors.iter_mut().find(|x| {x.id == id})
-    }
 }
 
 pub struct GameScenePlugin;

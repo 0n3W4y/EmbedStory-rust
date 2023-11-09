@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use rand::Rng;
 
+use crate::components::{PositionComponent, IdenteficationComponent};
 use crate::components::charactor_component::{
     AbilityComponent, ActionType, CharactorComponent, EffectComponent,
-    PositionComponent,
     ResistsComponent, SkillComponent, CharactorTargetComponent, CharactorTextComponent, StatsComponent,
 };
 
@@ -24,6 +24,7 @@ use super::{abilities::AbilityType, skills::Skill, CharactorStatus};
 pub fn attacking_from_basic_skill(
     mut commands: Commands,
     mut charactor_query: Query<(
+        &IdenteficationComponent,
         &CharactorComponent,
         &PositionComponent,
         &mut SkillComponent,
@@ -32,6 +33,7 @@ pub fn attacking_from_basic_skill(
     )>,
 
     mut target_query: Query<(
+        &IdenteficationComponent,
         &CharactorComponent,
         &StatsComponent,
         &ResistsComponent,
@@ -46,6 +48,7 @@ pub fn attacking_from_basic_skill(
     materail_manager: Res<MaterialManager>,
 ) {
     for (
+        identification_component,
         charactor, 
         charactor_position,
         mut charactor_skill, 
@@ -71,6 +74,7 @@ pub fn attacking_from_basic_skill(
         let skill = charactor_skill.skills.get_mut(&SkillSlot::Base).unwrap();
 
         for (
+            identification_target_component,
             target_component, 
             mut target_stats,
             target_resists, 
@@ -80,7 +84,7 @@ pub fn attacking_from_basic_skill(
             mut target_text_component,
             mut target_skills,
         ) in target_query.iter_mut() {
-            if target_id == target_component.id {
+            if target_id == identification_target_component.id {
                 attack(
                     commands,
                     skill,
@@ -115,6 +119,7 @@ pub fn update_attack_from_basic_skill(
     )>,
 
     mut target_query: Query<(
+        &IdenteficationComponent,
         &CharactorComponent,
         &PositionComponent,
     )>
@@ -152,11 +157,12 @@ pub fn update_attack_from_basic_skill(
                 }
 
                 for (
+                    target_identification,
                     target,
                     target_position,
                 ) in target_query.iter_mut() {
                     //check for target
-                    if target.id == target_id {
+                    if target_identification.id == target_id {
                         //try to attack;
                         if try_to_attack(charactor_position, target_position, skill) {
                             //for animation; when animation ends = attacking change to None or Stand;

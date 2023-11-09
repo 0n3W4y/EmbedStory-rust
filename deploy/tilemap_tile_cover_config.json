@@ -92,6 +92,7 @@
         "movement_ratio": 600,
         "permissions":[
             "PlaceStuff",
+            "PlaceThing",
             "Walk",
             "Fog"
         ]

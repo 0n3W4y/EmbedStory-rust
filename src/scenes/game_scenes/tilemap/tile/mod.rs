@@ -5,12 +5,14 @@ pub enum TilePermissions{
     RemoveFloor,
     PlaceFloor,
     PlaceThing,
+    RemoveThing,
     #[default]
     Walk,
     PlaceStuff,
     Roof,
     Fog,
     PlaceEffect,
+    RemoveEffect,
     EndMovementPoint,
 }
 
@@ -49,7 +51,7 @@ pub struct Position<T>{
 pub struct Tile{
     pub ground_type: GroundType,
     pub cover_type: CoverType,
-    pub index: usize, // in vec;
+    pub id: usize, // in vec;
 
     pub ground_graphic_index: u8,
     pub cover_graphic_index: u8,

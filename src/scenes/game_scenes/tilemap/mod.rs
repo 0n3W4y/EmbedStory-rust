@@ -78,6 +78,15 @@ impl Tilemap {
         }
         &self.tilemap_tile_storage[index]
     }
+
+    pub fn get_tile_by_position_mut(&mut self, x: i32, y: i32) -> &mut Tile {
+        let index = ((y + self.tilemap_height as i32 / 2) *  self.tilemap_height as i32 + ( x + self.tilemap_width as i32 / 2)) as usize;
+        if index >= self.tilemap_tile_storage.len() as usize {
+            println!("Can't get tile with x: '{:?}', y: '{:?}'", x, y);
+            return &mut self.tilemap_tile_storage[0];
+        }
+        &mut self.tilemap_tile_storage[index]
+    }
 /*
     pub fn get_tile_by_position_mut(&mut self, x: i32, y: i32) -> &mut Tile{
         let index = ((y + self.tilemap_height as i32 / 2)  * self.tilemap_height as i32 + (x + self.tilemap_width as i32 / 2)) as usize;

@@ -43,8 +43,11 @@
         "cover_type": "None",
         "movement_ratio": 0,
         "permissions":[
-            "Fog",
-            "Roof"
+            "PlaceFloor",
+            "PlaceThing",
+            "PlaceStuff",
+            "Walk",
+            "Fog"
         ]
     },
 

@@ -58,7 +58,6 @@ pub struct Thing {
     pub thing_type: ThingType,
     pub position: Position<i32>,
     pub graphic_index: u8, // get image from material_manager;
-    pub tile_index: usize, // tile id;
 
     pub permissions: Vec<ThingPermissions>,
     pub resists: HashMap<ResistType, i16>,
