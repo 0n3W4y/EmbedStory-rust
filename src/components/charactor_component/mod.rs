@@ -22,6 +22,7 @@ pub enum ActionType {
     Open,
     Talk,
     Move,
+    Use,
     #[default]
     None
 }
@@ -40,8 +41,7 @@ pub struct CharactorAnimationComponent {
 
 #[derive(Component, Default)]
 pub struct EffectComponent{
-    pub temporary_effect: HashMap<EffectType, Effect>,
-    pub endless_effect: HashMap<EffectType, Effect>,
+    pub effects: HashMap<EffectType, Effect>,
 }
 
 #[derive(Component, Default)]

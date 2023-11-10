@@ -47,20 +47,20 @@ pub struct Skill {
     pub skill_type: SkillType,
     pub skill_name: String,
     pub stuff_id: Option<usize>, // link to stuff in wear slot;
-    pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
-   
-    //for passive skill;
     pub is_passive_skill: bool,
-    pub trigger_chance: u8, // chanse to trigger that skill
-    pub trigger_time: f32, // 1 per second
-    pub trigger_duration: f32, // full time to skill live;
-    //-----------------
 
-    pub base_cooldown: i16, // base;
-    pub cooldown: f32, // current with multiplier from ability;
+    //for active skill;
+    pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
     pub on_cooldown: bool, // can use this skill now;
-    pub current_duration: f32, // == 0.0;
-    pub total_duration: f32,
+    pub cooldown_time: f32, // base;
+    pub current_time_duration: f32, // == 0.0;
+    
+
+    //for passive skills
+    pub trigger_chance: u8, // chanse to trigger that skill
+    pub trigger_frequency: f32, // 1 per second
+    pub full_time_duration: f32, // full time to skill live;
+    pub total_time_duration: f32,
 
     pub projectiles: u8,
     pub projectile_type: ProjectileType,
@@ -75,7 +75,7 @@ pub struct Skill {
 
     pub damage: HashMap<DamageType, i16>,
     pub effect: HashMap<EffectType, u8>,
-    pub passive_skill: HashMap<SkillType, u8>,
+    pub extra_skill: HashMap<SkillType, u8>,
 }
 
 impl Skill {
@@ -87,13 +87,12 @@ impl Skill {
             is_activated: false,
             is_passive_skill: config.is_passive_skill,
             trigger_chance: config.trigger_chance,
-            trigger_time: config.trigger_time as f32 / 10.0,
-            trigger_duration: config.trigger_duration as f32 / 10.0,
-            base_cooldown: config.cooldown,
-            cooldown: config.cooldown as f32 / 100.0,
+            trigger_frequency: config.trigger_frequency as f32 / 10.0,
+            full_time_duration: config.full_time_duration as f32 / 10.0,
+            cooldown_time: config.cooldown_time as f32 / 10.0,
             on_cooldown: false,
-            current_duration: 0.0,
-            total_duration: 0.0,
+            current_time_duration: 0.0,
+            total_time_duration: 0.0,
             projectiles: config.projectiles,
             projectile_type: config.projectile_type,
             range: config.range,
@@ -105,7 +104,7 @@ impl Skill {
             crit_multiplier: config.crit_multiplier,
             damage: config.damage.clone(),
             effect: config.effect.clone(),
-            passive_skill: config.passive_skill.clone(),
+            extra_skill: config.extra_skill.clone(),
         }
     }
 }
@@ -116,14 +115,17 @@ pub struct SkillDeploy {
     pub skill_name: String,
     pub is_passive_skill: bool,
 
-    pub trigger_chance: u8,
-    pub trigger_time: u16,
-    pub trigger_duration: u16,
-    pub cooldown: i16,
+    //for active skill;
+    pub cooldown_time: i16, // base;    
+
+    //for passive skills
+    pub trigger_chance: u8, // chanse to trigger that skill
+    pub trigger_frequency: f32, // 1 per second
+    pub full_time_duration: f32, // full time to skill live;
 
     pub projectiles: u8,
     pub projectile_type: ProjectileType,
-    pub range: u8,
+    pub range: u8, // max range; min range = 1;
     pub cast_source: CastSource,
     pub skill_direction: SkillDirectionType,
     pub stamina_cost: i16,
@@ -132,9 +134,9 @@ pub struct SkillDeploy {
     pub crit_chance: i16,
     pub crit_multiplier: i16,
 
-    pub damage: HashMap<DamageType, i16>, 
-    pub effect: HashMap<EffectType, u8>, // effect type and effect trigger chanse;
-    pub passive_skill: HashMap<SkillType, u8>, // skill type and skill trigger chanse;
+    pub damage: HashMap<DamageType, i16>,
+    pub effect: HashMap<EffectType, u8>,
+    pub extra_skill: HashMap<SkillType, u8>,
 }
 
 
@@ -144,7 +146,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             //clear for new entries;
             skill.damage.clear();
             skill.effect.clear();
-            skill.passive_skill.clear();
+            skill.extra_skill.clear();
             
             let critical_hit_chance_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {     //get critical hit chance from ability;
                 Some(v) => *v,
@@ -173,7 +175,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             let mut critical_multiplier: i16 = 0;
             let mut damage_from_weapon: HashMap<DamageType, i16> = HashMap::new();
             let mut effects_from_weapon: HashMap<EffectType, u8> = HashMap::new();
-            let mut passive_skills_from_weapon: HashMap<SkillType, u8> = HashMap::new();
+            let mut extra_skills_from_weapon: HashMap<SkillType, u8> = HashMap::new();
             let mut skip_left_hand: bool = false;             //check for TwoHanded weapon;
 
             let weapon = match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {          //get weapon from right hand
@@ -183,35 +185,35 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                     skill_cooldown = weapon.cooldown;
                     damage_from_weapon = weapon.damage.clone();
                     effects_from_weapon = weapon.effects.clone();
-                    passive_skills_from_weapon = weapon.passive_skills.clone();
-                    if weapon.wear_slot.unwrap() == StuffWearSlot::RightAndLeftHand {           //safe unwrap;
+                    extra_skills_from_weapon = weapon.extra_skills.clone();
+                    if weapon.wear_slot.unwrap() == StuffWearSlot::RightAndLeftHand {                        //safe unwrap;
                         skip_left_hand = true;
                     }
 
                 },
                 None => {
-                    skill_cooldown = 100;                                       // by default 1 shot per second;
-                    damage_from_weapon.insert(DamageType::Phisical, 5);         // default punch;
+                    skill_cooldown = 100;                                                                       // by default 1 shot per second;
+                    damage_from_weapon.insert(DamageType::Phisical, 5);                                 // default punch;
                 },
             };
 
             if !skip_left_hand {
-                match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {            //get weapon from left hand
+                match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {                                       //get weapon from left hand
                     Some(weapon) => {
-                        critical_chance = (critical_chance + weapon.critical_hit_chance) / 2;          //middle value from 2 weapons;
+                        critical_chance = (critical_chance + weapon.critical_hit_chance) / 2;                       //middle value from 2 weapons;
                         critical_multiplier = (critical_multiplier + weapon.critical_hit_multiplier) / 2;           //middle value from 2 weapons;
-                        skill_cooldown = (skill_cooldown + weapon.cooldown) / 2;        //middle value from 2 weapons;
+                        skill_cooldown = (skill_cooldown + weapon.cooldown) / 2;                                //middle value from 2 weapons;
     
-                        for (damage_type, value) in weapon.damage.iter() {              //stocking damage values into 1 hashmap
+                        for (damage_type, value) in weapon.damage.iter() {                     //stocking damage values into 1 hashmap
                             damage_from_weapon.entry(damage_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
                         }
     
-                        for(effect_type, value) in weapon.effects.iter() {                   //stocking effects into 1 hashmap;
+                        for(effect_type, value) in weapon.effects.iter() {                      //stocking effects into 1 hashmap;
                             effects_from_weapon.entry(effect_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
                         }
     
-                        for(skill_type, value) in weapon.passive_skills.iter() {            //stocking passive skills into 1 hashmap;
-                            passive_skills_from_weapon.entry(skill_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
+                        for(skill_type, value) in weapon.extra_skills.iter() {                           //stocking passive skills into 1 hashmap;
+                            extra_skills_from_weapon.entry(skill_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
                         }
                     },
                     None => {},
@@ -219,7 +221,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             }            
 
             let interim_cooldown = (skill_cooldown as f32 / 100.0) - ((skill_cooldown * attack_speed_from_ability) as f32 / 100.0);               //calculate cooldown value;
-            skill.cooldown = if interim_cooldown >= MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL {          //check for cooldown value;
+            skill.cooldown_time = if interim_cooldown >= MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL {          //check for cooldown value;
                 MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL
             } else {
                 interim_cooldown
@@ -240,7 +242,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             }
 
             skill.effect = effects_from_weapon;
-            skill.passive_skill = passive_skills_from_weapon;
+            skill.extra_skill = extra_skills_from_weapon;
 
         },
         None => println!("Can not udapte basic skill, because basic skill not found"),

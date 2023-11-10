@@ -66,7 +66,7 @@ pub struct Stuff{
 
     pub effects: HashMap<EffectType, u8>,
     pub skills: Vec<SkillType>,
-    pub passive_skills: HashMap<SkillType, u8>,
+    pub extra_skills: HashMap<SkillType, u8>,
 
     pub stats: HashMap<Stat, i16>,
     pub resists: HashMap<ResistType, i16>,

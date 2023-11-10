@@ -1,16 +1,18 @@
 use bevy::prelude::*;
 
+use crate::components::IdenteficationComponent;
+use crate::components::ObjectType;
+use crate::components::PositionComponent;
 use crate::components::charactor_component::ActionType;
 use crate::components::charactor_component::CharactorComponent;
 use crate::components::charactor_component::CharactorTargetComponent;
+use crate::components::charactor_component::DestinationComponent;
 use crate::components::charactor_component::PlayerComponent;
-use crate::components::charactor_component::PositionComponent;
 use crate::config::{MONITOR_HALF_HEIGHT, MONITOR_HALF_WIDTH, TILE_SIZE};
 use crate::plugins::camera::Orthographic2DCamera;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
-use super::CharactorStatus;
 use super::CharactorType;
 
 pub fn player_click(
@@ -18,15 +20,18 @@ pub fn player_click(
     mouse_button_input: Res<Input<MouseButton>>,
     scene_manager: Res<SceneManager>,
     mut player_query: Query<
-        (&mut CharactorComponent, &mut PositionComponent, &mut CharactorTargetComponent),
+        (&mut CharactorComponent, &mut PositionComponent, &mut CharactorTargetComponent, &mut DestinationComponent),
         With<PlayerComponent>,
     >,
-    //thing_query: Query<(&ThingComponent, &ThingPositionComponent)>,
-    charactor_query: Query<(&CharactorComponent, &PositionComponent), Without<PlayerComponent>>,
-    //stuff_component: Query<(&StuffComponent, &StuffPositionComponent)>,
+    target_query: Query<(&IdenteficationComponent, &PositionComponent)>,
     camera: Query<(&Transform, &OrthographicProjection), With<Orthographic2DCamera>>,
 ) {
-    let (mut player, mut position, mut palyer_target) = player_query.single_mut();
+    let (
+        mut player, 
+        mut position, 
+        mut player_target, 
+        mut destination_component
+    ) = player_query.single_mut();
     let window = windows.get_primary().unwrap();
     //let scene = scene_manager.get_current_game_scene();
 
@@ -54,32 +59,41 @@ pub fn player_click(
                 / (TILE_SIZE as f32 / camera_scale))
                 .round() as i32;
 
-
-
-            //TODO: может быть сделать проход по сетке tile, с заносом информации в tile каждое перемещение. Все объекты
-            // стационарны, кроме чаров
-
-
-            for (charactor_component, position_component) in charactor_query.iter(){
-                let char_position_x = position_component.position.x;
-                let char_position_y = position_component.position.y;
-                if char_position_x == position_x && char_position_y == position_y {
-                    match charactor_component.charactor_type {
-                        CharactorType::Monster => {
-                            select_target_to_attack(&mut player, &mut palyer_target, charactor_component.id, position_x, position_y);
-                            return;
+            for (target_identification, target_position) in target_query.iter(){
+                let target_x = target_position.position.x;
+                let target_y = target_position.position.y;
+                if target_x == position_x && target_y == position_y {
+                    match target_identification.object_type {
+                        ObjectType::Charactor(v) => {
+                            match v {
+                                CharactorType::Player => {
+                                    println!("Clicked on Player");
+                                    move_player_to_position(&mut destination_component, position_x, position_y);
+                                },
+                                CharactorType::NPC => {
+                                    println!("Clicked on NPC");
+                                    //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
+                                },
+                                CharactorType::Monster => {
+                                    select_target_to_attack(&mut player_target, target_identification.id, position_x, position_y);
+                                    return;
+                                },
+                                CharactorType::Companion => {
+                                    println!("Clicked on Companion");
+                                    move_player_to_position(&mut destination_component, position_x, position_y);
+                                },
+                            }
                         },
-                        CharactorType::Companion => {
-                            println!("Clicked on Companion");
-                            move_player_to_position(&mut player, &mut position, position_x, position_y);
+                        ObjectType::Stuff => {
+                            move_player_to_position(&mut destination_component, position_x, position_y);
                         },
-                        CharactorType::NPC => {
-                            println!("Clicked on NPC");
-                            //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
-                        }
-                        _ => {
-                            move_player_to_position(&mut player, &mut position, position_x, position_y);
-                        }
+                        ObjectType::Thing => {
+                            //TODO: for thing we need to set target and action type;
+                            move_player_to_position(&mut destination_component, position_x, position_y);
+                        },
+                        ObjectType::Projectile | ObjectType::Tile => {
+                            move_player_to_position(&mut destination_component, position_x, position_y);
+                        },
                     };
                 };
             };
@@ -102,25 +116,22 @@ pub fn player_click(
 }
 
 fn move_player_to_position(
-    player: &mut CharactorComponent,
-    position: &mut PositionComponent,
+    destination: &mut DestinationComponent,
     x: i32,
     y: i32,
 ) {
-    player.status = CharactorStatus::TryMove;
-    position.destination_point = Some(Position { x, y });
+    destination.destination_point = Some(Position { x, y });
+    if let Some(first) = destination.destination_path.first().cloned() {    
+        destination.destination_path.retain(|&x| x == first);                   //remove all values in destination path, but keep only first one;
+    }
 }
 
 fn select_target_to_attack(
-    player: &mut CharactorComponent,
     player_target: &mut CharactorTargetComponent,
     id: usize,
     x: i32,
     y: i32,
 ) {
-    if player.status == CharactorStatus::Standing {
-        player.status = CharactorStatus::TryAttack;
-    }
     player_target.target = Some(id);
     player_target.action = ActionType::Attack;
     player_target.target_position = Some(Position{ x, y });

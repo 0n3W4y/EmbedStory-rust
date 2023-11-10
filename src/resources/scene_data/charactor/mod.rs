@@ -103,14 +103,19 @@ pub enum StuffWearSlot {
 #[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
 pub enum CharactorStatus {
     Dead,
-    TryMove,
-    Moving,
+    MovingLeft,
+    MovingRight,
+    MovingUp,
+    MovingDown,
     #[default]
     Standing,
     CanAttack,
     TryAttack,
-    Attacking,
-    PickupItem,
+    AttackingLeft,
+    AttackingRight,
+    AttackingUp,
+    AttackingDown,
+    PickupingItem,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -145,8 +150,7 @@ pub struct Charactor {
     pub stuff_storage_max_slots: u8,
     pub stuff_wear: HashMap<StuffWearSlot, Option<Stuff>>,
 
-    pub temporary_effect: HashMap<EffectType, Effect>,
-    pub endless_effect: HashMap<EffectType, Effect>,
+    pub effects: HashMap<EffectType, Effect>,
 }
 
 
@@ -306,15 +310,15 @@ pub fn do_stat_dependences(
     let new_values_for_abilities: HashMap<AbilityType, i16> = abilities::get_values_of_abilities_from_stat(stat, new_value);
     for (ability_type, value) in new_values_for_abilities.iter() {
         let old_value_for_abilities =  old_values_for_abilities.get(ability_type).unwrap();         //safe call;
-        let value_to_ability = old_value_for_abilities - value;     // if new value is bigger, negative value will add, positive will be substruct;
+        let value_to_ability = old_value_for_abilities - value;                                 // if new value is bigger, negative value will add, positive will be substruct;
         change_ability(abilities, ability_type, value_to_ability);
     };
 
     let old_values_for_resist: HashMap<ResistType, i16> = get_values_of_resists_from_stat(stat, old_value);
     let new_values_for_resist: HashMap<ResistType, i16> = get_values_of_resists_from_stat(stat, new_value);
     for (resist_type, value) in new_values_for_resist.iter() {
-        let old_value_for_resist = old_values_for_resist.get(resist_type).unwrap();         //safe call;
-        let value_to_resist = old_value_for_resist - value;             // if new value is bigger, negative value will add, positive will be substruct;
+        let old_value_for_resist = old_values_for_resist.get(resist_type).unwrap();                 //safe call;
+        let value_to_resist = old_value_for_resist - value;                                     // if new value is bigger, negative value will add, positive will be substruct;
         change_resist(resists, resist_type, value_to_resist);
     };
 }

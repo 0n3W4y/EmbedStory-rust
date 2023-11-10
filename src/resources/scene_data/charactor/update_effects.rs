@@ -39,7 +39,7 @@ pub fn update_effects(
 
         let mut effects_to_remove:Vec<EffectType> = vec![];                                     //create vec of effects for deleting, which one ends at this moment;
 
-        for (effect_type, effect) in effects.temporary_effect.iter_mut() {        //update temporary effects;
+        for (effect_type, effect) in effects.effects.iter_mut() {                  //update  effects;
             if effect.current_duration == 0.0 {                                                             //first run;
                 for (stat, stat_damage) in effect.change_stat.iter() {
                     charactor::change_stat(                    
@@ -94,73 +94,7 @@ pub fn update_effects(
         }
 
         for effect_type in effects_to_remove.iter() {
-            effects.temporary_effect.remove(effect_type);
-        }
-        effects_to_remove.clear();
-
-        //update endless effect;
-        for(effect_type, endless_effect) in effects.endless_effect.iter_mut(){
-            //we remove endless effect if duration changes to negative value;
-            if endless_effect.current_duration < 0.0 {                      //check for remove endless_effect
-                //remove endless effect;
-                for (stat, stat_damage) in endless_effect.change_stat.iter() {             //revert changes from stat;
-                    charactor::change_stat(
-                        &mut stats.stats,
-                        &mut stats.stats_cache,
-                        &mut resists.resists,
-                        &mut abilities.ability,
-                        stat,
-                        -stat_damage,                                           // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                    );
-                }
-
-                for (resist_type, resist_damage) in endless_effect.change_resist.iter() {
-                    charactor::change_resist(&mut resists.resists, &resist_type,-resist_damage);            // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                }
-            
-                for (ability, ability_value) in endless_effect.change_ability.iter() {
-                    charactor::change_ability(&mut abilities.ability, ability, -ability_value);   // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                }
-
-                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
-
-                effects_to_remove.push(effect_type.clone());
-
-            //first run
-            } else if endless_effect.current_duration == 0.0 {
-                for (stat, stat_damage) in endless_effect.change_stat.iter() {
-                    charactor::change_stat(
-                        &mut stats.stats,
-                        &mut stats.stats_cache,
-                        &mut resists.resists,
-                        &mut abilities.ability,
-                        stat,
-                        *stat_damage,
-                    );
-                }
-
-                //change resists;
-                for (resist_type, resist_damage) in endless_effect.change_resist.iter() {
-                    charactor::change_resist(
-                        &mut resists.resists,
-                        resist_type,
-                        *resist_damage,
-                    );
-                }
-
-                //change abilities;
-                for (ability, ability_value) in endless_effect.change_ability.iter() {
-                    charactor::change_ability(&mut abilities.ability, ability, *ability_value);
-                }
-
-                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
-            } else {
-                endless_effect.current_duration += delta;
-            }            
-        }
-
-        for effect_type in effects_to_remove.iter() {
-            effects.endless_effect.remove(effect_type);
+            effects.effects.remove(effect_type);
         }
         effects_to_remove.clear();
     }

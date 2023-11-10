@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
-use crate::components::charactor_component::{CharactorComponent, ResistsComponent, SkillComponent, PositionComponent, EffectComponent, StatsComponent, AbilityComponent, InventoryComponent};
+use crate::components::{IdenteficationComponent, PositionComponent};
+use crate::components::charactor_component::{CharactorComponent, ResistsComponent, SkillComponent, EffectComponent, StatsComponent, AbilityComponent, InventoryComponent, DestinationComponent};
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::profile::Profile;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
@@ -8,11 +9,13 @@ use crate::resources::scene_data::charactor::{Charactor, CharactorType};
 pub fn cleanup(
     mut commands: Commands,
     mut charactor_query: Query<(
-        Entity, 
+        Entity,
+        &IdenteficationComponent,
         &CharactorComponent,
         &ResistsComponent,
         &SkillComponent,
         &PositionComponent,
+        &DestinationComponent,
         &EffectComponent,
         &StatsComponent,
         &AbilityComponent,
@@ -22,13 +25,19 @@ pub fn cleanup(
     mut profile: ResMut<Profile>,
 ){
     let scene = scene_manager.get_current_game_scene_mut();
-    scene.charactors.clear();
+    scene.charactors.companion.clear();
+    scene.charactors.monster.clear();
+    scene.charactors.player.clear();
+    scene.charactors.npc.clear();
+
     for (
         entity, 
+        identification_component,
         charactor_component, 
         resist_component, 
         skill_component, 
         position_component,
+        destination_component,
         effect_component,
         stats_component,
         ability_component,
@@ -37,10 +46,12 @@ pub fn cleanup(
         let mut charactor = Charactor::default();
         copy_from_component_to_charactor(
             &mut charactor, 
+            identification_component,
             charactor_component, 
             resist_component, 
             skill_component, 
-            position_component, 
+            position_component,
+            destination_component,
             effect_component, 
             stats_component, 
             ability_component,
@@ -54,7 +65,7 @@ pub fn cleanup(
                 profile.companion = Some(charactor);
             },
             CharactorType::Monster | CharactorType::NPC => {
-                scene.charactors.push(charactor);
+                scene.charactors.store(charactor);
             },
         }
         commands.entity(entity).despawn_recursive();
@@ -63,16 +74,18 @@ pub fn cleanup(
 
 pub fn copy_from_component_to_charactor(
     charactor: &mut Charactor,
+    identefication_component: &IdenteficationComponent,
     charactor_component: &CharactorComponent,
     resist_component: &ResistsComponent,
     skill_component: &SkillComponent,
     position_component: &PositionComponent,
+    destination_component: &DestinationComponent,
     effect_component: &EffectComponent,
     stats_component: &StatsComponent,
     ability_component: &AbilityComponent,
     inventory_component: &InventoryComponent,
 ){
-    charactor.id = charactor_component.id;
+    charactor.id = identefication_component.id;
     charactor.charactor_type = charactor_component.charactor_type.clone();
     charactor.race_type = charactor_component.race_type.clone();
     charactor.gender_type = charactor_component.gender_type.clone();
@@ -87,9 +100,9 @@ pub fn copy_from_component_to_charactor(
     charactor.passive_skills = skill_component.passive_skills.clone();
 
     charactor.position = position_component.position.clone();
-    charactor.destination_direction = position_component.destination_direction.clone();
-    charactor.destination_path = position_component.destination_path.clone();
-    charactor.destination_point = position_component.destination_point.clone();
+    charactor.destination_direction = destination_component.destination_direction.clone();
+    charactor.destination_path = destination_component.destination_path.clone();
+    charactor.destination_point = destination_component.destination_point.clone();
 
     charactor.temporary_effect = effect_component.temporary_effect.clone();
     charactor.endless_effect = effect_component.endless_effect.clone();

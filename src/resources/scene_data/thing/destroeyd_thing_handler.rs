@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+use crate::components::PositionComponent;
 use crate::components::thing_component::{ThingComponent, ThingStatsComponent};
 use crate::resources::scene_data::charactor::stats::Stat;
 use crate::resources::scene_data::stuff::Stuff;
@@ -10,11 +11,11 @@ use super::ThingType;
 
 pub fn destroeyd_thing_handler(
     mut commands: Commands,
-    mut things_query: Query<(Entity, &ThingComponent, &ThingStatsComponent), (Changed<ThingComponent>, With<ThingComponent>)>,
+    mut things_query: Query<(Entity, &ThingComponent, &ThingStatsComponent, &PositionComponent), (Changed<ThingComponent>, With<ThingComponent>)>,
     mut scene_manager: ResMut<SceneManager>,
     material_manager: Res<MaterialManager>,
 ){
-    for (entity, thing_component, thing_stats) in things_query.iter_mut(){
+    for (entity, thing_component, thing_stats, position_component) in things_query.iter_mut(){
         //TODO: Create animation timer, then despawn entity and create new;
 
         if *thing_stats.stats.get(&Stat::HealthPoints).unwrap() <= 0 { //check for destroy
@@ -47,10 +48,7 @@ pub fn destroeyd_thing_handler(
 
                 _ => None,
             };
-            let tile_index = thing_component.tile_index;
-            let mut tile = scene_manager.get_current_game_scene_mut().tilemap.get_tile_by_index_mut(tile_index);
-            tile.thing_type = None;
-
+            let thing_position = position_component.position.clone();
             commands.entity(entity).despawn_recursive();
 
             match new_stuff {

@@ -36,8 +36,104 @@ impl ThingsStorage {
             ThingType::ReinforcedIronDoor | ThingType::SteelDoor | ThingType::ReinforcedSteelDoor => self.doors.push(thing),
         }
     }
+
+    pub fn get_all_things(&self) -> Vec<&Thing> {
+        let mut result: Vec<&Thing> = vec![];
+        for rock_and_ore in self.rocks_and_ores.iter() {
+            result.push(rock_and_ore);
+        }
+
+        for tree in self.trees.iter() {
+            result.push(tree);
+        }
+
+        for bush in self.bushes.iter() {
+            result.push(bush);
+        }
+
+        for wall in self.walls.iter() {
+            result.push(wall);
+        }
+
+        for door in self.doors.iter() {
+            result.push(door);
+        }
+
+        for natural_barrier in self.natural_barriers.iter() {
+            result.push(natural_barrier);
+        }
+
+        result
+    }
+
+    pub fn get_all_things_mut(&self) -> Vec<&mut Thing> {
+        let mut result: Vec<&mut Thing> = vec![];
+        for rock_and_ore in self.rocks_and_ores.iter_mut() {
+            result.push(rock_and_ore);
+        }
+
+        for tree in self.trees.iter_mut() {
+            result.push(tree);
+        }
+
+        for bush in self.bushes.iter_mut() {
+            result.push(bush);
+        }
+
+        for wall in self.walls.iter_mut() {
+            result.push(wall);
+        }
+
+        for door in self.doors.iter_mut() {
+            result.push(door);
+        }
+
+        for natural_barrier in self.natural_barriers.iter_mut() {
+            result.push(natural_barrier);
+        }
+
+        result
+    }
+ }
+
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct CharactorStorage {
+    pub player: Vec<Charactor>,
+    pub companion: Vec<Charactor>,
+    pub npc: Vec<Charactor>,
+    pub monster: Vec<Charactor>,
 }
 
+impl CharactorStorage {
+    pub fn store(&mut self, charactor: Charactor){
+        match charactor.charactor_type {
+            charactor::CharactorType::Player => self.player.push(charactor),
+            charactor::CharactorType::NPC => self.npc.push(charactor),
+            charactor::CharactorType::Monster => self.monster.push(charactor),
+            charactor::CharactorType::Companion => self.companion.push(charactor),
+        }
+    }
+
+    pub fn get_all_charactors(&self) -> Vec<&Charactor> {
+        let mut result: Vec<&Charactor> = vec![];
+        for player in self.player.iter() {
+            result.push(player);
+        }
+
+        for npc in self.npc.iter(){
+            result.push(npc);
+        }
+
+        for monster in self.monster.iter() {
+            result.push(monster);
+        }
+
+        for companion in self.companion.iter() {
+            result.push(companion);
+        }
+        result
+    }
+}
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GameScene {
@@ -47,7 +143,7 @@ pub struct GameScene {
     pub tilemap: Tilemap,
     pub things: ThingsStorage,
     pub stuff: Vec<Stuff>,
-    pub charactors: Vec<Charactor>,
+    pub charactors: CharactorStorage,
     pub effects: Vec<SceneEffect>,
     //pub roof: Vec<>,
 }
@@ -63,7 +159,6 @@ impl Plugin for GameScenePlugin {
             .with_system(thing::draw::draw)
             //draw all charactor and player
             .with_system(charactor::draw::draw)
-            .with_system(charactor::draw::draw_player)
         );
 
         app.add_system_set(SystemSet::on_update(SceneState::GameScene)
