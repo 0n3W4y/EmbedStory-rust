@@ -58,8 +58,8 @@ pub struct Skill {
 
     //for passive skills
     pub trigger_chance: u8, // chanse to trigger that skill
-    pub trigger_frequency: f32, // 1 per second
-    pub full_time_duration: f32, // full time to skill live;
+    pub trigger_time_frequency: f32, // 1 per second
+    pub life_time: f32, // full time to skill live;
     pub total_time_duration: f32,
 
     pub projectiles: u8,
@@ -87,8 +87,8 @@ impl Skill {
             is_activated: false,
             is_passive_skill: config.is_passive_skill,
             trigger_chance: config.trigger_chance,
-            trigger_frequency: config.trigger_frequency as f32 / 10.0,
-            full_time_duration: config.full_time_duration as f32 / 10.0,
+            trigger_time_frequency: config.trigger_time_frequency as f32 / 10.0,
+            life_time: config.life_time as f32 / 10.0,
             cooldown_time: config.cooldown_time as f32 / 10.0,
             on_cooldown: false,
             current_time_duration: 0.0,
@@ -120,8 +120,8 @@ pub struct SkillDeploy {
 
     //for passive skills
     pub trigger_chance: u8, // chanse to trigger that skill
-    pub trigger_frequency: f32, // 1 per second
-    pub full_time_duration: f32, // full time to skill live;
+    pub trigger_time_frequency: f32, // 1 per second
+    pub life_time: f32, // full time to skill live;
 
     pub projectiles: u8,
     pub projectile_type: ProjectileType,
@@ -182,7 +182,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                 Some(weapon) => {
                     critical_chance = weapon.critical_hit_chance;
                     critical_multiplier = weapon.critical_hit_multiplier;
-                    skill_cooldown = weapon.cooldown;
+                    skill_cooldown = weapon.attack_cooldown;
                     damage_from_weapon = weapon.damage.clone();
                     effects_from_weapon = weapon.effects.clone();
                     extra_skills_from_weapon = weapon.extra_skills.clone();
@@ -202,7 +202,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                     Some(weapon) => {
                         critical_chance = (critical_chance + weapon.critical_hit_chance) / 2;                       //middle value from 2 weapons;
                         critical_multiplier = (critical_multiplier + weapon.critical_hit_multiplier) / 2;           //middle value from 2 weapons;
-                        skill_cooldown = (skill_cooldown + weapon.cooldown) / 2;                                //middle value from 2 weapons;
+                        skill_cooldown = (skill_cooldown + weapon.attack_cooldown) / 2;                                //middle value from 2 weapons;
     
                         for (damage_type, value) in weapon.damage.iter() {                     //stocking damage values into 1 hashmap
                             damage_from_weapon.entry(damage_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);

@@ -104,8 +104,7 @@ pub fn copy_from_component_to_charactor(
     charactor.destination_path = destination_component.destination_path.clone();
     charactor.destination_point = destination_component.destination_point.clone();
 
-    charactor.temporary_effect = effect_component.temporary_effect.clone();
-    charactor.endless_effect = effect_component.endless_effect.clone();
+    charactor.effects = effect_component.effects.clone();
 
     charactor.stats = stats_component.stats.clone();
     charactor.stats_cache = stats_component.stats_cache.clone();

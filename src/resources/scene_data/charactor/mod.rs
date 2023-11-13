@@ -25,6 +25,7 @@ pub mod update_passive_skills;
 pub mod update_attack;
 pub mod update_cooldowns;
 pub mod damage_text_informer;
+pub mod active_skill_handler;
 
 pub const STATS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;

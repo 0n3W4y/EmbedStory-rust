@@ -259,7 +259,7 @@ fn attack(
             projectile_component.effects.push(effect_type.clone());                             //store triggered effects to projectile;
         }
 
-        for (skill_type, trigger_chance) in skill.passive_skill.iter() {
+        for (skill_type, trigger_chance) in skill.extra_skill.iter() {
             let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
             if *trigger_chance < trigger_chance_random_number {
                 continue;                                                                   //not triggered;
@@ -386,36 +386,32 @@ fn attack(
 
             let effect_config = effects_deploy.get_effect_config(effect_type);          //create default effect;
             let mut effect = Effect::new(effect_config);
-
-            if effect.duration == 0.0 {
-                target_effects.endless_effect.entry(effect_type.clone()).or_insert(effect);      //try to insert, or ignore if effect already exist;
-            } else {
-                let effect_resist = resists_types::get_resist_from_effect_type(effect_type);  //convert effect type to resist type;
-                let target_effect_resist = match target_resists.resists.get(&effect_resist) {       //get resist from target on this effect to change duration;
-                    Some(v) => *v,
-                    _ => {
-                        println!(
-                            "Target has no effect resist: '{:?}', I use 0 instead",
-                            effect_type
-                        );
-                        0
-                    }
-                };
-                
-                if target_effect_resist > 100 {                                                        //check target resist; if it > 100% just ignore this effect;
-                    continue;
+            let effect_resist = resists_types::get_resist_from_effect_type(effect_type);  //convert effect type to resist type;
+            let target_effect_resist = match target_resists.resists.get(&effect_resist) {       //get resist from target on this effect to change duration;
+                Some(v) => *v,
+                _ => {
+                    println!(
+                        "Target has no effect resist: '{:?}', I use 0 instead",
+                        effect_type
+                    );
+                    0
                 }
-
-                //calculate new effect duration by target resist;
-                let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
-                effect.duration -= effect_duration;
-
-                target_effects.temporary_effect.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+            };
+            
+            if target_effect_resist > 100 {                                                        //check target resist; if it > 100% just ignore this effect;
+                continue;
             }
+
+            //calculate new effect duration by target resist;
+            let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
+            effect.duration -= effect_duration;
+
+            target_effects.effects.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+
         }
         
         //check for passivly skills on damage
-        for (skill_type, trigger_chance) in skill.passive_skill.iter() {
+        for (skill_type, trigger_chance) in skill.extra_skill.iter() {
             let skill_trigger_chance_random_number: u8 = rng.gen_range(0..=99);
             if *trigger_chance < skill_trigger_chance_random_number {
                 continue;                                                               // skip passive skill, not triggered;
@@ -446,7 +442,7 @@ fn attack(
             } 
             match target_skills.passive_skills.get_mut(skill_type) {
                 Some(v) => {
-                    skill.trigger_duration += v.trigger_duration;                       // prolong time duration;
+                    skill.life_time += v.life_time;                       // prolong time duration;
                     *v = skill;
                 },
                 None => {

@@ -62,7 +62,7 @@ pub struct Stuff{
     pub damage: HashMap<DamageType, i16>,
     pub critical_hit_chance: i16,
     pub critical_hit_multiplier: i16,
-    pub cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
+    pub attack_cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
 
     pub effects: HashMap<EffectType, u8>,
     pub skills: Vec<SkillType>,
@@ -76,4 +76,20 @@ pub struct Stuff{
 
     //TODO: Stuff attributes with values
     //attributes: HashMap<StuffAttribute>,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct StuffConfig {
+    pub stuff_type: StuffType,
+    pub max_amount: usize,
+    pub wear_slot:Option<StuffWearSlot>,
+    pub damage: HashMap<DamageType, i16>,
+    pub critical_hit_chance: i16,
+    pub critical_hit_multiplier: i16,
+    pub attack_cooldown: i16,
+    pub effects: HashMap<EffectType, u8>,
+    pub skills: Vec<SkillType>,
+    pub extra_skills: HashMap<SkillType, i16>,
+    pub price: u32,
+    //pub params for add or substruct stats, resists, abilities;
 }

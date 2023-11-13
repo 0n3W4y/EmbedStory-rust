@@ -170,6 +170,7 @@ impl Plugin for GameScenePlugin {
             .with_system(charactor::update_effects::update_effects)
             .with_system(charactor::update_cooldowns::update_active_skills_cooldown)
             .with_system(charactor::update_passive_skills::update_passive_skills)
+            .with_system(charactor::active_skill_handler::active_skill_handler)
             //.with_system(charactor::update_attack::player_attacking)
         );
 

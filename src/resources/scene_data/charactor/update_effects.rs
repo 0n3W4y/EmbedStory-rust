@@ -60,10 +60,14 @@ pub fn update_effects(
                     charactor::change_ability(&mut abilities.ability, &ability, *ability_damage);
                 }
 
-                //update base skill by changes in abilities and stats;
-                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);
-
-            } else if effect.current_duration >= effect.duration {                                          //effect is end; revert changes and remove effect
+                
+                skills::update_basic_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                    skills.skills.get_mut(&SkillSlot::Base),
+                     &abilities.ability, 
+                     &inventory.stuff_wear
+                    );
+                effect.current_duration += delta; 
+            } else if effect.current_duration > effect.duration || effect.duration < 0.0 {                                 //effect is end; revert changes and remove effect
                 for (stat, stat_damage) in effect.change_stat.iter() {
                     charactor::change_stat(
                         &mut stats.stats,
