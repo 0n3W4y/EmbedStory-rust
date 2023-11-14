@@ -120,12 +120,17 @@ pub fn update_passive_skills(
                         println!("Some error in update passive skills, because skill have and projectiles, but skill range = 0!");
                         return;
                     }
-                    
+
+                    let projectile_config = deploy.projectile_deploy.get_config(&skill.projectile_type);
                     let mut projectile = Projectile{
                         projectile_type: skill.projectile_type,
                         starting_position: cast_position,
                         is_missed: false,
                         damage: skill.damage.clone(),
+                        velocity: projectile_config.velocity,
+                        pierce_chance: projectile_config.pierce_chance,
+                        can_pierce: projectile_config.can_pierce,
+                        range: skill.range,
                         ..Default::default()
                     };
 
@@ -148,16 +153,17 @@ pub fn update_passive_skills(
                         projectile.effects.push(effect_type.clone());
                     }
 
-                    let end_point_position: Option<Position<i32>> = match target_component.target_position {
-                        Some(v) => Some(v.clone()),
+                    let end_point_position: Position<i32> = match target_component.target_position {
+                        Some(v) => v.clone(),
                         None => {
                             let direction = &destination_component.destination_direction;
                             if direction.x == 0 && direction.y == 0 {
-                                None
+                                println!("No target and no direction by casting passive skill");
+                                return;
                             } else {
                                 let x = position_component.position.x + direction.x as i32;
                                 let y = position_component.position.y + direction.y as i32;
-                                Some(Position {x, y})
+                                Position {x, y}
                             }
                         },
                     };
@@ -179,7 +185,9 @@ pub fn update_passive_skills(
 
                         },
                         SkillDirectionType::Line => {
-
+                            for i in 0..projectiles {
+                                create_projectile(&mut commands, projectile, &material_manager, end_point_position);
+                            }
                         },
                         SkillDirectionType::Arc45 => {
 

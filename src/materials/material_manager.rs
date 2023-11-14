@@ -6,6 +6,7 @@ use crate::materials::loading_new_game_scene_material::LoadingNewGameSceneMateri
 use crate::materials::main_menu_scene_material::MainMenuSceneMaterial;
 use crate::materials::options_scene_material::OptionsSceneMaterial;
 
+
 #[derive(Debug, Clone)]
 pub struct MaterialManager {
     pub main_menu_scene: MainMenuSceneMaterial,

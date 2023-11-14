@@ -4,9 +4,12 @@ pub mod game_scene_biome_deploy;
 pub mod game_scene_deploy;
 pub mod game_objects_deploy;
 pub mod charactor_deploy;
+pub mod projectile_deploy;
 
 use bevy::prelude::*;
 use serde::Deserialize;
+
+use self::projectile_deploy::ProjectileDeploy;
 
 //use crate::resources::deploy_addiction::scene_miscellaneous_deploy::SceneMiscellaneousDeploy;
 use super::deploy::game_scene_deploy::GameSceneDeploy;
@@ -25,6 +28,7 @@ pub struct Deploy{
     pub game_scene_biome: GameSceneBiomeDeploy,
     pub game_scene: GameSceneDeploy, 
     pub charactor_deploy: CharactorDeploy,
+    pub projectile_deploy: ProjectileDeploy,
 }
 
 impl Deploy{
@@ -47,12 +51,14 @@ impl FromWorld for Deploy{
         let game_scene_deploy: GameSceneDeploy = GameSceneDeploy::new(ground_scene_path);
         let objects_deploy: GameObjectsDeploy = GameObjectsDeploy::new(objects_path);
         let charactor_deploy: CharactorDeploy = CharactorDeploy::new();
+        let projectile_deploy: ProjectileDeploy = ProjectileDeploy::new();
         return Deploy{
             tile: tile_deploy,
             game_scene_biome: biome_deploy,
             game_scene: game_scene_deploy,
             objects_deploy,
             charactor_deploy,
+            projectile_deploy,
         };
     }
 }

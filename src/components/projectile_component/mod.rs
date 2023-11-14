@@ -11,7 +11,8 @@ pub struct Projectile {
     pub passive_skills: Vec<Skill>,
 
     pub starting_position: Position<i32>,
-    pub destination_point: Position<i32>,
+    pub motion_coefficient: Position<i32>,
+    pub range: u8,
     pub is_missed: bool,
     pub can_pierce: bool,
     pub pierce_chance: u8,

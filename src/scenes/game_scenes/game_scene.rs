@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use crate::resources::scene_data::charactor::Charactor;
+use crate::resources::scene_data::projectiles;
 use crate::resources::scene_data::scene_effect::SceneEffect;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::thing::Thing;
@@ -171,6 +172,7 @@ impl Plugin for GameScenePlugin {
             .with_system(charactor::update_cooldowns::update_active_skills_cooldown)
             .with_system(charactor::update_passive_skills::update_passive_skills)
             .with_system(charactor::active_skill_handler::active_skill_handler)
+            .with_system(projectiles::update_projectile::update_projectiles)
             //.with_system(charactor::update_attack::player_attacking)
         );
 

@@ -43,7 +43,6 @@ pub fn move_charactor(
                     &mut position,
                     &mut destination,
                     ability,
-                    &mut sprite, 
                     &mut transform.translation,
                     delta,
                     scene
@@ -75,7 +74,6 @@ pub fn try_move(
     position: &mut PositionComponent, 
     destination: &mut DestinationComponent, 
     ability: &AbilityComponent, 
-    sprite: &mut Mut<TextureAtlasSprite>, 
     translation: &mut Vec3, 
     delta: f32,
     scene: &GameScene
@@ -93,7 +91,6 @@ pub fn try_move(
             position,
             destination,
             ability,
-            sprite, 
             translation,
             delta
         );
@@ -107,7 +104,6 @@ pub fn moving(
     position: &mut PositionComponent, 
     destination: &mut DestinationComponent, 
     ability: &AbilityComponent, 
-    sprite: &mut Mut<TextureAtlasSprite>, 
     translation: &mut Vec3, 
     delta: f32
 ){
@@ -138,7 +134,7 @@ pub fn moving(
 
     change_moving_status_by_direction(charactor, &destination.destination_direction);
 
-    try_grid_moving(charactor, position, destination, translation, sprite);
+    try_grid_moving(charactor, position, destination, translation);
 }
 
 fn calculate_and_set_direction(position_x: i32, position_y: i32, destination_x: i32, destination_y: i32, position: &mut Position<i8>) {
@@ -201,7 +197,7 @@ fn destination_reach(charactor: &mut CharactorComponent, destination: &mut Desti
     destination.destination_path.clear();
 }
 
-fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionComponent, destination: &mut DestinationComponent, translation: &mut Vec3, sprite: &mut Mut<TextureAtlasSprite>){
+fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionComponent, destination: &mut DestinationComponent, translation: &mut Vec3){
     let grid_x = translation.x / TILE_SIZE as f32;
     let grid_y = translation.y / TILE_SIZE as f32;
 
@@ -237,9 +233,6 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
             //centering sprite ;
             translation.x = grid_x * TILE_SIZE as f32;
             translation.y = grid_y * TILE_SIZE as f32;
-            //reset sprite;
-            sprite.index = 0;
-            sprite.flip_x = false;
         } else {
             let next_point_x = destination.destination_path[0].x;
             let next_point_y = destination.destination_path[0].y;
