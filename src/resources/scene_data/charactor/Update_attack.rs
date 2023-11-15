@@ -239,13 +239,19 @@ fn attack(
         let mut projectile_component = Projectile {             //create default projectile component;
             projectile_type: skill.projectile_type.clone(),
             starting_position: charactor_position.position.clone(),
-            destination_point: target_position.position.clone(),
             ..Default::default()
         };
 
         if missed {
             projectile_component.is_missed = true;
-            create_projectile(&mut commands, projectile_component, material_manager);
+            create_projectile(
+                &mut commands,
+                material_manager,
+                projectile_component,
+                target_position.position.clone(),
+                skill.projectiles,
+                &skill.skill_direction
+            );
             return;                                                                         //return, because attack is missed;
         }
         
@@ -288,7 +294,14 @@ fn attack(
 
             projectile_component.passive_skills.push(skill);
         }
-        create_projectile(&mut commands, projectile_component, material_manager);                       // at base skill attack we have only 1 projectile;
+        create_projectile(
+            &mut commands,
+            material_manager,
+            projectile_component,
+            target_position.position.clone(),
+            skill.projectiles,
+            &skill.skill_direction
+        );                       
 
     } else {
         if missed {                                                             // if missed we put text into target and return from the function - no need to do next;

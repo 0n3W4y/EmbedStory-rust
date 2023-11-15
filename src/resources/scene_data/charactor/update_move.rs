@@ -79,7 +79,7 @@ pub fn try_move(
     scene: &GameScene
 ) {
     if destination.destination_path.len() == 0 {                                        //first move after standing or reach his destination;
-        try_path(position, destination, scene);                                         //light pathfinding;
+        try_path(position, destination, scene);                                   //light pathfinding;
     } else if destination.destination_path.len() == 1 {                                 //check for changing destination point;
         if destination.destination_path[0] != destination.destination_point.unwrap() {  //safe unwrap;
             try_path(position, destination, scene);
@@ -137,25 +137,9 @@ pub fn moving(
     try_grid_moving(charactor, position, destination, translation);
 }
 
-fn calculate_and_set_direction(position_x: i32, position_y: i32, destination_x: i32, destination_y: i32, position: &mut Position<i8>) {
-    let direction_x = destination_x - position_x;
-    let direction_y = destination_y - position_y;
-
-    position.x = if direction_x > 0 {
-        1
-    } else if direction_x < 0 {
-        -1
-    } else {
-        0
-    };
-
-    position.y = if direction_y > 0 {
-        1
-    } else if direction_y < 0 {
-        -1
-    } else {
-        0
-    };
+fn calculate_and_set_direction(path: &Vec<Position<i32>>, direction: &mut Position<i8>) {
+    direction.x = (path[1].x - path[0].x) as i8;
+    direction.y = (path[1].y - path[0].y) as i8;
 }
 
 fn change_moving_status_by_direction(charactor: &mut CharactorComponent, direction: &Position<i8>){
@@ -234,9 +218,7 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
             translation.x = grid_x * TILE_SIZE as f32;
             translation.y = grid_y * TILE_SIZE as f32;
         } else {
-            let next_point_x = destination.destination_path[0].x;
-            let next_point_y = destination.destination_path[0].y;
-            calculate_and_set_direction(calculated_x, calculated_y, next_point_x, next_point_y, &mut destination.destination_direction);
+            calculate_and_set_direction(&destination.destination_path, &mut destination.destination_direction);
         }   
     }
 }
@@ -245,45 +227,74 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
 
 fn try_path(position: &mut PositionComponent, destination: &mut DestinationComponent, scene: &GameScene) {
     //pathfinding need to be here;
-    let position_x = position.position.x;
-    let position_y = position.position.y;  
+    let starting_position_x = position.position.x;
+    let starting_position_y = position.position.y;  
     let destination_x = destination.destination_point.unwrap().x; //safe
     let destination_y = destination.destination_point.unwrap().y; //safe
 
-    //maximum tiles to reaach destination; line;
-    let path_tiles = ((destination_x - position_x).abs()).max((destination_y - position_y).abs());
+    //maximum tiles to reaach destination without pathfinding;
+    let path_tiles = ((destination_x - starting_position_x).abs()).max((destination_y - starting_position_y).abs());
     for i in 0..path_tiles{
         let path_len = destination.destination_path.len();
-        let next_point = if path_len == 0 {
+        let current_position = if path_len == 0 {
             //get start point;
-            Position{x: position_x, y: position_y}
+            Position{x: starting_position_x, y: starting_position_y}
         } else {
             //get last point;
             Position{
-                x: destination.destination_path[path_len -1].x, 
+                x: destination.destination_path[path_len -1].x,
                 y: destination.destination_path[path_len -1].y
             }
         };
+        let dif_x = destination_x - current_position.x;
+        let dif_y = destination_y - current_position.y;
 
-        calculate_and_set_direction(next_point.x, next_point.y, destination_x, destination_y, &mut destination.destination_direction);
-        let tile = scene.tilemap.get_tile_by_position(next_point.x + destination.destination_direction.x as i32, next_point.y + destination.destination_direction.y as i32);
+        let direction_x = if dif_x > 0 {
+            1
+        } else if dif_x < 0 {
+            -1
+        } else {
+            0
+        };
+
+        let direction_y = if dif_y > 0 {
+            1
+        } else if dif_y < 0 {
+            -1 
+        } else {
+            0
+        };
+
+        let next_position = Position{x: current_position.x + direction_x, y: current_position.y + direction_y};
+        let tile = scene.tilemap.get_tile_by_position(next_position.x, next_position.y);
 
         if check_tile_for_moving(tile) {
-            destination.destination_path.push(Position {x: tile.position.x, y: tile.position.y});
+            destination.destination_path.push(next_position);
         } else {
             //break circle;
             //break if tile can't walked, without pathfinding;
-            destination.destination_point = Some(Position {x: tile.position.x, y: tile.position.y});        //set new destination point, because all other path can't be constructing;
-            return;
+            if path_len == 0 {
+                destination.destination_point = None;
+                return;
+            } else {
+                destination.destination_point = Some(destination.destination_path[path_len - 1]);
+                return;
+            }            
         }
     }
 }
 
-fn check_tile_for_moving(tile: &Tile) -> bool {
-    match tile.permissions.iter().find(|x|{x == &&TilePermissions::Walk}){
-        Some(_) => true,
+fn check_tile_for_moving(tile: Option<&Tile>) -> bool {
+    match tile {
+        Some(v) => {
+            match v.permissions.iter().find(|x|{x == &&TilePermissions::Walk}){
+                Some(_) => true,
+                None => false,
+            }
+        },
         None => false,
     }
+    
 }
 
 

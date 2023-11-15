@@ -167,43 +167,7 @@ pub fn update_passive_skills(
                             }
                         },
                     };
-
-                    // passive skills can casts only from Itself;
-                    match skill.skill_direction {
-                        SkillDirectionType::Point => {
-                           println!("Can not cast skill with > 1 projectiles and direction 'Point'");
-                           return;
-                        },
-                        SkillDirectionType::Arc180 => {
-                            let degree_between_rpojectiles = 180 / projectiles as i16;
-                            !
-                        },
-                        SkillDirectionType::Arc90 => {
-
-                        },
-                        SkillDirectionType::Arc360 => {
-
-                        },
-                        SkillDirectionType::Line => {
-                            for i in 0..projectiles {
-                                create_projectile(&mut commands, projectile, &material_manager, end_point_position);
-                            }
-                        },
-                        SkillDirectionType::Arc45 => {
-
-                        },
-                        SkillDirectionType::Arc15 => {
-
-                        },
-                        SkillDirectionType::Arc30 => {
-
-                        },
-                        SkillDirectionType::Arc60 => {
-
-                        },
-                    }
-
-
+                    create_projectile(&mut commands, &material_manager, projectile, end_point_position, projectiles, &skill.skill_direction);
                 } else {
                     //buff or debuff skill; if skill range == 0 then we understand skill can buff or debuff self when triggered. We must ignore target_type;
                     if skill.range == 0 {
