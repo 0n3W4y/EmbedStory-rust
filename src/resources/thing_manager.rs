@@ -210,7 +210,13 @@ impl ThingManager {
             let thing_id_to_replace = rock_things[random_index];
             match scene.things.rocks_and_ores.iter_mut().find(|&x| x.id == thing_id_to_replace){
                 Some(v) => {
-                    let tile = scene.tilemap.get_tile_by_position_mut(v.position.x, v.position.y);
+                    let tile = match scene.tilemap.get_tile_by_position_mut(v.position.x, v.position.y){
+                        Some(v) => v,
+                        None => {
+                            println!("can not det tile by position x: {}, y: {}", v.position.x, v.position.y);
+                            continue;
+                        }
+                    };
                     let mut ore_thing = self.create_thing_on_tile(thing_type, tile, deploy);
                     ore_thing.graphic_index = v.graphic_index;
                     *v = ore_thing;

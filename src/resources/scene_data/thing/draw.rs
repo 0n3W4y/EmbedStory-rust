@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{IdenteficationComponent, PositionComponent};
+use crate::components::{IdenteficationComponent, PositionComponent, DamageTextComponent};
 use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -36,8 +36,14 @@ pub fn draw(
                     .game_scene
                     .things
                     .get_atlas(thing_type);
-        let tile = scene.tilemap.get_tile_by_position(thing.position.x, thing.position.y);
-        let new_z_position = Z_POSITION + ((total_tiles as f32 - tile.id as f32) / total_tiles as f32); // tile with index 0 have a higher z-order, with 10000 - lower z-order;
+        let tile_id = match scene.tilemap.get_tile_by_position(thing.position.x, thing.position.y){
+            Some(v) => v.id,
+            None => {
+                println!("Can not get tile with x: {}, y: {}", thing.position.x, thing.position.y);
+                continue;
+            },
+        };
+        let new_z_position = Z_POSITION + ((total_tiles as f32 - tile_id as f32) / total_tiles as f32); // tile with index 0 have a higher z-order, with 10000 - lower z-order;
         let transform = Transform::from_xyz(x, y, new_z_position);
 
         let mut identification_component: IdenteficationComponent = Default::default();
@@ -45,6 +51,7 @@ pub fn draw(
         let mut position_component: PositionComponent = Default::default();
         let mut stats_component: ThingStatsComponent = Default::default();
         let mut permissions_component: ThingPermissionsComponent = Default::default();
+        let damage_text_component: DamageTextComponent = Default::default();
 
         copy_from_thing_to_entity_component(
             &mut identification_component, 
@@ -66,6 +73,7 @@ pub fn draw(
         .insert(thing_component)
         .insert(position_component)
         .insert(permissions_component)
+        .insert(damage_text_component)
         .insert(stats_component);
     }    
 }

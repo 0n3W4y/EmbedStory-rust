@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::charactor::CharactorType};
+use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::CharactorType, damage_text_informer::DamageTextInformer}};
 
 pub mod tile_component;
 pub mod thing_component;
@@ -28,4 +28,9 @@ pub struct PositionComponent {
 pub struct IdenteficationComponent {
     pub id: usize,
     pub object_type: ObjectType,
+}
+
+#[derive(Component, Default)]
+pub struct DamageTextComponent {
+    pub text_upper: Vec<DamageTextInformer>,
 }

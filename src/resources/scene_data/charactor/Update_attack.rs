@@ -1,22 +1,22 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::components::{PositionComponent, IdenteficationComponent};
+use crate::components::{PositionComponent, IdenteficationComponent, DamageTextComponent};
 use crate::components::charactor_component::{
     AbilityComponent, ActionType, CharactorComponent, EffectComponent,
-    ResistsComponent, SkillComponent, CharactorTargetComponent, CharactorTextComponent, StatsComponent,
+    ResistsComponent, SkillComponent, CharactorTargetComponent, StatsComponent,
 };
 
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::charactor::{self, SkillSlot};
+use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::resources::scene_data::stuff::resists_types;
 
 use super::abilities;
-use super::damage_text_informer::DamageTextInformer;
 use super::effects::Effect;
 use super::stats::Stat;
 use super::{abilities::AbilityType, skills::Skill, CharactorStatus};
@@ -40,7 +40,7 @@ pub fn attacking_from_basic_skill(
         &mut EffectComponent,
         &PositionComponent,
         &AbilityComponent,
-        &mut CharactorTextComponent,
+        &mut DamageTextComponent,
         &mut SkillComponent,
     )>,
 
@@ -205,7 +205,7 @@ fn attack(
     charactor_ability: &AbilityComponent,
     charactor_position: &PositionComponent,
     target_position: &PositionComponent,
-    target_text_component: &mut CharactorTextComponent,
+    target_text_component: &mut DamageTextComponent,
     target_stats: &mut StatsComponent,
     target_resists: &ResistsComponent,
     target_effects: &mut EffectComponent,
@@ -305,7 +305,7 @@ fn attack(
 
     } else {
         if missed {                                                             // if missed we put text into target and return from the function - no need to do next;
-            target_text_component.text_upper_charactor.push(DamageTextInformer::new("MISSED".to_string(), false, None));
+            target_text_component.text_upper.push(DamageTextInformer::new("MISSED".to_string(), false, None));
             return;
         }
 
@@ -314,7 +314,7 @@ fn attack(
                 if *v > 0 {
                     let random_evasion_number: u8 = rng.gen_range(0..=99);
                     if *v >= random_evasion_number as i16 {                     //target evaded shot, put text into target and return from the function;
-                        target_text_component.text_upper_charactor.push(DamageTextInformer::new("EVADED".to_string(), false, None)); 
+                        target_text_component.text_upper.push(DamageTextInformer::new("EVADED".to_string(), false, None)); 
                         return;
                     }
                 }
@@ -388,7 +388,7 @@ fn attack(
                 false
             };
 
-            target_text_component.text_upper_charactor.push(DamageTextInformer::new(damage.to_string(), bold, Some(damage_type)));  //set damage to target informer;
+            target_text_component.text_upper.push(DamageTextInformer::new(damage.to_string(), bold, Some(damage_type)));  //set damage to target informer;
         }
 
         for (effect_type, trigger_chance) in skill.effect.iter_mut() {          //set effects on target, if triggered;

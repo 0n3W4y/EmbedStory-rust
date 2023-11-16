@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
 use crate::components::charactor_component::{
-    AbilityComponent, CharactorAnimationComponent, CharactorComponent, CharactorTextComponent,
+    AbilityComponent, CharactorAnimationComponent, CharactorComponent,
     CompanionComponent, DestinationComponent, EffectComponent, InventoryComponent,
     MonsterComponent, NPCComponent, PlayerComponent, ResistsComponent, SkillComponent,
     StatsComponent,
 };
-use crate::components::{IdenteficationComponent, ObjectType, PositionComponent};
+use crate::components::{IdenteficationComponent, ObjectType, PositionComponent, DamageTextComponent};
 use crate::config::TILE_SIZE;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
@@ -41,7 +41,7 @@ pub fn draw(
         let mut charactor_component: CharactorComponent = Default::default();
         let mut resist_component: ResistsComponent = Default::default();
         let mut skill_component: SkillComponent = Default::default();
-        let mut text_component: CharactorTextComponent = Default::default();
+        let mut text_component: DamageTextComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
         let mut destination_component: DestinationComponent = Default::default();
         let mut effect_component: EffectComponent = Default::default();
