@@ -14,6 +14,7 @@ pub struct Projectile {
     pub motion_coefficient: Position<f32>,
     pub range: u8,
     pub is_missed: bool,
+    pub is_critical_hit: bool,
     pub can_pierce: bool,
     pub pierce_chance: u8,
     pub velocity: u16,

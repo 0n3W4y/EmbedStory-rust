@@ -276,11 +276,14 @@ fn create_starting_scenes(
         &biome_setting.objects.things,
     );
      //prepare monsters and npcs
+     //monster_spawner.generate_monsters();
+     /* 
     charactor_manager.generate_mosnters_for_scene(
         &mut starting_scene,
         &deploy,
         &biome_setting.objects.charactors,
     );
+    */
     //object_manager.generate_pattern_things_for_scene( &mut starting_scene );
     
 

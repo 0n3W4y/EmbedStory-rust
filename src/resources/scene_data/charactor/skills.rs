@@ -94,12 +94,12 @@ impl Skill {
             current_time_duration: 0.0,
             total_time_duration: 0.0,
             projectiles: config.projectiles,
-            projectile_type: config.projectile_type,
+            projectile_type: config.projectile_type.clone(),
             range: config.range,
-            cast_source: config.cast_source,
+            cast_source: config.cast_source.clone(),
             skill_direction: config.skill_direction.clone(),
             stamina_cost: config.stamina_cost,
-            target: config.target,
+            target: config.target.clone(),
             crit_chance: config.crit_chance,
             crit_multiplier: config.crit_multiplier,
             damage: config.damage.clone(),
@@ -178,7 +178,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             let mut extra_skills_from_weapon: HashMap<SkillType, u8> = HashMap::new();
             let mut skip_left_hand: bool = false;             //check for TwoHanded weapon;
 
-            let weapon = match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {          //get weapon from right hand
+            match wear_stuff.get(&StuffWearSlot::RightHand).unwrap() {          //get weapon from right hand
                 Some(weapon) => {
                     critical_chance = weapon.critical_hit_chance;
                     critical_multiplier = weapon.critical_hit_multiplier;

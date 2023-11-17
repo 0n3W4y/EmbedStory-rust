@@ -67,7 +67,7 @@ impl ThingsStorage {
         result
     }
 
-    pub fn get_all_things_mut(&self) -> Vec<&mut Thing> {
+    pub fn get_all_things_mut(&mut self) -> Vec<&mut Thing> {
         let mut result: Vec<&mut Thing> = vec![];
         for rock_and_ore in self.rocks_and_ores.iter_mut() {
             result.push(rock_and_ore);

@@ -35,7 +35,7 @@ pub fn attacking_from_basic_skill(
     mut target_query: Query<(
         &IdenteficationComponent,
         &CharactorComponent,
-        &StatsComponent,
+        &mut StatsComponent,
         &ResistsComponent,
         &mut EffectComponent,
         &PositionComponent,
@@ -235,10 +235,18 @@ fn attack(
         false
     };
 
+    let critical_hit_random_number = rng.gen_range(0..=99);
+    let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {           //calculating critical multiplier;
+        skill.crit_multiplier
+    } else {
+        100
+    };
+
     if skill.projectiles > 0 {
         let mut projectile_component = Projectile {             //create default projectile component;
             projectile_type: skill.projectile_type.clone(),
             starting_position: charactor_position.position.clone(),
+            is_critical_hit: if critical_hit_multiplier > 100 {true}else{false},
             ..Default::default()
         };
 
@@ -274,13 +282,6 @@ fn attack(
             let skill_config = deploy.charactor_deploy.skills_deploy.get_skill_deploy(skill_type);
             let mut skill = Skill::new(skill_config);
 
-            let critical_hit_random_number = rng.gen_range(0..=99);
-            let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {           //calculating critical multiplier;
-                skill.crit_multiplier
-            } else {
-                100
-            };
-
             for (damage_type, damage) in skill.damage.iter_mut() {
                 let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
                 let damage_multiplier = match charactor_ability.ability.get(&ability_type) {
@@ -288,7 +289,7 @@ fn attack(
                     None => 0,
                 };
                 let multiplier_damage = *damage * damage_multiplier / 100;
-                let total_damage = multiplier_damage * critical_hit_multiplier;
+                let total_damage = multiplier_damage * critical_hit_multiplier / 100;
                 *damage = total_damage;
             }
 
@@ -340,13 +341,6 @@ fn attack(
             _ => {
                 0
             }
-        };
-
-        let critical_hit_random_number = rng.gen_range(0..=99);
-        let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {           //calculating critical multiplier;
-            skill.crit_multiplier
-        } else {
-            100
         };
         
         for (damage_type, value) in skill.damage.iter() {                       //create and apply damage to target;

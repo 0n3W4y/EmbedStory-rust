@@ -1,32 +1,34 @@
 use bevy::prelude::*;
 use rand::Rng;
-use crate::{components::{projectile_component::Projectile, IdenteficationComponent, thing_component::{ThingComponent, ThingStatsComponent}, charactor_component::{CharactorComponent, StatsComponent, EffectComponent, SkillComponent, AbilityComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::{skills::SkillDirectionType, stats::Stat}, stuff::{damage_type::DamageType, resists_types::get_resist_from_damage_type}, damage_text_informer::DamageTextInformer}, config::TILE_SIZE};
+use crate::{components::{projectile_component::Projectile, IdenteficationComponent, thing_component::{ThingComponent, ThingStatsComponent}, charactor_component::{CharactorComponent, StatsComponent, EffectComponent, SkillComponent, AbilityComponent, ResistsComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, stats::Stat, change_health_stamina_points, effects::{EffectDeploy, Effect}}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer}, deploy::Deploy}, config::TILE_SIZE};
 
 pub fn update_projectiles(
     mut commands: Commands,
     time: Res<Time>,
+    deploy: Res<Deploy>,
     mut projectile_query: Query<(Entity, &Projectile, &mut Transform)>, 
     all_query: Query<(&PositionComponent, &IdenteficationComponent), Without<TileComponent>>,
     mut things_query: Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
-    mut charactors_query: Query<(&CharactorComponent, &mut StatsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
+    mut charactors_query: Query<(&CharactorComponent, &mut StatsComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ) {
     let delta = time.delta_seconds();
     for(projectile_entity, projectile, mut transfrom) in projectile_query.iter_mut() {
         transfrom.translation.x += projectile.motion_coefficient.x * projectile.velocity as f32 * delta;
         transfrom.translation.y += projectile.motion_coefficient.y * projectile.velocity as f32 * delta;
-        check_for_collision(commands, projectile_entity, projectile, transfrom.translation.x, transfrom.translation.y, all_query, things_query, charactors_query);
+        check_for_collision(commands, &deploy, projectile_entity, projectile, transfrom.translation.x, transfrom.translation.y, all_query, things_query, charactors_query);
     }
 }
 
 pub fn check_for_collision(
     mut commands: Commands,
+    deploy: &Deploy,
     projectile_entity: Entity,
     projectile: &Projectile,
     x: f32,
     y: f32,
     all_query: Query<(&PositionComponent, &IdenteficationComponent), Without<TileComponent>>,
     mut things_query: Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
-    mut charactors_query: Query<(&CharactorComponent, &mut StatsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
+    mut charactors_query: Query<(&CharactorComponent, &mut StatsComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ){
     let mut random = rand::thread_rng();
     let grid_x: i32 = (x / TILE_SIZE as f32).round() as i32;
@@ -41,7 +43,56 @@ pub fn check_for_collision(
         let target_id = identification.id;
         match identification.object_type {
             crate::components::ObjectType::Charactor(_) => {
-                !
+                for(
+                    charactor_component, 
+                    mut charactor_stats, 
+                    charactor_resists,
+                    mut charactor_effects, 
+                    mut charactor_skills, 
+                    charactor_abilities, 
+                    mut text_component
+                ) in charactors_query.iter_mut() {
+                    for (damage_type, damage) in projectile.damage.iter() {
+                        let charactor_resist = match charactor_resists.resists.get(&get_resist_from_damage_type(damage_type)) {
+                            Some(v) => *v,
+                            None => 0,
+                        };
+                        let total_damage = damage - damage * charactor_resist / 100;
+
+                        let stat = if *damage_type == DamageType::Stamina {
+                            Stat::StaminaPoints
+                        } else {
+                            Stat::HealthPoints
+                        };
+
+                        change_health_stamina_points(&mut charactor_stats.stats, &mut charactor_stats.stats_cache, &stat, total_damage);
+                    }
+
+                    for effect_type in projectile.effects.iter(){
+                        let effect_config: &EffectDeploy = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
+                        let mut effect = Effect::new(effect_config);
+                        let charactor_resist = match charactor_resists.resists.get(&get_resist_from_effect_type(effect_type)) {
+                            Some(v) => *v,
+                            None => 0,
+                        };
+
+                        effect.duration -= effect.duration * charactor_resist as f32 / 100.0;
+                        charactor_effects.effects.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+                    }
+
+                    for skill in projectile.passive_skills.iter() {
+                        let mut new_skill = skill.clone();
+                        match charactor_skills.passive_skills.get_mut(&skill.skill_type) {
+                            Some(v) => {
+                                new_skill.life_time += v.life_time;                       // prolong time duration;
+                                *v = new_skill;
+                            },
+                            None => {
+                                charactor_skills.passive_skills.insert(skill.skill_type.clone(), new_skill);
+                            },
+                        }
+                    }
+                }
             },
             crate::components::ObjectType::Thing => {
                 for(thing_cmponent, mut stats, mut text_informer) in things_query.iter_mut() {
