@@ -4,11 +4,11 @@ use std::collections::HashMap;
 
 use super::{
     deploy::Deploy,
-    scene_data::
+    scene_data::{
         charactor::{
-            stats::Stat, Charactor, CharactorType,
+            Charactor, CharactorType,
             GenderType, RaceType, do_stat_dependences
-        },
+        }, Stat},
 };
 use crate::resources::deploy::charactor_deploy::RaceConfig;
 

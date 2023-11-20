@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default, Copy)]
 pub enum TilePermissions{
     RemoveFloor,
     PlaceFloor,

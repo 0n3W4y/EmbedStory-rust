@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 
-use crate::components::{IdenteficationComponent, PositionComponent, DamageTextComponent};
+use crate::components::{IdentificationComponent, PositionComponent, DamageTextComponent, AttributesComponent};
 use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::materials::material_manager::MaterialManager;
-use crate::components::thing_component::{ThingComponent, ThingStatsComponent, ThingPermissionsComponent};
+use crate::components::thing_component::{ThingComponent, ThingPermissionsComponent};
 use crate::resources::scene_data::thing::Thing;
 
 use super::ThingType;
@@ -46,10 +46,10 @@ pub fn draw(
         let new_z_position = Z_POSITION + ((total_tiles as f32 - tile_id as f32) / total_tiles as f32); // tile with index 0 have a higher z-order, with 10000 - lower z-order;
         let transform = Transform::from_xyz(x, y, new_z_position);
 
-        let mut identification_component: IdenteficationComponent = Default::default();
+        let mut identification_component: IdentificationComponent = Default::default();
         let mut thing_component: ThingComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
-        let mut stats_component: ThingStatsComponent = Default::default();
+        let mut attributes_component: AttributesComponent = Default::default();
         let mut permissions_component: ThingPermissionsComponent = Default::default();
         let damage_text_component: DamageTextComponent = Default::default();
 
@@ -57,7 +57,7 @@ pub fn draw(
             &mut identification_component, 
             &mut thing_component, 
             &mut position_component, 
-            &mut stats_component, 
+            &mut attributes_component, 
             &mut permissions_component, 
             thing
         );
@@ -74,15 +74,15 @@ pub fn draw(
         .insert(position_component)
         .insert(permissions_component)
         .insert(damage_text_component)
-        .insert(stats_component);
+        .insert(attributes_component);
     }    
 }
 
 pub fn copy_from_thing_to_entity_component(
-    identification_component: &mut IdenteficationComponent,
+    identification_component: &mut IdentificationComponent,
     thing_component: &mut ThingComponent, 
     position_component: &mut PositionComponent, 
-    stats_component: &mut ThingStatsComponent, 
+    attributes_component: &mut AttributesComponent, 
     permissions_component: &mut ThingPermissionsComponent,
     thing: &Thing,
 ) {
@@ -94,7 +94,7 @@ pub fn copy_from_thing_to_entity_component(
     position_component.position.y = thing.position.y;
     permissions_component.permissions = thing.permissions.to_vec();
 
-    stats_component.resists = thing.resists.clone();
-    stats_component.stats = thing.stats.clone();
+    attributes_component.attributes = thing.attributes.clone();
+    attributes_component.attributes_cache = thing.attributes.clone();
 
 }

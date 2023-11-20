@@ -2,10 +2,10 @@ use bevy::prelude::*;
 
 use super::tile::Tile;
 use super::Tilemap;
-use crate::{components::{tile_component::{TileComponent, PermissionsComponent}, IdenteficationComponent}, resources::scene_manager::SceneManager};
+use crate::{components::{tile_component::{TileComponent, PermissionsComponent}, IdentificationComponent}, resources::scene_manager::SceneManager};
 
 pub fn cleanup(
-    mut tile_query: Query<(Entity, &TileComponent, &PermissionsComponent, &IdenteficationComponent), With<TileComponent>>,
+    mut tile_query: Query<(Entity, &TileComponent, &PermissionsComponent, &IdentificationComponent), With<TileComponent>>,
     mut commands: Commands,
     mut scene_manager: ResMut<SceneManager>,
 ) {
@@ -24,7 +24,7 @@ pub fn cleanup(
 
 pub fn copy_from_ground_component_to_tile(
     tile_component: &TileComponent, 
-    identification_component: &IdenteficationComponent,
+    identification_component: &IdentificationComponent,
     permissions_component: &PermissionsComponent,
     tile: &mut Tile
 ) {

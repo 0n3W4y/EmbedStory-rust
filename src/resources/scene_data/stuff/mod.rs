@@ -13,9 +13,9 @@ use crate::resources::scene_data::charactor::StuffWearSlot;
 use self::damage_type::DamageType;
 use self::resists_types::ResistType;
 
-use super::charactor::abilities::AbilityType;
+use super::charactor::effects::EffectType;
+use super::{Stat, AbilityType};
 use super::charactor::skills::SkillType;
-use super::charactor::{stats::Stat, effects::EffectType};
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Hash )]
 pub enum StuffType{

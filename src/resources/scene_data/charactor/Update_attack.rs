@@ -19,13 +19,15 @@ use crate::resources::scene_data::stuff::resists_types;
 use super::abilities;
 use super::effects::Effect;
 use super::stats::Stat;
+use super::update_move::calculate_direction;
 use super::{abilities::AbilityType, skills::Skill, CharactorStatus};
 
-pub fn attacking_from_basic_skill(
+pub fn update_attack_from_basic_skill(
     mut commands: Commands,
+    material_manager: Res<MaterialManager>,
+    deploy: Res<Deploy>,
     mut charactor_query: Query<(
-        &IdenteficationComponent,
-        &CharactorComponent,
+        &mut CharactorComponent,
         &PositionComponent,
         &mut SkillComponent,
         &CharactorTargetComponent,
@@ -34,7 +36,6 @@ pub fn attacking_from_basic_skill(
 
     mut target_query: Query<(
         &IdenteficationComponent,
-        &CharactorComponent,
         &mut StatsComponent,
         &ResistsComponent,
         &mut EffectComponent,
@@ -43,130 +44,66 @@ pub fn attacking_from_basic_skill(
         &mut DamageTextComponent,
         &mut SkillComponent,
     )>,
-
-    deploy: Res<Deploy>,
-    materail_manager: Res<MaterialManager>,
-) {
-    for (
-        identification_component,
-        charactor, 
-        charactor_position,
-        mut charactor_skill, 
-        charactor_target, 
-        charactor_ability, 
-    ) in charactor_query.iter_mut() {
-        //check for attack
-        if charactor.status != CharactorStatus::CanAttack {
-            continue;
-        }
-
-        //let's attack or create projectile to attack;
-
-        let target_id = match charactor_target.target {
-            Some(v) => v,
-            None => {
-                println!("Can not attack, because charactor '{:?}, {:?}, {:?}' have Attack action, but doesnt have a target", charactor.charactor_type, charactor.gender_type, charactor.race_type);
-                continue;
-            }
-        };
-
-        //safe, we r already check for skill previosly;
-        let skill = charactor_skill.skills.get_mut(&SkillSlot::Base).unwrap();
-
-        for (
-            identification_target_component,
-            target_component, 
-            mut target_stats,
-            target_resists, 
-            mut target_effects, 
-            target_position, 
-            target_abilities,
-            mut target_text_component,
-            mut target_skills,
-        ) in target_query.iter_mut() {
-            if target_id == identification_target_component.id {
-                attack(
-                    commands,
-                    skill,
-                    charactor_ability,
-                    charactor_position,
-                    target_position,
-                    &mut target_text_component,
-                    &mut target_stats,
-                    target_resists, 
-                    &mut target_effects, 
-                    target_abilities, 
-                    &mut target_skills,
-                    &deploy,
-                    &materail_manager,
-                );
-                break;
-            }
-        }
-    }
-}
-
-
-
-
-
-pub fn update_attack_from_basic_skill(
-    mut charactor_query: Query<(
-        &CharactorComponent,
-        &mut SkillComponent,
-        &CharactorTargetComponent,
-        &PositionComponent
-    )>,
-
-    mut target_query: Query<(
-        &IdenteficationComponent,
-        &CharactorComponent,
-        &PositionComponent,
-    )>
 ) {
     
 
     for (
-        charactor, 
+        mut charactor, 
+        charactor_position,
         mut charactor_skill, 
         charactor_target, 
-        charactor_position
+        charactor_ability
     ) in charactor_query.iter_mut() {
-        if charactor_target.action != ActionType::Attack {
+        if charactor_target.action != ActionType::Attack {              //check for target status; And skip all if not attacking;
             continue;
         }
 
-        if charactor.status != CharactorStatus::TryAttack {
-            continue;
-        }
-
-        let target_id = match charactor_target.target {
+        let target_id = match charactor_target.target {             //checking for target id;
             Some(v) => v,
             None => {
-                println!("Can not attack, because charactor '{:?}, {:?}, {:?}' have Attack action, but doesnt have a target", charactor.charactor_type, charactor.gender_type, charactor.race_type);
+                println!(
+                    "Can not attack, because charactor '{:?}, {:?}, {:?}' have Attack action, but doesnt have a target", 
+                    charactor.charactor_type, 
+                    charactor.gender_type, 
+                    charactor.race_type);
                 continue;
             }
         };
-        //get base attack skill
-        match charactor_skill.skills.get_mut(&SkillSlot::Base) {
+        
+        match charactor_skill.skills.get_mut(&SkillSlot::Base) {                //get base attack skill
             Some(skill) => {
-                //check for colldown
-                if skill.on_cooldown {
-                    //go to next charactor;
-                    continue;
+                if skill.on_cooldown {                                          //check for colldown
+                    continue;                                                   //go to next charactor;
                 }
 
                 for (
                     target_identification,
-                    target,
+                    mut target_stats,
+                    target_resists,
+                    mut target_effects,
                     target_position,
+                    target_abilities,
+                    mut target_text,
+                    mut target_skills,
                 ) in target_query.iter_mut() {
-                    //check for target
-                    if target_identification.id == target_id {
-                        //try to attack;
-                        if try_to_attack(charactor_position, target_position, skill) {
-                            //for animation; when animation ends = attacking change to None or Stand;
-                            charactor.status = CharactorStatus::CanAttack;
+                    if target_identification.id == target_id {                              //check for target
+                        if try_to_attack(charactor_position, target_position, skill) {      //try to attack;
+                            attack(
+                                &mut commands,
+                                skill,
+                                &mut charactor,
+                                charactor_ability,
+                                charactor_position,
+                                target_position,
+                                &mut target_text,
+                                &mut target_stats,
+                                target_resists, 
+                                &mut target_effects, 
+                                target_abilities, 
+                                &mut target_skills,
+                                &deploy,
+                                &material_manager,
+                            );
                             break;
                         }
                         println!("Can not attacking target, becasue target not a monster, or player or companion or not NPC");
@@ -185,23 +122,22 @@ fn try_to_attack(
     target_position: &PositionComponent,
     skill: &mut Skill,
 ) -> bool {
-    //check for target position;
-    let skill_range = skill.range;
+    let skill_range = skill.range;                                          //check for target position;
     let diff_x = (position.position.x - target_position.position.x).abs(); // always positive value;
     let diff_y = (position.position.y - target_position.position.y).abs(); // always positive value;
     let diff = diff_x.max(diff_y);
 
-    //check for skill range;
-    if skill_range as i32 >= diff {
-            return true;
+    if skill_range as i32 >= diff {                                             //check for skill range;
+        return true;
     } else {
         return false;
     }
 }
 
 fn attack(
-    mut commands: Commands,
+    mut commands: &mut Commands,
     skill: &mut Skill,
+    charactor: &mut CharactorComponent,
     charactor_ability: &AbilityComponent,
     charactor_position: &PositionComponent,
     target_position: &PositionComponent,
@@ -242,10 +178,30 @@ fn attack(
         100
     };
 
+    //need more calculating for use properly angle from Y;
+    let direction = calculate_direction(                    //get direction to set ccorrectly sprite position for sprite;
+        charactor_position.position.x, 
+        charactor_position.position.y, 
+        target_position.position.x,
+        target_position.position.y
+    );
+
+    let charactor_status = if direction.x < 0 {
+        CharactorStatus::AttackingLeft
+    } else if direction.x > 0 {
+        CharactorStatus::AttackingRight
+    } else if direction.y < 0 {
+        CharactorStatus::AttackingUp
+    } else {
+        CharactorStatus::AttackingDown
+    };
+
+    charactor.status = charactor_status;
+
     if skill.projectiles > 0 {
         let mut projectile_component = Projectile {             //create default projectile component;
             projectile_type: skill.projectile_type.clone(),
-            starting_position: charactor_position.position.clone(),
+            current_position: charactor_position.position.clone(),
             is_critical_hit: if critical_hit_multiplier > 100 {true}else{false},
             ..Default::default()
         };

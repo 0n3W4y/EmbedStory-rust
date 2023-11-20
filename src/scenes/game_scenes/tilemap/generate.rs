@@ -630,7 +630,7 @@ pub fn generate_environment_for_rock_ground(tilemap: &mut Tilemap, deploy: &Depl
             continue;                                                           //skip non rock ground tile;
         }
 
-        match tilemap.tilemap_tile_storage[i].permissions.iter().find(|&&x| x == TilePermissions::Walk) {
+        match tilemap.tilemap_tile_storage[i].permissions.iter().find(|&x| x == &TilePermissions::Walk) {
             Some(_) => {},
             None => continue,                                                   //skip non rock things;
         }

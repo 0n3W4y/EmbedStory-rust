@@ -173,6 +173,7 @@ impl Plugin for GameScenePlugin {
             .with_system(charactor::update_passive_skills::update_passive_skills)
             .with_system(charactor::active_skill_handler::active_skill_handler)
             .with_system(projectiles::update_projectile::update_projectiles)
+            .with_system(charactor::update_attack::update_attack_from_basic_skill)
             //.with_system(charactor::update_attack::player_attacking)
         );
 

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::IdenteficationComponent;
+use crate::components::IdentificationComponent;
 use crate::components::ObjectType;
 use crate::components::PositionComponent;
 use crate::components::charactor_component::ActionType;
@@ -23,7 +23,7 @@ pub fn player_click(
         (&mut CharactorComponent, &mut PositionComponent, &mut CharactorTargetComponent, &mut DestinationComponent),
         With<PlayerComponent>,
     >,
-    target_query: Query<(&IdenteficationComponent, &PositionComponent)>,
+    target_query: Query<(&IdentificationComponent, &PositionComponent)>,
     camera: Query<(&Transform, &OrthographicProjection), With<Orthographic2DCamera>>,
 ) {
     let (

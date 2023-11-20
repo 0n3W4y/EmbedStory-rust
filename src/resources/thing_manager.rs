@@ -24,7 +24,8 @@ impl ThingManager {
             thing_type: thing_type.clone(),
             permissions: config.permissions.to_vec(),
             resists: config.resists.clone(),
-            stats: config.stats.clone(),
+            attributes: config.attributes.clone(),
+            attributes_cache: config.attributes.clone(),
             ..Default::default()
         };
         return thing;

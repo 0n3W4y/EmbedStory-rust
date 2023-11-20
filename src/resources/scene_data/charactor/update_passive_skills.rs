@@ -124,7 +124,7 @@ pub fn update_passive_skills(
                     let projectile_config = deploy.projectile_deploy.get_config(&skill.projectile_type);
                     let mut projectile = Projectile{
                         projectile_type: skill.projectile_type,
-                        starting_position: cast_position,
+                        current_position: cast_position,
                         is_missed: false,
                         damage: skill.damage.clone(),
                         velocity: projectile_config.velocity,

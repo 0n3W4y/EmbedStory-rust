@@ -1,8 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use super::{stats::Stat, abilities::AbilityType};
-use crate::resources::scene_data::stuff::resists_types::ResistType;
+use crate::resources::scene_data::{stuff::resists_types::ResistType, Stat, AbilityType, Attribute};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum EffectType{
@@ -38,6 +37,7 @@ pub struct EffectDeploy {
     pub duration: u16,
     
     pub change_stat: HashMap<Stat, i16>,
+    pub change_attribute: HashMap<Attribute, i16>,
     pub change_resist: HashMap<ResistType, i16>,
     pub change_ability: HashMap<AbilityType, i16>,
 }
@@ -49,6 +49,7 @@ pub struct Effect {
     pub current_duration: f32,
 
     pub change_stat: HashMap<Stat, i16>,
+    pub change_attribute: HashMap<Attribute, i16>,
     pub change_resist: HashMap<ResistType, i16>, 
     pub change_ability: HashMap<AbilityType, i16>, 
 }
@@ -60,6 +61,7 @@ impl Effect {
             duration: config.duration as f32 / 10.0,
             current_duration: 0.0,
             change_stat: config.change_stat.clone(),
+            change_attribute: config.change_attribute.clone(),
             change_resist: config.change_resist.clone(),
             change_ability: config.change_ability.clone(),
         }

@@ -1,34 +1,34 @@
 use bevy::prelude::*;
 use rand::Rng;
-use crate::{components::{projectile_component::Projectile, IdenteficationComponent, thing_component::{ThingComponent, ThingStatsComponent}, charactor_component::{CharactorComponent, StatsComponent, EffectComponent, SkillComponent, AbilityComponent, ResistsComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, stats::Stat, change_health_stamina_points, effects::{EffectDeploy, Effect}}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer}, deploy::Deploy}, config::TILE_SIZE};
+use crate::{components::{projectile_component::Projectile, IdentificationComponent, thing_component::{ThingComponent, ThingStatsComponent}, charactor_component::{CharactorComponent, EffectComponent, SkillComponent, AbilityComponent, ResistsComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent, AttributesComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, effects::{EffectDeploy, Effect}, change_attribute_points}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer, Stat, Attribute}, deploy::Deploy}, config::TILE_SIZE};
 
 pub fn update_projectiles(
     mut commands: Commands,
     time: Res<Time>,
     deploy: Res<Deploy>,
     mut projectile_query: Query<(Entity, &Projectile, &mut Transform)>, 
-    all_query: Query<(&PositionComponent, &IdenteficationComponent), Without<TileComponent>>,
+    mut all_query: Query<(&PositionComponent, &IdentificationComponent), Without<TileComponent>>,
     mut things_query: Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
-    mut charactors_query: Query<(&CharactorComponent, &mut StatsComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
+    mut charactors_query: Query<(&CharactorComponent, &mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ) {
     let delta = time.delta_seconds();
     for(projectile_entity, projectile, mut transfrom) in projectile_query.iter_mut() {
         transfrom.translation.x += projectile.motion_coefficient.x * projectile.velocity as f32 * delta;
         transfrom.translation.y += projectile.motion_coefficient.y * projectile.velocity as f32 * delta;
-        check_for_collision(commands, &deploy, projectile_entity, projectile, transfrom.translation.x, transfrom.translation.y, all_query, things_query, charactors_query);
+        check_for_collision(&mut commands, &deploy, projectile_entity, projectile, transfrom.translation.x, transfrom.translation.y, &mut all_query, &mut things_query, &mut charactors_query);
     }
 }
 
 pub fn check_for_collision(
-    mut commands: Commands,
+    mut commands: &mut Commands,
     deploy: &Deploy,
     projectile_entity: Entity,
     projectile: &Projectile,
     x: f32,
     y: f32,
-    all_query: Query<(&PositionComponent, &IdenteficationComponent), Without<TileComponent>>,
-    mut things_query: Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
-    mut charactors_query: Query<(&CharactorComponent, &mut StatsComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
+    all_query: &mut Query<(&PositionComponent, &IdentificationComponent), Without<TileComponent>>,
+    things_query: &mut Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
+    charactors_query: &mut Query<(&CharactorComponent, &mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ){
     let mut random = rand::thread_rng();
     let grid_x: i32 = (x / TILE_SIZE as f32).round() as i32;
@@ -45,7 +45,7 @@ pub fn check_for_collision(
             crate::components::ObjectType::Charactor(_) => {
                 for(
                     charactor_component, 
-                    mut charactor_stats, 
+                    mut charactor_attributes, 
                     charactor_resists,
                     mut charactor_effects, 
                     mut charactor_skills, 
@@ -58,14 +58,14 @@ pub fn check_for_collision(
                             None => 0,
                         };
                         let total_damage = damage - damage * charactor_resist / 100;
-
-                        let stat = if *damage_type == DamageType::Stamina {
-                            Stat::StaminaPoints
+                        
+                        let attribute = if *damage_type == DamageType::Stamina {
+                            Attribute::Stamina
                         } else {
-                            Stat::HealthPoints
+                            Attribute::Health
                         };
 
-                        change_health_stamina_points(&mut charactor_stats.stats, &mut charactor_stats.stats_cache, &stat, total_damage);
+                        change_attribute_points(&mut charactor_attributes, &attribute, total_damage, false);
                     }
 
                     for effect_type in projectile.effects.iter(){
@@ -153,8 +153,8 @@ pub fn create_projectile(
             return;
         },
     }; 
-    let starting_point_x = projectile.starting_position.x;
-    let starting_point_y = projectile.starting_position.y;
+    let starting_point_x = projectile.current_position.x;
+    let starting_point_y = projectile.current_position.y;
 
     let half_arc_angle = arc / 2.0;
     let angle_coefficient = if projectiles_value == 1 {                                             //each angle to cast projectile;

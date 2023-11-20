@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
-use crate::components::PositionComponent;
-use crate::components::thing_component::{ThingComponent, ThingStatsComponent};
-use crate::resources::scene_data::charactor::stats::Stat;
+use crate::components::{PositionComponent, AttributesComponent};
+use crate::components::thing_component::ThingComponent;
+use crate::resources::scene_data::Attribute;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_manager::SceneManager;
 use crate::materials::material_manager::MaterialManager;
@@ -11,14 +11,14 @@ use super::ThingType;
 
 pub fn destroeyd_thing_handler(
     mut commands: Commands,
-    mut things_query: Query<(Entity, &ThingComponent, &ThingStatsComponent, &PositionComponent), (Changed<ThingComponent>, With<ThingComponent>)>,
+    mut things_query: Query<(Entity, &ThingComponent, &AttributesComponent, &PositionComponent), (Changed<ThingComponent>, With<ThingComponent>)>,
     mut scene_manager: ResMut<SceneManager>,
     material_manager: Res<MaterialManager>,
 ){
     for (entity, thing_component, thing_stats, position_component) in things_query.iter_mut(){
         //TODO: Create animation timer, then despawn entity and create new;
 
-        if *thing_stats.stats.get(&Stat::HealthPoints).unwrap() <= 0 { //check for destroy
+        if *thing_stats.attributes.get(&Attribute::Health).unwrap() <= 0 { //check for destroy
             //despawn curent thing, and spawn stuff or something what should be spawn after death;
             let new_stuff: Option<Stuff> = match thing_component.thing_type {
                 ThingType::Tree

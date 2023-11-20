@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{PositionComponent, IdenteficationComponent, ObjectType};
+use crate::components::{PositionComponent, IdentificationComponent, ObjectType};
 use crate::components::tile_component::{TileComponent, PermissionsComponent};
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_manager::SceneManager;
@@ -29,7 +29,7 @@ pub fn draw(
 
         let mut tile_component: TileComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
-        let mut identification_component: IdenteficationComponent = Default::default();
+        let mut identification_component: IdentificationComponent = Default::default();
         let mut permissions_component: PermissionsComponent = Default::default();
         copy_from_tile_to_component( &mut tile_component, &mut position_component, &mut identification_component, &mut permissions_component, tile);
 
@@ -60,7 +60,7 @@ pub fn draw(
 pub fn copy_from_tile_to_component(
     tile_component: &mut TileComponent, 
     position_component: &mut PositionComponent, 
-    identification_component: &mut IdenteficationComponent,
+    identification_component: &mut IdentificationComponent,
     permissions_component: &mut PermissionsComponent,
     tile: &Tile
 ) {

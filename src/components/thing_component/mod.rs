@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub mod thing_animation_component;
 
-use crate::resources::scene_data::charactor::stats::Stat;
+use crate::resources::scene_data::Stat;
 use crate::resources::scene_data::stuff::resists_types::ResistType;
 use crate::resources::scene_data::thing::ThingType;
 use crate::resources::scene_data::thing::ThingPermissions;

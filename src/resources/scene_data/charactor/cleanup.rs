@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-use crate::components::{IdenteficationComponent, PositionComponent};
-use crate::components::charactor_component::{CharactorComponent, ResistsComponent, SkillComponent, EffectComponent, StatsComponent, AbilityComponent, InventoryComponent, DestinationComponent};
+use crate::components::{IdentificationComponent, PositionComponent, AttributesComponent, StatsComponent};
+use crate::components::charactor_component::{CharactorComponent, ResistsComponent, SkillComponent, EffectComponent, AbilityComponent, InventoryComponent, DestinationComponent};
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::profile::Profile;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
@@ -10,7 +10,7 @@ pub fn cleanup(
     mut commands: Commands,
     mut charactor_query: Query<(
         Entity,
-        &IdenteficationComponent,
+        &IdentificationComponent,
         &CharactorComponent,
         &ResistsComponent,
         &SkillComponent,
@@ -18,6 +18,7 @@ pub fn cleanup(
         &DestinationComponent,
         &EffectComponent,
         &StatsComponent,
+        &AttributesComponent,
         &AbilityComponent,
         &InventoryComponent,
     ), With<CharactorComponent>>,
@@ -40,6 +41,7 @@ pub fn cleanup(
         destination_component,
         effect_component,
         stats_component,
+        attributes_component,
         ability_component,
         inventory_component,
     ) in charactor_query.iter_mut(){
@@ -54,6 +56,7 @@ pub fn cleanup(
             destination_component,
             effect_component, 
             stats_component, 
+            attributes_component,
             ability_component,
             inventory_component
         );
@@ -74,7 +77,7 @@ pub fn cleanup(
 
 pub fn copy_from_component_to_charactor(
     charactor: &mut Charactor,
-    identefication_component: &IdenteficationComponent,
+    identefication_component: &IdentificationComponent,
     charactor_component: &CharactorComponent,
     resist_component: &ResistsComponent,
     skill_component: &SkillComponent,
@@ -82,6 +85,7 @@ pub fn copy_from_component_to_charactor(
     destination_component: &DestinationComponent,
     effect_component: &EffectComponent,
     stats_component: &StatsComponent,
+    attributes_component: &AttributesComponent,
     ability_component: &AbilityComponent,
     inventory_component: &InventoryComponent,
 ){
@@ -108,6 +112,9 @@ pub fn copy_from_component_to_charactor(
 
     charactor.stats = stats_component.stats.clone();
     charactor.stats_cache = stats_component.stats_cache.clone();
+
+    charactor.attributes = attributes_component.attributes.clone();
+    charactor.attributes_cache = attributes_component.attributes_cache.clone();
 
     charactor.ability = ability_component.ability.clone();
 

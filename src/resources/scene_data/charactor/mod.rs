@@ -1,17 +1,17 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use self::abilities::AbilityType;
 use self::effects::Effect;
 use self::skills::{Skill, SkillType};
-use self::stats::Stat;
+use crate::components::{StatsComponent, AttributesComponent};
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
+use super::stuff::damage_type::DamageType;
+use super::{Stat, Attribute, AbilityType};
 use super::stuff::resists_types::ResistType;
 use super::stuff::Stuff;
 
-pub mod abilities;
 pub mod cleanup;
 pub mod draw;
 pub mod effects;
@@ -19,7 +19,6 @@ pub mod killed_charactor_handler;
 pub mod update_move;
 pub mod player_click_function;
 pub mod skills;
-pub mod stats;
 pub mod update_effects;
 pub mod update_passive_skills;
 pub mod update_attack;
@@ -109,8 +108,6 @@ pub enum CharactorStatus {
     MovingDown,
     #[default]
     Standing,
-    CanAttack,
-    TryAttack,
     AttackingLeft,
     AttackingRight,
     AttackingUp,
@@ -138,6 +135,9 @@ pub struct Charactor {
 
     pub stats: HashMap<Stat, i16>,
     pub stats_cache: HashMap<Stat, i16>,
+
+    pub attributes: HashMap<Attribute, i16>,
+    pub attributes_cache: HashMap<Attribute, i16>,
 
     pub resists: HashMap<ResistType, i16>,
 
@@ -178,92 +178,55 @@ pub fn change_resist(
         .or_insert(value);
 }
 
-pub fn change_health_stamina_points_cache(
-    stats: &mut HashMap<Stat, i16>,
-    stats_cache: &mut HashMap<Stat, i16>,
-    stat: &Stat,
+pub fn change_attribute_points(
+    attributes: &mut AttributesComponent,
+    attribute: &Attribute,
     value: i16,
+    change_cache: bool,
 ){
-    let stat_value = match stats.get_mut(stat) {                    //chech for stat
-        Some(v) => v,
-        _ => {
-            println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. Returned from the function", 
-                stat,
-            );
-            return;                                                         // if we don't have this value -> returning;
-        }
-    };   
-    let cache_value = match stats_cache.get_mut(stat) {                 //check for stat in cache;
-        Some(v) => v,
-        _ => {
-            println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. Returned from function", 
-                stat,
-            );
-            return;                                                              // if we don't have this value -> returning;
-        }
-    };
-    
-    *cache_value -= value;                                                  //set new value to cache;
-    *stat_value -= value;                                                   // set new value to stat;
+    if change_cache {
+        let cache_value = match attributes.attributes_cache.get_mut(&attribute) {
+            Some(v) => {
+                *v -= value;
+                *v
+            },
+            None => {
+                println!("Cannot change attribute, because attribute not in cache storage! {:?}", attribute);
+                0
+            },
+        };
 
-    if *cache_value <= 0 {                                                  //check for negative cache stat;
-        println!("stat cache value <= 0!'{:?}'", stat);
-    };
-    if *stat_value < 1 {                                                 //check for minimal values for current values
-       *stat_value = 1;                                                   // use this value, because we r changing CAHCE values;
-    }
-}
-
-pub fn change_health_stamina_points(
-    stats: &mut HashMap<Stat, i16>,
-    stats_cache: &mut HashMap<Stat, i16>,
-    stat: &Stat,
-    value: i16,
-){
-    let cache_value = match stats_cache.get(stat) {                     //get cache value from stats;
-        Some(v) => *v,
-        _ => {
-            println!(
-                "Can not change stat: '{:?}', because stat is not in storage. Returning", 
-                stat
-            );
-            return;         //if we don't have this value -> return from this and text message;
-        }
-    };
-    let stat_value = match stats.get_mut(stat) {        //get current value from stat;
-        Some(v) => v,
-        _ => {
-            println!(
-                "Can not modify stat: '{:?}', because stat is not in storage. Returning", 
-                stat,
-            );
-            return;         //if we don't have this calue -> return from this and text message;
-        }
-    };
-    let temp_value = *stat_value - value;           //calculating stat value;
-
-    if temp_value > cache_value && cache_value > 0{            //check value 
-        *stat_value = cache_value;
-    } else if cache_value < 1 && temp_value > 0{
-        *stat_value = 1;
+        match attributes.attributes.get_mut(&attribute) {
+            Some(v) => {
+                let new_value = *v - value;
+                if new_value < 1 {
+                    *v = 1;
+                }
+            },
+            None => {
+                println!("Cannot change attribute, because attribute not find in attribute storage! {:?}", attribute);
+            }
+        }; 
     } else {
-        *stat_value = temp_value;
-    }
-
-    return;
+        match attributes.attributes.get_mut(&attribute) {
+            Some(v) => {
+                *v -= value;
+            },
+            None => {
+                println!("Cannot change attribute, because attribute not find in attribute storage! {:?}", attribute);
+            }
+        }
+    }   
 }
 
-pub fn change_stat(
-    stats_storage: &mut HashMap<Stat, i16>,
-    stats_cache: &mut HashMap<Stat, i16>,
+pub fn change_stat_points(
+    stats: &mut StatsComponent,
     resists: &mut HashMap<ResistType, i16>,
     abilities: &mut HashMap<AbilityType, i16>,
     stat: &Stat,
     value: i16,
 ){
-    let cache_value = match stats_cache.get_mut(stat) {             //get cache value;
+    let cache_value = match stats.stats_cache.get_mut(stat) {             //get cache value;
         Some(v) => v,
         _ => {
             println!(
@@ -273,7 +236,7 @@ pub fn change_stat(
             return;
         }
     };
-    let stat_value = match stats_storage.get_mut(stat) {            //get stat;
+    let stat_value = match stats.stats.get_mut(stat) {            //get stat;
         Some(v) => v,
         None => {
             println!(
@@ -306,21 +269,25 @@ pub fn do_stat_dependences(
     new_value: i16,
     old_value: i16,
 ) {
-    let old_values_for_abilities: HashMap<AbilityType, i16> = abilities::get_values_of_abilities_from_stat(stat, old_value);
-    let new_values_for_abilities: HashMap<AbilityType, i16> = abilities::get_values_of_abilities_from_stat(stat, new_value);
-    for (ability_type, value) in new_values_for_abilities.iter() {
-        let old_value_for_abilities =  old_values_for_abilities.get(ability_type).unwrap();         //safe call;
-        let value_to_ability = old_value_for_abilities - value;                                 // if new value is bigger, negative value will add, positive will be substruct;
-        change_ability(abilities, ability_type, value_to_ability);
-    };
+    if resists.len() != 0 {
+        let old_values_for_abilities: HashMap<AbilityType, i16> = get_values_of_abilities_from_stat(stat, old_value);
+        let new_values_for_abilities: HashMap<AbilityType, i16> = get_values_of_abilities_from_stat(stat, new_value);
+        for (ability_type, value) in new_values_for_abilities.iter() {
+            let old_value_for_abilities =  old_values_for_abilities.get(ability_type).unwrap();         //safe call;
+            let value_to_ability = old_value_for_abilities - value;                                 // if new value is bigger, negative value will add, positive will be substruct;
+            change_ability(abilities, ability_type, value_to_ability);
+        };
+    }    
 
-    let old_values_for_resist: HashMap<ResistType, i16> = get_values_of_resists_from_stat(stat, old_value);
-    let new_values_for_resist: HashMap<ResistType, i16> = get_values_of_resists_from_stat(stat, new_value);
-    for (resist_type, value) in new_values_for_resist.iter() {
-        let old_value_for_resist = old_values_for_resist.get(resist_type).unwrap();                 //safe call;
-        let value_to_resist = old_value_for_resist - value;                                     // if new value is bigger, negative value will add, positive will be substruct;
-        change_resist(resists, resist_type, value_to_resist);
-    };
+    if abilities.len() != 0 {
+        let old_values_for_resist: HashMap<ResistType, i16> = get_values_of_resists_from_stat(stat, old_value);
+        let new_values_for_resist: HashMap<ResistType, i16> = get_values_of_resists_from_stat(stat, new_value);
+        for (resist_type, value) in new_values_for_resist.iter() {
+            let old_value_for_resist = old_values_for_resist.get(resist_type).unwrap();                 //safe call;
+            let value_to_resist = old_value_for_resist - value;                                     // if new value is bigger, negative value will add, positive will be substruct;
+            change_resist(resists, resist_type, value_to_resist);
+        };
+    }    
 }
 
 //formulas
@@ -340,4 +307,57 @@ pub fn get_values_of_resists_from_stat(stat: &Stat, value: i16) -> HashMap<Resis
 
 pub fn get_level_by_current_experience(experience: u32) -> u8 {         //formula to get new level;
     ((experience as f64).sqrt() / 6.0) as u8
+}
+
+pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<AbilityType, i16> {
+    let mut result: HashMap<AbilityType, i16> = HashMap::new();
+    match *stat {
+        Stat::Dexterity => {
+            let evasion = value / 15;             //evasion:  dex/15
+            let movement_speed = value / 10;      //move speed: dex/10;
+            let attack_speed = value / 10;        //atk speed: dex/10;
+            result.insert(AbilityType::Evasion, evasion);
+            result.insert(AbilityType::MovementSpeed, movement_speed);
+            result.insert(AbilityType::AttackSpeed, attack_speed);
+        },
+        Stat::Intellect => {
+            let cooldown_active_skill = value / 10;           //cd of active skills: INT /10;
+            let critical_multiplier = value / 2;              // Crit Multi : INT / 5;
+            let stamina_regen = value / 10;             //stamina regen: INT / 10
+            result.insert(AbilityType::ActiveSkillsCoolDawn, cooldown_active_skill);
+            result.insert(AbilityType::CriticalHitMultiplier, critical_multiplier);
+            result.insert(AbilityType::StaminaRegen, stamina_regen);
+        },
+        Stat::Luck => {
+            let critical_hit_chance = value / 10;               //crit chance: LCK / 10;
+            let block_chance = value / 10;                      //block chance: LCK /10;
+            let accuracy = value / 10;                      //accuracy: LCK / 10;
+            result.insert(AbilityType::CriticalHitChanse, critical_hit_chance);
+            result.insert(AbilityType::BlockChance, block_chance);
+            result.insert(AbilityType::Accuracy, accuracy);
+        },
+        Stat::Strength => {
+            let health_regen = value / 10;              //health reneg: STR / 10;
+            let block_amount = value / 10;              //block amount: STR / 10;
+            result.insert(AbilityType::HealthRegen, health_regen);
+            result.insert(AbilityType::BlockAmount, block_amount);
+        },
+        _ => {},
+    }
+    return result;
+}
+
+pub fn get_ability_type_from_damage_type (damage_type: &DamageType) -> AbilityType {
+    return match *damage_type {
+        DamageType::Fire => AbilityType::FireDamage,
+        DamageType::Cold => AbilityType::ColdDamage,
+        DamageType::Electric => AbilityType::ElectricDamage,
+        DamageType::Phisical => AbilityType::PhisicalDamage,
+        DamageType::Acid => AbilityType::AcidDamage,
+        DamageType::Poison => AbilityType::PoisonDamage,
+        DamageType::Water => AbilityType::WaterDamage,
+        DamageType::Health => AbilityType::HealthDamage,
+        DamageType::Stamina => AbilityType::StaminaDamage,
+        
+    }
 }

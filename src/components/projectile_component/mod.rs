@@ -10,7 +10,7 @@ pub struct Projectile {
     pub effects: Vec<EffectType>,
     pub passive_skills: Vec<Skill>,
 
-    pub starting_position: Position<i32>,
+    pub current_position: Position<i32>,
     pub motion_coefficient: Position<f32>,
     pub range: u8,
     pub is_missed: bool,

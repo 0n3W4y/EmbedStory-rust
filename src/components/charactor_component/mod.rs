@@ -1,14 +1,13 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
+use crate::resources::scene_data::AbilityType;
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::skills::SkillType;
 use crate::resources::scene_data::stuff::resists_types::ResistType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::Effect;
-use crate::resources::scene_data::charactor::stats::Stat;
 use crate::resources::scene_data::charactor::effects::EffectType;
-use crate::resources::scene_data::charactor::abilities::AbilityType;
 use crate::resources::scene_data::charactor::skills::Skill;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::charactor::StuffWearSlot;
@@ -45,15 +44,8 @@ pub struct DestinationComponent {
 }
 
 #[derive(Component, Default)]
-pub struct StatsComponent {
-    pub stats: HashMap<Stat, i16>,
-    pub stats_cache: HashMap<Stat, i16>,
-}
-
-
-#[derive(Component, Default)]
 pub struct ResistsComponent {
-    pub resists: HashMap<ResistType, i16>
+    pub resists: HashMap<ResistType, i16>,
 }
 
 #[derive(Component, Default)]

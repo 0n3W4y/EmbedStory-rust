@@ -1,8 +1,9 @@
 use bevy::prelude::*;
 
-use crate::components::{PositionComponent, IdenteficationComponent};
+use crate::components::{PositionComponent, IdentificationComponent};
 use crate::config::TILE_SIZE;
 use crate::components::charactor_component::{CharactorComponent, AbilityComponent, DestinationComponent};
+use crate::resources::scene_data::AbilityType;
 use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
@@ -10,7 +11,6 @@ use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_manager::SceneManager;
 
 use super::CharactorType;
-use super::abilities::AbilityType;
 
 //use crate::plugins::camera::Orthographic2DCamera;
 
@@ -20,7 +20,7 @@ const DEFAULT_MOVEMENT_SPEED: f32 = 100.0;
 
 pub fn move_charactor(
     time: Res<Time>,
-    mut charactor_query: Query<(&IdenteficationComponent, &mut CharactorComponent, &mut PositionComponent, &mut DestinationComponent, &AbilityComponent, &mut Transform, &mut TextureAtlasSprite)>,
+    mut charactor_query: Query<(&IdentificationComponent, &mut CharactorComponent, &mut PositionComponent, &mut DestinationComponent, &AbilityComponent, &mut Transform)>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
@@ -33,10 +33,9 @@ pub fn move_charactor(
         mut destination,
         ability,
         mut transform, 
-        mut sprite
     ) in charactor_query.iter_mut(){
         match destination.destination_point {
-            Some(v) => {
+            Some(_) => {
                 try_move(
                     identification_component,
                     &mut charactor, 
@@ -69,7 +68,7 @@ pub fn move_charactor(
 
 //first click on ground;
 pub fn try_move(
-    identification_component: &IdenteficationComponent, 
+    identification_component: &IdentificationComponent, 
     charactor: &mut CharactorComponent, 
     position: &mut PositionComponent, 
     destination: &mut DestinationComponent, 
@@ -99,7 +98,7 @@ pub fn try_move(
 }
 
 pub fn moving(
-    identification_component: &IdenteficationComponent, 
+    identification_component: &IdentificationComponent, 
     charactor: &mut CharactorComponent, 
     position: &mut PositionComponent, 
     destination: &mut DestinationComponent, 
@@ -137,9 +136,13 @@ pub fn moving(
     try_grid_moving(charactor, position, destination, translation);
 }
 
-fn calculate_and_set_direction(path: &Vec<Position<i32>>, direction: &mut Position<i8>) {
-    direction.x = (path[1].x - path[0].x) as i8;
-    direction.y = (path[1].y - path[0].y) as i8;
+pub fn calculate_direction(position_x: i32, position_y: i32, target_x: i32, target_y: i32) -> Position<i8> {
+    let mut position: Position<i8> = Position{x: 0, y: 0};
+    let x = target_x - position_x;
+    let y = target_y - position_y;
+    if x < 0 {position.x = -1} else if x > 0 {position.x = 1} else {position.x = 0};
+    if y < 0 {position.y = -1} else if y > 0 {position.y = 1} else {position.y = 0};
+    return position;
 }
 
 fn change_moving_status_by_direction(charactor: &mut CharactorComponent, direction: &Position<i8>){
@@ -218,7 +221,13 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
             translation.x = grid_x * TILE_SIZE as f32;
             translation.y = grid_y * TILE_SIZE as f32;
         } else {
-            calculate_and_set_direction(&destination.destination_path, &mut destination.destination_direction);
+            let destination_position = &destination.destination_path[0];                     //get first destination point;
+            destination.destination_direction = calculate_direction(
+                current_destination_x, 
+                current_destination_y, 
+                destination_position.x, 
+                destination_position.y
+            );
         }   
     }
 }
@@ -234,7 +243,7 @@ fn try_path(position: &mut PositionComponent, destination: &mut DestinationCompo
 
     //maximum tiles to reaach destination without pathfinding;
     let path_tiles = ((destination_x - starting_position_x).abs()).max((destination_y - starting_position_y).abs());
-    for i in 0..path_tiles{
+    for _ in 0..path_tiles{
         let path_len = destination.destination_path.len();
         let current_position = if path_len == 0 {
             //get start point;

@@ -1,9 +1,9 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType};
+use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType, AbilityType};
 
-use super::{effects::EffectType, abilities::{AbilityType, self}, StuffWearSlot};
+use super::{effects::EffectType, StuffWearSlot, get_ability_type_from_damage_type};
 
 pub const MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL: f32 = 0.25;
 
@@ -200,9 +200,9 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             if !skip_left_hand {
                 match wear_stuff.get(&StuffWearSlot::LeftHand).unwrap() {                                       //get weapon from left hand
                     Some(weapon) => {
-                        critical_chance = (critical_chance + weapon.critical_hit_chance) / 2;                       //middle value from 2 weapons;
-                        critical_multiplier = (critical_multiplier + weapon.critical_hit_multiplier) / 2;           //middle value from 2 weapons;
-                        skill_cooldown = (skill_cooldown + weapon.attack_cooldown) / 2;                                //middle value from 2 weapons;
+                        critical_chance = critical_chance + weapon.critical_hit_chance;                       //middle value from 2 weapons;
+                        critical_multiplier = critical_multiplier + weapon.critical_hit_multiplier;           //middle value from 2 weapons;
+                        skill_cooldown = skill_cooldown + weapon.attack_cooldown;                                //middle value from 2 weapons;
     
                         for (damage_type, value) in weapon.damage.iter() {                     //stocking damage values into 1 hashmap
                             damage_from_weapon.entry(damage_type.clone()).and_modify(|x| {*x += *value}).or_insert(*value);
@@ -232,7 +232,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
 
 
             for (damage_type, value) in damage_from_weapon.iter() {             //collect damage from abilities and calculate new values;
-                let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
+                let ability_type = get_ability_type_from_damage_type(damage_type);
                 let damage_multiplier_from_ability = match ability_storage.get(&ability_type){
                     Some(v) => *v,
                     None => 0,
