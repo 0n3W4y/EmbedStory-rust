@@ -3,9 +3,9 @@ use bevy::prelude::*;
 use crate::components::charactor_component::{
     AbilityComponent, CharactorAnimationComponent, CharactorComponent,
     CompanionComponent, DestinationComponent, EffectComponent, InventoryComponent,
-    MonsterComponent, NPCComponent, PlayerComponent, ResistsComponent, SkillComponent
+    MonsterComponent, NPCComponent, PlayerComponent, SkillComponent
 };
-use crate::components::{IdentificationComponent, ObjectType, PositionComponent, DamageTextComponent, AttributesComponent, StatsComponent};
+use crate::components::{IdentificationComponent, ObjectType, PositionComponent, DamageTextComponent, AttributesComponent, StatsComponent, ResistsComponent};
 use crate::config::TILE_SIZE;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};

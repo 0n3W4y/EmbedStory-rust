@@ -15,8 +15,6 @@ pub enum Stat{
     Dexterity,
     Intellect,
     Luck,
-    HealthPoints,
-    StaminaPoints,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize, Hash)]

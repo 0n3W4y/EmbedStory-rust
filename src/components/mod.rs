@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::CharactorType, damage_text_informer::DamageTextInformer, Stat, Attribute}};
+use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::CharactorType, damage_text_informer::DamageTextInformer, Stat, Attribute, stuff::resists_types::ResistType}};
 
 pub mod tile_component;
 pub mod thing_component;
@@ -46,4 +46,9 @@ pub struct StatsComponent {
 pub struct AttributesComponent {
     pub attributes: HashMap<Attribute, i16>,
     pub attributes_cache: HashMap<Attribute, i16>,
+}
+
+#[derive(Component, Default)]
+pub struct ResistsComponent{
+    pub resists: HashMap<ResistType, i16>,
 }

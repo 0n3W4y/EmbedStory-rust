@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
-use crate::components::{IdentificationComponent, PositionComponent, AttributesComponent, StatsComponent};
-use crate::components::charactor_component::{CharactorComponent, ResistsComponent, SkillComponent, EffectComponent, AbilityComponent, InventoryComponent, DestinationComponent};
+use crate::components::{IdentificationComponent, PositionComponent, AttributesComponent, StatsComponent, ResistsComponent};
+use crate::components::charactor_component::{CharactorComponent, SkillComponent, EffectComponent, AbilityComponent, InventoryComponent, DestinationComponent};
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::profile::Profile;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};

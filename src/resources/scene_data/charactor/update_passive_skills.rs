@@ -3,15 +3,15 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use rand::Rng;
 
+use super::change_attribute_points;
 use super::effects::EffectType;
 use super::skills::{TargetType, SkillType, Skill};
-use super::stats::Stat;
 use super::{
     skills::CastSource,
     CharactorType, effects::Effect, CharactorStatus,
 };
-use crate::components::{PositionComponent, IdenteficationComponent};
-use crate::components::charactor_component::{StatsComponent, DestinationComponent};
+use crate::components::{PositionComponent, IdentificationComponent, ResistsComponent, AttributesComponent};
+use crate::components::charactor_component::DestinationComponent;
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
@@ -21,31 +21,31 @@ use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::{
     components::charactor_component::{
         CharactorComponent, CharactorTargetComponent, EffectComponent,
-        ResistsComponent, SkillComponent,
+        SkillComponent,
     },
     resources::deploy::Deploy
 };
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
-use crate::resources::scene_data::charactor;
+use crate::resources::scene_data::Attribute;
 
 pub fn update_passive_skills(
     mut commands: Commands,
     mut skills_query: Query<(
-        &IdenteficationComponent,
+        &IdentificationComponent,
         &CharactorComponent,
         &mut SkillComponent,
         &PositionComponent,
         &DestinationComponent,
         &CharactorTargetComponent,
         &ResistsComponent,
-        &StatsComponent,
+        &mut AttributesComponent,
         &mut EffectComponent,
     )>,
     mut charactors_query: Query<(
         &CharactorComponent,
         &PositionComponent,
         &ResistsComponent,
-        &mut StatsComponent,
+        &mut AttributesComponent,
         &mut EffectComponent,
     )>,
     time: Res<Time>,
@@ -62,7 +62,7 @@ pub fn update_passive_skills(
         destination_component,
         target_component, 
         resists_component, 
-        mut stats_component, 
+        mut attributes_component, 
         mut effect_component
     ) in skills_query.iter_mut() {
 
@@ -123,7 +123,7 @@ pub fn update_passive_skills(
 
                     let projectile_config = deploy.projectile_deploy.get_config(&skill.projectile_type);
                     let mut projectile = Projectile{
-                        projectile_type: skill.projectile_type,
+                        projectile_type: skill.projectile_type.clone(),
                         current_position: cast_position,
                         is_missed: false,
                         damage: skill.damage.clone(),
@@ -173,7 +173,7 @@ pub fn update_passive_skills(
                     if skill.range == 0 {
                         match *skill_cast_source {
                             CastSource::Itself => {
-                                do_damage(&skill.damage, &mut stats_component, crit_multiplier, &resists_component.resists);
+                                do_damage(&skill.damage, &mut attributes_component, crit_multiplier, &resists_component.resists);
                                 add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);
                             },
                             CastSource::Mouse => { 
@@ -191,10 +191,10 @@ pub fn update_passive_skills(
                                 return;
                             },
                             SkillDirectionType::Arc360 => {                                         //AURA
-
+                                !
                             },
                             SkillDirectionType::Point => {                                          // single target skill;
-
+                                !
                             },
                         }
                         // AOE Aura
@@ -209,7 +209,7 @@ pub fn update_passive_skills(
                             target,
                             target_position,
                             target_resists,
-                            mut target_stats,
+                            mut target_attributes,
                             mut target_effects,
                         ) in charactors_query.iter_mut()
                         {
@@ -265,7 +265,7 @@ pub fn update_passive_skills(
                                 traget_position_y <= y_max {
 
                                 //bingo, we have a target;
-                                do_damage(&skill.damage, &mut stats_component, crit_multiplier, &target_resists.resists);
+                                do_damage(&skill.damage, &mut target_attributes, crit_multiplier, &target_resists.resists);
                                 add_effect(&skill.effect, &deploy, &target_resists.resists, &mut target_effects);
                             } else {
                                 //position of target not in range;
@@ -287,7 +287,7 @@ pub fn update_passive_skills(
     }
 }
 
-pub fn do_damage(damage: &HashMap<DamageType, i16>, stats: &mut StatsComponent, crit_multiplier: i16, resists: &HashMap<ResistType, i16>){
+pub fn do_damage(damage: &HashMap<DamageType, i16>, attributes: &mut AttributesComponent, crit_multiplier: i16, resists: &HashMap<ResistType, i16>){
     for (damage_type, value) in damage.iter() {
         let resist_type = get_resist_from_damage_type(damage_type);
         let resist: i16 =  match resists.get(&resist_type) {
@@ -306,17 +306,17 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, stats: &mut StatsComponent, 
             0
         };
 
-        let stat = if *damage_type == DamageType::Stamina {
-            Stat::StaminaPoints
+        let attribute = if *damage_type == DamageType::Stamina {
+            Attribute::Stamina
         } else {
-            Stat::HealthPoints
+            Attribute::Health
         };
 
-        charactor::change_health_stamina_points(
-            &mut stats.stats,
-            &mut stats.stats_cache,
-            &stat,
+        change_attribute_points(
+            attributes,
+            &attribute,
             damage_value,
+            false,
         );
     }
 }

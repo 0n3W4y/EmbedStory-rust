@@ -1,26 +1,26 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::components::{PositionComponent, IdenteficationComponent, DamageTextComponent};
+use crate::components::{PositionComponent, IdentificationComponent, DamageTextComponent, ResistsComponent, AttributesComponent};
 use crate::components::charactor_component::{
     AbilityComponent, ActionType, CharactorComponent, EffectComponent,
-    ResistsComponent, SkillComponent, CharactorTargetComponent, StatsComponent,
+    SkillComponent, CharactorTargetComponent,
 };
 
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
-use crate::resources::scene_data::charactor::{self, SkillSlot};
+use crate::resources::scene_data::{AbilityType, Attribute};
+use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::resources::scene_data::stuff::resists_types;
 
-use super::abilities;
 use super::effects::Effect;
-use super::stats::Stat;
+use super::{get_ability_type_from_damage_type, change_attribute_points};
 use super::update_move::calculate_direction;
-use super::{abilities::AbilityType, skills::Skill, CharactorStatus};
+use super::{skills::Skill, CharactorStatus};
 
 pub fn update_attack_from_basic_skill(
     mut commands: Commands,
@@ -35,8 +35,8 @@ pub fn update_attack_from_basic_skill(
     )>,
 
     mut target_query: Query<(
-        &IdenteficationComponent,
-        &mut StatsComponent,
+        &IdentificationComponent,
+        &mut AttributesComponent,
         &ResistsComponent,
         &mut EffectComponent,
         &PositionComponent,
@@ -78,7 +78,7 @@ pub fn update_attack_from_basic_skill(
 
                 for (
                     target_identification,
-                    mut target_stats,
+                    mut target_attributes,
                     target_resists,
                     mut target_effects,
                     target_position,
@@ -96,7 +96,7 @@ pub fn update_attack_from_basic_skill(
                                 charactor_position,
                                 target_position,
                                 &mut target_text,
-                                &mut target_stats,
+                                &mut target_attributes,
                                 target_resists, 
                                 &mut target_effects, 
                                 target_abilities, 
@@ -142,7 +142,7 @@ fn attack(
     charactor_position: &PositionComponent,
     target_position: &PositionComponent,
     target_text_component: &mut DamageTextComponent,
-    target_stats: &mut StatsComponent,
+    target_attributes: &mut AttributesComponent,
     target_resists: &ResistsComponent,
     target_effects: &mut EffectComponent,
     target_abilities: &AbilityComponent,
@@ -239,7 +239,7 @@ fn attack(
             let mut skill = Skill::new(skill_config);
 
             for (damage_type, damage) in skill.damage.iter_mut() {
-                let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
+                let ability_type = get_ability_type_from_damage_type(damage_type);
                 let damage_multiplier = match charactor_ability.ability.get(&ability_type) {
                     Some(v) => *v,
                     None => 0,
@@ -315,21 +315,22 @@ fn attack(
 
             let value_with_multiplier = value * critical_hit_multiplier / 100;                    //calculating new damage value with multiplier from critical hit;
             let damage = value_with_multiplier - (value_with_multiplier * target_damage_resist / 100) - (value_with_multiplier * block_amount / 100 );  // calculating damage;
-            let stat = if *damage_type == DamageType::Stamina {                                 //which health or stamina points get damaged;
-                Stat::StaminaPoints
-            } else {
-                Stat::HealthPoints
-            };
-
+            
             if damage <= 0 {                                                                    //check for negative damage (excluding healing by damage xD);
                 continue;
             }
 
-            charactor::change_health_stamina_points(                                        //do damage;
-                &mut target_stats.stats,
-                &mut target_stats.stats_cache,
-                &stat,
+            let attribute = if *damage_type == DamageType::Stamina {
+                Attribute::Stamina
+            } else {
+                Attribute::Health
+            };
+
+            change_attribute_points(                                        //do damage;
+                target_attributes,
+                &attribute,
                 damage,
+                false,
             );
 
             let bold: bool = if critical_hit_multiplier > 100 {                                 //check for bigger text or not for inform to ui;
@@ -388,7 +389,7 @@ fn attack(
                     None => 0,
                 };
 
-                let ability_type = abilities::get_ability_type_from_damage_type(damage_type);
+                let ability_type = get_ability_type_from_damage_type(damage_type);
                 let damage_multiplier = match charactor_ability.ability.get(&ability_type) {
                     Some(v) => *v,
                     None => 0

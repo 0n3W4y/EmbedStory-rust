@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 
+use crate::components::{StatsComponent, ResistsComponent, AttributesComponent};
 use crate::components::charactor_component::{
-    AbilityComponent, CharactorComponent, EffectComponent, ResistsComponent,
-    SkillComponent, StatsComponent, InventoryComponent,
+    AbilityComponent, CharactorComponent, EffectComponent,
+    SkillComponent, InventoryComponent,
 };
 use crate::resources::scene_data::charactor::{self, skills};
 use super::effects::EffectType;
-use super::{CharactorStatus, SkillSlot};
+use super::{CharactorStatus, SkillSlot, change_stat_points};
 
 pub fn update_effects(
     mut charactors_query: Query<
@@ -14,6 +15,7 @@ pub fn update_effects(
             &CharactorComponent,
             &mut EffectComponent,
             &mut StatsComponent,
+            &mut AttributesComponent,
             &mut ResistsComponent,
             &mut AbilityComponent,
             &mut SkillComponent,
@@ -28,6 +30,7 @@ pub fn update_effects(
         charactor_component,
         mut effects, 
         mut stats, 
+        mut attributes,
         mut resists, 
         mut abilities, 
         mut skills,
@@ -42,14 +45,17 @@ pub fn update_effects(
         for (effect_type, effect) in effects.effects.iter_mut() {                  //update  effects;
             if effect.current_duration == 0.0 {                                                             //first run;
                 for (stat, stat_damage) in effect.change_stat.iter() {
-                    charactor::change_stat(                    
-                        &mut stats.stats,
-                        &mut stats.stats_cache,
+                    change_stat_points(                    
+                        &mut stats,
                         &mut resists.resists,
                         &mut abilities.ability,
-                        &stat,
+                        stat,
                         *stat_damage,
                     );
+                }
+
+                for (attribute, attribute_damage) in effect.change_attribute.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, true);
                 }
                 
                 for (resist, resists_damage) in effect.change_resist.iter() {                   //change resists;
@@ -69,14 +75,17 @@ pub fn update_effects(
                 effect.current_duration += delta; 
             } else if effect.current_duration > effect.duration || effect.duration < 0.0 {                                 //effect is end; revert changes and remove effect
                 for (stat, stat_damage) in effect.change_stat.iter() {
-                    charactor::change_stat(
-                        &mut stats.stats,
-                        &mut stats.stats_cache,
+                    change_stat_points(
+                        &mut stats,
                         &mut resists.resists,
                         &mut abilities.ability,
                         stat,
                         -stat_damage,                                                                           // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                     );
+                }
+
+                for (attribute, attribute_damage) in effect.change_attribute.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute, -attribute_damage, true);
                 }
 
                 for (effect_resist, resist_damage) in effect.change_resist.iter() {

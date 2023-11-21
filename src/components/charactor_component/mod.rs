@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use crate::resources::scene_data::AbilityType;
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::skills::SkillType;
-use crate::resources::scene_data::stuff::resists_types::ResistType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::Effect;
 use crate::resources::scene_data::charactor::effects::EffectType;
@@ -41,11 +40,6 @@ pub struct DestinationComponent {
     pub destination_point: Option<Position<i32>>,
     pub destination_path: Vec<Position<i32>>,
     pub destination_direction: Position<i8>,
-}
-
-#[derive(Component, Default)]
-pub struct ResistsComponent {
-    pub resists: HashMap<ResistType, i16>,
 }
 
 #[derive(Component, Default)]

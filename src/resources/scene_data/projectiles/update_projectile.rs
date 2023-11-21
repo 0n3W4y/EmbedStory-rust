@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use rand::Rng;
-use crate::{components::{projectile_component::Projectile, IdentificationComponent, thing_component::{ThingComponent, ThingStatsComponent}, charactor_component::{CharactorComponent, EffectComponent, SkillComponent, AbilityComponent, ResistsComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent, AttributesComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, effects::{EffectDeploy, Effect}, change_attribute_points}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer, Stat, Attribute}, deploy::Deploy}, config::TILE_SIZE};
+use crate::{components::{projectile_component::Projectile, IdentificationComponent, thing_component::ThingComponent, charactor_component::{CharactorComponent, EffectComponent, SkillComponent, AbilityComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent, AttributesComponent, ResistsComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, effects::{EffectDeploy, Effect}, change_attribute_points}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer, Attribute}, deploy::Deploy}, config::TILE_SIZE};
 
 pub fn update_projectiles(
     mut commands: Commands,
@@ -8,7 +8,7 @@ pub fn update_projectiles(
     deploy: Res<Deploy>,
     mut projectile_query: Query<(Entity, &Projectile, &mut Transform)>, 
     mut all_query: Query<(&PositionComponent, &IdentificationComponent), Without<TileComponent>>,
-    mut things_query: Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
+    mut things_query: Query<(&ThingComponent, &ResistsComponent, &mut AttributesComponent, &mut DamageTextComponent), With<ThingComponent>>,
     mut charactors_query: Query<(&CharactorComponent, &mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ) {
     let delta = time.delta_seconds();
@@ -27,7 +27,7 @@ pub fn check_for_collision(
     x: f32,
     y: f32,
     all_query: &mut Query<(&PositionComponent, &IdentificationComponent), Without<TileComponent>>,
-    things_query: &mut Query<(&ThingComponent, &mut ThingStatsComponent, &mut DamageTextComponent), With<ThingComponent>>,
+    things_query: &mut Query<(&ThingComponent, &ResistsComponent, &mut AttributesComponent, &mut DamageTextComponent), With<ThingComponent>>,
     charactors_query: &mut Query<(&CharactorComponent, &mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ){
     let mut random = rand::thread_rng();
@@ -95,9 +95,9 @@ pub fn check_for_collision(
                 }
             },
             crate::components::ObjectType::Thing => {
-                for(thing_cmponent, mut stats, mut text_informer) in things_query.iter_mut() {
+                for(thing_cmponent, mut resists_component, mut attributes_component, mut text_informer) in things_query.iter_mut() {
                     for (damage_type, damage) in projectile.damage.iter() {
-                        let thing_resits = match stats.resists.get(&get_resist_from_damage_type(damage_type)){
+                        let thing_resits = match resists_component.resists.get(&get_resist_from_damage_type(damage_type)){
                             Some(v) => *v,
                             None => 0,
                         };
@@ -106,7 +106,7 @@ pub fn check_for_collision(
                         };
 
                         let damage_with_resist = damage - damage * thing_resits / 100;
-                        match stats.stats.get_mut(&Stat::HealthPoints) {
+                        match attributes_component.attributes.get_mut(&Attribute::Health) {
                             Some(v) => *v -= damage_with_resist,
                             None => {},
                         }
