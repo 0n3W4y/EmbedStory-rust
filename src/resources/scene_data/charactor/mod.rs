@@ -201,6 +201,10 @@ pub fn change_attribute_points(
                 let new_value = *v - value;
                 if new_value < 1 {
                     *v = 1;
+                } else if new_value > cache_value {
+                    *v = cache_value;
+                } else {
+
                 }
             },
             None => {
@@ -341,8 +345,7 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
             let block_amount = value / 10;              //block amount: STR / 10;
             result.insert(AbilityType::HealthRegen, health_regen);
             result.insert(AbilityType::BlockAmount, block_amount);
-        },
-        _ => {},
+        }
     }
     return result;
 }

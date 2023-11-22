@@ -1,14 +1,13 @@
 //use rand::Rng;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 use super::{
     deploy::Deploy,
-    scene_data::{
+    scene_data::
         charactor::{
             Charactor, CharactorType,
             GenderType, RaceType, do_stat_dependences
-        }, Stat},
+    },
 };
 use crate::resources::deploy::charactor_deploy::RaceConfig;
 
@@ -49,13 +48,6 @@ impl CharactorManager {
         self.id += 1;
         return id;
     }
-}
-
-fn generate_stats(
-    stats: &mut HashMap<Stat, u8>,
-    level: u8,
-) {
-    //TODO:
 }
 
 pub fn initialize_character_after_creation(charactor: &mut Charactor) {

@@ -170,11 +170,14 @@ pub fn update_passive_skills(
                     create_projectile(&mut commands, &material_manager, projectile, end_point_position, projectiles, &skill.skill_direction);
                 } else {
                     //buff or debuff skill; if skill range == 0 then we understand skill can buff or debuff self when triggered. We must ignore target_type;
+
+                    
+
                     if skill.range == 0 {
                         match *skill_cast_source {
                             CastSource::Itself => {
-                                do_damage(&skill.damage, &mut attributes_component, crit_multiplier, &resists_component.resists);
-                                add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);
+                                do_damage(&skill.damage, &mut attributes_component, crit_multiplier, &resists_component.resists);           //do damage to itself;
+                                add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);              //add effects to itself;
                             },
                             CastSource::Mouse => { 
                                 println!(
@@ -184,26 +187,27 @@ pub fn update_passive_skills(
                             },
                         }       
                     } else {
+                        let x_min = cast_position.x - skill.range as i32;               // min x range from target to source;
+                        let x_max = cast_position.x + skill.range as i32;               // max x range from target to source;
+                        let y_min = cast_position.y - skill.range as i32;
+                        let y_max = cast_position.y + skill.range as i32;
+
+                        let mut multiply_target = false;
 
                         match skill.skill_direction {
+                            SkillDirectionType::Arc360 => {                                         //AURA
+                                do_damage(&skill.damage, &mut attributes_component, crit_multiplier, &resists_component.resists);           //do damage to itself;
+                                add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);              //add effects to itself;
+                                multiply_target = true;
+                            },
+                            SkillDirectionType::Point => {                                          // single target skill;
+                                
+                            },
                             _ => {
                                 println!("Can not cast skill with 0 projectiles, and skilldirection neither ARC360 or point");
                                 return;
                             },
-                            SkillDirectionType::Arc360 => {                                         //AURA
-                                !
-                            },
-                            SkillDirectionType::Point => {                                          // single target skill;
-                                !
-                            },
                         }
-                        // AOE Aura
-
-                        //for check target in range of skill
-                        let x_min = cast_position.x - skill.range as i32;
-                        let x_max = cast_position.x + skill.range as i32;
-                        let y_min = cast_position.y - skill.range as i32;
-                        let y_max = cast_position.y + skill.range as i32;
     
                         for (
                             target,
@@ -264,12 +268,11 @@ pub fn update_passive_skills(
                                 traget_position_y >= y_min &&
                                 traget_position_y <= y_max {
 
-                                //bingo, we have a target;
-                                do_damage(&skill.damage, &mut target_attributes, crit_multiplier, &target_resists.resists);
-                                add_effect(&skill.effect, &deploy, &target_resists.resists, &mut target_effects);
+                                do_damage(&skill.damage, &mut target_attributes, crit_multiplier, &target_resists.resists);                     // do damage to target
+                                add_effect(&skill.effect, &deploy, &target_resists.resists, &mut target_effects);     // add effects to target
+                                if !multiply_target {break};                                                                                    // end loop;
                             } else {
-                                //position of target not in range;
-                                continue;
+                                continue;                                                                                                       //position of target not in range;
                             }
                         }
                     }

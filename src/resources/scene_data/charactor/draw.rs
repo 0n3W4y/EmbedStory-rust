@@ -40,11 +40,11 @@ pub fn draw(
         let mut charactor_component: CharactorComponent = Default::default();
         let mut resist_component: ResistsComponent = Default::default();
         let mut skill_component: SkillComponent = Default::default();
-        let mut text_component: DamageTextComponent = Default::default();
+        let text_component: DamageTextComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
         let mut destination_component: DestinationComponent = Default::default();
         let mut effect_component: EffectComponent = Default::default();
-        let mut animation_component: CharactorAnimationComponent = Default::default();
+        let animation_component: CharactorAnimationComponent = Default::default();
         let mut stats_component: StatsComponent = Default::default();
         let mut attributes_component: AttributesComponent = Default::default();
         let mut ability_component: AbilityComponent = Default::default();
@@ -64,7 +64,7 @@ pub fn draw(
             &mut inventory_component,
         );
 
-        let charactor_type_component = match *charactor_type {
+        match *charactor_type {
             CharactorType::Player => {
                 commands
                     .spawn_bundle(SpriteSheetBundle {

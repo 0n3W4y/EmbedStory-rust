@@ -95,6 +95,15 @@ impl ThingsStorage {
 
         result
     }
+
+    pub fn clear_all(&mut self) {
+        self.rocks_and_ores.clear();
+        self.bushes.clear();
+        self.doors.clear();
+        self.natural_barriers.clear();
+        self.trees.clear();
+        self.walls.clear();
+    }
  }
 
 #[derive(Serialize, Deserialize, Clone, Default)]

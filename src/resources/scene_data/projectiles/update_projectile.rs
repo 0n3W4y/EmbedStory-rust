@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use rand::Rng;
-use crate::{components::{projectile_component::Projectile, IdentificationComponent, thing_component::ThingComponent, charactor_component::{CharactorComponent, EffectComponent, SkillComponent, AbilityComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent, AttributesComponent, ResistsComponent}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, effects::{EffectDeploy, Effect}, change_attribute_points}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer, Attribute}, deploy::Deploy}, config::TILE_SIZE};
+use crate::{components::{projectile_component::Projectile, IdentificationComponent, thing_component::ThingComponent, charactor_component::{CharactorComponent, EffectComponent, SkillComponent, AbilityComponent}, PositionComponent, tile_component::TileComponent, DamageTextComponent, AttributesComponent, ResistsComponent, ObjectType}, materials::material_manager::MaterialManager, scenes::game_scenes::tilemap::tile::Position, resources::{scene_data::{charactor::{skills::SkillDirectionType, effects::{EffectDeploy, Effect}, change_attribute_points, CharactorStatus}, stuff::{damage_type::DamageType, resists_types::{get_resist_from_damage_type, get_resist_from_effect_type}}, damage_text_informer::DamageTextInformer, Attribute, AbilityType}, deploy::Deploy}, config::TILE_SIZE};
 
 pub fn update_projectiles(
     mut commands: Commands,
@@ -9,42 +9,45 @@ pub fn update_projectiles(
     mut projectile_query: Query<(Entity, &Projectile, &mut Transform)>, 
     mut all_query: Query<(&PositionComponent, &IdentificationComponent), Without<TileComponent>>,
     mut things_query: Query<(&ThingComponent, &ResistsComponent, &mut AttributesComponent, &mut DamageTextComponent), With<ThingComponent>>,
-    mut charactors_query: Query<(&CharactorComponent, &mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
+    mut charactors_query: Query<(&mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
 ) {
     let delta = time.delta_seconds();
     for(projectile_entity, projectile, mut transfrom) in projectile_query.iter_mut() {
         transfrom.translation.x += projectile.motion_coefficient.x * projectile.velocity as f32 * delta;
         transfrom.translation.y += projectile.motion_coefficient.y * projectile.velocity as f32 * delta;
-        check_for_collision(&mut commands, &deploy, projectile_entity, projectile, transfrom.translation.x, transfrom.translation.y, &mut all_query, &mut things_query, &mut charactors_query);
+        if try_grid_move(transfrom.translation.x, transfrom.translation.y, &mut projectile.current_position) {
+            let object_type = match check_for_collision(transfrom.translation.x, transfrom.translation.y, &mut all_query){
+                Some(v) => {
+                    match v {
+                        ObjectType::Charactor(_) => todo!(),
+                        ObjectType::Stuff => todo!(),
+                        ObjectType::Thing => todo!(),
+                        ObjectType::Projectile => todo!(),
+                        ObjectType::Tile => todo!(),
+                    }
+                },
+                None => continue,
+            }
+        }
     }
 }
 
 pub fn check_for_collision(
-    mut commands: &mut Commands,
-    deploy: &Deploy,
-    projectile_entity: Entity,
-    projectile: &Projectile,
-    x: f32,
-    y: f32,
+    projectile_x: i32,
+    projectile_y: i32,
     all_query: &mut Query<(&PositionComponent, &IdentificationComponent), Without<TileComponent>>,
-    things_query: &mut Query<(&ThingComponent, &ResistsComponent, &mut AttributesComponent, &mut DamageTextComponent), With<ThingComponent>>,
-    charactors_query: &mut Query<(&CharactorComponent, &mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
-){
+) -> Option<ObjectType> {
     let mut random = rand::thread_rng();
-    let grid_x: i32 = (x / TILE_SIZE as f32).round() as i32;
-    let grid_y: i32 = (y / TILE_SIZE as f32).round() as i32;
     for (position, identification) in all_query.iter() {
         let target_x = position.position.x;
         let target_y = position.position.y;
-        if grid_x != target_x || grid_y != target_y {
+        if projectile_x != target_x || projectile_y != target_y {               //check for position and target;
             continue;
         }
 
-        let target_id = identification.id;
         match identification.object_type {
             crate::components::ObjectType::Charactor(_) => {
                 for(
-                    charactor_component, 
                     mut charactor_attributes, 
                     charactor_resists,
                     mut charactor_effects, 
@@ -52,12 +55,39 @@ pub fn check_for_collision(
                     charactor_abilities, 
                     mut text_component
                 ) in charactors_query.iter_mut() {
+                    match charactor_abilities.ability.get(&AbilityType::Evasion) {           //check for evade
+                        Some(v) => {
+                            let random_evade_chance: i16 = random.gen_range(0..=99);
+                            if *v > random_evade_chance {                                    //evaded
+                                text_component.text_upper.push(DamageTextInformer::new("Evaded".to_string(), false, None));
+                                commands.entity(projectile_entity).despawn_recursive();
+                                return;
+                            }
+                        },
+                        None => {},
+                    }
+
+                    let block_amount_percent = match charactor_abilities.ability.get(&AbilityType::BlockChance) {      //check for block and amount;
+                        Some(v) => {
+                            let random_block_chance: i16 = random.gen_range(0..=99);
+                            if *v > random_block_chance {                                   //blocked some damage;
+                                match charactor_abilities.ability.get(&AbilityType::BlockAmount) {
+                                    Some(value) => *value,
+                                    None => 0,
+                                }
+                            } else {
+                                0
+                            }
+                        },
+                        None => 0,
+                    };
+
                     for (damage_type, damage) in projectile.damage.iter() {
                         let charactor_resist = match charactor_resists.resists.get(&get_resist_from_damage_type(damage_type)) {
                             Some(v) => *v,
                             None => 0,
                         };
-                        let total_damage = damage - damage * charactor_resist / 100;
+                        let total_damage = damage - damage * charactor_resist / 100 - damage * block_amount_percent / 100;
                         
                         let attribute = if *damage_type == DamageType::Stamina {
                             Attribute::Stamina
@@ -92,6 +122,8 @@ pub fn check_for_collision(
                             },
                         }
                     }
+                    commands.entity(projectile_entity).despawn_recursive();
+                    break;
                 }
             },
             crate::components::ObjectType::Thing => {
@@ -113,11 +145,13 @@ pub fn check_for_collision(
                         let text_damage = DamageTextInformer::new(damage_with_resist.to_string(), false, Some(damage_type));
                         text_informer.text_upper.push(text_damage);
                     }
+                    commands.entity(projectile_entity).despawn_recursive();
+                    return;
                 }
             },
-            _ => continue,
+            _ => return,
         }
-
+        /*
         if projectile.can_pierce {
             let projectile_piercing_chance = projectile.pierce_chance;
             let random_priecing_chance: u8 = random.gen_range(0..=99);
@@ -125,10 +159,21 @@ pub fn check_for_collision(
                 continue;
             }
         }
-
-        commands.entity(projectile_entity).despawn_recursive();
-        
+        */        
     }
+}
+
+fn collision_with_charactor(
+    commands: &mut Commands,
+    deploy: &Deploy,
+    projectile: &Projectile,
+    projectile_entity: Entity,
+    mut charactors_query: Query<(&mut AttributesComponent, &ResistsComponent, &mut EffectComponent, &mut SkillComponent, &AbilityComponent, &mut DamageTextComponent), With<CharactorComponent>>,
+
+){}
+fn collision_with_thing(){}
+fn try_grid_move( x: f32, y: f32, position: &mut Position<i32>) -> bool {
+
 }
 
 pub fn create_projectile(
@@ -156,6 +201,8 @@ pub fn create_projectile(
     let starting_point_x = projectile.current_position.x;
     let starting_point_y = projectile.current_position.y;
 
+    let texture_atlas = material_manager.game_scene.projectiles.get_texture_atlas(&projectile.projectile_type);
+
     let half_arc_angle = arc / 2.0;
     let angle_coefficient = if projectiles_value == 1 {                                             //each angle to cast projectile;
         0.0
@@ -175,5 +222,6 @@ pub fn create_projectile(
         let distance = (new_delta_x.powf(2.0) + new_delta_y.powf(2.0)).sqrt();
         projectile.motion_coefficient.x = new_delta_x / distance;
         projectile.motion_coefficient.y = new_delta_y / distance;
+        
     }
 }

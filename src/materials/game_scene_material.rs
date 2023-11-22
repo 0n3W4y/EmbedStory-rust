@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
+use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::{
     resources::scene_data::{
         charactor::{GenderType, RaceType},
@@ -69,10 +70,6 @@ impl TileMaterial {
             CoverType::Water => self.water_atlas.clone_weak(),
             CoverType::WoodenFloor => self.wooden_floor_atlas.clone_weak(),
             CoverType::None => self.none_atlas.clone_weak(),
-            _ => {
-                println!("Can't get '{:?}', there is no option for it", cover_type);
-                self.flowers_atlas.clone_weak()
-            }
         }
     }
 
@@ -88,10 +85,6 @@ impl TileMaterial {
             CoverType::Water => 37,
             CoverType::WoodenFloor =>  15,
             CoverType::None => 0,
-            _ => {
-                println!("Can't get '{:?}', there is no option for it", cover_type);
-                0
-            }
         }
     }
 }
@@ -199,6 +192,17 @@ pub struct ProjectilesMaterial {
     pub arrow_atlas: Handle<TextureAtlas>,
     pub bullet_atlas: Handle<TextureAtlas>,
     pub sphere_atlas: Handle<TextureAtlas>,
+}
+
+impl ProjectilesMaterial {
+    pub fn get_texture_atlas(&self, projectile_type: &ProjectileType) -> Handle<TextureAtlas> {
+        match projectile_type {
+            ProjectileType::Arrow => self.arrow_atlas.clone_weak(),
+            ProjectileType::Bullet => self.bullet_atlas.clone_weak(),
+            ProjectileType::FireSphere => self.sphere_atlas.clone_weak(),
+            ProjectileType::None => panic!("Try to get projectile texture without projectile type"),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
