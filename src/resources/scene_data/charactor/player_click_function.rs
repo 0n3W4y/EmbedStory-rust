@@ -20,14 +20,13 @@ pub fn player_click(
     mouse_button_input: Res<Input<MouseButton>>,
     scene_manager: Res<SceneManager>,
     mut player_query: Query<
-        (&mut CharactorComponent, &mut PositionComponent, &mut CharactorTargetComponent, &mut DestinationComponent),
+        (&mut PositionComponent, &mut CharactorTargetComponent, &mut DestinationComponent),
         With<PlayerComponent>,
     >,
     target_query: Query<(&IdentificationComponent, &PositionComponent)>,
     camera: Query<(&Transform, &OrthographicProjection), With<Orthographic2DCamera>>,
 ) {
     let (
-        mut player, 
         mut position, 
         mut player_target, 
         mut destination_component
@@ -75,6 +74,7 @@ pub fn player_click(
                                     //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
                                 },
                                 CharactorType::Monster => {
+                                    println!("Clicked on Monstger");
                                     select_target_to_attack(&mut player_target, target_identification.id, position_x, position_y);
                                     return;
                                 },
@@ -88,10 +88,12 @@ pub fn player_click(
                             move_player_to_position(&mut destination_component, position_x, position_y);
                         },
                         ObjectType::Thing => {
+                            println!("Clicked on Tile or Prijectile");
                             //TODO: for thing we need to set target and action type;
                             move_player_to_position(&mut destination_component, position_x, position_y);
                         },
                         ObjectType::Projectile | ObjectType::Tile => {
+                            println!("Clicked on Tile or Prijectile");
                             move_player_to_position(&mut destination_component, position_x, position_y);
                         },
                     };

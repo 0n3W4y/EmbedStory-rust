@@ -209,7 +209,7 @@ impl ThingManager {
         while max_ore_things > 0 {
             let random_index = rng.gen_range(0..rock_things.len());
             let thing_id_to_replace = rock_things[random_index];
-            match scene.things.rocks_and_ores.iter_mut().find(|&x| x.id == thing_id_to_replace){
+            match scene.things.rocks_and_ores.iter_mut().find(|x| x.id == thing_id_to_replace){
                 Some(v) => {
                     let tile = match scene.tilemap.get_tile_by_position_mut(v.position.x, v.position.y){
                         Some(v) => v,
@@ -235,30 +235,29 @@ impl ThingManager {
     }
 
     fn spread_indexes_for_things(&self, thing_storage: &mut Vec<Thing>) {
+        let clone_thing_storage = thing_storage.clone();
         for thing in thing_storage.iter_mut() {
             let index = self.find_graphic_index_for_thing(
                 thing.position.x,
                 thing.position.y,
-                &thing.thing_type,
-                &thing_storage,
+                &clone_thing_storage,
             );
             thing.graphic_index = index;
         }
     }
 
-    pub fn find_graphic_index_for_thing(
+    pub fn find_graphic_index_for_thing(                        //предполагается, что в thing_storage будет собраны things по типу одинаковые.
         &self,
         x: i32,
         y: i32,
-        thing_type: &ThingType,
         thing_storage: &Vec<Thing>,
     ) -> u8 {
-        let top_index: Position<i32> = Position {x: x, y: y + 1};
+        let top_index: Position<i32> = Position {x, y: y + 1};
         let left_top_index = Position {x: x - 1, y: y + 1};
-        let left_index = Position {x: x - 1, y: y};
+        let left_index = Position {x: x - 1, y};
         let right_top_index = Position {x: x + 1, y: y + 1};
-        let right_index = Position {x: x + 1, y: y};
-        let bottom_index = Position {x: x , y: y - 1};
+        let right_index = Position {x: x + 1, y};
+        let bottom_index = Position {x , y: y - 1};
         let left_bottom_index= Position {x: x - 1, y: y - 1};
         let right_bottom_index = Position {x: x + 1, y: y - 1};
 

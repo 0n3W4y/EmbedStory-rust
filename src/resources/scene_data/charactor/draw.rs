@@ -12,7 +12,7 @@ use crate::resources::scene_data::charactor::{Charactor, CharactorType};
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 
-pub const Z_POSITION: f32 = 3.9; // fourth layer;
+pub const Z_POSITION: f32 = 3.0; // fourth layer;
 
 pub fn draw(
     mut commands: Commands,
