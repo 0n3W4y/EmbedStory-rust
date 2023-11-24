@@ -214,7 +214,7 @@ fn collision_with_charactor(
             Attribute::Health
         };
 
-        change_attribute_points(attributes, &attribute, total_damage, false);
+        change_attribute_points(&mut attributes.attributes, &mut attributes.attributes_cache, &attribute, total_damage, false);
     }
 
     for effect_type in projectile.effects.iter() {

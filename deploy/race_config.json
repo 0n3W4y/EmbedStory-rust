@@ -3,44 +3,38 @@
         "stats": {
             "Strength": 10,
             "Dexterity": 10,
-            "Mobility": 10,
             "Wisdom": 10,
-            "Intellect": 10,
-            "Luck": 10,
-            "Endurance": 10,
-            "Vitality": 10
+            "Luck": 10
         },
-        "extra_stats": {
+        "attributes": {
             "HealthPoints": 100,
             "StaminaPoints": 50
         },
-        "damage_resists": {
-            "Fire": 5,
-            "Cold": 5,
-            "Electric": 5,
-            "Kinetic": 5,
-            "Poison": 5,
-            "Water": 5,
-            "Acid": 5,
-            "SacredEnergy": 5,
-            "DeathEnergy": 5
-        },
-        "effect_resists": {
-            "moveless": 0,
-            "bleeding": 0,
-            "slow": 0,
-            "stun": 0,
-            "freeze": 0,
-            "burn": 0,
-            "electification": 0,
-            "blind": 0,
-            "acid": 0,
-            "poison": 0,
-            "wet": 0,
-            "staminaDamage": 0,
-            "brokeArmor": 0,
-            "brokeWeapon": 0,
-            "frostbite": 0
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "StunEffect": 0,
+            "AcidEffect": 0,
+            "MovelessEffect": 0,
+            "SlowEffect": 0,
+            "BleedingEffect": 0,
+            "BurnEffect": 0,
+            "ElectrificationEffect": 0,
+            "FreezeEffect": 0,
+            "BlindEffect": 0,
+            "PoisonEffect": 0,
+            "WetEffect": 0,
+            "BrokenArmorEffect": 0,
+            "BrokenWeaponEffect": 0,
+            "IncreaseMovementEffect": 0,
+            "FrostbiteEffect": 0
         },
         "ability": {
             "Evasion": 1.0,

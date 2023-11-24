@@ -47,10 +47,18 @@ pub enum SkillSlot {
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
     Player,
-    NPC,
     #[default]
-    Monster,
+    NPC,
+    Monster(MonsterType),
     Companion,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum MonsterType {
+    #[default]
+    SkeletonArcher,
+    SkeletonWarrior,
+    SkeletonMagician,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -179,13 +187,14 @@ pub fn change_resist(
 }
 
 pub fn change_attribute_points(
-    attributes: &mut AttributesComponent,
+    attributes: &mut HashMap<Attribute, i16>,
+    attributes_cache: &mut HashMap<Attribute, i16>,
     attribute: &Attribute,
     value: i16,
     change_cache: bool,
 ){
     if change_cache {
-        let cache_value = match attributes.attributes_cache.get_mut(&attribute) {
+        let cache_value = match attributes_cache.get_mut(&attribute) {
             Some(v) => {
                 *v -= value;
                 *v
@@ -196,7 +205,7 @@ pub fn change_attribute_points(
             },
         };
 
-        match attributes.attributes.get_mut(&attribute) {
+        match attributes.get_mut(&attribute) {
             Some(v) => {
                 let new_value = *v - value;
                 if new_value < 1 {
@@ -212,7 +221,7 @@ pub fn change_attribute_points(
             }
         }; 
     } else {
-        match attributes.attributes.get_mut(&attribute) {
+        match attributes.get_mut(&attribute) {
             Some(v) => {
                 *v -= value;
             },
@@ -227,6 +236,7 @@ pub fn change_stat_points(
     stats: &mut StatsComponent,
     resists: &mut HashMap<ResistType, i16>,
     abilities: &mut HashMap<AbilityType, i16>,
+    attributes: &mut AttributesComponent,
     stat: &Stat,
     value: i16,
 ){
@@ -262,13 +272,15 @@ pub fn change_stat_points(
     }   
     
     if *stat_value != old_stat_value {                          //check for do dependences;
-        do_stat_dependences(resists, abilities, stat,*stat_value,old_stat_value);
+        do_stat_dependences(resists, abilities, &mut attributes.attributes, &mut attributes.attributes_cache, stat,*stat_value,old_stat_value);
     }
 }
 
 pub fn do_stat_dependences(
     resists: &mut HashMap<ResistType, i16>,
     abilities: &mut HashMap<AbilityType, i16>,
+    attributes: &mut HashMap<Attribute, i16>,
+    attributes_cache: &mut HashMap<Attribute, i16>,
     stat: &Stat,
     new_value: i16,
     old_value: i16,
@@ -291,7 +303,16 @@ pub fn do_stat_dependences(
             let value_to_resist = old_value_for_resist - value;                                     // if new value is bigger, negative value will add, positive will be substruct;
             change_resist(resists, resist_type, value_to_resist);
         };
-    }    
+    }
+
+    
+    let old_values_for_attributes = get_values_of_attributes_from_stat(stat, old_value);
+    let new_values_for_attributes = get_values_of_attributes_from_stat(stat, new_value);
+    for(attribute, value) in new_values_for_attributes.iter() {
+        let old_value_for_attribute = old_values_for_attributes.get(attribute).unwrap();
+        let value_to_attribute = old_value_for_attribute - value;
+        change_attribute_points(attributes, attributes_cache, attribute, value_to_attribute, true);
+    }
 }
 
 //formulas
@@ -309,6 +330,29 @@ pub fn get_values_of_resists_from_stat(stat: &Stat, value: i16) -> HashMap<Resis
     return result;
 }
 
+
+pub fn get_values_of_attributes_from_stat(stat: &Stat, value: i16) -> HashMap<Attribute, i16> {
+    //STR/2; DEX/3; INT/4	
+    //INT /2; DEX / 3; STR/4	
+    let mut result: HashMap<Attribute, i16> = HashMap::new();
+    match *stat {
+        Stat::Strength => {
+            result.insert(Attribute::Health, value / 2);
+            result.insert(Attribute::Stamina, value / 4);
+        },
+        Stat::Dexterity => {
+            result.insert(Attribute::Health, value / 3);
+            result.insert(Attribute::Stamina, value / 3);
+        },
+        Stat::Wisdom => {
+            result.insert(Attribute::Health, value / 4);
+            result.insert(Attribute::Stamina, value / 2);
+        },
+        Stat::Luck => {},
+    }
+
+    return result;
+}
 pub fn get_level_by_current_experience(experience: u32) -> u8 {         //formula to get new level;
     ((experience as f64).sqrt() / 6.0) as u8
 }
@@ -324,7 +368,7 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
             result.insert(AbilityType::MovementSpeed, movement_speed);
             result.insert(AbilityType::AttackSpeed, attack_speed);
         },
-        Stat::Intellect => {
+        Stat::Wisdom => {
             let cooldown_active_skill = value / 10;           //cd of active skills: INT /10;
             let critical_multiplier = value / 2;              // Crit Multi : INT / 5;
             let stamina_regen = value / 10;             //stamina regen: INT / 10
@@ -360,7 +404,13 @@ pub fn get_ability_type_from_damage_type (damage_type: &DamageType) -> AbilityTy
         DamageType::Poison => AbilityType::PoisonDamage,
         DamageType::Water => AbilityType::WaterDamage,
         DamageType::Health => AbilityType::HealthDamage,
-        DamageType::Stamina => AbilityType::StaminaDamage,
-        
+        DamageType::Stamina => AbilityType::StaminaDamage,        
+    }
+}
+
+pub fn get_attribute_from_damage_type(damage_type: &DamageType) -> Attribute {
+    return match *damage_type {
+        DamageType::Stamina => Attribute::Stamina,
+        _ => Attribute::Health,
     }
 }

@@ -225,15 +225,15 @@ pub fn update_passive_skills(
                                             match target.charactor_type {
                                                 CharactorType::Player | CharactorType::Companion => continue,
                                                 CharactorType::NPC => continue,
-                                                CharactorType::Monster => {},
+                                                CharactorType::Monster(_) => {},
                                             }
                                         },
                                         CharactorType::NPC => continue,
-                                        CharactorType::Monster => {
+                                        CharactorType::Monster(_) => {
                                             match target.charactor_type {
                                                 CharactorType::Player | CharactorType::Companion => {},
                                                 CharactorType::NPC => continue,
-                                                CharactorType::Monster => continue,
+                                                CharactorType::Monster(_) => continue,
                                             }
                                         },
                                     }
@@ -244,15 +244,15 @@ pub fn update_passive_skills(
                                             match target.charactor_type {
                                                 CharactorType::Player | CharactorType::Companion => {},
                                                 CharactorType::NPC => continue,
-                                                CharactorType::Monster => continue,
+                                                CharactorType::Monster(_) => continue,
                                             }
                                         },
                                         CharactorType::NPC => continue,
-                                        CharactorType::Monster => {
+                                        CharactorType::Monster(_) => {
                                             match target.charactor_type {
                                                 CharactorType::Player | CharactorType::Companion => continue,
                                                 CharactorType::NPC => continue,
-                                                CharactorType::Monster => {},
+                                                CharactorType::Monster(_) => {},
                                             }
                                         },
                                     }
@@ -316,7 +316,8 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, attributes: &mut AttributesC
         };
 
         change_attribute_points(
-            attributes,
+            &mut attributes.attributes,
+            &mut attributes.attributes_cache,
             &attribute,
             damage_value,
             false,

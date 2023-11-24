@@ -7,7 +7,7 @@ use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::dictionary::Dictionary;
-//use crate::resources::profile::Profile;
+use crate::resources::profile::Profile;
 use crate::resources::stuff_manager::StuffManager;
 use crate::resources::thing_manager::ThingManager;
 use crate::resources::scene_manager::{SceneManager, SceneType};
@@ -229,7 +229,8 @@ fn cleanup(mut commands: Commands, scene_data: Res<LoadingNewGameSceneData>) {
 fn create_starting_scenes(
     mut commands: Commands, 
     deploy: Res<Deploy>,
-    //profile: Res<Profile>,
+    profile: Res<Profile>,
+    mut charactor_manager: ResMut<CharactorManager>,
 ) {
     //get scene settings fro deploy;
     let scene_setting = deploy.game_scene.get_scene_setting(BiomeType::Plain);
@@ -239,10 +240,6 @@ fn create_starting_scenes(
 
     //create new object manager;
     let mut object_manager: ThingManager = Default::default();
-
-    //create new charactor manager;
-    
-    let mut charactor_manager: CharactorManager = Default::default();
 
     //create new stuff manager;
 
@@ -275,6 +272,16 @@ fn create_starting_scenes(
         &deploy,
         &biome_setting.objects.things,
     );
+
+    match &profile.charactor {
+        Some(v) => starting_scene.charactors.store(v.clone()),
+        None => panic!("Player not created"),
+    };
+
+    match &profile.companion {
+        Some(v) => starting_scene.charactors.store(v.clone()),
+        None => {}
+    };
      //prepare monsters and npcs
      //monster_spawner.generate_monsters();
      /* 
@@ -296,5 +303,4 @@ fn create_starting_scenes(
     commands.insert_resource(scene_manager);
     commands.insert_resource(object_manager);
     commands.insert_resource(stuff_manager);
-    commands.insert_resource(charactor_manager);
 }

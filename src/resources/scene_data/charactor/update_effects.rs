@@ -49,13 +49,14 @@ pub fn update_effects(
                         &mut stats,
                         &mut resists.resists,
                         &mut abilities.ability,
+                        &mut attributes,
                         stat,
                         *stat_damage,
                     );
                 }
 
                 for (attribute, attribute_damage) in effect.change_attribute.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, true);
+                    charactor::change_attribute_points(&mut attributes.attributes, &mut attributes.attributes_cache, attribute, *attribute_damage, true);
                 }
                 
                 for (resist, resists_damage) in effect.change_resist.iter() {                   //change resists;
@@ -79,13 +80,14 @@ pub fn update_effects(
                         &mut stats,
                         &mut resists.resists,
                         &mut abilities.ability,
+                        &mut attributes,
                         stat,
                         -stat_damage,                                                                           // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
                     );
                 }
 
                 for (attribute, attribute_damage) in effect.change_attribute.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute, -attribute_damage, true);
+                    charactor::change_attribute_points(&mut attributes.attributes, &mut attributes.attributes_cache, attribute, -attribute_damage, true);
                 }
 
                 for (effect_resist, resist_damage) in effect.change_resist.iter() {

@@ -4,7 +4,6 @@ use crate::components::IdentificationComponent;
 use crate::components::ObjectType;
 use crate::components::PositionComponent;
 use crate::components::charactor_component::ActionType;
-use crate::components::charactor_component::CharactorComponent;
 use crate::components::charactor_component::CharactorTargetComponent;
 use crate::components::charactor_component::DestinationComponent;
 use crate::components::charactor_component::PlayerComponent;
@@ -73,7 +72,7 @@ pub fn player_click(
                                     println!("Clicked on NPC");
                                     //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
                                 },
-                                CharactorType::Monster => {
+                                CharactorType::Monster(_) => {
                                     println!("Clicked on Monstger");
                                     select_target_to_attack(&mut player_target, target_identification.id, position_x, position_y);
                                     return;

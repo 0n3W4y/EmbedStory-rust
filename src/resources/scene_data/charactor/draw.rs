@@ -28,11 +28,6 @@ pub fn draw(
         let charactor_gender = &charactor.gender_type;
         let charactor_racetype = &charactor.race_type;
 
-        let texture: Handle<TextureAtlas> = material_manager
-            .game_scene
-            .charactors
-            .get_atlas(charactor_racetype, charactor_gender);
-
         let new_z_position = Z_POSITION - y as f32 / 1000.0;
         let transform = Transform::from_xyz(x, y, new_z_position);
 
@@ -66,6 +61,11 @@ pub fn draw(
 
         match *charactor_type {
             CharactorType::Player => {
+                let texture: Handle<TextureAtlas> = material_manager
+                    .game_scene
+                    .charactors
+                    .get_player_atlas(charactor_racetype, charactor_gender);
+
                 commands
                     .spawn_bundle(SpriteSheetBundle {
                         texture_atlas: texture,
@@ -88,6 +88,11 @@ pub fn draw(
                     .insert(PlayerComponent);
             }
             CharactorType::NPC => {
+                let texture: Handle<TextureAtlas> = material_manager
+                    .game_scene
+                    .charactors
+                    .get_npc_atlas(charactor_racetype, charactor_gender);
+
                 commands
                     .spawn_bundle(SpriteSheetBundle {
                         texture_atlas: texture,
@@ -109,7 +114,12 @@ pub fn draw(
                     .insert(inventory_component)
                     .insert(NPCComponent);
             }
-            CharactorType::Monster => {
+            CharactorType::Monster(v) => {
+                let texture: Handle<TextureAtlas> = material_manager
+                    .game_scene
+                    .charactors
+                    .get_monster_atlas(&v, charactor_gender);
+
                 commands
                     .spawn_bundle(SpriteSheetBundle {
                         texture_atlas: texture,
@@ -132,6 +142,11 @@ pub fn draw(
                     .insert(MonsterComponent);
             }
             CharactorType::Companion => {
+                let texture: Handle<TextureAtlas> = material_manager
+                    .game_scene
+                    .charactors
+                    .get_companion_atlas(charactor_racetype, charactor_gender);
+
                 commands
                     .spawn_bundle(SpriteSheetBundle {
                         texture_atlas: texture,

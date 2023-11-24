@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
+use crate::resources::scene_data::charactor::MonsterType;
 use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::{
     resources::scene_data::{
@@ -164,26 +165,58 @@ impl ThingMaterial {
 
 #[derive(Debug, Clone)]
 pub struct CharactorsMaterial {
+    pub player_material: PlayerMaterial,
+    pub companion_material: CompanionMaterial,
+    pub npc_material: NPCMAterial,
+    pub monster_material: MonsterMaterial,
+}
+
+#[derive(Debug, Clone)]
+pub struct PlayerMaterial {
     pub human_female_atlas: Handle<TextureAtlas>,
     pub human_male_atlas: Handle<TextureAtlas>,
 }
+#[derive(Debug, Clone)]
+pub struct CompanionMaterial {
+    pub human_female_atlas: Handle<TextureAtlas>,
+    pub human_male_atlas: Handle<TextureAtlas>,
+}
+#[derive(Debug, Clone)]
+pub struct NPCMAterial {
+    pub human_female_atlas: Handle<TextureAtlas>,
+    pub human_male_atlas: Handle<TextureAtlas>,
+}
+#[derive(Debug, Clone)]
+pub struct MonsterMaterial {
+    pub skeleton_melee: Handle<TextureAtlas>,
+    pub skeleton_ranged: Handle<TextureAtlas>,
+    pub skeleton_magician: Handle<TextureAtlas>,
+}
+
 
 impl CharactorsMaterial {
-    pub fn get_atlas(
+    pub fn get_monster_atlas(
         &self,
-        charactor_racetype: &RaceType,
-        gender: &GenderType,
+        monster_type: &MonsterType,
+        gender_type: &GenderType,
     ) -> Handle<TextureAtlas> {
-        match *charactor_racetype {
-            RaceType::Human => match *gender {
-                GenderType::Male => self.human_male_atlas.clone_weak(),
-                GenderType::Female => self.human_female_atlas.clone_weak(),
-            },
-            _ => match *gender {
-                GenderType::Male => self.human_male_atlas.clone_weak(),
-                GenderType::Female => self.human_female_atlas.clone_weak(),
-            },
+        match *monster_type {
+            MonsterType::SkeletonArcher => self.monster_material.ranged_skeleton.clone_weak(),
+            MonsterType::SkeletonWarrior => self.monster_material.melee_skeleton.clone_weak(),
+            MonsterType::SkeletonMagician => self.monster_material.magician_skeleton.clone_weak(),
         }
+    }
+
+    pub fn get_companion_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
+
+    }
+
+    pub fn get_player_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
+
+    }
+
+    pub fn get_npc_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
+
     }
 }
 

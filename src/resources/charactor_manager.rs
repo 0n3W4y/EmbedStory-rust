@@ -53,6 +53,6 @@ impl CharactorManager {
 pub fn initialize_character_after_creation(charactor: &mut Charactor) {
     //TODO:
     for (stat, value) in charactor.stats.iter() {
-        do_stat_dependences(&mut charactor.resists, &mut charactor.ability, stat, *value, 0);
+        do_stat_dependences(&mut charactor.resists, &mut charactor.ability, &mut charactor.attributes, &mut charactor.attributes_cache, stat, *value, 0);
     }
 }

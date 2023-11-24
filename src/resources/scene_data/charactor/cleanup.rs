@@ -67,7 +67,7 @@ pub fn cleanup(
             CharactorType::Companion => {
                 profile.companion = Some(charactor);
             },
-            CharactorType::Monster | CharactorType::NPC => {
+            CharactorType::Monster(_) | CharactorType::NPC => {
                 scene.charactors.store(charactor);
             },
         }

@@ -119,7 +119,7 @@ impl CharactorStorage {
         match charactor.charactor_type {
             charactor::CharactorType::Player => self.player.push(charactor),
             charactor::CharactorType::NPC => self.npc.push(charactor),
-            charactor::CharactorType::Monster => self.monster.push(charactor),
+            charactor::CharactorType::Monster(_) => self.monster.push(charactor),
             charactor::CharactorType::Companion => self.companion.push(charactor),
         }
     }
