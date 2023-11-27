@@ -11,12 +11,11 @@ use super::{
     CharactorType, effects::Effect, CharactorStatus,
 };
 use crate::components::{PositionComponent, IdentificationComponent, ResistsComponent, AttributesComponent};
-use crate::components::charactor_component::DestinationComponent;
+use crate::components::charactor_component::{DestinationComponent, AbilityComponent};
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
-use crate::resources::scene_data::stuff::resists_types::{self, get_resist_from_damage_type, ResistType};
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::{
     components::charactor_component::{
@@ -26,7 +25,7 @@ use crate::{
     resources::deploy::Deploy
 };
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
-use crate::resources::scene_data::Attribute;
+use crate::resources::scene_data::{Attribute, get_resist_from_damage_type, ResistType, AbilityType};
 
 pub fn update_passive_skills(
     mut commands: Commands,
@@ -38,6 +37,7 @@ pub fn update_passive_skills(
         &DestinationComponent,
         &CharactorTargetComponent,
         &ResistsComponent,
+        &AbilityComponent,
         &mut AttributesComponent,
         &mut EffectComponent,
     )>,
@@ -47,6 +47,7 @@ pub fn update_passive_skills(
         &ResistsComponent,
         &mut AttributesComponent,
         &mut EffectComponent,
+        & AbilityComponent,
     )>,
     time: Res<Time>,
     deploy: Res<Deploy>,
@@ -62,6 +63,7 @@ pub fn update_passive_skills(
         destination_component,
         target_component, 
         resists_component, 
+        abilities_component,
         mut attributes_component, 
         mut effect_component
     ) in skills_query.iter_mut() {
@@ -177,7 +179,11 @@ pub fn update_passive_skills(
                         match *skill_cast_source {
                             CastSource::Itself => {
                                 do_damage(&skill.damage, &mut attributes_component, crit_multiplier, &resists_component.resists);           //do damage to itself;
-                                add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);              //add effects to itself;
+                                let effect_time_reduced = match abilities_component.ability.get(&AbilityType::ReducingEffectTime) {
+                                    Some(v) => *v,
+                                    None => 0,
+                                };
+                                add_effect(&skill.effect, &deploy, effect_time_reduced, &mut effect_component);              //add effects to itself;
                             },
                             CastSource::Mouse => { 
                                 println!(
@@ -197,7 +203,11 @@ pub fn update_passive_skills(
                         match skill.skill_direction {
                             SkillDirectionType::Arc360 => {                                         //AURA
                                 do_damage(&skill.damage, &mut attributes_component, crit_multiplier, &resists_component.resists);           //do damage to itself;
-                                add_effect(&skill.effect, &deploy, &resists_component.resists, &mut effect_component);              //add effects to itself;
+                                let effect_time_reduced = match abilities_component.ability.get(&AbilityType::ReducingEffectTime) {
+                                    Some(v) => *v,
+                                    None => 0,
+                                };
+                                add_effect(&skill.effect, &deploy, effect_time_reduced, &mut effect_component);              //add effects to itself;
                                 multiply_target = true;
                             },
                             SkillDirectionType::Point => {                                          // single target skill;
@@ -215,6 +225,7 @@ pub fn update_passive_skills(
                             target_resists,
                             mut target_attributes,
                             mut target_effects,
+                            target_abilities,
                         ) in charactors_query.iter_mut()
                         {
                             //check for target
@@ -269,8 +280,12 @@ pub fn update_passive_skills(
                                 traget_position_y <= y_max {
 
                                 do_damage(&skill.damage, &mut target_attributes, crit_multiplier, &target_resists.resists);                     // do damage to target
-                                add_effect(&skill.effect, &deploy, &target_resists.resists, &mut target_effects);     // add effects to target
-                                if !multiply_target {break};                                                                                    // end loop;
+                                let effect_time_reduced = match target_abilities.ability.get(&AbilityType::ReducingEffectTime) {
+                                    Some(v) => *v,
+                                    None => 0,
+                                };
+                                add_effect(&skill.effect, &deploy, effect_time_reduced, &mut target_effects);     // add effects to target
+                                if !multiply_target {break};// end loop;
                             } else {
                                 continue;                                                                                                       //position of target not in range;
                             }
@@ -325,25 +340,18 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, attributes: &mut AttributesC
     }
 }
 
-pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, resists: &HashMap<ResistType, i16>, effect_component: &mut EffectComponent){
+pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, effect_time_reduce: i16, effect_component: &mut EffectComponent){
+    if effect_time_reduce >= 100 {
+        return;
+    }
+
     let mut rng = rand::thread_rng();
     for (effect_type, effect_trigger) in effects.iter() {
         let trigger_effect_random_number: u8 = rng.gen_range(0..=99);
-        if *effect_trigger >= trigger_effect_random_number {                    //check triegger on effect;
+        if *effect_trigger >= trigger_effect_random_number {                                                                         //check triegger on effect;
             let effect_config = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
             let mut effect = Effect::new(effect_config);
-
-            let resist_type = resists_types::get_resist_from_effect_type(effect_type);
-            let effect_resist = match resists.get(&resist_type) {
-                Some(v) => *v,
-                None => 0,                                             // if not exist, use 0;
-            };
-
-            if effect_resist >= 100 {                               //check for resist this effect
-                continue;                                               //ignore that effect;
-            };
-
-            effect.duration -= effect.duration * effect_resist as f32 / 100.0;              //reduce effect duration by target resist;        
+            effect.duration -= effect.duration * effect_time_reduce as f32 / 100.0;                                                  //reduce effect duration by target resist;        
             effect_component.effects.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
         }
     }

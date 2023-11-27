@@ -17,13 +17,9 @@ use crate::{
                 skills::SkillDirectionType,
             },
             damage_text_informer::DamageTextInformer,
-            stuff::{
+            stuff::
                 damage_type::DamageType,
-                resists_types::{
-                    get_resist_from_damage_type, get_resist_from_effect_type,
-                },
-            },
-            AbilityType, Attribute,
+            AbilityType, Attribute, get_resist_from_damage_type,
         },
     },
     scenes::game_scenes::tilemap::tile::Position,
@@ -223,15 +219,15 @@ fn collision_with_charactor(
             .effects_deploy
             .get_effect_config(effect_type);
         let mut effect = Effect::new(effect_config);
-        let charactor_resist = match resists
-            .resists
-            .get(&get_resist_from_effect_type(effect_type))
+        let time_effect_reduced = match abilities
+            .ability
+            .get(&AbilityType::ReducingEffectTime)
         {
             Some(v) => *v,
             None => 0,
         };
 
-        effect.duration -= effect.duration * charactor_resist as f32 / 100.0;
+        effect.duration -= effect.duration * time_effect_reduced as f32 / 100.0;
         effects
             .effects
             .entry(effect_type.clone())

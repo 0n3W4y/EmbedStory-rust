@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::CharactorType, damage_text_informer::DamageTextInformer, Stat, Attribute, stuff::resists_types::ResistType}};
+use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::CharactorType, damage_text_informer::DamageTextInformer, Stat, Attribute, ResistType}};
 
 pub mod tile_component;
 pub mod thing_component;

@@ -8,8 +8,7 @@ use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::stuff::damage_type::DamageType;
-use super::{Stat, Attribute, AbilityType};
-use super::stuff::resists_types::ResistType;
+use super::{Stat, Attribute, AbilityType, ResistType};
 use super::stuff::Stuff;
 
 pub mod cleanup;
@@ -36,10 +35,11 @@ pub enum SkillSlot {
     WeaponTwo,
     WeaponThree,
     WeaponFour,
+    TrinketOne,
+    TrinketTwo,
     BeltOne,
     BeltTwo,
     BeltThree,
-    BeltFour,
     PotionHealth,
     PotionStamina,
 }

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
 
-use super::{stuff::resists_types::ResistType, Attribute};
+use super::{Attribute, ResistType};
 
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default )]

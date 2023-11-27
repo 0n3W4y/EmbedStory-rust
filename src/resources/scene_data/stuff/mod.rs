@@ -4,17 +4,15 @@ use serde::{ Serialize, Deserialize };
 
 pub mod stuff_attributes;
 pub mod damage_type;
-pub mod resists_types;
 
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use crate::resources::scene_data::charactor::StuffWearSlot;
 
 use self::damage_type::DamageType;
-use self::resists_types::ResistType;
 
 use super::charactor::effects::EffectType;
-use super::{Stat, AbilityType};
+use super::{Stat, AbilityType, ResistType};
 use super::charactor::skills::SkillType;
 
 #[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Hash )]

@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use crate::resources::scene_data::{stuff::resists_types::ResistType, Stat, AbilityType, Attribute};
+use crate::resources::scene_data::{Stat, AbilityType, Attribute, ResistType};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum EffectType{

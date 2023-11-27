@@ -3,11 +3,10 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::scene_data::{Stat, Attribute, AbilityType};
+use crate::resources::scene_data::{Stat, Attribute, AbilityType, ResistType};
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
 use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillType};
 use crate::resources::scene_data::charactor::RaceType;
-use crate::resources::scene_data::stuff::resists_types::ResistType;
 
 #[derive(Deserialize, Debug)]
 pub struct CharactorDeploy {
@@ -146,6 +145,7 @@ pub struct RaceConfig {
     pub attributes: HashMap<Attribute, i16>,
     pub resists: HashMap<ResistType, i16>,
     pub ability: HashMap<AbilityType, i16>,
+    pub passive_skills: Vec<SkillType>,
 }
 
 #[derive(Deserialize, Debug)]

@@ -10,12 +10,11 @@ use crate::components::charactor_component::{
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
-use crate::resources::scene_data::{AbilityType, Attribute};
+use crate::resources::scene_data::{AbilityType, Attribute, get_resist_from_damage_type};
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::resources::scene_data::stuff::damage_type::DamageType;
-use crate::resources::scene_data::stuff::resists_types;
 
 use super::effects::Effect;
 use super::{get_ability_type_from_damage_type, change_attribute_points};
@@ -300,7 +299,7 @@ fn attack(
         };
         
         for (damage_type, value) in skill.damage.iter() {                       //create and apply damage to target;
-            let resist_type = resists_types::get_resist_from_damage_type(damage_type);
+            let resist_type = get_resist_from_damage_type(damage_type);
             let target_damage_resist = match target_resists.resists.get(&resist_type) {
                 Some(v) => *v,
                 _ => {
@@ -351,25 +350,17 @@ fn attack(
 
             let effect_config = effects_deploy.get_effect_config(effect_type);          //create default effect;
             let mut effect = Effect::new(effect_config);
-            let effect_resist = resists_types::get_resist_from_effect_type(effect_type);  //convert effect type to resist type;
-            let target_effect_resist = match target_resists.resists.get(&effect_resist) {       //get resist from target on this effect to change duration;
+            let effect_time_reducing = match target_abilities.ability.get(&AbilityType::ReducingEffectTime) {
                 Some(v) => *v,
-                _ => {
-                    println!(
-                        "Target has no effect resist: '{:?}', I use 0 instead",
-                        effect_type
-                    );
-                    0
-                }
+                None => 0,
             };
             
-            if target_effect_resist > 100 {                                                        //check target resist; if it > 100% just ignore this effect;
+            if effect_time_reducing > 100 {                                                        //check target resist; if it > 100% just ignore this effect;
                 continue;
             }
 
             //calculate new effect duration by target resist;
-            let effect_duration = effect.duration * target_effect_resist as f32 / 100.0;
-            effect.duration -= effect_duration;
+            effect.duration -= effect.duration * effect_time_reducing as f32 / 100.0;
 
             target_effects.effects.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
 
@@ -384,7 +375,7 @@ fn attack(
 
             let mut skill = Skill::new(skills_deploy.get_skill_deploy(skill_type));         //create new default skill;
             for (damage_type, value) in skill.damage.iter_mut() {
-                let resist_type = resists_types::get_resist_from_damage_type(damage_type);
+                let resist_type = get_resist_from_damage_type(damage_type);
                 let target_resist_multiplier = match target_resists.resists.get(&resist_type) {
                     Some(v) => *v,
                     None => 0,
