@@ -1,3 +1,24 @@
 {
-    
+    "Melee": {
+        
+    },
+    "Ranged": {},
+    "Magic": {},
+    "Phantom": {},
+    "Wraith": {},
+    "Spectre": {},
+    "Apparition": {},
+    "Poltergiest": {},
+    "Wisp": {},
+    "Shade": {},
+    "Banshee": {},
+    "Wolf": {},
+    "Bear": {},
+    "Crocodile": {},
+    "Scorpion": {},
+    "Eagle": {},
+    "Spider": {},
+    "KomodoDragon": {},
+    "Rhinocerops": {},
+    "Snake": {}
 }

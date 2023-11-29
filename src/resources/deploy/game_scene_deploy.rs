@@ -2,6 +2,7 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 
+use crate::config::DEPLOY_GROUND_SCENE_PATH;
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 
 #[derive(Deserialize, Debug)]
@@ -21,14 +22,14 @@ pub struct GameSceneDeploy {
 }
 
 impl GameSceneDeploy {
-    pub fn new(path: &str) -> Self {
-        let result: GameSceneDeploy = match File::open(path) {
+    pub fn new() -> Self {
+        let result: GameSceneDeploy = match File::open(DEPLOY_GROUND_SCENE_PATH) {
             Ok(mut file) => {
                 let mut contents = String::new();
                 file.read_to_string(&mut contents).unwrap();
                 serde_json::from_str(&contents).expect("JSON was not well-formatted")
             }
-            Err(err) => panic!("Can not open ground scene data file: {}, {}", err, path),
+            Err(err) => panic!("Can not open ground scene data file: {}, {}", err, DEPLOY_GROUND_SCENE_PATH),
         };
 
         return result;

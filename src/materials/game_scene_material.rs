@@ -191,20 +191,56 @@ pub struct MonsterMaterial {
     pub skeleton_melee: Handle<TextureAtlas>,
     pub skeleton_ranged: Handle<TextureAtlas>,
     pub skeleton_magician: Handle<TextureAtlas>,
+    pub human_male_melee: Handle<TextureAtlas>,
+    pub human_female_melee: Handle<TextureAtlas>,
+    pub human_male_ranged: Handle<TextureAtlas>,
+    pub human_female_ranged: Handle<TextureAtlas>,
+    pub human_male_magic: Handle<TextureAtlas>,
+    pub human_female_magic: Handle<TextureAtlas>,
 }
 
 
 impl CharactorsMaterial {
     pub fn get_monster_atlas(
         &self,
+        monster_race: &RaceType,
         monster_type: &MonsterType,
         gender_type: &GenderType,
     ) -> Handle<TextureAtlas> {
-        match *monster_type {
-            MonsterType::SkeletonArcher => self.monster_material.ranged_skeleton.clone_weak(),
-            MonsterType::SkeletonWarrior => self.monster_material.melee_skeleton.clone_weak(),
-            MonsterType::SkeletonMagician => self.monster_material.magician_skeleton.clone_weak(),
+        match *monster_race {
+            RaceType::Human => todo!(),
+            RaceType::Elf => todo!(),
+            RaceType::Orc => todo!(),
+            RaceType::Dwarf => todo!(),
+            RaceType::Halfling => todo!(),
+            RaceType::Lizardfolk => todo!(),
+            RaceType::Naga => todo!(),
+            RaceType::Gnome => todo!(),
+            RaceType::Goblin => todo!(),
+            RaceType::Beast => todo!(),
+            RaceType::Abbreviation => todo!(),
+            RaceType::Minotaur => todo!(),
+            RaceType::Harpia => todo!(),
+            RaceType::Dryada => todo!(),
+            RaceType::Fairy => todo!(),
+            RaceType::Celestial => todo!(),
+            RaceType::Elemental => todo!(),
+            RaceType::Skeleton => {
+                match *monster_type {
+                    MonsterType::Melee => self.monster_material.skeleton_melee.clone_weak(),
+                    MonsterType::Ranged => self.monster_material.skeleton_ranged.clone_weak(),
+                    MonsterType::Magic => self.monster_material.skeleton_magician.clone_weak(),
+                    _ => {},
+                }
+            },
+            RaceType::Zombie => todo!(),
+            RaceType::Ogre => todo!(),
+            RaceType::Demon => todo!(),
         }
+        
+        println!("Check config. Try to get texture with Race: {:?}, monster: {:?}, gender: {:?}. Returning human_male_atlas", monster_race, monster_type, gender_type);
+        return self.monster_material.human_male_melee.clone_weak();
+
     }
 
     pub fn get_companion_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {

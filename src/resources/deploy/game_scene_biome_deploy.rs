@@ -8,7 +8,7 @@ use crate::{
         charactor::RaceType,
         thing::ThingType,
     },
-    scenes::game_scenes::tilemap::tile::{CoverType, GroundType}
+    scenes::game_scenes::tilemap::tile::{CoverType, GroundType}, config::DEPLOY_BIOME_PATH
 };
 
 #[derive(Deserialize, Clone, Debug)]
@@ -105,14 +105,14 @@ pub struct GameSceneBiomeDeploy {
 }
 
 impl GameSceneBiomeDeploy {
-    pub fn new(path: &str) -> Self {
-        let result: GameSceneBiomeDeploy = match File::open(path) {
+    pub fn new() -> Self {
+        let result: GameSceneBiomeDeploy = match File::open(DEPLOY_BIOME_PATH) {
             Ok(mut file) => {
                 let mut contents = String::new();
                 file.read_to_string(&mut contents).unwrap();
                 serde_json::from_str(&contents).expect("JSON was not well-formatted")
             }
-            Err(err) => panic!("Can not open biome data file: {}, {}", err, path),
+            Err(err) => panic!("Can not open biome data file: {}, {}", err, DEPLOY_BIOME_PATH),
         };
 
         return result;

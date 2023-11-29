@@ -2,7 +2,7 @@ use std::{fs::File, io::Read};
 
 use serde::Deserialize;
 
-use crate::resources::scene_data::projectiles::{ProjectileConfig, ProjectileType};
+use crate::{resources::scene_data::projectiles::{ProjectileConfig, ProjectileType}, config::DEPLOY_PROJECTILE_PATH};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ProjectileDeploy {
@@ -13,14 +13,13 @@ pub struct ProjectileDeploy {
 
 impl ProjectileDeploy {
     pub fn new() -> Self {
-        let projectile_path = "deploy/projectiles.json";
-        let projectile_data: ProjectileDeploy  = match File::open( projectile_path ){
+        let projectile_data: ProjectileDeploy  = match File::open( DEPLOY_PROJECTILE_PATH ){
             Ok( mut file ) => {
                 let mut contents = String::new();
                 file.read_to_string( &mut contents ).unwrap();
                 serde_json::from_str( &contents ).expect( "JSON was not well-formatted" )
             }
-            Err( err ) => panic!( "Can not open cover data file: {}, {}", err, projectile_path ),
+            Err( err ) => panic!( "Can not open cover data file: {}, {}", err, DEPLOY_PROJECTILE_PATH ),
         };
 
         return projectile_data;

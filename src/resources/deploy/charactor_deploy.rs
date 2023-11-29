@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 
+use crate::config::{DEPLOY_EFFECTS_PATH, DEPLOY_RACE_PATH, DEPLOY_SKILLS_PATH};
 use crate::resources::scene_data::{Stat, Attribute, AbilityType, ResistType};
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
 use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillType};
@@ -17,11 +18,7 @@ pub struct CharactorDeploy {
 
 impl CharactorDeploy {
     pub fn new() -> Self {
-        let race_config_deploy: &str = "deploy/race_config.json";
-        let effects_config: &str = "deploy/battle_effects_config.json";
-        let skills_config: &str = "deploy/skills_config.json";
-
-        let race_deploy: RaceDeploy = match File::open(race_config_deploy) {
+        let race_deploy: RaceDeploy = match File::open(DEPLOY_RACE_PATH) {
             Ok(mut file) => {
                 let mut content = String::new();
                 file.read_to_string(&mut content).unwrap();
@@ -29,26 +26,26 @@ impl CharactorDeploy {
             }
             Err(e) => panic!(
                 "Can not open objects data file: {}, {}",
-                e, race_config_deploy
+                e, DEPLOY_RACE_PATH
             ),
         };
 
-        let effects_deploy: EffectsDeploy = match File::open(effects_config) {
+        let effects_deploy: EffectsDeploy = match File::open(DEPLOY_EFFECTS_PATH) {
             Ok(mut file) => {
                 let mut content = String::new();
                 file.read_to_string(&mut content).unwrap();
                 serde_json::from_str(&content).expect("JSON was not well-formatted")
             }
-            Err(e) => panic!("Can not open objects data file: {}, {}", e, effects_config),
+            Err(e) => panic!("Can not open objects data file: {}, {}", e, DEPLOY_EFFECTS_PATH),
         };
 
-        let skills_deploy: SkillsDeploy = match File::open(skills_config) {
+        let skills_deploy: SkillsDeploy = match File::open(DEPLOY_SKILLS_PATH) {
             Ok(mut file) => {
                 let mut content = String::new();
                 file.read_to_string(&mut content).unwrap();
                 serde_json::from_str(&content).expect("JSON was not well-formatted")
             }
-            Err(e) => panic!("Can not open objects data file: {}, {}", e, effects_config),
+            Err(e) => panic!("Can not open objects data file: {}, {}", e, DEPLOY_SKILLS_PATH),
         };
 
         return CharactorDeploy {
@@ -113,12 +110,22 @@ pub struct RaceDeploy {
     pub orc: RaceConfig,
     pub halfling: RaceConfig,
     pub dwarf: RaceConfig,
-    pub undead: RaceConfig,
+    pub lizardfolk: RaceConfig,
     pub naga: RaceConfig,
     pub gnome: RaceConfig,
     pub goblin: RaceConfig,
     pub beast: RaceConfig,
-    pub arahnid: RaceConfig,
+    pub minotaur: RaceConfig,
+    pub harpia: RaceConfig,
+    pub dryada: RaceConfig,
+    pub fairy: RaceConfig,
+    pub celestial: RaceConfig,
+    pub elemental: RaceConfig,
+    pub skeleton: RaceConfig,
+    pub zombie: RaceConfig,
+    pub ogre: RaceConfig,
+    pub demon: RaceConfig,
+    pub abbreviation: RaceConfig
 }
 
 impl RaceDeploy {
@@ -129,12 +136,22 @@ impl RaceDeploy {
             RaceType::Orc => &self.orc,
             RaceType::Halfling => &self.halfling,
             RaceType::Dwarf => &self.dwarf,
-            RaceType::Undead => &self.undead,
             RaceType::Naga => &self.naga,
             RaceType::Gnome => &self.gnome,
             RaceType::Goblin => &self.goblin,
             RaceType::Beast => &self.beast,
-            RaceType::Arahnid => &self.arahnid,
+            RaceType::Lizardfolk => &self.lizardfolk,
+            RaceType::Abbreviation => &self.abbreviation,
+            RaceType::Minotaur => &self.minotaur,
+            RaceType::Harpia => &self.harpia,
+            RaceType::Dryada => &self.dryada,
+            RaceType::Fairy => &self.fairy,
+            RaceType::Celestial => &self.celestial,
+            RaceType::Elemental => &self.elemental,
+            RaceType::Skeleton => &self.skeleton,
+            RaceType::Zombie => &self.zombie,
+            RaceType::Ogre => &self.ogre,
+            RaceType::Demon => &self.demon,
         }
     }
 }

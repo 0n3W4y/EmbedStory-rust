@@ -192,6 +192,7 @@ pub fn copy_from_charactor_to_component(
     charactor_component.charactor_type = charactor.charactor_type.clone();
     charactor_component.race_type = charactor.race_type.clone();
     charactor_component.gender_type = charactor.gender_type.clone();
+    charactor_component.strength = charactor.strength.clone();
     charactor_component.status = charactor.status.clone();
     //charactor_component.fraction: charactor.fraction.clone();
     charactor_component.level = charactor.level;

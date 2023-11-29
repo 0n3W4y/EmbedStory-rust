@@ -1,8 +1,8 @@
-use serde::{ Deserialize };
+use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::scenes::game_scenes::tilemap::tile::{ GroundType, CoverType, TileDeploy };
+use crate::{scenes::game_scenes::tilemap::tile::{ GroundType, CoverType, TileDeploy }, config::{DEPLOY_COVER_PATH, DEPLOY_GROUND_PATH}};
 
 #[derive( Deserialize, Debug )]
 pub struct TilemapTileDeploy{
@@ -10,23 +10,23 @@ pub struct TilemapTileDeploy{
     cover_tile: CoverTileDeploy,
 }
 impl TilemapTileDeploy{
-    pub fn new( ground_path: &str, cover_path: &str ) -> Self{
-        let cover_data:CoverTileDeploy  = match File::open( cover_path ){
+    pub fn new() -> Self{
+        let cover_data:CoverTileDeploy  = match File::open( DEPLOY_COVER_PATH ){
             Ok( mut file ) => {
                 let mut contents = String::new();
                 file.read_to_string( &mut contents ).unwrap();
                 serde_json::from_str( &contents ).expect( "JSON was not well-formatted" )
             }
-            Err( err ) => panic!( "Can not open cover data file: {}, {}", err, cover_path ),
+            Err( err ) => panic!( "Can not open cover data file: {}, {}", err, DEPLOY_COVER_PATH ),
         };
 
-        let ground_data:GroundTileDeploy  = match File::open( ground_path ){
+        let ground_data:GroundTileDeploy  = match File::open( DEPLOY_GROUND_PATH ){
             Ok( mut file ) => {
                 let mut contents = String::new();
                 file.read_to_string( &mut contents ).unwrap();
                 serde_json::from_str( &contents ).expect( "JSON was not well-formatted" )
             }
-            Err( err ) => panic!( "Can not open cover data file: {}, {}", err, ground_path ),
+            Err( err ) => panic!( "Can not open cover data file: {}, {}", err, DEPLOY_GROUND_PATH ),
         };
 
         return TilemapTileDeploy { 

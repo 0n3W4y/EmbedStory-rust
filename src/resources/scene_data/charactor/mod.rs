@@ -56,9 +56,26 @@ pub enum CharactorType {
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum MonsterType {
     #[default]
-    SkeletonArcher,
-    SkeletonWarrior,
-    SkeletonMagician,
+    Melee,
+    Ranged,
+    Magic,
+    Phantom,
+    Wraith,
+    Spectre,
+    Apparition,
+    Poltergiest,
+    Wisp,
+    Shade,
+    Banshee,
+    Wolf,
+    Bear,
+    Crocodile,
+    Scorpion,
+    Eagle,
+    Spider,
+    KomodoDragon,
+    Rhinocerops,
+    Snake,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -83,12 +100,22 @@ pub enum RaceType {
     Orc,
     Dwarf,
     Halfling,
-    Undead,
+    Lizardfolk,
     Naga,
     Gnome,
     Goblin,
     Beast,
-    Arahnid,
+    Abbreviation,
+    Minotaur,
+    Harpia,
+    Dryada,
+    Fairy,
+    Celestial,
+    Elemental,
+    Skeleton,
+    Zombie,
+    Ogre,
+    Demon
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]
@@ -120,7 +147,17 @@ pub enum CharactorStatus {
     AttackingRight,
     AttackingUp,
     AttackingDown,
-    PickupingItem,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
+pub enum CharactorStrength {
+    Weak,
+    #[default]
+    Normal,
+    Champion,
+    Elite,
+    Boss,
+    None,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -129,6 +166,7 @@ pub struct Charactor {
     pub charactor_type: CharactorType,
     pub race_type: RaceType,
     pub gender_type: GenderType,
+    pub strength: CharactorStrength,
 
     pub status: CharactorStatus,
 

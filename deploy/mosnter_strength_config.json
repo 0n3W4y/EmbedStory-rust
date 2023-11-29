@@ -1,0 +1,32 @@
+{
+    "weak": {
+        "stats": -25,
+        "attributes": -25,
+        "resists": -10,
+        "abilities": {}
+    },
+    "normal": {
+        "stats": 5,
+        "attributes": 5,
+        "resists": 5,
+        "abilities": {}
+    },
+    "champion": {
+        "stats": 50,
+        "attributes": 50,
+        "resists": 20,
+        "abilities": {}
+    },
+    "elite": {
+        "stats": 100,
+        "attributes": 100,
+        "resists": 40,
+        "abilities": {}
+    },
+    "boss": {
+        "stats": 200,
+        "attributes": 200,
+        "resists": 60,
+        "abilities": {}
+    }
+}

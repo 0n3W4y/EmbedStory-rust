@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 
 use crate::resources::scene_data::AbilityType;
+use crate::resources::scene_data::charactor::CharactorStrength;
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::skills::SkillType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
@@ -65,6 +66,7 @@ pub struct CharactorComponent{
     pub charactor_type: CharactorType,
     pub race_type: RaceType,
     pub gender_type: GenderType,
+    pub strength: CharactorStrength,
 
     pub status: CharactorStatus,
     //pub fraction: CharactorFraction,

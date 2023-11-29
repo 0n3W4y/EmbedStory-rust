@@ -2,7 +2,7 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::resources::scene_data::thing::{ThingConfig, ThingType};
+use crate::{resources::scene_data::thing::{ThingConfig, ThingType}, config::DEPLOY_OBJECTS_PATH};
 
 #[derive( Deserialize, Debug )]
 pub struct GameObjectsDeploy{
@@ -27,14 +27,14 @@ pub struct GameObjectsDeploy{
     pub reinforced_steel_door: ThingConfig,
 }
 impl GameObjectsDeploy{
-    pub fn new( path: &str ) -> Self{
-        let result: GameObjectsDeploy  = match File::open( path ){
+    pub fn new() -> Self{
+        let result: GameObjectsDeploy  = match File::open( DEPLOY_OBJECTS_PATH ){
             Ok( mut file ) => {
                 let mut contents = String::new();
                 file.read_to_string( &mut contents ).unwrap();
                 serde_json::from_str( &contents ).expect( "JSON was not well-formatted" )
             }
-            Err( err ) => panic!( "Can not open objects data file: {}, {}", err, path ),
+            Err( err ) => panic!( "Can not open objects data file: {}, {}", err, DEPLOY_OBJECTS_PATH ),
         };
 
         return result;
