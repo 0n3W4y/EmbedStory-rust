@@ -3,11 +3,12 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::config::{DEPLOY_EFFECTS_PATH, DEPLOY_RACE_PATH, DEPLOY_SKILLS_PATH};
 use crate::resources::scene_data::{Stat, Attribute, AbilityType, ResistType};
 use crate::resources::scene_data::charactor::effects::{EffectDeploy, EffectType};
 use crate::resources::scene_data::charactor::skills::{SkillDeploy, SkillType};
 use crate::resources::scene_data::charactor::RaceType;
+
+use super::{DEPLOY_RACE_PATH, DEPLOY_EFFECTS_PATH, DEPLOY_SKILLS_PATH};
 
 #[derive(Deserialize, Debug)]
 pub struct CharactorDeploy {

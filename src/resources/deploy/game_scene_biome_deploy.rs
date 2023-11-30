@@ -8,8 +8,10 @@ use crate::{
         charactor::RaceType,
         thing::ThingType,
     },
-    scenes::game_scenes::tilemap::tile::{CoverType, GroundType}, config::DEPLOY_BIOME_PATH
+    scenes::game_scenes::tilemap::tile::{CoverType, GroundType}
 };
+
+use super::DEPLOY_BIOME_PATH;
 
 #[derive(Deserialize, Clone, Debug)]
 pub enum BiomeType {

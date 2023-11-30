@@ -87,11 +87,11 @@ pub fn draw(
                     .insert(inventory_component)
                     .insert(PlayerComponent);
             }
-            CharactorType::NPC => {
+            CharactorType::NPC(npc_type) => {
                 let texture: Handle<TextureAtlas> = material_manager
                     .game_scene
                     .charactors
-                    .get_npc_atlas(charactor_racetype, charactor_gender);
+                    .get_npc_atlas(charactor_racetype, &npc_type, charactor_gender);
 
                 commands
                     .spawn_bundle(SpriteSheetBundle {
@@ -114,11 +114,11 @@ pub fn draw(
                     .insert(inventory_component)
                     .insert(NPCComponent);
             }
-            CharactorType::Monster(v) => {
+            CharactorType::Monster(montser_type) => {
                 let texture: Handle<TextureAtlas> = material_manager
                     .game_scene
                     .charactors
-                    .get_monster_atlas(&v, charactor_gender);
+                    .get_monster_atlas(charactor_racetype,&montser_type, charactor_gender);
 
                 commands
                     .spawn_bundle(SpriteSheetBundle {
@@ -141,11 +141,11 @@ pub fn draw(
                     .insert(inventory_component)
                     .insert(MonsterComponent);
             }
-            CharactorType::Companion => {
+            CharactorType::Companion(companion_type) => {
                 let texture: Handle<TextureAtlas> = material_manager
                     .game_scene
                     .charactors
-                    .get_companion_atlas(charactor_racetype, charactor_gender);
+                    .get_companion_atlas(charactor_racetype, &companion_type, charactor_gender);
 
                 commands
                     .spawn_bundle(SpriteSheetBundle {

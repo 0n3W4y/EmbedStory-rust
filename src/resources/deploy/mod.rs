@@ -21,6 +21,20 @@ use super::deploy::game_objects_deploy::GameObjectsDeploy;
 use super::deploy::charactor_deploy::CharactorDeploy;
 
 
+pub const DEPLOY_BIOME_PATH: &str = "deploy/biome_config.json";
+pub const DEPLOY_COVER_PATH: &str = "deploy/tilemap_tile_cover_config.json";
+pub const DEPLOY_GROUND_PATH: &str = "deploy/tilemap_tile_ground_config.json";
+//pub const DEPLOY_SCENE_PATH: &str = "deploy/scene_config.json";
+pub const DEPLOY_GROUND_SCENE_PATH: &str = "deploy/game_scene_config.json";
+pub const DEPLOY_OBJECTS_PATH: &str = "deploy/game_objects_config.json";
+pub const DEPLOY_RACE_PATH: &str = "deploy/race_config.json";
+pub const DEPLOY_EFFECTS_PATH: &str = "deploy/battle_effects_config.json";
+pub const DEPLOY_SKILLS_PATH: &str = "deploy/skills_config.json";
+pub const DEPLOY_PROJECTILE_PATH: &str = "deploy/projectiles.json";
+pub const DEPLOY_MONSTER_STRENGTH_PATH: &str = "deploy/mosnter_strength_config.json";
+pub const DEPLOY_MONSTER_TYPE_PATH: &str = "deploy/monster_type_config.json";
+
+
 
 #[derive( Deserialize, Debug )]
 pub struct Deploy{

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::config::TILE_SIZE;
-use crate::resources::scene_data::charactor::MonsterType;
+use crate::resources::scene_data::charactor::{MonsterType, CompanionType, NPCType};
 use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::{
     resources::scene_data::{
@@ -178,8 +178,12 @@ pub struct PlayerMaterial {
 }
 #[derive(Debug, Clone)]
 pub struct CompanionMaterial {
-    pub human_female_atlas: Handle<TextureAtlas>,
-    pub human_male_atlas: Handle<TextureAtlas>,
+    pub human_melee_female_atlas: Handle<TextureAtlas>,
+    pub human_ranged_female_atlas: Handle<TextureAtlas>,
+    pub human_magic_female_atlas: Handle<TextureAtlas>,
+    pub human_melee_male_atlas: Handle<TextureAtlas>,
+    pub human_ranged_male_atlas: Handle<TextureAtlas>,
+    pub human_magic_male_atlas: Handle<TextureAtlas>,
 }
 #[derive(Debug, Clone)]
 pub struct NPCMAterial {
@@ -208,6 +212,812 @@ impl CharactorsMaterial {
         gender_type: &GenderType,
     ) -> Handle<TextureAtlas> {
         match *monster_race {
+            RaceType::Human => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => self.monster_material.human_female_melee.clone_weak(),
+                            GenderType::Male => self.monster_material.human_male_melee.clone_weak(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => self.monster_material.human_female_ranged.clone_weak(),
+                            GenderType::Male => self.monster_material.human_male_ranged.clone_weak(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => self.monster_material.human_female_magic.clone_weak(),
+                            GenderType::Male => self.monster_material.human_male_magic.clone_weak(),
+                        };
+                    },
+                }
+            },
+            RaceType::Elf => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Orc => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Dwarf => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Halfling => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Lizardfolk => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Naga => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Gnome => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Goblin => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Minotaur => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Harpia => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Dryada => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Fairy => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Celestial => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Elemental => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Skeleton => {
+                match *monster_type {
+                    MonsterType::Melee => self.monster_material.skeleton_melee.clone_weak(),
+                    MonsterType::Ranged => self.monster_material.skeleton_ranged.clone_weak(),
+                    MonsterType::Magic => self.monster_material.skeleton_magician.clone_weak(),
+                };
+            },
+            RaceType::Zombie => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Ogre => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Demon => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Wolf => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Bear => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Crocodile => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Scorpion => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Eagle => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Spider => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::KomodoDragon => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Rhinocerops => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Snake => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+            RaceType::Ghost => {
+                match *monster_type {
+                    MonsterType::Melee => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Ranged => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                    MonsterType::Magic => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        };
+                    },
+                }
+            },
+        }
+        
+        println!("Check config. Try to get texture with Race: {:?}, monster: {:?}, gender: {:?}. Returning human_male_atlas", monster_race, monster_type, gender_type);
+        return self.monster_material.human_male_melee.clone_weak();
+
+    }
+
+    pub fn get_companion_atlas(&self, race_type: &RaceType, companion_type: &CompanionType, gender_type: &GenderType) -> Handle<TextureAtlas> {
+        match *race_type {
+            RaceType::Human => {
+                match *companion_type {
+                    CompanionType::Knight => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                    CompanionType::Berserk => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                    CompanionType::Rouge => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                    CompanionType::Bowman => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                    CompanionType::Crossbowman => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                    CompanionType::FireMage => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                    CompanionType::WaterMage => {
+                        match *gender_type {
+                            GenderType::Female => todo!(),
+                            GenderType::Male => todo!(),
+                        }
+                    },
+                }
+            },
+            RaceType::Elf => {
+                
+            },
+            RaceType::Orc => {
+                
+            },
+            RaceType::Dwarf => {
+                
+            },
+            RaceType::Halfling => {
+                
+            },
+            RaceType::Lizardfolk => {
+                
+            },
+            RaceType::Naga => {
+                
+            },
+            RaceType::Gnome => {
+                
+            },
+            RaceType::Goblin => {
+                
+            },
+            RaceType::Minotaur => {
+                
+            },
+            RaceType::Harpia => {
+                
+            },
+            RaceType::Dryada => {
+                
+            },
+            RaceType::Fairy => {
+                
+            },
+            RaceType::Celestial => {
+                
+            },
+            RaceType::Elemental => {
+                
+            },
+            RaceType::Skeleton => {
+                
+            },
+            RaceType::Zombie => {
+                
+            },
+            RaceType::Ogre => {
+                
+            },
+            RaceType::Demon => {
+                
+            },
+            RaceType::Wolf => {
+                
+            },
+            RaceType::Bear => {
+                
+            },
+            RaceType::Crocodile => {
+                
+            },
+            RaceType::Scorpion => {
+                
+            },
+            RaceType::Eagle => {
+                
+            },
+            RaceType::Spider => {
+                
+            },
+            RaceType::KomodoDragon => {
+                
+            },
+            RaceType::Rhinocerops => {
+                
+            },
+            RaceType::Snake => {
+                
+            },
+            RaceType::Ghost => {
+                
+            },
+        }
+    }
+
+    pub fn get_player_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
+        match *race_type {
+            RaceType::Human => {
+                match *gender_type {
+                    GenderType::Female => self.player_material.human_female_atlas.clone_weak(),
+                    GenderType::Male => self.player_material.human_male_atlas.clone_weak(),
+                }
+            },
+            RaceType::Elf => todo!(),
+            RaceType::Orc => todo!(),
+            RaceType::Dwarf => todo!(),
+            RaceType::Halfling => todo!(),
+            RaceType::Lizardfolk => todo!(),
+            RaceType::Naga => todo!(),
+            RaceType::Gnome => todo!(),
+            RaceType::Goblin => todo!(),
+            RaceType::Minotaur => todo!(),
+            RaceType::Harpia => todo!(),
+            RaceType::Dryada => todo!(),
+            RaceType::Fairy => todo!(),
+            RaceType::Celestial => todo!(),
+            RaceType::Elemental => todo!(),
+            RaceType::Skeleton => todo!(),
+            RaceType::Zombie => todo!(),
+            RaceType::Ogre => todo!(),
+            RaceType::Demon => todo!(),
+            RaceType::Wolf => todo!(),
+            RaceType::Bear => todo!(),
+            RaceType::Crocodile => todo!(),
+            RaceType::Scorpion => todo!(),
+            RaceType::Eagle => todo!(),
+            RaceType::Spider => todo!(),
+            RaceType::KomodoDragon => todo!(),
+            RaceType::Rhinocerops => todo!(),
+            RaceType::Snake => todo!(),
+            RaceType::Ghost => todo!(),
+        }
+    }
+
+    pub fn get_npc_atlas(&self, race_type: &RaceType, npc_type: &NPCType, gender_type: &GenderType) -> Handle<TextureAtlas> {
+        match *race_type {
             RaceType::Human => todo!(),
             RaceType::Elf => todo!(),
             RaceType::Orc => todo!(),
@@ -217,42 +1027,27 @@ impl CharactorsMaterial {
             RaceType::Naga => todo!(),
             RaceType::Gnome => todo!(),
             RaceType::Goblin => todo!(),
-            RaceType::Beast => todo!(),
-            RaceType::Abbreviation => todo!(),
             RaceType::Minotaur => todo!(),
             RaceType::Harpia => todo!(),
             RaceType::Dryada => todo!(),
             RaceType::Fairy => todo!(),
             RaceType::Celestial => todo!(),
             RaceType::Elemental => todo!(),
-            RaceType::Skeleton => {
-                match *monster_type {
-                    MonsterType::Melee => self.monster_material.skeleton_melee.clone_weak(),
-                    MonsterType::Ranged => self.monster_material.skeleton_ranged.clone_weak(),
-                    MonsterType::Magic => self.monster_material.skeleton_magician.clone_weak(),
-                    _ => {},
-                }
-            },
+            RaceType::Skeleton => todo!(),
             RaceType::Zombie => todo!(),
             RaceType::Ogre => todo!(),
             RaceType::Demon => todo!(),
+            RaceType::Ghost => todo!(),
+            RaceType::Wolf => todo!(),
+            RaceType::Bear => todo!(),
+            RaceType::Crocodile => todo!(),
+            RaceType::Scorpion => todo!(),
+            RaceType::Eagle => todo!(),
+            RaceType::Spider => todo!(),
+            RaceType::KomodoDragon => todo!(),
+            RaceType::Rhinocerops => todo!(),
+            RaceType::Snake => todo!(),
         }
-        
-        println!("Check config. Try to get texture with Race: {:?}, monster: {:?}, gender: {:?}. Returning human_male_atlas", monster_race, monster_type, gender_type);
-        return self.monster_material.human_male_melee.clone_weak();
-
-    }
-
-    pub fn get_companion_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
-
-    }
-
-    pub fn get_player_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
-
-    }
-
-    pub fn get_npc_atlas(&self, race_type: &RaceType, gender_type: &GenderType) -> Handle<TextureAtlas> {
-
     }
 }
 
@@ -718,9 +1513,30 @@ impl GameSceneMaterial {
         let human_male_atlas = texture_atlases.add(human_male_texture_atlas);
         let human_female_atlas = texture_atlases.add(human_female_texture_atlas);
 
-        CharactorsMaterial {
-            human_male_atlas,
+        let player_material = PlayerMaterial {
             human_female_atlas,
+            human_male_atlas,
+        };
+
+
+
+        let companion_material = CompanionMaterial {
+
+        };
+
+        let npc_material = NPCMAterial {
+
+        };
+
+        let monster_material = MonsterMaterial {
+
+        };
+
+        CharactorsMaterial {
+            player_material,
+            companion_material,
+            npc_material,
+            monster_material,
         }
     }
 }

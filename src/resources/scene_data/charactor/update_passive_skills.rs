@@ -232,18 +232,18 @@ pub fn update_passive_skills(
                             match skill_target_type {
                                 TargetType::Enemies=> {
                                     match charactor_component.charactor_type {
-                                        CharactorType::Player | CharactorType::Companion => {
+                                        CharactorType::Player | CharactorType::Companion(_) => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion => continue,
-                                                CharactorType::NPC => continue,
+                                                CharactorType::Player | CharactorType::Companion(_) => continue,
+                                                CharactorType::NPC(_) => continue,
                                                 CharactorType::Monster(_) => {},
                                             }
                                         },
-                                        CharactorType::NPC => continue,
+                                        CharactorType::NPC(_) => continue,
                                         CharactorType::Monster(_) => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion => {},
-                                                CharactorType::NPC => continue,
+                                                CharactorType::Player | CharactorType::Companion(_) => {},
+                                                CharactorType::NPC(_) => continue,
                                                 CharactorType::Monster(_) => continue,
                                             }
                                         },
@@ -251,18 +251,18 @@ pub fn update_passive_skills(
                                 },
                                 TargetType::Allies => {
                                     match charactor_component.charactor_type {
-                                        CharactorType::Player | CharactorType::Companion => {
+                                        CharactorType::Player | CharactorType::Companion(_) => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion => {},
-                                                CharactorType::NPC => continue,
+                                                CharactorType::Player | CharactorType::Companion(_) => {},
+                                                CharactorType::NPC(_) => continue,
                                                 CharactorType::Monster(_) => continue,
                                             }
                                         },
-                                        CharactorType::NPC => continue,
+                                        CharactorType::NPC(_) => continue,
                                         CharactorType::Monster(_) => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion => continue,
-                                                CharactorType::NPC => continue,
+                                                CharactorType::Player | CharactorType::Companion(_) => continue,
+                                                CharactorType::NPC(_) => continue,
                                                 CharactorType::Monster(_) => {},
                                             }
                                         },

@@ -2,7 +2,9 @@ use std::{fs::File, io::Read, collections::HashMap};
 
 use serde::Deserialize;
 
-use crate::{config::{DEPLOY_MONSTER_STRENGTH_PATH, DEPLOY_MONSTER_TYPE_PATH}, resources::scene_data::AbilityType};
+use crate::resources::scene_data::{AbilityType, Stat, Attribute, ResistType};
+
+use super::{DEPLOY_MONSTER_STRENGTH_PATH, DEPLOY_MONSTER_TYPE_PATH};
 
 #[derive(Deserialize, Debug)]
 pub struct MonsterDeploy {
@@ -48,21 +50,24 @@ pub struct MonsterStrengthDeploy {
 
 #[derive(Deserialize, Debug)]
 pub struct MonsterStrengthConfig {
-    stats: i16,
-    attributes: i16,
-    resists: i16,
-    abilities: HashMap<AbilityType, i16>,
+    pub stats: i16,
+    pub attributes: i16,
+    pub resists: i16,
+    pub abilities: HashMap<AbilityType, i16>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct MonsterTypeDeploy {
-    melee: MonsterTypeConfig,
-    ranged: MonsterTypeConfig,
-    magic: MonsterTypeConfig,
+    pub melee: MonsterTypeConfig,
+    pub ranged: MonsterTypeConfig,
+    pub magic: MonsterTypeConfig,
 
 }
 
 #[derive(Deserialize, Debug)] 
 pub struct MonsterTypeConfig{
-    
+    pub stats: HashMap<Stat, i16>,
+    pub attributes: HashMap<Attribute, i16>,
+    pub resists: HashMap<ResistType, i16>,
+    pub abilities: HashMap<AbilityType, i16>,
 }

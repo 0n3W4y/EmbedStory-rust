@@ -68,7 +68,7 @@ pub fn player_click(
                                     println!("Clicked on Player");
                                     move_player_to_position(&mut destination_component, position_x, position_y);
                                 },
-                                CharactorType::NPC => {
+                                CharactorType::NPC(_) => {
                                     println!("Clicked on NPC");
                                     //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
                                 },
@@ -77,7 +77,7 @@ pub fn player_click(
                                     select_target_to_attack(&mut player_target, target_identification.id, position_x, position_y);
                                     return;
                                 },
-                                CharactorType::Companion => {
+                                CharactorType::Companion(_) => {
                                     println!("Clicked on Companion");
                                     move_player_to_position(&mut destination_component, position_x, position_y);
                                 },

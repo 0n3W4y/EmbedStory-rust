@@ -118,9 +118,9 @@ impl CharactorStorage {
     pub fn store(&mut self, charactor: Charactor){
         match charactor.charactor_type {
             charactor::CharactorType::Player => self.player.push(charactor),
-            charactor::CharactorType::NPC => self.npc.push(charactor),
+            charactor::CharactorType::NPC(_) => self.npc.push(charactor),
             charactor::CharactorType::Monster(_) => self.monster.push(charactor),
-            charactor::CharactorType::Companion => self.companion.push(charactor),
+            charactor::CharactorType::Companion(_) => self.companion.push(charactor),
         }
     }
 

@@ -2,7 +2,9 @@ use std::{fs::File, io::Read};
 
 use serde::Deserialize;
 
-use crate::{resources::scene_data::projectiles::{ProjectileConfig, ProjectileType}, config::DEPLOY_PROJECTILE_PATH};
+use crate::resources::scene_data::projectiles::{ProjectileConfig, ProjectileType};
+
+use super::DEPLOY_PROJECTILE_PATH;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ProjectileDeploy {

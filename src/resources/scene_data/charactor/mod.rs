@@ -44,13 +44,18 @@ pub enum SkillSlot {
     PotionStamina,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy)]
 pub enum CharactorType {
     Player,
-    #[default]
-    NPC,
+    NPC(NPCType),
     Monster(MonsterType),
-    Companion,
+    Companion(CompanionType),
+}
+
+impl Default for CharactorType {
+    fn default() -> Self {
+        Self::Monster(MonsterType::Melee)
+    }
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -58,24 +63,27 @@ pub enum MonsterType {
     #[default]
     Melee,
     Ranged,
-    Magic,
-    Phantom,
-    Wraith,
-    Spectre,
-    Apparition,
-    Poltergiest,
-    Wisp,
-    Shade,
-    Banshee,
-    Wolf,
-    Bear,
-    Crocodile,
-    Scorpion,
-    Eagle,
-    Spider,
-    KomodoDragon,
-    Rhinocerops,
-    Snake,
+    Magic
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum CompanionType {
+    #[default]
+    Knight,
+    Berserk,
+    Rouge,
+    Bowman,
+    Crossbowman,
+    FireMage,
+    WaterMage,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
+pub enum NPCType{
+    #[default]
+    PotionTrader,
+    BlackSmith,
+    TrinketTrader,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -104,18 +112,26 @@ pub enum RaceType {
     Naga,
     Gnome,
     Goblin,
-    Beast,
-    Abbreviation,
     Minotaur,
     Harpia,
     Dryada,
     Fairy,
     Celestial,
     Elemental,
+    Ghost,
     Skeleton,
     Zombie,
     Ogre,
-    Demon
+    Demon,
+    Wolf,
+    Bear,
+    Crocodile,
+    Scorpion,
+    Eagle,
+    Spider,
+    KomodoDragon,
+    Rhinocerops,
+    Snake,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Hash)]

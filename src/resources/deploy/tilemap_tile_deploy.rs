@@ -2,7 +2,9 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::{ GroundType, CoverType, TileDeploy }, config::{DEPLOY_COVER_PATH, DEPLOY_GROUND_PATH}};
+use crate::scenes::game_scenes::tilemap::tile::{ GroundType, CoverType, TileDeploy };
+
+use super::{DEPLOY_COVER_PATH, DEPLOY_GROUND_PATH};
 
 #[derive( Deserialize, Debug )]
 pub struct TilemapTileDeploy{
