@@ -126,7 +126,16 @@ pub struct RaceDeploy {
     pub zombie: RaceConfig,
     pub ogre: RaceConfig,
     pub demon: RaceConfig,
-    pub abbreviation: RaceConfig
+    pub ghost: RaceConfig,
+    pub wolf: RaceConfig,
+    pub bear: RaceConfig,
+    pub crocodile: RaceConfig,
+    pub scorpion: RaceConfig,
+    pub eagle: RaceConfig,
+    pub spider: RaceConfig,
+    pub komodo_dragon: RaceConfig,
+    pub rhinocerops: RaceConfig,
+    pub snake: RaceConfig,
 }
 
 impl RaceDeploy {
@@ -140,9 +149,7 @@ impl RaceDeploy {
             RaceType::Naga => &self.naga,
             RaceType::Gnome => &self.gnome,
             RaceType::Goblin => &self.goblin,
-            RaceType::Beast => &self.beast,
             RaceType::Lizardfolk => &self.lizardfolk,
-            RaceType::Abbreviation => &self.abbreviation,
             RaceType::Minotaur => &self.minotaur,
             RaceType::Harpia => &self.harpia,
             RaceType::Dryada => &self.dryada,
@@ -153,6 +160,16 @@ impl RaceDeploy {
             RaceType::Zombie => &self.zombie,
             RaceType::Ogre => &self.ogre,
             RaceType::Demon => &self.demon,
+            RaceType::Ghost => &self.ghost,
+            RaceType::Wolf => &self.wolf,
+            RaceType::Bear => &self.bear,
+            RaceType::Crocodile => &self.crocodile,
+            RaceType::Scorpion => &self.scorpion,
+            RaceType::Eagle => &self.eagle,
+            RaceType::Spider => &self.spider,
+            RaceType::KomodoDragon => &self.komodo_dragon,
+            RaceType::Rhinocerops => &self.rhinocerops,
+            RaceType::Snake => &self.snake,
         }
     }
 }
