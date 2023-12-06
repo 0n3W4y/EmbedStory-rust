@@ -56,7 +56,7 @@ pub fn update_effects(
                 }
 
                 for (attribute, attribute_damage) in effect.change_attribute.iter() {
-                    charactor::change_attribute_points(&mut attributes.attributes, &mut attributes.attributes_cache, attribute, *attribute_damage, true);
+                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, true);
                 }
                 
                 for (resist, resists_damage) in effect.change_resist.iter() {                   //change resists;
@@ -87,7 +87,7 @@ pub fn update_effects(
                 }
 
                 for (attribute, attribute_damage) in effect.change_attribute.iter() {
-                    charactor::change_attribute_points(&mut attributes.attributes, &mut attributes.attributes_cache, attribute, -attribute_damage, true);
+                    charactor::change_attribute_points(&mut attributes, attribute, -attribute_damage, true);
                 }
 
                 for (effect_resist, resist_damage) in effect.change_resist.iter() {

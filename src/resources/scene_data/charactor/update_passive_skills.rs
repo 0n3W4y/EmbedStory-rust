@@ -232,38 +232,38 @@ pub fn update_passive_skills(
                             match skill_target_type {
                                 TargetType::Enemies=> {
                                     match charactor_component.charactor_type {
-                                        CharactorType::Player | CharactorType::Companion(_) => {
+                                        CharactorType::Player | CharactorType::Companion => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion(_) => continue,
-                                                CharactorType::NPC(_) => continue,
-                                                CharactorType::Monster(_) => {},
+                                                CharactorType::Player | CharactorType::Companion => continue,
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => {},
                                             }
                                         },
-                                        CharactorType::NPC(_) => continue,
-                                        CharactorType::Monster(_) => {
+                                        CharactorType::NPC => continue,
+                                        CharactorType::Monster => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion(_) => {},
-                                                CharactorType::NPC(_) => continue,
-                                                CharactorType::Monster(_) => continue,
+                                                CharactorType::Player | CharactorType::Companion => {},
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => continue,
                                             }
                                         },
                                     }
                                 },
                                 TargetType::Allies => {
                                     match charactor_component.charactor_type {
-                                        CharactorType::Player | CharactorType::Companion(_) => {
+                                        CharactorType::Player | CharactorType::Companion => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion(_) => {},
-                                                CharactorType::NPC(_) => continue,
-                                                CharactorType::Monster(_) => continue,
+                                                CharactorType::Player | CharactorType::Companion => {},
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => continue,
                                             }
                                         },
-                                        CharactorType::NPC(_) => continue,
-                                        CharactorType::Monster(_) => {
+                                        CharactorType::NPC => continue,
+                                        CharactorType::Monster => {
                                             match target.charactor_type {
-                                                CharactorType::Player | CharactorType::Companion(_) => continue,
-                                                CharactorType::NPC(_) => continue,
-                                                CharactorType::Monster(_) => {},
+                                                CharactorType::Player | CharactorType::Companion => continue,
+                                                CharactorType::NPC => continue,
+                                                CharactorType::Monster => {},
                                             }
                                         },
                                     }
@@ -331,8 +331,7 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, attributes: &mut AttributesC
         };
 
         change_attribute_points(
-            &mut attributes.attributes,
-            &mut attributes.attributes_cache,
+            attributes,
             &attribute,
             damage_value,
             false,

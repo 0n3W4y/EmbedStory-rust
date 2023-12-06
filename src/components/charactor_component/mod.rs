@@ -16,11 +16,6 @@ use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderTyp
 #[derive(Default, Eq, PartialEq, Debug)]
 pub enum ActionType {
     Attack,
-    Pickup,
-    Open,
-    Talk,
-    Move,
-    Use,
     #[default]
     None
 }

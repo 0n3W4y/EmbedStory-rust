@@ -326,8 +326,7 @@ fn attack(
             };
 
             change_attribute_points(                                        //do damage;
-                &mut target_attributes.attributes,
-                &mut target_attributes.attributes_cache,
+                target_attributes,
                 &attribute,
                 damage,
                 false,

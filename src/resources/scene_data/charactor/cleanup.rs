@@ -64,10 +64,10 @@ pub fn cleanup(
             CharactorType::Player => {
                 profile.charactor = Some(charactor);
             },
-            CharactorType::Companion(_) => {
+            CharactorType::Companion => {
                 profile.companion = Some(charactor);
             },
-            CharactorType::Monster(_) | CharactorType::NPC(_) => {
+            CharactorType::Monster | CharactorType::NPC => {
                 scene.charactors.store(charactor);
             },
         }

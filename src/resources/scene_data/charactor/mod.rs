@@ -24,7 +24,7 @@ pub mod update_attack;
 pub mod update_cooldowns;
 pub mod active_skill_handler;
 
-pub const STATS_EVERY_LEVEL: u8 = 2;
+pub const STATS_POINTS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default, Hash)]
@@ -44,46 +44,13 @@ pub enum SkillSlot {
     PotionStamina,
 }
 
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
 pub enum CharactorType {
     Player,
-    NPC(NPCType),
-    Monster(MonsterType),
-    Companion(CompanionType),
-}
-
-impl Default for CharactorType {
-    fn default() -> Self {
-        Self::Monster(MonsterType::Melee)
-    }
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum MonsterType {
+    NPC,
     #[default]
-    Melee,
-    Ranged,
-    Magic
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum CompanionType {
-    #[default]
-    Knight,
-    Berserk,
-    Rouge,
-    Bowman,
-    Crossbowman,
-    FireMage,
-    WaterMage,
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum NPCType{
-    #[default]
-    PotionTrader,
-    BlackSmith,
-    TrinketTrader,
+    Monster,
+    Companion,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -91,13 +58,6 @@ pub enum GenderType {
     Female,
     #[default]
     Male,
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
-pub enum AttitudeToPlayer {
-    #[default]
-    Enemy,
-    Friendly,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default)]
@@ -241,14 +201,13 @@ pub fn change_resist(
 }
 
 pub fn change_attribute_points(
-    attributes: &mut HashMap<Attribute, i16>,
-    attributes_cache: &mut HashMap<Attribute, i16>,
+    attributes: &mut AttributesComponent,
     attribute: &Attribute,
     value: i16,
     change_cache: bool,
 ){
     if change_cache {
-        let cache_value = match attributes_cache.get_mut(&attribute) {
+        let cache_value = match attributes.attributes_cache.get_mut(&attribute) {
             Some(v) => {
                 *v -= value;
                 *v
@@ -259,7 +218,7 @@ pub fn change_attribute_points(
             },
         };
 
-        match attributes.get_mut(&attribute) {
+        match attributes.attributes.get_mut(&attribute) {
             Some(v) => {
                 let new_value = *v - value;
                 if new_value < 1 {
@@ -275,7 +234,7 @@ pub fn change_attribute_points(
             }
         }; 
     } else {
-        match attributes.get_mut(&attribute) {
+        match attributes.attributes.get_mut(&attribute) {
             Some(v) => {
                 *v -= value;
             },
@@ -326,15 +285,14 @@ pub fn change_stat_points(
     }   
     
     if *stat_value != old_stat_value {                          //check for do dependences;
-        do_stat_dependences(resists, abilities, &mut attributes.attributes, &mut attributes.attributes_cache, stat,*stat_value,old_stat_value);
+        do_stat_dependences(resists, abilities, attributes, stat,*stat_value,old_stat_value);
     }
 }
 
 pub fn do_stat_dependences(
     resists: &mut HashMap<ResistType, i16>,
     abilities: &mut HashMap<AbilityType, i16>,
-    attributes: &mut HashMap<Attribute, i16>,
-    attributes_cache: &mut HashMap<Attribute, i16>,
+    attributes: &mut AttributesComponent,
     stat: &Stat,
     new_value: i16,
     old_value: i16,
@@ -365,7 +323,7 @@ pub fn do_stat_dependences(
     for(attribute, value) in new_values_for_attributes.iter() {
         let old_value_for_attribute = old_values_for_attributes.get(attribute).unwrap();
         let value_to_attribute = old_value_for_attribute - value;
-        change_attribute_points(attributes, attributes_cache, attribute, value_to_attribute, true);
+        change_attribute_points(attributes, attribute, value_to_attribute, true);
     }
 }
 

@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 use crate::components::charactor_component::{
     AbilityComponent, CharactorAnimationComponent, CharactorComponent,
-    CompanionComponent, DestinationComponent, EffectComponent, InventoryComponent,
-    MonsterComponent, NPCComponent, PlayerComponent, SkillComponent
+    DestinationComponent, EffectComponent, InventoryComponent,
+    SkillComponent, PlayerComponent, NPCComponent, MonsterComponent, CompanionComponent
 };
 use crate::components::{IdentificationComponent, ObjectType, PositionComponent, DamageTextComponent, AttributesComponent, StatsComponent, ResistsComponent};
 use crate::config::TILE_SIZE;
@@ -59,116 +59,39 @@ pub fn draw(
             &mut inventory_component,
         );
 
+        let texture: Handle<TextureAtlas> = material_manager
+            .game_scene
+            .charactors
+            .get_atlas(charactor_racetype, charactor_gender);
+
+        let entity = commands
+        .spawn_bundle(SpriteSheetBundle {
+            texture_atlas: texture,
+            transform,
+            ..default()
+        })
+        .insert(identefication_component)
+        .insert(charactor_component)
+        .insert(resist_component)
+        .insert(skill_component)
+        .insert(text_component)
+        .insert(position_component)
+        .insert(destination_component)
+        .insert(effect_component)
+        .insert(animation_component)
+        .insert(stats_component)
+        .insert(attributes_component)
+        .insert(ability_component)
+        .insert(inventory_component)
+        .id();
+
         match *charactor_type {
-            CharactorType::Player => {
-                let texture: Handle<TextureAtlas> = material_manager
-                    .game_scene
-                    .charactors
-                    .get_player_atlas(charactor_racetype, charactor_gender);
-
-                commands
-                    .spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: texture,
-                        transform,
-                        ..default()
-                    })
-                    .insert(identefication_component)
-                    .insert(charactor_component)
-                    .insert(resist_component)
-                    .insert(skill_component)
-                    .insert(text_component)
-                    .insert(position_component)
-                    .insert(destination_component)
-                    .insert(effect_component)
-                    .insert(animation_component)
-                    .insert(stats_component)
-                    .insert(attributes_component)
-                    .insert(ability_component)
-                    .insert(inventory_component)
-                    .insert(PlayerComponent);
-            }
-            CharactorType::NPC(npc_type) => {
-                let texture: Handle<TextureAtlas> = material_manager
-                    .game_scene
-                    .charactors
-                    .get_npc_atlas(charactor_racetype, &npc_type, charactor_gender);
-
-                commands
-                    .spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: texture,
-                        transform,
-                        ..default()
-                    })
-                    .insert(identefication_component)
-                    .insert(charactor_component)
-                    .insert(resist_component)
-                    .insert(skill_component)
-                    .insert(text_component)
-                    .insert(position_component)
-                    .insert(destination_component)
-                    .insert(effect_component)
-                    .insert(animation_component)
-                    .insert(stats_component)
-                    .insert(attributes_component)
-                    .insert(ability_component)
-                    .insert(inventory_component)
-                    .insert(NPCComponent);
-            }
-            CharactorType::Monster(montser_type) => {
-                let texture: Handle<TextureAtlas> = material_manager
-                    .game_scene
-                    .charactors
-                    .get_monster_atlas(charactor_racetype,&montser_type, charactor_gender);
-
-                commands
-                    .spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: texture,
-                        transform,
-                        ..default()
-                    })
-                    .insert(identefication_component)
-                    .insert(charactor_component)
-                    .insert(resist_component)
-                    .insert(skill_component)
-                    .insert(text_component)
-                    .insert(position_component)
-                    .insert(destination_component)
-                    .insert(effect_component)
-                    .insert(animation_component)
-                    .insert(stats_component)
-                    .insert(attributes_component)
-                    .insert(ability_component)
-                    .insert(inventory_component)
-                    .insert(MonsterComponent);
-            }
-            CharactorType::Companion(companion_type) => {
-                let texture: Handle<TextureAtlas> = material_manager
-                    .game_scene
-                    .charactors
-                    .get_companion_atlas(charactor_racetype, &companion_type, charactor_gender);
-
-                commands
-                    .spawn_bundle(SpriteSheetBundle {
-                        texture_atlas: texture,
-                        transform,
-                        ..default()
-                    })
-                    .insert(identefication_component)
-                    .insert(charactor_component)
-                    .insert(resist_component)
-                    .insert(skill_component)
-                    .insert(text_component)
-                    .insert(position_component)
-                    .insert(destination_component)
-                    .insert(effect_component)
-                    .insert(animation_component)
-                    .insert(stats_component)
-                    .insert(attributes_component)
-                    .insert(ability_component)
-                    .insert(inventory_component)
-                    .insert(CompanionComponent);
-            }
+            CharactorType::Player => commands.entity(entity).insert(PlayerComponent),
+            CharactorType::NPC => commands.entity(entity).insert(NPCComponent),
+            CharactorType::Monster => commands.entity(entity).insert(MonsterComponent),
+            CharactorType::Companion => commands.entity(entity).insert(CompanionComponent),
         };
+        
     }
 }
 
