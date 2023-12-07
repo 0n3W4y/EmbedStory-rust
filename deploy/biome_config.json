@@ -70,11 +70,6 @@
                     "IronOre": 15.0
                 }
                 
-            },
-            "charactors":
-            {
-                "neutral_monsters":[],
-                "agressive_monsters": []
             }
         }
     }

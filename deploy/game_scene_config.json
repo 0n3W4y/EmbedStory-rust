@@ -1,9 +1,55 @@
 {
-    "plain_event":{
+    "elven_plains":{
+        "location": "ElvenPlains",
+        "location_type": "Neutral",
         "biome_type": "Plain",
         "width": 100,
         "height": 100,
-        "underground": 50,
-        "underground_floor": 3
+        "dungeon": {
+            "chance": 5,
+            "location_type": "PlainCaves",
+            "dungeon_floors_max": 2
+        },
+        "races": ["Wolf", "Human"]
+    },
+
+    "elven_forest": {
+        "location": "ElvenForest",
+        "location_type": "Agressive",
+        "biome_type": "Forest",
+        "width": 100,
+        "height": 100,
+        "dungeon": {
+            "chance": 15,
+            "location_type": "ForestCaves",
+            "dungeon_floors_max": 2
+        },
+        "races": ["Wolf", "Human"]
+    },
+
+    "forest_caves": {
+        "location_type": "ForestCaves",
+        "biome_type": "Forest",
+        "width": 50,
+        "height": 50,
+        "dungeon": {
+            "chance": 0,
+            "location_type": "ForestCaves",
+            "dungeon_floors_max": 0
+        },
+        "races": ["Skeleton"]
+    },
+
+    "plain_caves": {
+        "location_type": "PlainCaves",
+        "biome_type": "Plain",
+        "width": 50,
+        "height": 50,
+        "dungeon": {
+            "chance": 0,
+            "location_type": "PlainCaves",
+            "dungeon_floors_max": 0
+        },
+        "races": ["Skeleton"]
     }
 }

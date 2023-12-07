@@ -4,9 +4,13 @@ use std::slice::Iter;
 use crate::materials::font::FontMaterials;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::charactor_manager::CharactorManager;
+use crate::resources::deploy::game_scene_deploy::Location;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
-use crate::resources::scene_data::charactor::{CharactorType, GenderType, RaceType};
+use crate::resources::scene_data::charactor::{GenderType, RaceType};
+use crate::resources::scene_manager::SceneManager;
+use crate::resources::stuff_manager::StuffManager;
+use crate::resources::thing_manager::ThingManager;
 use crate::scenes::SceneState;
 use crate::resources::deploy::Deploy;
 
@@ -155,17 +159,32 @@ fn setup(
     });
 
     let mut charactor_manager: CharactorManager = Default::default();
-    let player = charactor_manager.create_charactor(
+    let player = charactor_manager.create_player(
         &deploy, 
-        &CharactorType::Player,
         &RaceType::Human,
         &GenderType::Male,
     );
 
     let mut profile: Profile = Default::default();
     profile.charactor = Some(player);
+
+    let mut scene_manager: SceneManager = Default::default();                   // Create new scene_manager;     
+    let mut thing_manager: ThingManager = Default::default();                      //create new object manager;
+    let stuff_manager: StuffManager = Default::default();                       //create new stuff manager;
+
+    let next_scene = scene_manager.generate_new_scenes(
+        &deploy, 
+        &mut thing_manager, 
+        &mut charactor_manager, 
+        &Location::ElvenPlains
+    );
+    scene_manager.next_game_scene = Some(next_scene.scene_id);
+
     commands.insert_resource(charactor_manager);
     commands.insert_resource(profile);
+    commands.insert_resource(scene_manager);
+    commands.insert_resource(thing_manager);
+    commands.insert_resource(stuff_manager);
 }
 
 fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: Res<Dictionary>) {
@@ -309,8 +328,8 @@ fn button_handle_system(
     >,
     mut state: ResMut<State<SceneState>>,
     mut profile: ResMut<Profile>,
-    mut charactor_manager: ResMut<CharactorManager>,
-    deploy: Res<Deploy>,
+    //mut charactor_manager: ResMut<CharactorManager>,
+    //deploy: Res<Deploy>,
 ) {
     for (interaction, button_component, mut color) in button_query.iter_mut() {
         match *button_component {

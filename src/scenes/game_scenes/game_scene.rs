@@ -1,13 +1,15 @@
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
+use crate::resources::deploy::game_scene_deploy::Location;
+use crate::resources::deploy::game_scene_deploy::LocationType;
 use crate::resources::scene_data::charactor::Charactor;
 use crate::resources::scene_data::projectiles;
 use crate::resources::scene_data::scene_effect::SceneEffect;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::thing::Thing;
 use crate::resources::scene_data::thing::ThingType;
-use crate::resources::scene_manager::SceneType;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::thing;
@@ -118,9 +120,9 @@ impl CharactorStorage {
     pub fn store(&mut self, charactor: Charactor){
         match charactor.charactor_type {
             charactor::CharactorType::Player => self.player.push(charactor),
-            charactor::CharactorType::NPC(_) => self.npc.push(charactor),
-            charactor::CharactorType::Monster(_) => self.monster.push(charactor),
-            charactor::CharactorType::Companion(_) => self.companion.push(charactor),
+            charactor::CharactorType::NPC => self.npc.push(charactor),
+            charactor::CharactorType::Monster => self.monster.push(charactor),
+            charactor::CharactorType::Companion => self.companion.push(charactor),
         }
     }
 
@@ -147,15 +149,15 @@ impl CharactorStorage {
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GameScene {
-    pub scene_type: SceneType,
+    pub location: Location,
+    pub location_type: LocationType,
+    pub biome_type: BiomeType,
     pub scene_id: usize,
-    pub index: usize, // vector index in scene_manager.ground_scene;
     pub tilemap: Tilemap,
     pub things: ThingsStorage,
     pub stuff: Vec<Stuff>,
     pub charactors: CharactorStorage,
     pub effects: Vec<SceneEffect>,
-    //pub roof: Vec<>,
 }
 
 pub struct GameScenePlugin;

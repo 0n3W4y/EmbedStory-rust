@@ -1,25 +1,52 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::prelude::*;
 
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
+use crate::resources::scene_data::charactor::RaceType;
 
 use super::DEPLOY_GROUND_SCENE_PATH;
 
+#[derive(Clone, Serialize, Deserialize, Debug, Default)]
+pub enum LocationType {
+    Friendly,
+    #[default]
+    Neutral,
+    Agressive,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, Default)]
+pub enum Location {
+    #[default]
+    ElvenPlains,
+    ElvenForest,
+    PlainCavse,
+    ForestCaves,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct GameSceneConfig {
+    pub location_type: LocationType,
     pub biome_type: BiomeType,
     pub width: u16,
     pub height: u16,
-    pub underground: u8,       // percent;
-    pub underground_floor: u8, // min 0 - max - value;
-    pub monsters: u8, //min 0 - max - value;
-    pub npc: u8,      //min 0 - max - value;
+    pub dungeon: DungeonConfig,
+    pub races: Vec<RaceType>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct DungeonConfig {
+    pub chance: u8,
+    pub dungeon_type: Location,
+    pub dungeon_floors_max: u8,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct GameSceneDeploy {
-    pub plain_event: GameSceneConfig,
+    pub elven_plains: GameSceneConfig,
+    pub elven_forest: GameSceneConfig,
+    pub plain_caves: GameSceneConfig,
+    pub forest_caves: GameSceneConfig,
 }
 
 impl GameSceneDeploy {
@@ -36,18 +63,12 @@ impl GameSceneDeploy {
         return result;
     }
 
-    pub fn get_scene_setting(&self, biome_type: BiomeType) -> &GameSceneConfig {
-        match biome_type {
-            BiomeType::Plain => return &self.plain_event,
-            /*
-            BiomeType::Desert =>{},
-            BiomeType::Forest =>{},
-            BiomeType::Rocks =>{},
-            BiomeType::Snow =>{},
-            BiomeType::Swamp =>{},
-            BiomeType::Tropic =>{},
-            */
-            _ => return &self.plain_event,
+    pub fn get_scene_setting(&self, location: &Location) -> &GameSceneConfig {
+        match *location {
+            Location::ElvenPlains => &self.elven_plains,
+            Location::ElvenForest => &self.elven_forest,
+            Location::PlainCavse => &self.plain_caves,
+            Location::ForestCaves => &self.forest_caves,
         }
     }
 }

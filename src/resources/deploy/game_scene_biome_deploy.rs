@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
@@ -13,8 +13,9 @@ use crate::{
 
 use super::DEPLOY_BIOME_PATH;
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub enum BiomeType {
+    #[default]
     Plain,
     Desert,
     Forest,

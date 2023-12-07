@@ -30,7 +30,7 @@ pub const DEPLOY_EFFECTS_PATH: &str = "deploy/battle_effects_config.json";
 pub const DEPLOY_SKILLS_PATH: &str = "deploy/skills_config.json";
 pub const DEPLOY_PROJECTILE_PATH: &str = "deploy/projectiles.json";
 pub const DEPLOY_MONSTER_STRENGTH_PATH: &str = "deploy/mosnter_config.json";
-pub const DEPLOY_MONSTER_TYPE_PATH: &str = "deploy/monster_type_config.json";
+pub const DEPLOY_LOCATION_PATH: &str = "deploy/location_config.json";
 pub const DEPLOY_NPC_PATH: &str = "deploy/npc_config.json";
 pub const DEPLOY_COMPANION_PATH: &str = "deploy/companion_config";
 

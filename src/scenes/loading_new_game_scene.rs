@@ -1,19 +1,15 @@
 use bevy::prelude::*;
 
-use super::game_scenes::tilemap;
-use crate::config::{RESOLUTION, TILE_SIZE, WINDOW_HEIGHT};
+use crate::config::{RESOLUTION, WINDOW_HEIGHT};
 use crate::materials::{font::FontMaterials, material_manager::MaterialManager};
 use crate::resources::charactor_manager::CharactorManager;
 use crate::resources::deploy::Deploy;
-use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
 use crate::resources::stuff_manager::StuffManager;
 use crate::resources::thing_manager::ThingManager;
-use crate::resources::scene_manager::{SceneManager, SceneType};
+use crate::resources::scene_manager::SceneManager;
 use crate::scenes::SceneState;
-
-use super::game_scenes::game_scene::GameScene;
 
 const LOADING_BORDER_WIDTH: f32 = 600.0;
 const LOADING_BORDER_HEIGHT: f32 = 60.0;
@@ -38,7 +34,7 @@ impl Plugin for LoadingNewGameScenePlugin {
         app.add_system_set(
             SystemSet::on_enter(SceneState::LoadingNewGameScene)
                 .with_system(setup)
-                .with_system(create_starting_scenes),
+                .with_system(prepare_next_scene),
         );
         app.add_system_set(
             SystemSet::on_update(SceneState::LoadingNewGameScene).with_system(update),
@@ -226,81 +222,26 @@ fn cleanup(mut commands: Commands, scene_data: Res<LoadingNewGameSceneData>) {
         .despawn_recursive();
 }
 
-fn create_starting_scenes(
+fn prepare_next_scene(
     mut commands: Commands, 
     deploy: Res<Deploy>,
     profile: Res<Profile>,
     mut charactor_manager: ResMut<CharactorManager>,
+    mut scene_manager: ResMut<SceneManager>,
+    mut thing_manager: ResMut<ThingManager>,
+    mut stuff_manager: ResMut<StuffManager>
 ) {
-    //get scene settings fro deploy;
-    let scene_setting = deploy.game_scene.get_scene_setting(BiomeType::Plain);
-
-    // Create new scene_manager;
-    let mut scene_manager: SceneManager = Default::default();
-
-    //create new object manager;
-    let mut object_manager: ThingManager = Default::default();
-
-    //create new stuff manager;
-
-    let stuff_manager: StuffManager = Default::default();
-
-    //Create starting scene;
-    let mut starting_scene: GameScene = scene_manager.create_game_scene(&SceneType::GroundScene);
-    let id = starting_scene.scene_id;
-
-    //config scen etilemap with deploy ;
-    starting_scene
-        .tilemap
-        .set(TILE_SIZE, scene_setting.width, scene_setting.height);
-
-    //generate tilemap with template from biome type;
-    tilemap::generate::generate_tilemap(
-        &mut starting_scene.tilemap,
-        &deploy,
-        &scene_setting.biome_type,
-    );
-
-    //prepare things for scene;
-    let biome_setting = deploy
-        .game_scene_biome
-        .get_biome_setting(&scene_setting.biome_type);
-   
-   
-    object_manager.generate_things_for_scene(
-        &mut starting_scene,
-        &deploy,
-        &biome_setting.objects.things,
-    );
+    let next_scene = scene_manager.get_next_scene(); 
+    scene_manager.set_current_game_scene(next_scene.scene_id);
+    scene_manager.next_game_scene = None;
 
     match &profile.charactor {
-        Some(v) => starting_scene.charactors.store(v.clone()),
+        Some(v) => next_scene.charactors.store(v.clone()),
         None => panic!("Player not created"),
     };
 
     match &profile.companion {
-        Some(v) => starting_scene.charactors.store(v.clone()),
+        Some(v) => next_scene.charactors.store(v.clone()),
         None => {}
     };
-     //prepare monsters and npcs
-     //monster_spawner.generate_monsters();
-     /* 
-    charactor_manager.generate_mosnters_for_scene(
-        &mut starting_scene,
-        &deploy,
-        &biome_setting.objects.charactors,
-    );
-    */
-    //object_manager.generate_pattern_things_for_scene( &mut starting_scene );
-    
-
-    //store scene into scene_manager;
-    scene_manager.store_game_scene(starting_scene);
-
-    //set next scene to load - new scene;
-    scene_manager.set_current_game_scene(id);
-
-    commands.insert_resource(scene_manager);
-    commands.insert_resource(object_manager);
-    commands.insert_resource(stuff_manager);
 }

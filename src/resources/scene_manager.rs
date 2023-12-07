@@ -1,13 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::scenes::game_scenes::game_scene::GameScene;
+use crate::{scenes::game_scenes::{game_scene::GameScene, tilemap::generate::generate_tilemap}, config::TILE_SIZE};
 
-#[derive(Serialize, Deserialize, Clone, Default)]
-pub enum SceneType {
-    #[default]
-    GroundScene,
-    UndergroundScene,
-}
+use super::{deploy::{Deploy, game_scene_deploy::Location}, charactor_manager::CharactorManager, thing_manager::ThingManager, profile::Profile};
+
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct SceneManager {
@@ -20,21 +16,39 @@ pub struct SceneManager {
 }
 
 impl SceneManager {
-    pub fn create_game_scene(&mut self, scene_type: &SceneType) -> GameScene {
-        let scene_id = self.create_scene_id();
-        let scene: GameScene = GameScene {
-            scene_id,
-            scene_type: scene_type.clone(),
-            ..Default::default()
-        };
-        return scene;
+    pub fn generate_new_scenes(
+        &mut self, 
+        dpeloy: &Deploy, 
+        thing_manager: &mut ThingManager, 
+        charactor_manager: &mut CharactorManager,
+        location: &Location
+    ) -> &mut GameScene {
+        //TODO:: check for dungeon; create dungeon entrance like thing; add into scene id;
+        // create 1-st floor, create 2 things. ID to ground scene and id to next floor;
     }
 
-    pub fn store_game_scene(&mut self, mut scene: GameScene) -> usize {
-        let index: usize = self.game_scene.len();
-        scene.index = index;
+    fn create_game_scene(&mut self, deploy: &Deploy, location: &Location) -> &mut GameScene {
+        let scene_id = self.create_scene_id();
+        let scene_config = deploy.game_scene.get_scene_setting(location);
+
+        let mut scene: GameScene = GameScene {
+            scene_id,
+            location: location.clone(),
+            location_type: scene_config.location_type.clone(),
+            biome_type: scene_config.biome_type.clone(),
+            ..Default::default()
+        };
+
+        scene.tilemap.set(TILE_SIZE, scene_config.width, scene_config.height);
+        generate_tilemap(&mut scene.tilemap, deploy, &scene.biome_type);
+
+        return self.store_game_scene(scene);
+    }
+
+    fn store_game_scene(&mut self, scene: GameScene) -> &mut GameScene {
+        let id = scene.scene_id;
         self.game_scene.push(scene);
-        return index;
+        return self.get_game_scene_by_id_mut(id);
     }
 
     pub fn get_current_game_scene_mut(&mut self) -> &mut GameScene{
@@ -44,32 +58,37 @@ impl SceneManager {
                 panic!("scene_manager.get_current_game_scene_mut. Can't get current scene.");
             }
         };
-
-        return &mut self.game_scene[index];
+        self.get_game_scene_by_id_mut(index)
     }
 
-    pub fn get_current_game_scene(& self) -> & GameScene{
+    pub fn get_current_game_scene(& self) -> &GameScene {
         let index: usize = match self.current_game_scene {
             Option::Some(v) => v,
             Option::None => {
-                panic!("scene_manager.get_current_game_scene. Can't get current scene.");
+                panic!("scene_manager.get_current_game_scene. Can't get current scene.No current game scene");
             }
         };
-
-        return &self.game_scene[index];
+        self.get_game_scene_by_id(index)        
     }
 
     pub fn get_game_scene_by_id_mut(&mut self, scene_id: usize) -> &mut GameScene {
-        for i in 0..self.game_scene.len() {
-            if scene_id == self.game_scene[i].scene_id {
-                return &mut self.game_scene[i];
+        for scene in self.game_scene.iter_mut() {
+            if scene.scene_id == scene_id {
+                return scene;
             }
         }
 
-        panic!(
-            "scene_mnager.get_ground_scene_by_id. There is no id: {} in vector with Ground Scenes",
-            scene_id
-        );
+        panic!("Can't get current scene, because ID '{:?}' not available in game_scenes vector", scene_id);
+    }
+
+    pub fn get_game_scene_by_id(&self, scene_id: usize) -> &GameScene {
+        for scene in self.game_scene.iter() {
+            if scene.scene_id == scene_id {
+                return scene;
+            }
+        }
+
+        panic!("Can't get current scene, because ID '{:?}' not available in game_scenes vector", scene_id);
     }
 
     pub fn clear_current_game_scene(&mut self){
@@ -87,6 +106,14 @@ impl SceneManager {
             }
             Option::None => self.current_game_scene = Some(id),
         };
+    }
+    pub fn get_next_scene(&mut self) -> &mut GameScene {
+        let id = match self.next_game_scene {
+            Some(v) => v,
+            None => panic!("Can't get next scene, because it's empty")
+        };
+
+        &mut self.get_game_scene_by_id(id)
     }
 
     fn create_scene_id(&mut self) -> usize {
