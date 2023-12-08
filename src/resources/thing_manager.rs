@@ -6,7 +6,6 @@ use crate::scenes::game_scenes::tilemap::tile::{GroundType, Tile, TilePermission
 use crate::scenes::game_scenes::tilemap;
 
 use super::deploy::Deploy;
-use super::deploy::game_scene_biome_deploy::BiomeThings;
 use super::scene_data::thing::{Thing, ThingType, ThingConfig};
 
 
@@ -86,10 +85,12 @@ impl ThingManager {
     pub fn generate_things_for_scene(
         &mut self,
         scene: &mut GameScene,
-        deploy: &Deploy,
-        biome_things_setting: &BiomeThings,
+        deploy: &Deploy
     ) {
         //first get all "free" tiles, where i can put a Thing except rocks;
+        let location_config = deploy.game_scene.get_scene_setting(&scene.location);
+        let biome_config = deploy.game_scene_biome.get_biome_setting(&location_config.biome_type);
+
         let mut vec_of_free_tiles: Vec<usize> = vec![];
         let tile_storage = scene.tilemap.get_tilemap_tile_storage();
         for tile in tile_storage.iter(){
@@ -99,7 +100,7 @@ impl ThingManager {
             }
         };
 
-        for (key, percent) in biome_things_setting.natural_things.iter() {
+        for (key, percent) in biome_config.objects.things.natural_things.iter() {
             match *key {
                 ThingType::Rock => self.generate_rocks_for_scene(scene, deploy),
                 ThingType::CopperOre | ThingType::IronOre => {

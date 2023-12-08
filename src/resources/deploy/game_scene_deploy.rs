@@ -7,46 +7,34 @@ use crate::resources::scene_data::charactor::RaceType;
 
 use super::DEPLOY_GROUND_SCENE_PATH;
 
-#[derive(Clone, Serialize, Deserialize, Debug, Default)]
-pub enum LocationType {
-    Friendly,
-    #[default]
-    Neutral,
-    Agressive,
-}
 
 #[derive(Clone, Serialize, Deserialize, Debug, Default)]
 pub enum Location {
     #[default]
     ElvenPlains,
     ElvenForest,
-    PlainCavse,
-    ForestCaves,
+    ElvenPlainDungeon,
+    ElvenForestDungeon,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct GameSceneConfig {
-    pub location_type: LocationType,
+    pub location: Location,
     pub biome_type: BiomeType,
     pub width: u16,
     pub height: u16,
-    pub dungeon: DungeonConfig,
-    pub races: Vec<RaceType>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct DungeonConfig {
-    pub chance: u8,
+    pub dungeon_chance: u8,
     pub dungeon_type: Location,
     pub dungeon_floors_max: u8,
+    pub races: Vec<RaceType>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct GameSceneDeploy {
     pub elven_plains: GameSceneConfig,
     pub elven_forest: GameSceneConfig,
-    pub plain_caves: GameSceneConfig,
-    pub forest_caves: GameSceneConfig,
+    pub elven_plain_dungeon: GameSceneConfig,
+    pub elven_forest_dungeon: GameSceneConfig,
 }
 
 impl GameSceneDeploy {
@@ -67,8 +55,8 @@ impl GameSceneDeploy {
         match *location {
             Location::ElvenPlains => &self.elven_plains,
             Location::ElvenForest => &self.elven_forest,
-            Location::PlainCavse => &self.plain_caves,
-            Location::ForestCaves => &self.forest_caves,
+            Location::ElvenPlainDungeon => &self.elven_plain_dungeon,
+            Location::ElvenForestDungeon => &self.elven_forest_dungeon,
         }
     }
 }

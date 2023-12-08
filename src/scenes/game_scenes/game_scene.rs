@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::deploy::game_scene_deploy::Location;
-use crate::resources::deploy::game_scene_deploy::LocationType;
 use crate::resources::scene_data::charactor::Charactor;
 use crate::resources::scene_data::projectiles;
 use crate::resources::scene_data::scene_effect::SceneEffect;
@@ -150,7 +149,6 @@ impl CharactorStorage {
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct GameScene {
     pub location: Location,
-    pub location_type: LocationType,
     pub biome_type: BiomeType,
     pub scene_id: usize,
     pub tilemap: Tilemap,

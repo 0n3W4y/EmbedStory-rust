@@ -9,7 +9,7 @@ use super::{
             GenderType, RaceType, do_stat_dependences, CharactorStrength, STATS_POINTS_EVERY_LEVEL
     }, Stat},
 };
-use crate::components::AttributesComponent;
+use crate::{components::AttributesComponent, scenes::game_scenes::game_scene::GameScene};
 
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct CharactorManager {
@@ -124,6 +124,10 @@ impl CharactorManager {
 
         initialize_character_after_creation(&mut charactor);
         return charactor;
+    }
+
+    pub fn generate_charactors_for_scene(&mut self, scene: &mut GameScene, deploy: &Deploy, player_level: u8) {
+        
     }
 
     fn create_charactor(&mut self, deploy: &Deploy, race_type: &RaceType, gender: &GenderType, charactor_type: CharactorType) -> Charactor {

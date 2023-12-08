@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use rand::Rng;
 
 use crate::{scenes::game_scenes::{game_scene::GameScene, tilemap::generate::generate_tilemap}, config::TILE_SIZE};
 
@@ -18,13 +19,49 @@ pub struct SceneManager {
 impl SceneManager {
     pub fn generate_new_scenes(
         &mut self, 
-        dpeloy: &Deploy, 
+        deploy: &Deploy, 
         thing_manager: &mut ThingManager, 
         charactor_manager: &mut CharactorManager,
+        profile: &Profile,
         location: &Location
     ) -> &mut GameScene {
         //TODO:: check for dungeon; create dungeon entrance like thing; add into scene id;
         // create 1-st floor, create 2 things. ID to ground scene and id to next floor;
+        let mut random = rand::thread_rng();
+        let location_config = deploy.game_scene.get_scene_setting(location);
+
+        let scene = self.generate_game_scene(deploy, thing_manager, charactor_manager, profile, location);
+        
+        let dungeon_percent = location_config.dungeon_chance;
+        if dungeon_percent < 100 {
+            let random_chance: u8 = random.gen_range(0..=99);
+            if dungeon_percent < random_chance {
+                return scene;
+            }
+        }
+        return scene;        
+    }
+
+    fn generate_game_scene(
+        &self, 
+        deploy: &Deploy, 
+        thing_manager: &mut ThingManager, 
+        charactor_manager: &mut CharactorManager, 
+        profile: &Profile, 
+        location: &Location
+    ) -> &mut GameScene {
+        let mut scene = self.create_game_scene(deploy, location);
+        thing_manager.generate_things_for_scene(scene, deploy);
+        let player_level = match &profile.charactor {
+            Some(v) => v.level,
+            None => {
+                println!("Can not get player level in Game Scene Generator. Using 0");
+                0
+            }
+        };
+        charactor_manager.generate_charactors_for_scene(scene, deploy, player_level);
+
+        return scene;
     }
 
     fn create_game_scene(&mut self, deploy: &Deploy, location: &Location) -> &mut GameScene {
@@ -34,7 +71,6 @@ impl SceneManager {
         let mut scene: GameScene = GameScene {
             scene_id,
             location: location.clone(),
-            location_type: scene_config.location_type.clone(),
             biome_type: scene_config.biome_type.clone(),
             ..Default::default()
         };
