@@ -33,24 +33,27 @@ impl SceneManager {
         let scene = self.generate_game_scene(deploy, thing_manager, charactor_manager, profile, location);
         
         let dungeon_percent = location_config.dungeon_chance;
-        if dungeon_percent < 100 {
+        if dungeon_percent < 100 {                                              //check for dungeon in current scene;
             let random_chance: u8 = random.gen_range(0..=99);
             if dungeon_percent < random_chance {
                 return scene;
             }
         }
+
+        //here we need to generate dungeon scenes and generate enter and exit to\from dungeon; 
+        todo!();
         return scene;        
     }
 
     fn generate_game_scene(
-        &self, 
+        &mut self, 
         deploy: &Deploy, 
         thing_manager: &mut ThingManager, 
         charactor_manager: &mut CharactorManager, 
         profile: &Profile, 
         location: &Location
     ) -> &mut GameScene {
-        let mut scene = self.create_game_scene(deploy, location);
+        let scene = self.create_game_scene(deploy, location);
         thing_manager.generate_things_for_scene(scene, deploy);
         let player_level = match &profile.charactor {
             Some(v) => v.level,
@@ -149,7 +152,7 @@ impl SceneManager {
             None => panic!("Can't get next scene, because it's empty")
         };
 
-        &mut self.get_game_scene_by_id(id)
+        self.get_game_scene_by_id_mut(id)
     }
 
     fn create_scene_id(&mut self) -> usize {

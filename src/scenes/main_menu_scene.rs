@@ -72,7 +72,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
     let glossary = dictionary.get_glossary();
 
     for( index, button ) in ButtonComponent::iterator().enumerate(){
-        let position: Rect<Val> = Rect { 
+        let position: UiRect<Val> = UiRect { 
             left: Val::Px( 100.0 ), 
             right: Val::Auto, 
             top: Val::Px( MONITOR_HEIGHT / 2.0 + MAIN_MENU_BUTTON_HEIGHT * ( index as f32 + 1.0 )), 
@@ -106,20 +106,21 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
             };
 
             parent.spawn_bundle( TextBundle{
-                text: Text::with_section(
+                text: Text::from_section(
                     text,
                     TextStyle {
                         font: font.get_font( dictionary.get_current_language() ),
                         font_size: MAIN_MENU_BUTTON_FONT_SIZE,
                         color: Color::GRAY,
-                    },
-                    TextAlignment {
-                        vertical: VerticalAlign::Center,
-                        horizontal: HorizontalAlign::Center,
-                    },
+                    }
                 ),
                 ..Default::default()
-            });
+            }
+            .with_text_alignment(TextAlignment {
+                vertical: VerticalAlign::Center,
+                horizontal: HorizontalAlign::Center,
+                })
+            );
         })
         .insert( button.clone() );
     }

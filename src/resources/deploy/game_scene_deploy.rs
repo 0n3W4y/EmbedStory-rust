@@ -13,8 +13,8 @@ pub enum Location {
     #[default]
     ElvenPlains,
     ElvenForest,
-    ElvenPlainDungeon,
-    ElvenForestDungeon,
+    PlainDungeon,
+    ForestDungeon,
 }
 
 #[derive(Deserialize, Debug)]
@@ -33,8 +33,8 @@ pub struct GameSceneConfig {
 pub struct GameSceneDeploy {
     pub elven_plains: GameSceneConfig,
     pub elven_forest: GameSceneConfig,
-    pub elven_plain_dungeon: GameSceneConfig,
-    pub elven_forest_dungeon: GameSceneConfig,
+    pub plain_dungeon: GameSceneConfig,
+    pub forest_dungeon: GameSceneConfig,
 }
 
 impl GameSceneDeploy {
@@ -55,8 +55,8 @@ impl GameSceneDeploy {
         match *location {
             Location::ElvenPlains => &self.elven_plains,
             Location::ElvenForest => &self.elven_forest,
-            Location::ElvenPlainDungeon => &self.elven_plain_dungeon,
-            Location::ElvenForestDungeon => &self.elven_forest_dungeon,
+            Location::PlainDungeon => &self.plain_dungeon,
+            Location::ForestDungeon => &self.forest_dungeon,
         }
     }
 }

@@ -127,7 +127,7 @@ impl CharactorManager {
     }
 
     pub fn generate_charactors_for_scene(&mut self, scene: &mut GameScene, deploy: &Deploy, player_level: u8) {
-        
+        todo!();
     }
 
     fn create_charactor(&mut self, deploy: &Deploy, race_type: &RaceType, gender: &GenderType, charactor_type: CharactorType) -> Charactor {

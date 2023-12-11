@@ -176,6 +176,7 @@ fn setup(
         &deploy, 
         &mut thing_manager, 
         &mut charactor_manager, 
+        &profile,
         &Location::ElvenPlains
     );
     scene_manager.next_game_scene = Some(next_scene.scene_id);
@@ -191,7 +192,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
     let glossary = dictionary.get_glossary();
 
     for (index, button_component) in MainButtonComponent::iterator().enumerate() {
-        let position: Rect<Val> = Rect {
+        let position: UiRect<Val> = UiRect {
             left: Val::Auto,
             right: Val::Px(BUTTON_WIDTH + index as f32 * BUTTON_WIDTH), // 2 buttons together
             top: Val::Auto,
@@ -223,20 +224,23 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
             };
 
             parent.spawn_bundle(TextBundle {
-                text: Text::with_section(
+                text: Text::from_section(
                     text,
                     TextStyle {
                         font: font.get_font(dictionary.get_current_language()),
                         font_size: BUTTON_FONT_SIZE,
                         color: Color::GRAY,
-                    },
-                    TextAlignment {
-                        vertical: VerticalAlign::Center,
-                        horizontal: HorizontalAlign::Center,
-                    },
+                    }
                 ),
                 ..Default::default()
-            });
+            }
+            .with_text_alignment(
+                TextAlignment { 
+                    vertical: VerticalAlign::Center,
+                    horizontal: HorizontalAlign::Center,
+                }
+            )
+        );
         })
         .insert(button_component.clone());
     }

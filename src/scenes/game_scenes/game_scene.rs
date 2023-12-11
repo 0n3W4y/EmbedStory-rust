@@ -23,6 +23,7 @@ pub struct ThingsStorage {
     pub walls: Vec<Thing>,
     pub doors: Vec<Thing>,
     pub natural_barriers: Vec<Thing>,
+    pub dungeon_entrace: Vec<Thing>,
 }
 
 impl ThingsStorage {
@@ -36,6 +37,7 @@ impl ThingsStorage {
             ThingType::WoodenWall | ThingType::StoneWall |ThingType::IronWall | ThingType::SteelWall => self.walls.push(thing),
             ThingType::WoodenDoor | ThingType::ReinforcedWoodenDoor | ThingType::IronDoor | 
             ThingType::ReinforcedIronDoor | ThingType::SteelDoor | ThingType::ReinforcedSteelDoor => self.doors.push(thing),
+            ThingType::DungeonEnter(_) | ThingType::DungeonExit(_) => self.dungeon_entrace.push(thing),
         }
     }
 
@@ -63,6 +65,10 @@ impl ThingsStorage {
 
         for natural_barrier in self.natural_barriers.iter() {
             result.push(natural_barrier);
+        }
+
+        for dungeon_entrance in self.dungeon_entrace.iter() {
+            result.push(dungeon_entrance);
         }
 
         result
@@ -94,6 +100,10 @@ impl ThingsStorage {
             result.push(natural_barrier);
         }
 
+        for dungeon_entrance in self.dungeon_entrace.iter_mut() {
+            result.push(dungeon_entrance);
+        }
+
         result
     }
 
@@ -104,6 +114,7 @@ impl ThingsStorage {
         self.natural_barriers.clear();
         self.trees.clear();
         self.walls.clear();
+        self.dungeon_entrace.clear();
     }
  }
 

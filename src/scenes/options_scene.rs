@@ -182,22 +182,22 @@ fn texts( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: 
         };
 
         let position = match index{
-            0 => Rect{
+            0 => UiRect{
                 left: Val::Px( TEXT_OPTIONS_LEFT_POSITION ),
                 top: Val::Px( TEXT_OPTIONS_TOP_POSITION ),
                 ..Default::default()
             },
-            1 => Rect{
+            1 => UiRect{
                 left: Val::Px( TEXT_ENABLEMUSIC_LEFT_POSITION ),
                 top: Val::Px( TEXT_ENABLEMUSIC_TOP_POSITION ),
                 ..Default::default()
             },
-            2 => Rect{
+            2 => UiRect{
                 left: Val::Px( TEXT_ENABLESOUND_LEFT_POSITION ),
                 top: Val::Px( TEXT_ENABLESOUND_TOP_POSITION ),
                 ..Default::default()
             },
-            3 => Rect{
+            3 => UiRect{
                 left: Val::Px( TEXT_LANGUAGE_LEFT_POSITION ),
                 top: Val::Px( TEXT_LANGUAGE_TOP_POSITION ),
                 ..Default::default()
@@ -211,20 +211,21 @@ fn texts( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: 
                 position: position,
                 ..Default::default()
             },
-            text: Text::with_section(
+            text: Text::from_section(
                 value, 
                 TextStyle {
                     font: font.clone(),
                     font_size,
                     color: Color::BLACK,
-                },
-                TextAlignment {
-                    vertical: VerticalAlign::Center,
-                    horizontal: HorizontalAlign::Center,
-                },
+                }
             ),
             ..Default::default()
-        })
+        }
+        .with_text_alignment(TextAlignment {
+            vertical: VerticalAlign::Center,
+            horizontal: HorizontalAlign::Center,
+            })
+        )
         .insert(Name::new( component_name ))
         .insert(prevalue.clone() );
     };
@@ -242,27 +243,27 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
         let text_button_off = dictionary.get_glossary().options_text.off.clone();
 
         let position_button_on = match button_component{
-            ButtonComponent::EnableMusic => Rect{
+            ButtonComponent::EnableMusic => UiRect{
                 left: Val::Px( TEXT_ENABLEMUSIC_LEFT_POSITION + 300.0 ),
                 top: Val::Px( TEXT_ENABLEMUSIC_TOP_POSITION ),
                 right: Val::Auto,
                 bottom: Val::Auto,
             },
-            ButtonComponent::EnableSound => Rect{
+            ButtonComponent::EnableSound => UiRect{
                 left: Val::Px( TEXT_ENABLESOUND_LEFT_POSITION + 300.0 ),
                 top: Val::Px( TEXT_ENABLESOUND_TOP_POSITION ),
                 right: Val::Auto,
                 bottom: Val::Auto,
             },
         };
-        let position_button_off: Rect<Val> = match button_component{ 
-            ButtonComponent::EnableMusic => Rect { 
+        let position_button_off: UiRect<Val> = match button_component{ 
+            ButtonComponent::EnableMusic => UiRect { 
                 left: Val::Px( TEXT_ENABLEMUSIC_LEFT_POSITION + 300.0 + OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
                 top: Val::Px( TEXT_ENABLEMUSIC_TOP_POSITION ), 
                 right: Val::Auto, 
                 bottom: Val::Auto,
             },
-            ButtonComponent::EnableSound => Rect {
+            ButtonComponent::EnableSound => UiRect {
                 left: Val::Px( TEXT_ENABLESOUND_LEFT_POSITION + 300.0 + OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
                 top: Val::Px( TEXT_ENABLESOUND_TOP_POSITION ), 
                 right: Val::Auto, 
@@ -283,20 +284,21 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
         })
         .with_children( |root| {
             root.spawn_bundle( TextBundle{
-                text: Text::with_section(
+                text: Text::from_section(
                     text_button_on, 
                     TextStyle{
                         font: font.clone(),
                         font_size: TEXT_FONT_SIZE,
                         color: Color::WHITE,
-                    }, 
-                    TextAlignment {
-                        vertical: VerticalAlign::Center,
-                        horizontal: HorizontalAlign::Center,
                     },
                 ),
                 ..Default::default()
-            });
+            }
+            .with_text_alignment(TextAlignment {
+                vertical: VerticalAlign::Center,
+                horizontal: HorizontalAlign::Center,
+                })
+            );
         })
         .insert( button_component.clone())
         .insert( OnOffButtonComponent::On.clone() );
@@ -314,20 +316,21 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
         })
         .with_children( |root|{
             root.spawn_bundle( TextBundle{
-                text: Text::with_section(
+                text: Text::from_section(
                     text_button_off, 
                     TextStyle{
                         font: font.clone(),
                         font_size: TEXT_FONT_SIZE,
                         color: Color::WHITE,
-                    }, 
-                    TextAlignment {
-                        vertical: VerticalAlign::Center,
-                        horizontal: HorizontalAlign::Center,
-                    },
+                    }
                 ),
                 ..Default::default()
-            });
+            }
+            .with_text_alignment(TextAlignment {
+                vertical: VerticalAlign::Center,
+                horizontal: HorizontalAlign::Center,
+                })
+            );
         })
         .insert( button_component.clone() )
         .insert( OnOffButtonComponent::Off.clone() );
@@ -336,7 +339,7 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
 
 fn language_buttons( parent: &mut ChildBuilder, material_manager: &MaterialManager, dictionary: &Dictionary ){
     for( index, button_component ) in LanguageButtonComponent::iterator().enumerate(){
-        let position = Rect{ 
+        let position = UiRect{ 
                 left: Val::Px( TEXT_LANGUAGE_LEFT_POSITION + 300.0 + index as f32 * OPTIONS_SCENE_ON_OFF_BUTTON_WIDTH ),
                 top: Val::Px( TEXT_LANGUAGE_TOP_POSITION ),
                 right: Val::Auto,
@@ -389,7 +392,7 @@ fn return_button( parent: &mut ChildBuilder, font_material: &FontMaterials, dict
     let font = font_material.get_font( dictionary.get_current_language() ).clone();
     parent.spawn_bundle( ButtonBundle{
         style: Style{
-            position: Rect { 
+            position: UiRect { 
                 left: Val::Px( OPTIONS_SCENE_RETURN_BUTTON_LEFT_POSITION ), 
                 right: Val::Auto, 
                 top: Val::Auto, 
@@ -408,20 +411,21 @@ fn return_button( parent: &mut ChildBuilder, font_material: &FontMaterials, dict
     })
     .with_children(|root|{
         root.spawn_bundle( TextBundle{
-            text: Text::with_section(
+            text: Text::from_section(
                 dictionary.get_glossary().options_text.return_back, 
                 TextStyle{
                     font: font,
                     font_size: TEXT_OPTIONS_FONT_SIZE,
                     color: Color::WHITE,
-                }, 
-                TextAlignment {
-                    vertical: VerticalAlign::Center,
-                    horizontal: HorizontalAlign::Center,
-                },
+                }
             ),
             ..Default::default()
-        });
+        }
+        .with_text_alignment(TextAlignment {
+            vertical: VerticalAlign::Center,
+            horizontal: HorizontalAlign::Center,
+            })
+        );
     })
     .insert( Name::new( "Return" ))
     .insert( ReturnButton );

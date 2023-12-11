@@ -86,7 +86,7 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
                 Val::Px(LOADING_BORDER_HEIGHT),
             ),
             //position in center
-            position: Rect {
+            position: UiRect {
                 top: Val::Px((WINDOW_HEIGHT / 2.0) - (LOADING_BORDER_HEIGHT / 2.0)),
                 left: Val::Px((WINDOW_HEIGHT * RESOLUTION) / 2.0 - (LOADING_BORDER_WIDTH / 2.0)),
                 bottom: Val::Auto,
@@ -107,7 +107,7 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
                         Val::Px(0.0),
                         Val::Px(LOADING_BORDER_HEIGHT - LOADING_BORDER_HEIGHT * 0.2),
                     ),
-                    position: Rect::all(Val::Px(5.0)),
+                    position: UiRect::all(Val::Px(5.0)),
                     ..Default::default()
                 },
                 color: UiColor(INNER_LOADER_COLOR),
@@ -124,20 +124,21 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
                         align_self: AlignSelf::Center,
                         ..Default::default()
                     },
-                    text: Text::with_section(
+                    text: Text::from_section(
                         "",
                         TextStyle {
                             font: font_str,
                             font_size: TEXT_FONT_SIZE,
                             color: Color::WHITE,
-                        },
-                        TextAlignment {
-                            vertical: VerticalAlign::Center,
-                            horizontal: HorizontalAlign::Center,
-                        },
+                        }
                     ),
                     ..Default::default()
-                });
+                }
+                .with_text_alignment(TextAlignment {
+                    vertical: VerticalAlign::Center,
+                    horizontal: HorizontalAlign::Center,
+                })
+                );
             })
             .insert(LoadingNewGameSceneComponent {
                 max_width: LOADING_BORDER_WIDTH - 10.0,
@@ -152,7 +153,7 @@ fn loading_text(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: 
             justify_content: JustifyContent::Center,
             position_type: PositionType::Absolute,
             size: Size::new(Val::Px(LOADING_BORDER_WIDTH), Val::Px(35.0)),
-            position: Rect {
+            position: UiRect {
                 left: Val::Px((WINDOW_HEIGHT * RESOLUTION - LOADING_BORDER_WIDTH) / 2.0),
                 top: Val::Px((WINDOW_HEIGHT - LOADING_BORDER_HEIGHT) / 2.0 - 37.0),
                 bottom: Val::Auto,
@@ -175,20 +176,21 @@ fn loading_text(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: 
                 align_self: AlignSelf::Center,
                 ..Default::default()
             },
-            text: Text::with_section(
+            text: Text::from_section(
                 glossary.loading_scene_text.loading,
                 TextStyle {
                     font: font_str,
                     font_size: LOADING_TEXT_FONT_SIZE,
                     color: Color::WHITE,
-                },
-                TextAlignment {
-                    vertical: VerticalAlign::Center,
-                    horizontal: HorizontalAlign::Center,
-                },
+                }
             ),
             ..Default::default()
-        });
+        }
+        .with_text_alignment(TextAlignment {
+            vertical: VerticalAlign::Center,
+            horizontal: HorizontalAlign::Center,
+            })
+        );
     });
 }
 
@@ -231,17 +233,18 @@ fn prepare_next_scene(
     mut thing_manager: ResMut<ThingManager>,
     mut stuff_manager: ResMut<StuffManager>
 ) {
-    let next_scene = scene_manager.get_next_scene(); 
-    scene_manager.set_current_game_scene(next_scene.scene_id);
+    let next_scene_id = scene_manager.get_next_scene().scene_id; 
+    scene_manager.set_current_game_scene(next_scene_id);
     scene_manager.next_game_scene = None;
+    let current_scene = scene_manager.get_current_game_scene_mut();
 
     match &profile.charactor {
-        Some(v) => next_scene.charactors.store(v.clone()),
+        Some(v) => current_scene.charactors.store(v.clone()),
         None => panic!("Player not created"),
     };
 
     match &profile.companion {
-        Some(v) => next_scene.charactors.store(v.clone()),
+        Some(v) => current_scene.charactors.store(v.clone()),
         None => {}
     };
 }

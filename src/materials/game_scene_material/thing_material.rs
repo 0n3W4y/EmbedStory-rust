@@ -23,6 +23,8 @@ pub struct ThingMaterial {
     pub reinforced_iron_door_atlas: Handle<TextureAtlas>,
     pub steel_door_atlas: Handle<TextureAtlas>,
     pub reinforced_steel_door_atlas: Handle<TextureAtlas>,
+    pub dungeon_enter_atlas: Handle<TextureAtlas>,
+    pub dungeon_exit_atlas: Handle<TextureAtlas>,
 }
 
 impl ThingMaterial {
@@ -54,6 +56,8 @@ impl ThingMaterial {
             ThingType::Tree => self.tree_atlas.clone_weak(),
             ThingType::WoodenDoor => self.wooden_door_atlas.clone_weak(),
             ThingType::WoodenWall => self.wooden_wall_atlas.clone_weak(),
+            ThingType::DungeonEnter(_) => self.dungeon_enter_atlas.clone_weak(),
+            ThingType::DungeonExit(_) => self.dungeon_exit_atlas.clone_weak(),
         };
     }
 
@@ -78,6 +82,8 @@ impl ThingMaterial {
             ThingType::Tree => 2,
             ThingType::WoodenDoor => 1,
             ThingType::WoodenWall => 37,
+            ThingType::DungeonEnter(_) => 2,
+            ThingType::DungeonExit(_) => 2,
         };
     }
 }
@@ -123,6 +129,10 @@ fn load_things_material(
         asset_server.load("textures/things/door/reinforced_steel_door_00.png");
     let reinforced_wooden_door_texture_handle: Handle<Image> =
         asset_server.load("textures/things/door/reinforced_wooden_door_00.png");
+    let dungeon_enter_texture_handle: Handle<Image> =
+        asset_server.load("textures/things/dungeon/dungeon_enter00.png");
+    let dungeon_exit_texture_handle: Handle<Image> =
+        asset_server.load("textures/things/dungeon/dungeon_exit00.png");
 
     let rock_texture_atlas = TextureAtlas::from_grid(
         rock_texture_handle,
@@ -238,6 +248,18 @@ fn load_things_material(
         6,
         1,
     );
+    let dungeon_enter_texture_atlas = TextureAtlas::from_grid(
+        dungeon_enter_texture_handle,
+        Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+        2,
+        1,
+    );
+    let dungeon_exit_texture_atlas = TextureAtlas::from_grid(
+        dungeon_exit_texture_handle,
+        Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
+        6,
+        1,
+    );
 
     let rock_atlas = texture_atlases.add(rock_texture_atlas);
     let tree_atlas = texture_atlases.add(tree_texture_atlas);
@@ -259,6 +281,8 @@ fn load_things_material(
     let reinforced_iron_door_atlas = texture_atlases.add(reinforced_iron_door_texture_atlas);
     let steel_door_atlas = texture_atlases.add(steel_door_texture_atlas);
     let reinforced_steel_door_atlas = texture_atlases.add(reinforced_steel_door_texture_atlas);
+    let dungeon_enter_atlas = texture_atlases.add(dungeon_enter_texture_atlas);
+    let dungeon_exit_atlas = texture_atlases.add(dungeon_exit_texture_atlas);
 
     return ThingMaterial {
         rock_atlas,
@@ -280,5 +304,7 @@ fn load_things_material(
         reinforced_iron_door_atlas,
         steel_door_atlas,
         reinforced_steel_door_atlas,
+        dungeon_enter_atlas,
+        dungeon_exit_atlas,
     };
 }

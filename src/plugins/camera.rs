@@ -19,7 +19,7 @@ pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin{
     fn build( &self, app: &mut App ){
-        app.add_startup_system( spawn_ui_camera );
+        //app.add_startup_system( spawn_ui_camera );
         app.add_startup_system( spawn_2d_camera );
 
         app.add_system_set( SystemSet::on_update(SceneState::GameScene).with_system( camera_zoom ));
@@ -27,17 +27,17 @@ impl Plugin for CameraPlugin{
         //app.add_syste_set( SystemSet::on_exit( SceneState::_).width_system(_));
     }
 }
-
+/*
 fn spawn_ui_camera( mut commands: Commands ){
     commands
         .spawn_bundle( UiCameraBundle::default())
         .insert( Name::new( "UserInterfaceCamera" ))
         .insert( UserInterfaceCamera );
 }
-
+*/
 fn spawn_2d_camera( mut commands: Commands ){
-    let mut camera = OrthographicCameraBundle::new_2d();
-    camera.orthographic_projection.scale = 2.0;
+    let mut camera = Camera2dBundle::default();
+    camera.projection.scale = 2.0;
     //camera.transform.translation.z = 1000.0;
     //camera.orthographic_projection.top = 1.0;
     //camera.orthographic_projection.bottom = -1.0;

@@ -16,6 +16,7 @@ pub enum ThingPermissions{
     CanHarvested,
     #[default]
     CanBeDestroyed,
+    CanWalk,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Copy, Default, Hash)]
@@ -40,6 +41,8 @@ pub enum ThingType {
     ReinforcedIronDoor,
     SteelDoor,
     ReinforcedSteelDoor,
+    DungeonEnter(usize),
+    DungeonExit(usize),
 }
 
 #[derive(Deserialize, Clone, Debug)]
