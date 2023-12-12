@@ -7,7 +7,7 @@ use super::{
         charactor::{
             Charactor, CharactorType,
             GenderType, RaceType, do_stat_dependences, CharactorStrength, STATS_POINTS_EVERY_LEVEL
-    }, Stat},
+    }, Stat, AbilityType, ResistType},
 };
 use crate::{components::AttributesComponent, scenes::game_scenes::game_scene::GameScene};
 
@@ -133,16 +133,39 @@ impl CharactorManager {
     fn create_charactor(&mut self, deploy: &Deploy, race_type: &RaceType, gender: &GenderType, charactor_type: CharactorType) -> Charactor {
         let id = self.create_id();
         let race_config: &RaceConfig = deploy.charactor_deploy.race_deploy.get_race_config(race_type);
-        Charactor {
+        let mut charactor = Charactor {
             id,
             race_type: race_type.clone(),
             charactor_type: charactor_type,
             gender_type: gender.clone(),
-            stats_cache: race_config.stats.clone(),
-            stats: race_config.stats.clone(),
-            resists: race_config.resists.clone(),
             ..Default::default()
+        };
+
+        for ability_type in AbilityType::all_values() {
+            let ability_value = match race_config.ability.get(&ability_type) {
+                Some(v) => *v,
+                None => 0,
+            };
+            charactor.ability.insert(ability_type.clone(), ability_value);
         }
+
+        for resist_type in ResistType::all_values() {
+            let resist_value = match race_config.resists.get(&resist_type) {
+                Some(v) => *v,
+                None => 0,
+            };
+            charactor.resists.insert(resist_type.clone(), resist_value);
+        }
+
+        for stat_type in Stat::all_values() {
+            let stat_value = match race_config.stats.get(&stat_type) {
+                Some(v) => *v,
+                None => 0,
+            };
+            charactor.stats.insert(stat_type.clone(), stat_value);
+            charactor.stats_cache.insert(stat_type.clone(), stat_value);
+        }
+        return charactor;
     }
 
     fn create_id(&mut self) -> usize {

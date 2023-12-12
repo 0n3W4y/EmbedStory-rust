@@ -2,18 +2,18 @@
     "rock":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Roof"
@@ -30,18 +30,18 @@
     "tree":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -57,18 +57,18 @@
     "fertile_tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -84,18 +84,18 @@
     "bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
         "Walk"
@@ -111,18 +111,18 @@
     "fertile_bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -138,18 +138,18 @@
     "boulder":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
         "Walk"
@@ -165,18 +165,18 @@
     "log":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
         "Walk"
@@ -192,18 +192,18 @@
     "copper_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Roof"
@@ -219,18 +219,18 @@
     "iron_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Roof"
@@ -246,18 +246,18 @@
     "wooden_wall":{
         "permissions": ["CanRepaired", "CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Fog"
@@ -273,18 +273,18 @@
     "stone_wall":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Fog"
@@ -300,18 +300,18 @@
     "iron_wall":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
         ],
@@ -326,18 +326,18 @@
     "steel_wall":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
         ],
@@ -352,18 +352,18 @@
     "wooden_door":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -379,18 +379,18 @@
     "reinforced_wooden_door":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -406,18 +406,18 @@
     "iron_door":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -433,18 +433,18 @@
     "reinforced_iron_door":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -460,18 +460,18 @@
     "steel_door":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"
@@ -487,18 +487,18 @@
     "reinforced_steel_door":{
         "permissions": ["CanBeDestroyed"],
         "resists":{
-            "Fire": 0,
-            "Cold": 0,
-            "Electric": 0,
-            "Kinetic": 0,
-            "Water": 0,
-            "Acid": 0,
-            "Poison": 0,
-            "SacredEnergy": 0,
-            "DeathEnegry": 0
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0
         },
-        "extra_stats": {
-            "HealthPoints": 100
+        "attributes": {
+            "Health": 100
         },
         "tile_allow_permissions": [
             "Walk"

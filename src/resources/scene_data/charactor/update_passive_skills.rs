@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use rand::Rng;
 
-use super::change_attribute_points;
+use super::{change_attribute_points, get_attribute_from_damage_type};
 use super::effects::EffectType;
 use super::skills::{TargetType, SkillType, Skill};
 use super::{
@@ -25,7 +25,7 @@ use crate::{
     resources::deploy::Deploy
 };
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
-use crate::resources::scene_data::{Attribute, get_resist_from_damage_type, ResistType, AbilityType};
+use crate::resources::scene_data::{get_resist_from_damage_type, ResistType, AbilityType};
 
 pub fn update_passive_skills(
     mut commands: Commands,
@@ -324,11 +324,7 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, attributes: &mut AttributesC
             0
         };
 
-        let attribute = if *damage_type == DamageType::Stamina {
-            Attribute::Stamina
-        } else {
-            Attribute::Health
-        };
+        let attribute = get_attribute_from_damage_type(damage_type);
 
         change_attribute_points(
             attributes,

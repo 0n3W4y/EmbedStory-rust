@@ -17,6 +17,17 @@ pub enum Stat{
     Luck,
 }
 
+impl Stat {
+    pub fn all_values() -> impl Iterator<Item = Self> {
+        vec![
+            Stat::Strength,
+            Stat::Dexterity,
+            Stat::Wisdom,
+            Stat::Luck
+        ].into_iter()
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, Default, Serialize, Deserialize, Hash)]
 pub enum Attribute {
     #[default]
