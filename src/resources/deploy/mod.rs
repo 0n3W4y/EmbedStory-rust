@@ -35,7 +35,7 @@ pub const DEPLOY_NPC_PATH: &str = "deploy/npc_config.json";
 pub const DEPLOY_COMPANION_PATH: &str = "deploy/companion_config";
 
 
-#[derive( Deserialize, Debug )]
+#[derive( Deserialize, Debug, Resource )]
 pub struct Deploy{
     pub tile: TilemapTileDeploy,
     //pub scene_miscellaneous: SceneMiscellaneousDeploy,

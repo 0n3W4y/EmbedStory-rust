@@ -227,11 +227,11 @@ fn collision_with_charactor(
             None => 0,
         };
 
-        effect.duration -= effect.duration * time_effect_reduced as f32 / 100.0;
+        effect.effect_duration -= effect.effect_duration * time_effect_reduced as f32 / 100.0;
         effects
             .effects
             .entry(effect_type.clone())
-            .and_modify(|x| x.duration += effect.duration)
+            .and_modify(|x| x.effect_duration += effect.effect_duration)
             .or_insert(effect);
     }
 
@@ -308,7 +308,7 @@ fn try_grid_move(x: f32, y: f32, position: &mut Position<i32>) -> bool {
 pub fn create_projectile(
     commands: &mut Commands,
     material_manager: &MaterialManager,
-    mut projectile: Projectile,
+    projectile: Projectile,
     target_position: Position<i32>,
     projectiles_value: u8,
     skill_direction: &SkillDirectionType,
@@ -343,6 +343,9 @@ pub fn create_projectile(
     let radius = (delta_x * delta_x + delta_y * delta_y).sqrt();
 
     for i in 0..projectiles_value {
+        let mut new_projectile_component = projectile.clone();
+        let projectile_type = &new_projectile_component.projectile_type;
+
         let x = starting_point_x as f32
             + radius
                 * (angle_between_ab_and_y - half_arc_angle + angle_coefficient * i as f32)
@@ -356,19 +359,22 @@ pub fn create_projectile(
         let new_delta_x = starting_point_x as f32 - x;
         let new_delta_y = starting_point_y as f32 - y;
         let distance = (new_delta_x.powf(2.0) + new_delta_y.powf(2.0)).sqrt();
-        projectile.motion_coefficient.x = new_delta_x / distance;
-        projectile.motion_coefficient.y = new_delta_y / distance;
+        new_projectile_component.motion_coefficient.x = new_delta_x / distance;
+        new_projectile_component.motion_coefficient.y = new_delta_y / distance;
+        
 
         let new_z_position = Z_POSITION;
         let transform = Transform::from_xyz(x, y, new_z_position);
         let texture_atlas = material_manager
             .game_scene
             .projectiles
-            .get_texture_atlas(&projectile.projectile_type);
-        commands.spawn_bundle(SpriteSheetBundle {
+            .get_texture_atlas(projectile_type);
+        commands.spawn((SpriteSheetBundle {
             texture_atlas,
             transform,
             ..Default::default()
-        });
+        },
+        new_projectile_component,
+        ));
     }
 }

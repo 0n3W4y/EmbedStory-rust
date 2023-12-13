@@ -42,18 +42,24 @@ fn load_projectiles_material(
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         1,
         1,
+        None,
+        None,
     );
     let bullet_texture_atlas = TextureAtlas::from_grid(
         bullet_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         1,
         1,
+        None,
+        None,
     );
     let sphere_texture_atlas = TextureAtlas::from_grid(
         sphere_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         1,
         1,
+        None,
+        None,
     );
 
     let arrow_atlas = texture_atlases.add(arrow_texture_atlas);

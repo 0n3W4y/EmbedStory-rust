@@ -7,21 +7,25 @@ use crate::resources::scene_data::{Stat, AbilityType, Attribute, ResistType};
 pub enum EffectType{
     #[default]
     Stun,
-    Acid,
+    AcidDamage,
+    AcidDebuff,
     Moveless,
-    Slow,
-    Bleeding,
-    Burn,
-    Electrification,
-    //Electroshoke,
+    BleedingDamage,
+    BleedingDebuff,
+    BurnDamage,
+    BurnDebuff,
+    ColdDamage,
+    ColdDebuff,
+    ElectricDamage,
+    ElectricDebuff,
+    WaterDamage,
+    WaterDebuff,
     Freeze,
     Blind,
-    Poison,
-    Wet,
-    BrokeArmor,
-    BrokeWeapon,
-    IncreaseMovement,
-    Frostbite,
+    PoisonDamage,
+    PosisonDebuff,
+    MovementBuff,
+    MovementDebuff,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
@@ -34,10 +38,13 @@ pub enum EffectDamageType {
 #[derive(Deserialize, Debug, Clone, Default)]
 pub struct EffectDeploy {
     pub effect_type: EffectType,
-    pub duration: u16,
+    pub effect_duration: f32,
+    pub effect_trigger_time: f32,
+    pub effect_trigger_chance: u8,
     
     pub change_stat: HashMap<Stat, i16>,
     pub change_attribute: HashMap<Attribute, i16>,
+    pub change_attribute_cache: HashMap<Attribute, i16>,
     pub change_resist: HashMap<ResistType, i16>,
     pub change_ability: HashMap<AbilityType, i16>,
 }
@@ -45,25 +52,33 @@ pub struct EffectDeploy {
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Effect {
     pub effect_type: EffectType,
-    pub duration: f32,
-    pub current_duration: f32,
+    pub effect_duration: f32,
+    pub effect_trigger_time: f32,
+    pub effect_trigger_chance: u8,
+    pub current_time_duration: f32,
+    pub total_time_duration: f32,
 
     pub change_stat: HashMap<Stat, i16>,
     pub change_attribute: HashMap<Attribute, i16>,
-    pub change_resist: HashMap<ResistType, i16>, 
-    pub change_ability: HashMap<AbilityType, i16>, 
+    pub change_attribute_cache: HashMap<Attribute, i16>,
+    pub change_resist: HashMap<ResistType, i16>,
+    pub change_ability: HashMap<AbilityType, i16>,
 }
 
 impl Effect {
     pub fn new(config: &EffectDeploy) -> Self {
         Effect {
             effect_type: config.effect_type.clone(),
-            duration: config.duration as f32 / 10.0,
-            current_duration: 0.0,
             change_stat: config.change_stat.clone(),
             change_attribute: config.change_attribute.clone(),
             change_resist: config.change_resist.clone(),
             change_ability: config.change_ability.clone(),
+            effect_duration: config.effect_duration,
+            effect_trigger_time: config.effect_trigger_time,
+            effect_trigger_chance: config.effect_trigger_chance,
+            current_time_duration: 0.0,
+            total_time_duration: 0.0,
+            change_attribute_cache: config.change_attribute_cache.clone(),
         }
     }
 }

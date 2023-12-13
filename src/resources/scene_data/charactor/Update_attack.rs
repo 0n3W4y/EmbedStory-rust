@@ -353,9 +353,9 @@ fn attack(
             }
 
             //calculate new effect duration by target resist;
-            effect.duration -= effect.duration * effect_time_reducing as f32 / 100.0;
+            effect.effect_duration -= effect.effect_duration * effect_time_reducing as f32 / 100.0;
 
-            target_effects.effects.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+            target_effects.effects.entry(effect_type.clone()).and_modify(|x| x.effect_duration += effect.effect_duration).or_insert(effect);
 
         }
         

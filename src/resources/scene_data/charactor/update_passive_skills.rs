@@ -346,8 +346,8 @@ pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, effect_tim
         if *effect_trigger >= trigger_effect_random_number {                                                                         //check triegger on effect;
             let effect_config = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
             let mut effect = Effect::new(effect_config);
-            effect.duration -= effect.duration * effect_time_reduce as f32 / 100.0;                                                  //reduce effect duration by target resist;        
-            effect_component.effects.entry(effect_type.clone()).and_modify(|x| x.duration += effect.duration).or_insert(effect);
+            effect.effect_duration -= effect.effect_duration * effect_time_reduce as f32 / 100.0;                                                  //reduce effect duration by target resist;        
+            effect_component.effects.entry(effect_type.clone()).and_modify(|x| x.effect_duration += effect.effect_duration).or_insert(effect);
         }
     }
 }

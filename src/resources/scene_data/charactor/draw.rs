@@ -64,32 +64,99 @@ pub fn draw(
             .charactors
             .get_atlas(charactor_racetype, charactor_gender);
 
-        let entity = commands
-        .spawn_bundle(SpriteSheetBundle {
-            texture_atlas: texture,
-            transform,
-            ..default()
-        })
-        .insert(identefication_component)
-        .insert(charactor_component)
-        .insert(resist_component)
-        .insert(skill_component)
-        .insert(text_component)
-        .insert(position_component)
-        .insert(destination_component)
-        .insert(effect_component)
-        .insert(animation_component)
-        .insert(stats_component)
-        .insert(attributes_component)
-        .insert(ability_component)
-        .insert(inventory_component)
-        .id();
-
         match *charactor_type {
-            CharactorType::Player => commands.entity(entity).insert(PlayerComponent),
-            CharactorType::NPC => commands.entity(entity).insert(NPCComponent),
-            CharactorType::Monster => commands.entity(entity).insert(MonsterComponent),
-            CharactorType::Companion => commands.entity(entity).insert(CompanionComponent),
+            CharactorType::Player => {
+                commands
+                    .spawn((SpriteSheetBundle {
+                        texture_atlas: texture,
+                        transform,
+                        ..default()
+                    },
+                    identefication_component,
+                    charactor_component,
+                    resist_component,
+                    skill_component,
+                    text_component,
+                    position_component,
+                    destination_component,
+                    effect_component,
+                    animation_component,
+                    stats_component,
+                    attributes_component,
+                    ability_component,
+                    inventory_component,
+                    PlayerComponent,
+                    ))
+            },
+            CharactorType::NPC => {
+                commands
+                    .spawn((SpriteSheetBundle {
+                        texture_atlas: texture,
+                        transform,
+                        ..default()
+                    },
+                    identefication_component,
+                    charactor_component,
+                    resist_component,
+                    skill_component,
+                    text_component,
+                    position_component,
+                    destination_component,
+                    effect_component,
+                    animation_component,
+                    stats_component,
+                    attributes_component,
+                    ability_component,
+                    inventory_component,
+                    NPCComponent,
+                    ))
+            },
+            CharactorType::Monster => {
+                commands
+                    .spawn((SpriteSheetBundle {
+                        texture_atlas: texture,
+                        transform,
+                        ..default()
+                    },
+                    identefication_component,
+                    charactor_component,
+                    resist_component,
+                    skill_component,
+                    text_component,
+                    position_component,
+                    destination_component,
+                    effect_component,
+                    animation_component,
+                    stats_component,
+                    attributes_component,
+                    ability_component,
+                    inventory_component,
+                    MonsterComponent,
+                    ))
+            },
+            CharactorType::Companion => {
+                commands
+                    .spawn((SpriteSheetBundle {
+                        texture_atlas: texture,
+                        transform,
+                        ..default()
+                    },
+                    identefication_component,
+                    charactor_component,
+                    resist_component,
+                    skill_component,
+                    text_component,
+                    position_component,
+                    destination_component,
+                    effect_component,
+                    animation_component,
+                    stats_component,
+                    attributes_component,
+                    ability_component,
+                    inventory_component,
+                    CompanionComponent,
+                    ))
+            },
         };
         
     }

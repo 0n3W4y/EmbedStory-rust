@@ -115,36 +115,48 @@ fn load_charactors_material(
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         4,
         1,
+        None,
+        None,
     );
     let human_female_texture_atlas = TextureAtlas::from_grid(
         human_female_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         4,
         1,
+        None,
+        None,
     );
     let skeleton_male_texture_atlas = TextureAtlas::from_grid(
         skeleton_male_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         4,
         1,
+        None,
+        None,
     );
     let skeleton_female_texture_atlas = TextureAtlas::from_grid(
         skeleton_female_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         4,
         1,
+        None,
+        None,
     );
     let wolf_male_texture_atlas = TextureAtlas::from_grid(
         wolf_male_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         4,
         1,
+        None,
+        None,
     );
     let wolf_female_texture_atlas = TextureAtlas::from_grid(
         wolf_female_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         4,
         1,
+        None,
+        None,
     );
 
     let human_male_atlas = texture_atlases.add(human_male_texture_atlas);

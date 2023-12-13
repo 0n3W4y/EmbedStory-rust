@@ -1,3 +1,4 @@
+use bevy::prelude::*;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +12,7 @@ use super::{
 };
 use crate::{components::AttributesComponent, scenes::game_scenes::game_scene::GameScene};
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Default, Clone, Serialize, Deserialize, Resource)]
 pub struct CharactorManager {
     id: usize,
 }

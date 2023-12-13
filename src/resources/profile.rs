@@ -1,3 +1,4 @@
+use bevy::ecs::system::Resource;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -5,7 +6,7 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::Charactor;
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Resource)]
 pub struct Profile {
     pub last_save: String,
     pub playtime: i64,

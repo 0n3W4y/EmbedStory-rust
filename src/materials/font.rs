@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::resources::language::Language;
 
+#[derive(Resource)]
 pub struct FontMaterials {
     pub firasans_bold_font: Handle<Font>,
 }

@@ -1,4 +1,5 @@
 //use serde::{ Deserialize, Serialize };
+use bevy::prelude::*;
 use rand::Rng;
 
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -9,7 +10,7 @@ use super::deploy::Deploy;
 use super::scene_data::thing::{Thing, ThingType, ThingConfig};
 
 
-#[derive(Default)]
+#[derive(Default, Resource)]
 pub struct ThingManager {
     id: usize,
 }

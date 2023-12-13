@@ -115,6 +115,7 @@ impl ResistsTextComponent{
     }
 }
 
+#[derive(Resource)]
 pub struct CreateCharSceneData {
     pub user_interface_root: Entity,
 }
@@ -139,15 +140,16 @@ fn setup(
     deploy: Res<Deploy>,
 ) {
     let user_interface_root = commands
-        .spawn_bundle(NodeBundle {
+        .spawn((NodeBundle {
             style: Style {
                 position_type: PositionType::Absolute,
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
-            image: UiImage(material_manager.create_char_scene.background_image.clone()),
             ..Default::default()
-        })
+        },
+        UiImage(material_manager.create_char_scene.background_image.clone()),
+        ))
         .with_children(|parent| {
             create_buttons(parent, &font, dictionary);
             //create_text(parent, &font, dictionary);
@@ -192,19 +194,19 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
     let glossary = dictionary.get_glossary();
 
     for (index, button_component) in MainButtonComponent::iterator().enumerate() {
-        let position: UiRect<Val> = UiRect {
+        let position: UiRect = UiRect {
             left: Val::Auto,
             right: Val::Px(BUTTON_WIDTH + index as f32 * BUTTON_WIDTH), // 2 buttons together
             top: Val::Auto,
             bottom: Val::Px(BUTTON_HEIGHT),
         };
 
-        let size: Size<Val> = Size {
+        let size: Size = Size {
             width: Val::Px(BUTTON_WIDTH),
             height: Val::Px(BUTTON_HEIGHT),
         };
 
-        root.spawn_bundle(ButtonBundle {
+        root.spawn((ButtonBundle {
             style: Style {
                 size,
                 justify_content: JustifyContent::Center,
@@ -214,16 +216,18 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 position,
                 ..Default::default()
             },
-            color: UiColor(BUTTON_NORMAL_COLOR),
+            background_color: BackgroundColor(BUTTON_NORMAL_COLOR),
             ..Default::default()
-        })
+        },
+        button_component.clone(),
+        ))
         .with_children(|parent| {
             let text: &str = match button_component {
                 MainButtonComponent::Back => glossary.create_char_scene.back.as_str(),
                 MainButtonComponent::Start => glossary.create_char_scene.start.as_str(),
             };
 
-            parent.spawn_bundle(TextBundle {
+            parent.spawn(TextBundle {
                 text: Text::from_section(
                     text,
                     TextStyle {
@@ -241,8 +245,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 }
             )
         );
-        })
-        .insert(button_component.clone());
+        });
     }
 }
 /*
@@ -327,7 +330,7 @@ fn create_text(
 */
 fn button_handle_system(
     mut button_query: Query<
-        (&Interaction, &MainButtonComponent, &mut UiColor),
+        (&Interaction, &MainButtonComponent, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
     mut state: ResMut<State<SceneState>>,
@@ -339,13 +342,13 @@ fn button_handle_system(
         match *button_component {
             MainButtonComponent::Back => match *interaction {
                 Interaction::None => {
-                    *color = UiColor(BUTTON_NORMAL_COLOR);
+                    *color = BackgroundColor(BUTTON_NORMAL_COLOR);
                 }
                 Interaction::Hovered => {
-                    *color = UiColor(BUTTON_HOVER_COLOR);
+                    *color = BackgroundColor(BUTTON_HOVER_COLOR);
                 }
                 Interaction::Clicked => {
-                    *color = UiColor(BUTTON_SELECT_COLOR);
+                    *color = BackgroundColor(BUTTON_SELECT_COLOR);
                     state
                         .set(SceneState::MainMenuScene)
                         .expect("Couldn't switch state to Main Menu Scene");
@@ -353,13 +356,13 @@ fn button_handle_system(
             },
             MainButtonComponent::Start => match *interaction {
                 Interaction::None => {
-                    *color = UiColor(BUTTON_NORMAL_COLOR);
+                    *color = BackgroundColor(BUTTON_NORMAL_COLOR);
                 }
                 Interaction::Hovered => {
-                    *color = UiColor(BUTTON_HOVER_COLOR);
+                    *color = BackgroundColor(BUTTON_HOVER_COLOR);
                 }
                 Interaction::Clicked => {
-                    *color = UiColor(BUTTON_SELECT_COLOR);
+                    *color = BackgroundColor(BUTTON_SELECT_COLOR);
                     //TODO: check name, check stats all checks;
                     // if all good -> set name, start game;
                     profile.set_name("Test Player Name".to_string());

@@ -244,7 +244,7 @@
         "tile_movement_ratio": 0
     },
     "wooden_wall":{
-        "permissions": ["CanRepaired", "CanBeDestroyed"],
+        "permissions": ["CanBeDestroyed"],
         "resists":{
             "FireDamage": 0,
             "ColdDamage": 0,

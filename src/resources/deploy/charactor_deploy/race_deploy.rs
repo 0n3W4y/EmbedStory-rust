@@ -16,7 +16,6 @@ pub struct RaceDeploy {
     pub naga: RaceConfig,
     pub gnome: RaceConfig,
     pub goblin: RaceConfig,
-    pub beast: RaceConfig,
     pub minotaur: RaceConfig,
     pub harpia: RaceConfig,
     pub dryada: RaceConfig,

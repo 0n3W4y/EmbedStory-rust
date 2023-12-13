@@ -63,18 +63,19 @@ pub fn draw(
         );
 
         commands
-        .spawn_bundle(SpriteSheetBundle {
-            transform,
-            sprite: TextureAtlasSprite::new(index as usize),
-            texture_atlas: texture,
-            ..Default::default()
-        })
-        .insert(identification_component)
-        .insert(thing_component)
-        .insert(position_component)
-        .insert(permissions_component)
-        .insert(damage_text_component)
-        .insert(attributes_component);
+            .spawn((SpriteSheetBundle {
+                transform,
+                sprite: TextureAtlasSprite::new(index as usize),
+                texture_atlas: texture,
+                ..Default::default()
+            }, 
+        identification_component,
+        thing_component,
+        position_component,
+        permissions_component,
+        damage_text_component,
+        attributes_component
+        ));
     }    
 }
 

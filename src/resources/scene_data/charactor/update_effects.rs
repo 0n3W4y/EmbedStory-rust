@@ -23,9 +23,9 @@ pub fn update_effects(
         ),
         With<CharactorComponent>,
     >,
-    time: Res<Time>,
 ) {
-    let delta = time.delta_seconds();
+    //this function running with criteria triggered by 0.1 sec;
+    let delta_time: f32 = 0.1;
     for (
         charactor_component,
         mut effects, 
@@ -43,7 +43,7 @@ pub fn update_effects(
         let mut effects_to_remove:Vec<EffectType> = vec![];                                     //create vec of effects for deleting, which one ends at this moment;
 
         for (effect_type, effect) in effects.effects.iter_mut() {                  //update  effects;
-            if effect.current_duration == 0.0 {                                                             //first run;
+            if effect.current_time_duration == 0.0 {                                                             //first run;
                 for (stat, stat_damage) in effect.change_stat.iter() {
                     change_stat_points(                    
                         &mut stats,
@@ -56,6 +56,10 @@ pub fn update_effects(
                 }
 
                 for (attribute, attribute_damage) in effect.change_attribute.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, false);
+                }
+
+                for (attribute, attribute_damage) in effect.change_attribute_cache.iter() {
                     charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, true);
                 }
                 
@@ -73,8 +77,8 @@ pub fn update_effects(
                      &abilities.ability, 
                      &inventory.stuff_wear
                     );
-                effect.current_duration += delta; 
-            } else if effect.current_duration > effect.duration || effect.duration < 0.0 {                                 //effect is end; revert changes and remove effect
+                effect.current_time_duration += delta_time; 
+            } else if effect.current_time_duration > effect.effect_duration || effect.effect_duration < 0.0 {                                 //effect is end; revert changes and remove effect
                 for (stat, stat_damage) in effect.change_stat.iter() {
                     change_stat_points(
                         &mut stats,
@@ -87,6 +91,10 @@ pub fn update_effects(
                 }
 
                 for (attribute, attribute_damage) in effect.change_attribute.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute, -attribute_damage, false);
+                }
+
+                for (attribute, attribute_damage) in effect.change_attribute_cache.iter() {
                     charactor::change_attribute_points(&mut attributes, attribute, -attribute_damage, true);
                 }
 
@@ -102,7 +110,7 @@ pub fn update_effects(
 
                 effects_to_remove.push(effect_type.clone());                                                            //fill vec for deleting effects ended by duration;
             } else {
-                effect.current_duration += delta;                                                                           //add time to effect duration;
+                effect.current_time_duration += delta_time;                                                                           //add time to effect duration;
                 //remove this;
                 //println!("From effect update. current duration: {:?}, delta: {:?}", effect.current_duration, delta);
             }                

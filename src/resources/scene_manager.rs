@@ -1,3 +1,4 @@
+use bevy::ecs::system::Resource;
 use serde::{Deserialize, Serialize};
 use rand::Rng;
 
@@ -6,7 +7,7 @@ use crate::{scenes::game_scenes::{game_scene::GameScene, tilemap::generate::gene
 use super::{deploy::{Deploy, game_scene_deploy::Location}, charactor_manager::CharactorManager, thing_manager::ThingManager, profile::Profile};
 
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Resource)]
 pub struct SceneManager {
     pub next_game_scene: Option<usize>,
     pub current_game_scene: Option<usize>,

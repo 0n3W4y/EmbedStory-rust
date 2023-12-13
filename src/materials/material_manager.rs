@@ -7,7 +7,7 @@ use crate::materials::main_menu_scene_material::MainMenuSceneMaterial;
 use crate::materials::options_scene_material::OptionsSceneMaterial;
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Resource)]
 pub struct MaterialManager {
     pub main_menu_scene: MainMenuSceneMaterial,
     pub options_scene: OptionsSceneMaterial,

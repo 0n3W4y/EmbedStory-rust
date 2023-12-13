@@ -129,90 +129,120 @@ fn load_tile_material(
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let clay_texture_atlas = TextureAtlas::from_grid(
         clay_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let dirt_texture_atlas = TextureAtlas::from_grid(
         dirt_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let dry_earth_texture_atlas = TextureAtlas::from_grid(
         dry_earth_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let rock_texture_atlas = TextureAtlas::from_grid(
         rock_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let none_texture_atlas = TextureAtlas::from_grid(
         none_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         1,
         1,
+        None,
+        None,
     );
     let grass_texture_atlas = TextureAtlas::from_grid(
         grass_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let ice_texture_atlas = TextureAtlas::from_grid(
         ice_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let flowers_texture_atlas = TextureAtlas::from_grid(
         flowers_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let sand_texture_atlas = TextureAtlas::from_grid(
         sand_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let shallow_texture_atlas = TextureAtlas::from_grid(
         shallow_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let snow_texture_atlas = TextureAtlas::from_grid(
         snow_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let water_texture_atlas = TextureAtlas::from_grid(
         water_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let wooden_floor_texture_atlas = TextureAtlas::from_grid(
         wooden_floor_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let rocky_road_texture_atlas = TextureAtlas::from_grid(
         rocky_road_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
 
     let earth_atlas = texture_atlases.add(earth_texture_atlas);

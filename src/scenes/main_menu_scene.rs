@@ -30,6 +30,7 @@ impl ButtonComponent{
     }
 }
 
+#[derive(Resource)]
 struct MainMenuSceneData{
     user_interface_root: Entity,
 }
@@ -46,21 +47,22 @@ impl Plugin for MainMenuScenePlugin{
 
 fn setup( mut commands: Commands, dictionary: Res<Dictionary>, font: Res<FontMaterials>, material_manager: Res<MaterialManager>){
     let user_interface_root = commands
-        .spawn_bundle( NodeBundle{
+        .spawn(( NodeBundle{
             style: Style{ 
                 position_type: PositionType::Absolute,
                 size: Size::new( Val::Percent(100.0), Val::Percent( 100.0 )),
                 ..Default::default()
             },
-            image: UiImage( material_manager.main_menu_scene.background_image.clone() ),
             ..Default::default()
-        })
+        },
+        UiImage( material_manager.main_menu_scene.background_image.clone() ),
+        ))
         .with_children(|parent|{
             create_buttons( parent, &font, dictionary );
         })
         .id();
     commands.insert_resource( MainMenuSceneData{ 
-         user_interface_root: user_interface_root, 
+        user_interface_root, 
     });
 }
 
@@ -72,19 +74,19 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
     let glossary = dictionary.get_glossary();
 
     for( index, button ) in ButtonComponent::iterator().enumerate(){
-        let position: UiRect<Val> = UiRect { 
+        let position: UiRect = UiRect { 
             left: Val::Px( 100.0 ), 
             right: Val::Auto, 
             top: Val::Px( MONITOR_HEIGHT / 2.0 + MAIN_MENU_BUTTON_HEIGHT * ( index as f32 + 1.0 )), 
             bottom: Val::Auto,
         };
 
-        let size: Size<Val> = Size { 
+        let size: Size = Size { 
             width: Val::Px( MAIN_MENU_BUTTON_WIDTH ),
             height: Val::Px( MAIN_MENU_BUTTON_HEIGHT ),
         };
 
-        root.spawn_bundle( ButtonBundle {
+        root.spawn(( ButtonBundle {
             style: Style{
                 size,
                 justify_content: JustifyContent::Center,
@@ -94,9 +96,11 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 position,
                 ..Default::default()
             },
-            color: UiColor( Color::NONE ),
+            background_color: BackgroundColor( Color::NONE ),
             ..Default::default()
-        })
+        },
+        button.clone(),
+        ))
         .with_children( |parent|{
             let text: &str = match button{
                 ButtonComponent::Play => glossary.main_menu_text.play.as_str(),
@@ -105,7 +109,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 ButtonComponent::Quit => glossary.main_menu_text.quit.as_str(),
             };
 
-            parent.spawn_bundle( TextBundle{
+            parent.spawn( TextBundle{
                 text: Text::from_section(
                     text,
                     TextStyle {
@@ -121,22 +125,21 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 horizontal: HorizontalAlign::Center,
                 })
             );
-        })
-        .insert( button.clone() );
+        });
     }
 }
 
 fn button_handle_system( 
-    mut button_query: Query<( &Interaction, &ButtonComponent, &mut UiColor ), ( Changed<Interaction>, With<Button> )>,
+    mut button_query: Query<( &Interaction, &ButtonComponent, &mut BackgroundColor ), ( Changed<Interaction>, With<Button> )>,
     mut state: ResMut<State<SceneState>>,
     mut exit: EventWriter<AppExit>
 ){
     for( interaction, button, mut color ) in button_query.iter_mut(){
         match *interaction{
-            Interaction::None => *color = UiColor( Color::NONE ),
-            Interaction::Hovered => *color = UiColor( Color::rgb(0.25, 0.25, 0.25 )),
+            Interaction::None => *color = BackgroundColor( Color::NONE ),
+            Interaction::Hovered => *color = BackgroundColor( Color::rgb(0.25, 0.25, 0.25 )),
             Interaction::Clicked => {
-                *color = UiColor( Color::rgb(0.25, 0.75, 0.25));
+                *color = BackgroundColor( Color::rgb(0.25, 0.75, 0.25));
                 match button{
                     //ButtonComponent::Play => state.set( SceneState::CreateCharScene).expect( "Could not load CreateCharacterScene"),
                     ButtonComponent::Play => state.set( SceneState::CreateCharScene).expect( "Could not load GameGroundScene"),

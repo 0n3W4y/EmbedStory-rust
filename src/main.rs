@@ -15,21 +15,24 @@ use config::*;
 
 fn main(){
     App::new()
-        .insert_resource(WindowDescriptor { 
-            title: TITLE.to_string(),
-            width: WINDOW_HEIGHT*RESOLUTION,                 
-            height: WINDOW_HEIGHT,
-            //present_mode: PresentMode::Immediate,
-            resizable: false,
-            //resize_constraints: bevy::window::WindowResizeConstraints {
-            //   min_width: WINDOW_HEIGHT * RESOLUTION,
-            //    max_width: WINDOW_HEIGHT * RESOLUTION,
-            //    min_height: WINDOW_HEIGHT,
-            //    max_height: WINDOW_HEIGHT,
-            //},
-            mode: WindowMode::Windowed,  
+        .add_plugins(DefaultPlugins.set(WindowPlugin{
+            window: WindowDescriptor {
+                title: TITLE.to_string(),
+                width: WINDOW_HEIGHT*RESOLUTION,                 
+                height: WINDOW_HEIGHT,
+                //present_mode: PresentMode::Immediate,
+                resizable: false,
+                //resize_constraints: bevy::window::WindowResizeConstraints {
+                //   min_width: WINDOW_HEIGHT * RESOLUTION,
+                //    max_width: WINDOW_HEIGHT * RESOLUTION,
+                //    min_height: WINDOW_HEIGHT,
+                //    max_height: WINDOW_HEIGHT,
+                //},
+                mode: WindowMode::Windowed,  
+                ..default()
+            },
             ..default()
-        })
+        }))
         .init_resource::<resources::setting::Setting>()
         .init_resource::<resources::dictionary::Dictionary>()
         .init_resource::<resources::deploy::Deploy>()

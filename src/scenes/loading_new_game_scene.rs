@@ -2,12 +2,8 @@ use bevy::prelude::*;
 
 use crate::config::{RESOLUTION, WINDOW_HEIGHT};
 use crate::materials::{font::FontMaterials, material_manager::MaterialManager};
-use crate::resources::charactor_manager::CharactorManager;
-use crate::resources::deploy::Deploy;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
-use crate::resources::stuff_manager::StuffManager;
-use crate::resources::thing_manager::ThingManager;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::SceneState;
 
@@ -23,6 +19,7 @@ pub struct LoadingNewGameSceneComponent {
     current_width: f32,
 }
 
+#[derive(Resource)]
 pub struct LoadingNewGameSceneData {
     user_interface_root: Entity,
 }
@@ -52,19 +49,15 @@ fn setup(
     dictionary: Res<Dictionary>,
 ) {
     let user_interface_root = commands
-        .spawn_bundle(NodeBundle {
+        .spawn((NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
                 ..Default::default()
             },
-            image: UiImage(
-                material_manager
-                    .loading_new_game_scene
-                    .background_image
-                    .clone(),
-            ),
             ..Default::default()
-        })
+        },
+        UiImage(material_manager.loading_new_game_scene.background_image.clone()),
+        ))
         .with_children(|parent| {
             loading_text(parent, &font, &dictionary);
             loader_bundle(parent, &font, &dictionary);
@@ -77,7 +70,7 @@ fn setup(
 }
 
 fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: &Res<Dictionary>) {
-    root.spawn_bundle(NodeBundle {
+    root.spawn(NodeBundle {
         style: Style {
             justify_content: JustifyContent::Center,
             position_type: PositionType::Absolute,
@@ -94,12 +87,12 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
             },
             ..Default::default()
         },
-        color: UiColor(Color::DARK_GRAY),
+        background_color: BackgroundColor(Color::DARK_GRAY),
         ..Default::default()
     })
     .with_children(|parent| {
         parent
-            .spawn_bundle(NodeBundle {
+            .spawn((NodeBundle {
                 style: Style {
                     justify_content: JustifyContent::Center,
                     position_type: PositionType::Absolute,
@@ -110,13 +103,18 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
                     position: UiRect::all(Val::Px(5.0)),
                     ..Default::default()
                 },
-                color: UiColor(INNER_LOADER_COLOR),
+                background_color: BackgroundColor(INNER_LOADER_COLOR),
                 ..Default::default()
-            })
+            },
+            LoadingNewGameSceneComponent {
+                max_width: LOADING_BORDER_WIDTH - 10.0,
+                current_width: 0.0,
+            }
+            ))
             .with_children(|parent| {
                 let font_str = font.get_font(dictionary.get_current_language());
 
-                parent.spawn_bundle(TextBundle {
+                parent.spawn(TextBundle {
                     style: Style {
                         justify_content: JustifyContent::Center,
                         position_type: PositionType::Absolute,
@@ -139,16 +137,12 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
                     horizontal: HorizontalAlign::Center,
                 })
                 );
-            })
-            .insert(LoadingNewGameSceneComponent {
-                max_width: LOADING_BORDER_WIDTH - 10.0,
-                current_width: 0.0,
             });
     });
 }
 
 fn loading_text(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: &Res<Dictionary>) {
-    root.spawn_bundle(NodeBundle {
+    root.spawn(NodeBundle {
         style: Style {
             justify_content: JustifyContent::Center,
             position_type: PositionType::Absolute,
@@ -161,14 +155,14 @@ fn loading_text(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: 
             },
             ..Default::default()
         },
-        color: UiColor(Color::NONE),
+        background_color: BackgroundColor(Color::NONE),
         ..Default::default()
     })
     .with_children(|parent| {
         let glossary = dictionary.get_glossary();
         let font_str = font.get_font(dictionary.get_current_language());
 
-        parent.spawn_bundle(TextBundle {
+        parent.spawn(TextBundle {
             style: Style {
                 justify_content: JustifyContent::Center,
                 position_type: PositionType::Absolute,
@@ -225,13 +219,8 @@ fn cleanup(mut commands: Commands, scene_data: Res<LoadingNewGameSceneData>) {
 }
 
 fn prepare_next_scene(
-    mut commands: Commands, 
-    deploy: Res<Deploy>,
     profile: Res<Profile>,
-    mut charactor_manager: ResMut<CharactorManager>,
     mut scene_manager: ResMut<SceneManager>,
-    mut thing_manager: ResMut<ThingManager>,
-    mut stuff_manager: ResMut<StuffManager>
 ) {
     let next_scene_id = scene_manager.get_next_scene().scene_id; 
     scene_manager.set_current_game_scene(next_scene_id);

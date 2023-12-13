@@ -139,126 +139,168 @@ fn load_things_material(
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let tree_texture_atlas = TextureAtlas::from_grid(
         tree_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let fertile_bush_texture_atlas = TextureAtlas::from_grid(
         fertile_bush_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let fertile_tree_texture_atlas = TextureAtlas::from_grid(
         fertile_tree_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let boulder_texture_atlas = TextureAtlas::from_grid(
         boulder_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let bush_texture_atlas = TextureAtlas::from_grid(
         bush_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let log_texture_atlas = TextureAtlas::from_grid(
         log_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let copper_ore_texture_atlas = TextureAtlas::from_grid(
         copper_ore_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     ); //37
     let iron_ore_texture_atlas = TextureAtlas::from_grid(
         iron_ore_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     ); //37
     let iron_door_texture_atlas = TextureAtlas::from_grid(
         iron_door_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let wooden_door_texture_atlas = TextureAtlas::from_grid(
         wooden_door_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let wooden_wall_texture_atlas = TextureAtlas::from_grid(
         wooden_wall_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let stone_wall_texture_atlas = TextureAtlas::from_grid(
         stone_wall_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let steel_wall_texture_atlas = TextureAtlas::from_grid(
         steel_wall_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let steel_door_texture_atlas = TextureAtlas::from_grid(
         steel_door_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let iron_wall_texture_atlas = TextureAtlas::from_grid(
         iron_wall_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let reinforced_iron_door_texture_atlas = TextureAtlas::from_grid(
         reinforced_iron_door_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let reinforced_steel_door_texture_atlas = TextureAtlas::from_grid(
         reinforced_steel_door_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let reinforced_wooden_door_texture_atlas = TextureAtlas::from_grid(
         reinforced_wooden_door_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
     let dungeon_enter_texture_atlas = TextureAtlas::from_grid(
         dungeon_enter_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         2,
         1,
+        None,
+        None,
     );
     let dungeon_exit_texture_atlas = TextureAtlas::from_grid(
         dungeon_exit_texture_handle,
         Vec2::new(TILE_SIZE as f32, TILE_SIZE as f32),
         6,
         1,
+        None,
+        None,
     );
 
     let rock_atlas = texture_atlases.add(rock_texture_atlas);

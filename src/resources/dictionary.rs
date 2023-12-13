@@ -5,7 +5,7 @@ use crate::resources::language::Language;
 use crate::resources::setting::Setting;
 use crate::resources::glossary::Glossary;
 
-#[derive( Serialize, Deserialize, Debug, Clone )]
+#[derive( Serialize, Deserialize, Debug, Clone, Resource )]
 pub struct Dictionary{
     en_glossary:Glossary,
     ru_glossary:Glossary,

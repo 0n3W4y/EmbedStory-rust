@@ -7,8 +7,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -43,9 +43,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "elf": {
@@ -56,8 +56,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -92,9 +92,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "orc": {
@@ -105,8 +105,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -141,9 +141,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "dwarf": {
@@ -154,8 +154,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -190,12 +190,12 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
-
-    "Halfling": {
+    
+    "halfling": {
         "stats": {
             "Strength": 10,
             "Dexterity": 10,
@@ -203,8 +203,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -239,9 +239,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "lizardfolk": {
@@ -252,8 +252,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -288,9 +288,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "naga": {
@@ -301,8 +301,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -337,9 +337,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "gnome": {
@@ -350,8 +350,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -386,9 +386,9 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
     },
 
     "goblin": {
@@ -399,8 +399,8 @@
             "Luck": 10
         },
         "attributes": {
-            "HealthPoints": 100,
-            "StaminaPoints": 50
+            "Health": 100,
+            "Stamina": 50
         },
         "resists": {
             "FireDamage": 0,
@@ -435,8 +435,972 @@
             "ColdDamage": 0,
             "HealthDamage": 0,
             "StaminaDamage": 0,
-            "ReducingTimeEffect": 0
+            "ReducingEffectTime": 0
         },
-        "passive_skills": {}
+        "passive_skills": []
+    },
+
+    "minotaur": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+
+    "harpia": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+
+    "dryada": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+
+    "fairy": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "celestial": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "elemental": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "skeleton": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "zombie": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "ogre": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "demon": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "ghost": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "wolf": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "bear": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "crocodile": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "scorpion": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "eagle": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "spider": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "komodo_dragon": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "rhinocerops": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
+    },
+    "snake": {
+        "stats": {
+            "Strength": 10,
+            "Dexterity": 10,
+            "Wisdom": 10,
+            "Luck": 10
+        },
+        "attributes": {
+            "Health": 100,
+            "Stamina": 50
+        },
+        "resists": {
+            "FireDamage": 0,
+            "ColdDamage": 0,
+            "ElectricDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "PhisicalDamage": 0,
+            "WaterDamage": 0
+        },
+        "ability": {
+            "Evasion": 0,
+            "MovementSpeed": 0,
+            "AttackSpeed": 0,
+            "ActiveSkillsCoolDawn": 0,
+            "BlockChance": 0,
+            "BlockAmount": 0,
+            "CriticalHitChanse": 0,
+            "CriticalHitMultiplier": 0,
+            "Accuracy": 0,
+            "StaminaRegen": 0,
+            "HealthRegen": 0,
+            "ExperienceMultiplier": 0,
+            "PhisicalDamage": 0,
+            "FireDamage": 0,
+            "ElectricDamage": 0,
+            "WaterDamage": 0,
+            "AcidDamage": 0,
+            "PoisonDamage": 0,
+            "ColdDamage": 0,
+            "HealthDamage": 0,
+            "StaminaDamage": 0,
+            "ReducingEffectTime": 0
+        },
+        "passive_skills": []
     }
 }

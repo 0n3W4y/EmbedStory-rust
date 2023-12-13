@@ -34,26 +34,27 @@ pub fn draw(
         copy_from_tile_to_component( &mut tile_component, &mut position_component, &mut identification_component, &mut permissions_component, tile);
 
         commands
-            .spawn_bundle(SpriteSheetBundle {
+            .spawn((SpriteSheetBundle {
                 transform,
                 sprite: TextureAtlasSprite::new(tile.cover_graphic_index as usize),
                 texture_atlas: texture,
                 ..Default::default()
-            })
+            },
+            tile_component,
+            position_component,
+            identification_component,
+            permissions_component,
+            ))
             .with_children(|parent| {
                 let ground_texture: Handle<TextureAtlas> = material_manager.game_scene.tile.get_ground_atlas(ground_type);
                 let ground_transform = Transform::from_xyz(0.0, 0.0, GROUND_Z_POSITION);
-                parent.spawn_bundle(SpriteSheetBundle{
+                parent.spawn(SpriteSheetBundle{
                     transform: ground_transform,
                     sprite: TextureAtlasSprite::new(tile.ground_graphic_index as usize),
                     texture_atlas: ground_texture,
                     ..Default::default()
                 });
-            })
-            .insert(tile_component)
-            .insert(position_component)
-            .insert(identification_component)
-            .insert(permissions_component);
+            });
     }
 }
 
