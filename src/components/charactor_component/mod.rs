@@ -4,14 +4,16 @@ use std::collections::HashMap;
 use crate::resources::scene_data::AbilityType;
 use crate::resources::scene_data::charactor::CharactorStrength;
 use crate::resources::scene_data::charactor::SkillSlot;
+use crate::resources::scene_data::charactor::effects::Effect;
+use crate::resources::scene_data::charactor::effects::EffectStatus;
 use crate::resources::scene_data::charactor::skills::SkillType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
-use crate::resources::scene_data::charactor::effects::Effect;
 use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::resources::scene_data::charactor::skills::Skill;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::charactor::StuffWearSlot;
 use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderType, CharactorStatus};
+
 
 #[derive(Default, Eq, PartialEq, Debug)]
 pub enum ActionType {
@@ -28,7 +30,10 @@ pub struct CharactorAnimationComponent {
 
 #[derive(Component, Default)]
 pub struct EffectComponent{
+    pub added_effect: Vec<EffectType>,
     pub effects: HashMap<EffectType, Effect>,
+    pub effect_immunes: Vec<EffectType>,
+    pub effect_status: Vec<EffectStatus>,
 }
 
 #[derive(Component, Default)]

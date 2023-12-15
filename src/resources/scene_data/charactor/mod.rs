@@ -1,10 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use self::effects::Effect;
+use self::effects::{EffectType, Effect, EffectStatus};
 use self::skills::{Skill, SkillType};
 use crate::components::{StatsComponent, AttributesComponent};
-use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::stuff::damage_type::DamageType;
@@ -173,6 +172,8 @@ pub struct Charactor {
     pub stuff_wear: HashMap<StuffWearSlot, Option<Stuff>>,
 
     pub effects: HashMap<EffectType, Effect>,
+    pub effects_immunes: Vec<EffectType>,
+    pub effect_status: Vec<EffectStatus>,
 }
 
 

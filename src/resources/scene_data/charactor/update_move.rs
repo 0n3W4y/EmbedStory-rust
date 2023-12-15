@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::components::{PositionComponent, IdentificationComponent};
 use crate::config::TILE_SIZE;
-use crate::components::charactor_component::{CharactorComponent, AbilityComponent, DestinationComponent};
+use crate::components::charactor_component::{CharactorComponent, AbilityComponent, DestinationComponent, EffectComponent};
 use crate::resources::scene_data::AbilityType;
 use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -11,6 +11,7 @@ use crate::scenes::game_scenes::tilemap::tile::Tile;
 use crate::resources::scene_manager::SceneManager;
 
 use super::CharactorType;
+use super::effects::EffectStatus;
 
 //use crate::plugins::camera::Orthographic2DCamera;
 
@@ -20,7 +21,15 @@ const DEFAULT_MOVEMENT_SPEED: f32 = 100.0;
 
 pub fn move_charactor(
     time: Res<Time>,
-    mut charactor_query: Query<(&IdentificationComponent, &mut CharactorComponent, &mut PositionComponent, &mut DestinationComponent, &AbilityComponent, &mut Transform)>,
+    mut charactor_query: Query<(
+        &IdentificationComponent, 
+        &mut CharactorComponent, 
+        &mut PositionComponent, 
+        &mut DestinationComponent, 
+        &AbilityComponent, 
+        &EffectComponent,
+        &mut Transform
+    )>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
@@ -32,20 +41,26 @@ pub fn move_charactor(
         mut position, 
         mut destination,
         ability,
+        effects,
         mut transform, 
     ) in charactor_query.iter_mut(){
         match destination.destination_point {
             Some(_) => {
-                try_move(
-                    identification_component,
-                    &mut charactor, 
-                    &mut position,
-                    &mut destination,
-                    ability,
-                    &mut transform.translation,
-                    delta,
-                    scene
-                );               // check for moving and create path;
+                match effects.effect_status.iter().find(|&x| *x == EffectStatus::CanNotMove) {
+                    Some(_) => continue,                                                            //have status can't move, so we stop moving;
+                    None => {
+                        try_move(
+                            identification_component,
+                            &mut charactor, 
+                            &mut position,
+                            &mut destination,
+                            ability,
+                            &mut transform.translation,
+                            delta,
+                            scene
+                        );                                                                      // check for moving and create path;
+                    }
+                }
             },
             None => continue,                                                                   //skip
         }

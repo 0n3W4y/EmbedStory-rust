@@ -170,7 +170,7 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
                 }
             };
 
-            let mut skill_cooldown: i16 = 0;
+            let mut skill_cooldown: i16;
             let mut critical_chance: i16 = 0;
             let mut critical_multiplier: i16 = 0;
             let mut damage_from_weapon: HashMap<DamageType, i16> = HashMap::new();

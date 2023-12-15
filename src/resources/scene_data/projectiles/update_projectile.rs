@@ -8,12 +8,10 @@ use crate::{
     },
     config::TILE_SIZE,
     materials::material_manager::MaterialManager,
-    resources::{
-        deploy::Deploy,
+    resources::
         scene_data::{
             charactor::{
                 change_attribute_points,
-                effects::{Effect, EffectDeploy},
                 skills::SkillDirectionType,
             },
             damage_text_informer::DamageTextInformer,
@@ -21,7 +19,6 @@ use crate::{
                 damage_type::DamageType,
             AbilityType, Attribute, get_resist_from_damage_type,
         },
-    },
     scenes::game_scenes::tilemap::tile::Position,
 };
 use bevy::prelude::*;
@@ -32,7 +29,6 @@ const Z_POSITION: f32 = 4.0; // fourth layer;
 pub fn update_projectiles(
     mut commands: Commands,
     time: Res<Time>,
-    deploy: Res<Deploy>,
     mut projectile_query: Query<(Entity, &mut Projectile, &mut Transform)>,
     mut all_query: Query<
         (
@@ -62,7 +58,6 @@ pub fn update_projectiles(
         ) {
             check_for_collision(
                 &mut commands,
-                &deploy,
                 &mut projectile,
                 projectile_entity,
                 &mut all_query,
@@ -73,7 +68,6 @@ pub fn update_projectiles(
 
 pub fn check_for_collision(
     commands: &mut Commands,
-    deploy: &Deploy,
     projectile: &mut Projectile,
     projectile_entity: Entity,
     all_query: &mut Query<
@@ -111,7 +105,6 @@ pub fn check_for_collision(
                 ObjectType::Charactor(_) => {
                     collision_with_charactor(
                         commands,
-                        &deploy,
                         projectile,
                         projectile_entity,
                         &mut attributes_component,
@@ -147,7 +140,6 @@ pub fn check_for_collision(
 
 fn collision_with_charactor(
     commands: &mut Commands,
-    deploy: &Deploy,
     projectile: &Projectile,
     projectile_entity: Entity,
     attributes: &mut AttributesComponent,
@@ -214,25 +206,7 @@ fn collision_with_charactor(
     }
 
     for effect_type in projectile.effects.iter() {
-        let effect_config: &EffectDeploy = deploy
-            .charactor_deploy
-            .effects_deploy
-            .get_effect_config(effect_type);
-        let mut effect = Effect::new(effect_config);
-        let time_effect_reduced = match abilities
-            .ability
-            .get(&AbilityType::ReducingEffectTime)
-        {
-            Some(v) => *v,
-            None => 0,
-        };
-
-        effect.effect_duration -= effect.effect_duration * time_effect_reduced as f32 / 100.0;
-        effects
-            .effects
-            .entry(effect_type.clone())
-            .and_modify(|x| x.effect_duration += effect.effect_duration)
-            .or_insert(effect);
+        effects.added_effect.push(effect_type.clone());   
     }
 
     for skill in projectile.passive_skills.iter() {

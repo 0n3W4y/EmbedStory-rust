@@ -196,6 +196,7 @@ impl Plugin for GameScenePlugin {
             .with_run_criteria(FixedTimestep::step(0.1))
             .with_system(charactor::update_effects::update_effects)
             .with_system(charactor::update_cooldowns::update_active_skills_cooldown)
+            .with_system(charactor::update_effects::add_new_effect)
             //.with_system(charactor::update_attack::player_attacking)
         );
 

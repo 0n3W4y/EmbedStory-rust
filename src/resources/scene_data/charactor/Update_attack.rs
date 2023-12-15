@@ -15,7 +15,7 @@ use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 
-use super::effects::Effect;
+use super::effects::{Effect, EffectStatus};
 use super::{get_ability_type_from_damage_type, change_attribute_points, get_attribute_from_damage_type};
 use super::update_move::calculate_direction;
 use super::{skills::Skill, CharactorStatus};
@@ -30,6 +30,7 @@ pub fn update_attack_from_basic_skill(
         &mut SkillComponent,
         &CharactorTargetComponent,
         &AbilityComponent,
+        &EffectComponent,
     )>,
 
     mut target_query: Query<(
@@ -50,10 +51,16 @@ pub fn update_attack_from_basic_skill(
         charactor_position,
         mut charactor_skill, 
         charactor_target, 
-        charactor_ability
+        charactor_ability,
+        charactor_effect
     ) in charactor_query.iter_mut() {
         if charactor_target.action != ActionType::Attack {              //check for target status; And skip all if not attacking;
             continue;
+        }
+
+        match charactor_effect.effect_status.iter().find(|&x| *x == EffectStatus::CanNotAttack) {
+            Some(_) => continue,
+            None => {},
         }
 
         let target_id = match charactor_target.target {             //checking for target id;

@@ -110,6 +110,7 @@ pub fn copy_from_component_to_charactor(
     charactor.destination_point = destination_component.destination_point.clone();
 
     charactor.effects = effect_component.effects.clone();
+    charactor.effects_immunes = effect_component.effect_immunes.clone();
 
     charactor.stats = stats_component.stats.clone();
     charactor.stats_cache = stats_component.stats_cache.clone();

@@ -8,7 +8,7 @@ use super::effects::EffectType;
 use super::skills::{TargetType, SkillType, Skill};
 use super::{
     skills::CastSource,
-    CharactorType, effects::Effect, CharactorStatus,
+    CharactorType, CharactorStatus,
 };
 use crate::components::{PositionComponent, IdentificationComponent, ResistsComponent, AttributesComponent};
 use crate::components::charactor_component::{DestinationComponent, AbilityComponent};
@@ -173,8 +173,6 @@ pub fn update_passive_skills(
                 } else {
                     //buff or debuff skill; if skill range == 0 then we understand skill can buff or debuff self when triggered. We must ignore target_type;
 
-                    
-
                     if skill.range == 0 {
                         match *skill_cast_source {
                             CastSource::Itself => {
@@ -183,7 +181,11 @@ pub fn update_passive_skills(
                                     Some(v) => *v,
                                     None => 0,
                                 };
-                                add_effect(&skill.effect, &deploy, effect_time_reduced, &mut effect_component);              //add effects to itself;
+                                try_add_effect(
+                                    &skill.effect,
+                                    effect_time_reduced, 
+                                    &mut effect_component,
+                                );              //add effects to itself;
                             },
                             CastSource::Mouse => { 
                                 println!(
@@ -207,7 +209,11 @@ pub fn update_passive_skills(
                                     Some(v) => *v,
                                     None => 0,
                                 };
-                                add_effect(&skill.effect, &deploy, effect_time_reduced, &mut effect_component);              //add effects to itself;
+                                try_add_effect(
+                                    &skill.effect,
+                                    effect_time_reduced, 
+                                    &mut effect_component,
+                                );              //add effects to itself;
                                 multiply_target = true;
                             },
                             SkillDirectionType::Point => {                                          // single target skill;
@@ -284,7 +290,11 @@ pub fn update_passive_skills(
                                     Some(v) => *v,
                                     None => 0,
                                 };
-                                add_effect(&skill.effect, &deploy, effect_time_reduced, &mut target_effects);     // add effects to target
+                                try_add_effect(
+                                    &skill.effect,
+                                    effect_time_reduced, 
+                                    &mut target_effects,
+                                    );     // add effects to target
                                 if !multiply_target {break};// end loop;
                             } else {
                                 continue;                                                                                                       //position of target not in range;
@@ -335,8 +345,12 @@ pub fn do_damage(damage: &HashMap<DamageType, i16>, attributes: &mut AttributesC
     }
 }
 
-pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, effect_time_reduce: i16, effect_component: &mut EffectComponent){
-    if effect_time_reduce >= 100 {
+pub fn try_add_effect(
+    effects: &HashMap<EffectType, u8>, 
+    effect_time_reducing: i16, 
+    effect_component: &mut EffectComponent,
+){
+    if effect_time_reducing >= 100 {
         return;
     }
 
@@ -344,10 +358,7 @@ pub fn add_effect(effects: &HashMap<EffectType, u8>, deploy: &Deploy, effect_tim
     for (effect_type, effect_trigger) in effects.iter() {
         let trigger_effect_random_number: u8 = rng.gen_range(0..=99);
         if *effect_trigger >= trigger_effect_random_number {                                                                         //check triegger on effect;
-            let effect_config = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
-            let mut effect = Effect::new(effect_config);
-            effect.effect_duration -= effect.effect_duration * effect_time_reduce as f32 / 100.0;                                                  //reduce effect duration by target resist;        
-            effect_component.effects.entry(effect_type.clone()).and_modify(|x| x.effect_duration += effect.effect_duration).or_insert(effect);
+            effect_component.added_effect.push(effect_type.clone());            
         }
     }
 }
