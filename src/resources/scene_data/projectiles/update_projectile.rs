@@ -157,7 +157,8 @@ fn collision_with_charactor(
             if *v > random_evade_chance {
                 //evaded
                 damage_text.text_upper.push(DamageTextInformer::new(
-                    "Evaded".to_string(),
+                    0,
+                    Some("Evaded".to_string()),
                     false,
                     None,
                 ));
@@ -252,7 +253,7 @@ fn collision_with_thing(
             None => {}
         }
         let text_damage =
-            DamageTextInformer::new(damage_with_resist.to_string(), false, Some(damage_type));
+            DamageTextInformer::new(damage_with_resist, None, false, Some(damage_type));
         damage_text.text_upper.push(text_damage);
     }
     commands.entity(projectile_entity).despawn_recursive();

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{StatsComponent, ResistsComponent, AttributesComponent};
+use crate::components::{StatsComponent, ResistsComponent, AttributesComponent, DamageTextComponent};
 use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent,
     SkillComponent, InventoryComponent,
@@ -8,6 +8,7 @@ use crate::components::charactor_component::{
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::AbilityType;
 use crate::resources::scene_data::charactor::{self, skills};
+use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use super::effects::{EffectType, Effect, EffectStatus};
 use super::{CharactorStatus, SkillSlot, change_stat_points};
 
@@ -17,6 +18,7 @@ pub fn add_new_effect(
     (
         &mut EffectComponent,
         &StatsComponent,
+        &AttributesComponent,
         &AbilityComponent
     ),
     With<CharactorComponent>    
@@ -25,6 +27,7 @@ pub fn add_new_effect(
     for (
         mut effects,
         stats,
+        attrbiutes,
         abilities
     ) in charactor_query.iter_mut() {
         let mut effects_to_charactor: Vec<Effect> = vec![];
@@ -49,7 +52,15 @@ pub fn add_new_effect(
                     Some(v) => *v,
                     None => 0,
                 };
-                *value = *value * stat_value / 100;
+                *value = *value * stat_value / 100;                                                 //convert percent to flat;
+            }
+
+            for (attribute, value) in effect.change_attributes.iter_mut() {
+                let attribute_value = match attrbiutes.attributes_cache.get(attribute) {
+                    Some(v) => *v,
+                    None => 0,
+                };
+                *value = *value * attribute_value / 100;                                            //convert percent to flat;
             }
 
             for effect_status in effect.effect_status.iter(){
@@ -86,7 +97,8 @@ pub fn update_effects(
             &mut ResistsComponent,
             &mut AbilityComponent,
             &mut SkillComponent,
-            & InventoryComponent,
+            &InventoryComponent,
+            &mut DamageTextComponent,
         ),
         With<CharactorComponent>,
     >
@@ -101,6 +113,8 @@ pub fn update_effects(
         mut abilities, 
         mut skills,
         inventory,
+        mut damage_text,
+
     ) in charactors_query.iter_mut() {
         if charactor_component.status == CharactorStatus::Dead {                            //check for dead
             continue;                                                                       //do nothing with dead charactors;
@@ -121,8 +135,13 @@ pub fn update_effects(
                     );
                 }
 
-                for (attribute, attribute_damage) in effect.change_attribute_cache.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, true);
+                for (attribute_cache, attribute_damage) in effect.change_attribute_cache.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute_cache, *attribute_damage, true);
+                }
+
+                for (attribute, attribute_damage) in effect.change_attributes.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, false);
+                    damage_text.text_upper.push(DamageTextInformer::new(*attribute_damage, None, false, Some(&effect.damage_type())));
                 }
                 
                 for (resist, resists_damage) in effect.change_resist.iter() {                   //change resists;
@@ -139,7 +158,8 @@ pub fn update_effects(
                      &abilities.ability, 
                      &inventory.stuff_wear
                     );
-                effect.total_time_duration += delta_time; 
+                effect.total_time_duration += delta_time;
+                effect.current_time_duration += delta_time;
             } else if effect.total_time_duration > effect.effect_duration || effect.effect_duration < 0.0 {                                 //effect is end; revert changes and remove effect
                 for (stat, stat_damage) in effect.change_stat.iter() {
                     change_stat_points(
@@ -167,9 +187,18 @@ pub fn update_effects(
                 skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);  
 
                 effects_to_remove.push(effect_type.clone());                                                            //fill vec for deleting effects ended by duration;
+            } else if effect.current_time_duration >= effect.trigger_time_effect {
+                effect.current_time_duration -= effect.trigger_time_effect;
+
+                for (attribute, attribute_damage) in effect.change_attributes.iter() {
+                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, false);
+                    damage_text.text_upper.push(DamageTextInformer::new(*attribute_damage, None, false, Some(&effect.damage_type())));
+                }
+                
             } else {
-                effect.total_time_duration += delta_time;                                                                           //add time to effect duration;
-            }                
+                effect.total_time_duration += delta_time;
+                effect.current_time_duration += delta_time;
+            }          
         }
 
         for effect_type in effects_to_remove.iter() {

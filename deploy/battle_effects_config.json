@@ -1,643 +1,278 @@
 {
     "stun":{
         "effect_type": "Stun",
-        "damage_type": "Kinetic",
-        "itself": false,
-        "duration": 30,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+        "effect_duration": 3.0,
+        "trigger_time_effect": 0.0,
+        
         "change_stat": {},
-        "change_stat_damage_type": "Percent",
-
-        "change_extra_stat": {},
-        "change_extra_stat_damage_type": "Percent",
-
-        "change_damage_resist": {},
-
-        "change_effect_resist": {},
-
-        "change_ability": {"MovementSpeed": -100, "AttackSpeed": -100, "BlockChance": -100, "Evasion": -100}
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {"BlockChance": 100, "Evasion": 100},
+        "effect_status": ["CanNotMove", "CanNotAttack"]
     },
-
-    "acid":{
-        "effect_type": "Acid",
-        "damage_type": "Acid",
-        "itself": false,
-        "duration": 100,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+    "acid_debuff": {
+        "effect_type": "AcidDebuff",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 0.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": -10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {"Kinetic": -75},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {"PhisicalResist": 75},
+        "change_ability": {"MovementSpeed": 25},
+        "effect_status": []
     },
-
-    "moveless":{
+    "moveless": {
         "effect_type": "Moveless",
-        "damage_type": "Kinetic",
-        "itself": false,
-        "duration": 30,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+        "effect_duration": 4.0,
+        "trigger_time_effect": 0.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": -100},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {"Evasion": 100},
+        "effect_status": ["CanNotMove"]
     },
-
-    "slow":{
-        "effect_type": "Slow",
-        "damage_type": "Kinetic",
-        "itself": false,
-        "duration": 60,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": -50},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+    "bleeding_debuff": {
+        "effect_type": "BleedingDebuff",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {"Strength": 25, "Dexterity": 50},
+        "change_attributes": {},
+        "change_attribute_cache": {"Health": 25, "Stamina": 25},
+        "change_resist": {},
+        "change_ability": {"MovementSpeed": 25, "Evasion": 25},
+        "effect_status": []
     },
-
-    "bleeding":{
-        "effect_type": "Bleeding",
-        "damage_type": "Kinetic",
-        "itself": false,
-        "duration": 100,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {"Strength": -50},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": -10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+    "fire_debuff": {
+        "effect_type": "FireDebuff",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {"Wisdom": 25},
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {"FireResist": -25, "WaterResist": 25, "ColdResist": -10},
+        "change_ability": {"Evasion": -10},
+        "effect_status": []
     },
-
-    "burn":{
-        "effect_type": "Burn",
-        "damage_type": "Fire",
-        "itself": false,
-        "duration": 40,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": -10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {"Cold": 50},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+    "cold_debuff": {
+        "effect_type": "ColdDebuff",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {"Strength": 25, "Dexterity": 25, "Wisdom": 25},
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {"ColdResist": -25, "WaterResist": -10, "FireResist": -25, "PhisicalResist": 25},
+        "change_ability": {"MovementSpeed": 15, "Evasion": 15},
+        "effect_status": []
     },
-
-    "electrofication":{
-        "effect_type": "Electrofication",
-        "damage_type": "Electrical",
-        "itself": false,
-        "duration": 50,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": -10000, "StaminaPoints": -10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": -15},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+    "electric_debuff": {
+        "effect_type": "ElectricDebuff",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {"Wisdom": -25, "Dexterity": 15},
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {"ElectricResist": -25, "WaterResist": 50},
+        "change_ability": {"MovementSpeed": -50, "Evasion": 15},
+        "effect_status": []
     },
-
-    "freeze":{
+    "water_debuff": {
+        "effect_type": "WaterDebuff",
+        "effect_duration": 20.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {"Strength": 15},
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {"WaterResist": -25, "ElectricResist": 50, "ColdResist": 25, "FireResist": -15},
+        "change_ability": {"BlockChance": 10, "Evasion": 10, "MovementSpeed": 25},
+        "effect_status": []
+    },
+    "freeze": {
         "effect_type": "Freeze",
-        "damage_type": "Cold",
-        "itself": false,
-        "duration": 30,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+        "effect_duration": 3.0,
+        "trigger_time_effect": 0.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": -10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {"Kinetic": 50},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": -100, "AttackSpeed": -100, "BlockChance": -100, "Evasion": -100},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {"PhisicalResist": -100, "ColdResist": -100, "FireResist": -50, "WaterResist": -50, "PoisonResist": -50},
+        "change_ability": {"BlockChance": -100, "Evasion": -100},
+        "effect_status": ["CanNotMove", "CanNotAttack"]
     },
-
-    "blind":{
+    "blind": {
         "effect_type": "Blind",
-        "damage_type": "Kinetic",
-        "itself": false,
-        "duration": 20,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+        "effect_duration": 5.0,
+        "trigger_time_effect": 0.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"Accuracy": -100},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {"Evasion": -100},
+        "effect_status": ["CanNotAttack"]
     },
-
-    "poison":{
-        "effect_type": "Poison",
-        "damage_type": "Poison",
-        "itself": false,
-        "duration": 70,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {"Strength": -50, "Dexterity": -50, "Mobility": -50, "Wisdom": -50, "Intellect": -50, "Luck": -50},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": -10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": -25},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+    "posison_debuff": {
+        "effect_type": "PoisonDebuff",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {"Strength": 25, "Dexterity": 15},
+        "change_attributes": {},
+        "change_attribute_cache": {"Health": 25, "Stamina": 25},
+        "change_resist": {"PoisonResist": 25},
+        "change_ability": {"Accuracy": -10, "Evasion": -10, "MovementSpeed": 25},
+        "effect_status": []
     },
-
-    "wet":{
-        "effect_type": "Wet",
-        "damage_type": "Water",
-        "itself": false,
-        "duration": 100,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+    "movement_buff": {
+        "effect_type": "MovementBuff",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 0.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {"Fire": 50, "Cold": -25, "Electric": -25},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {"Freeze": -120, "Electrification": -120, "Burn": 120},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {"Accuracy": 10, "Evasion": -10, "MovementSpeed": -100},
+        "effect_status": []
+    },
+    "movement_debuff": {
+        "effect_type": "MovementDebuff",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 0.0,
+        
+        "change_stat": {},
+        "change_attributes": {},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {"Accuracy": -10, "Evasion": 10, "MovementSpeed": 75},
+        "effect_status": []
+    },
+    "acid_damage": {
+        "effect_type": "AcidDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
+        "change_stat": {},
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     },
-
-    "broke_armor":{
-        "effect_type": "BrokeArmor",
-        "damage_type": "kinetic",
-        "itself": false,
-        "duration": 30,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+    "bleeding_damage": {
+        "effect_type": "BleedingDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {"Fire": -50, "Cold": -50, "Electric": -50, "Water": -50, "Acid": -50, "Kinetic": -50, "SacredEnergy": -50, "DarkEnergy": -50},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {"Freeze": -120, "Electrification": -120, "Burn": 120},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     },
-
-    "broke_weapon":{
-        "effect_type": "BrokeWeapon",
-        "damage_type": "kinetic",
-        "itself": false,
-        "duration": 50,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+    "cold_damage": {
+        "effect_type": "ColdDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MeleeDamage": -75, "RangedDamage": -70, "MagicDamage": -70, "BlockAmount": -75},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
-    },
-
-    "run_fast":{
-        "effect_type": "RunFast",
-        "damage_type": "kinetic",
-        "itself": false,
-        "duration": 20,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": 100},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
-    },
-
-    "lifelich":{
-        "effect_type": "Lifelich",
-        "damage_type": "DarkEnergy",
-        "itself": true,
-        "duration": 9,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": 10000},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     },
-
-    "staminalich":{
-        "effect_type": "Staminalich",
-        "damage_type": "SacredEnergy",
-        "itself": true,
-        "duration": 9,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+    "water_damage": {
+        "effect_type": "WaterDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"StaminaPoints": 10000},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     },
-
-    "stamina_damage":{
+    "electric_damage": {
+        "effect_type": "ElectricDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
+        "change_stat": {},
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {},
+        "effect_status": []
+    },
+    "fire_damage": {
+        "effect_type": "FireDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
+        "change_stat": {},
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {},
+        "effect_status": []
+    },
+    "poison_damage": {
+        "effect_type": "PoisonDamage",
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
+        "change_stat": {},
+        "change_attributes": {"Health": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
+        "change_ability": {},
+        "effect_status": []
+    },
+    "stamina_damage": {
         "effect_type": "StaminaDamage",
-        "damage_type": "SacredEnergy",
-        "itself": false,
-        "duration": 50,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+        "effect_duration": 5.0,
+        "trigger_time_effect": 1.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"StaminaPoints": -10000},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {"Stamina": 4},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     },
-
-    "healthpoint_regen":{
-        "effect_type": "HealthPointsRegen",
-        "damage_type": "DarkEnergy",
-        "itself": true,
-        "duration": 50,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+    "health_regen": {
+        "effect_type": "HealthRegen",
+        "effect_duration": 10.0,
+        "trigger_time_effect": 1.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"HealthPoints": 10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {"Health": 2},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     },
-
-    "stamina_regen":{
+    "stamina_regen": {
         "effect_type": "StaminaRegen",
-        "damage_type": "SacredEnergy",
-        "itself": true,
-        "duration": 50,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
+        "effect_duration": 10.0,
+        "trigger_time_effect": 1.0,
+        
         "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {"StaminaPoints": 10000},
-        "change_extra_stat_time_effect": "Pereodic",
-        "change_extra_stat_revert_changes": false,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
+        "change_attributes": {"Stamina": 2},
+        "change_attribute_cache": {},
+        "change_resist": {},
         "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
-    },
-
-    "frostbite":{
-        "effect_type": "Frostbite",
-        "damage_type": "Cold",
-        "itself": false,
-        "duration": 30,
-        "trigger_time": 10,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {"Freeze": -25, "Burn": 25},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {"MovementSpeed": -25,  "Evasion": -10},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
-    },
-
-    "can_not_be_frozen":{
-        "effect_type": "CanNotBeFrozen",
-        "damage_type": "Cold",
-        "itself": true,
-        "duration": 0,
-        "trigger_time": 0,
-        "extra_skill": null,
-        "extra_skill_trigger": 0,
-
-        "change_stat": {},
-        "change_stat_time_effect": "Instant",
-        "change_stat_revert_changes": true,
-
-        "change_extra_stat": {},
-        "change_extra_stat_time_effect": "Instant",
-        "change_extra_stat_revert_changes": true,
-        "change_extra_stat_is_damage": true,
-
-        "change_damage_resist": {},
-        "change_damage_resist_time_effect": "Instant",
-        "change_damage_resist_revert_changes": true,
-
-        "change_effect_resist": {"Freeze": 100},
-        "change_effect_resist_time_effect": "Instant",
-        "change_effect_resist_revert_changes": true,
-
-        "change_ability": {},
-        "change_ability_time_effect": "Instant",
-        "change_ability_revert_changes": true
+        "effect_status": []
     }
 }

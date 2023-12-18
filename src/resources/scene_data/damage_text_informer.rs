@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-use crate::resources::scene_data::stuff::damage_type::DamageType;
+use crate::{resources::scene_data::stuff::damage_type::DamageType, components::DamageTextComponent};
 
 
 const WHITE_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
@@ -24,7 +24,22 @@ pub struct DamageTextInformer {
 } 
 
 impl DamageTextInformer {
-    pub fn new (text: String, bold: bool, damage_type: Option<&DamageType>) -> Self {
+    pub fn new (damage_value: i16, string: Option<String>, bold: bool, damage_type: Option<&DamageType>) -> Self {
+        let text = match string {
+            Some(v) => v,
+            None => {
+                let mut new_text = if damage_value < 0 {
+                    "+".to_string()
+                } else {
+                    "-".to_string()
+                };
+                let damage_text = damage_value.to_string();
+                new_text.push_str(&damage_text);
+                new_text
+            }
+        };
+        
+
         let new_color: Color = match damage_type {
             Some(v) => { match *v {
                 DamageType::Fire => ORANGE_DAMAGE_TEXT,
@@ -48,4 +63,10 @@ impl DamageTextInformer {
             color: new_color,
         }
     }
+}
+
+pub fn update_damage_text_informer(
+    objects_query: Query<&DamageTextComponent>
+){
+    
 }

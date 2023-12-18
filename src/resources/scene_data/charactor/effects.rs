@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use crate::resources::scene_data::{Stat, AbilityType, Attribute, ResistType};
+use crate::resources::scene_data::{Stat, AbilityType, Attribute, ResistType, stuff::damage_type::DamageType};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
 pub enum EffectType{
@@ -9,7 +9,7 @@ pub enum EffectType{
     AcidDebuff,
     Moveless,
     BleedingDebuff,
-    BurnDebuff,
+    FireDebuff,
     ColdDebuff,
     ElectricDebuff,
     WaterDebuff,
@@ -18,6 +18,16 @@ pub enum EffectType{
     PosisonDebuff,
     MovementBuff,
     MovementDebuff,
+    AcidDamage,
+    BleedingDamage,
+    ColdDamage,
+    FireDamage,
+    ElectricDamage,
+    WaterDamage,
+    PosionDamage,
+    StaminaDamage,
+    StaminaRegen,
+    HealthRegen,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
@@ -30,8 +40,10 @@ pub enum EffectStatus {
 pub struct EffectDeploy {
     pub effect_type: EffectType,
     pub effect_duration: f32,
+    pub trigger_time_effect: f32,
     
     pub change_stat: HashMap<Stat, i16>,
+    pub change_attributes: HashMap<Attribute, i16>,
     pub change_attribute_cache: HashMap<Attribute, i16>,
     pub change_resist: HashMap<ResistType, i16>,
     pub change_ability: HashMap<AbilityType, i16>,
@@ -43,8 +55,11 @@ pub struct Effect {
     pub effect_type: EffectType,
     pub effect_duration: f32,
     pub total_time_duration: f32,
+    pub trigger_time_effect: f32,
+    pub current_time_duration: f32,
 
     pub change_stat: HashMap<Stat, i16>,
+    pub change_attributes: HashMap<Attribute, i16>,
     pub change_attribute_cache: HashMap<Attribute, i16>,
     pub change_resist: HashMap<ResistType, i16>,
     pub change_ability: HashMap<AbilityType, i16>,
@@ -62,6 +77,25 @@ impl Effect {
             change_attribute_cache: config.change_attribute_cache.clone(),
             change_resist: config.change_resist.clone(),
             effect_status: config.effect_status.clone(),
+            trigger_time_effect: config.trigger_time_effect,
+            current_time_duration: 0.0,
+            change_attributes: config.change_attributes.clone(),
+        }
+    }
+
+    pub fn damage_type(&self) -> DamageType {
+        match &self.effect_type {
+            EffectType::AcidDamage => DamageType::Acid,
+            EffectType::BleedingDamage => DamageType::Health,
+            EffectType::ColdDamage => DamageType::Cold,
+            EffectType::FireDamage => DamageType::Fire,
+            EffectType::ElectricDamage => DamageType::Electric,
+            EffectType::WaterDamage => DamageType::Water,
+            EffectType::PosionDamage => DamageType::Poison,
+            EffectType::StaminaDamage => DamageType::Stamina,
+            EffectType::StaminaRegen => DamageType::Stamina,
+            EffectType::HealthRegen => DamageType::Health,
+            _ => DamageType::Health,
         }
     }
 }

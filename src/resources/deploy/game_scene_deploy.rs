@@ -27,6 +27,8 @@ pub struct GameSceneConfig {
     pub dungeon_type: Location,
     pub dungeon_floors_max: u8,
     pub races: Vec<RaceType>,
+    pub monsters_min: u8,
+    pub monsters_max: u8
 }
 
 #[derive(Deserialize, Debug)]

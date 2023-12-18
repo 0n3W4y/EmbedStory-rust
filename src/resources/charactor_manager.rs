@@ -25,7 +25,7 @@ impl CharactorManager {
         player_gender: &GenderType
     ) -> Charactor {
         let mut charactor = self.create_charactor(deploy, player_race, player_gender, CharactorType::Player);
-        initialize_character_after_creation(&mut charactor);
+        self.initialize_character_after_creation(&mut charactor);
         return charactor;
     }
 
@@ -35,7 +35,7 @@ impl CharactorManager {
     pub fn create_monster(
         &mut self,
         deploy: &Deploy, 
-        level: usize, 
+        level: u8, 
         monster_race: &RaceType, 
         monster_strength: &CharactorStrength,
         monster_gender: &GenderType,
@@ -123,12 +123,30 @@ impl CharactorManager {
         }
 
 
-        initialize_character_after_creation(&mut charactor);
+        self.initialize_character_after_creation(&mut charactor);
         return charactor;
     }
 
-    pub fn generate_charactors_for_scene(&mut self, scene: &mut GameScene, deploy: &Deploy, player_level: u8) {
-        todo!();
+    pub fn generate_monsters_for_scene(&mut self, scene: &mut GameScene, deploy: &Deploy, player_level: u8) {
+        let mut random = rand::thread_rng();
+        let monster_strength_variants: Vec<CharactorStrength> = vec![CharactorStrength::Weak, CharactorStrength::Normal, CharactorStrength::Elite, CharactorStrength::Boss, CharactorStrength::Champion];
+        let monster_gender_variants: Vec<GenderType> = vec![GenderType::Male, GenderType::Female];
+        let location_config = deploy.game_scene.get_scene_setting(&scene.location);
+        let min_value = location_config.monsters_min;
+        let max_value = location_config.monsters_max;
+        let monsters = random.gen_range(min_value..=max_value);
+        for _ in 0..monsters {
+            let monster_strength = &monster_strength_variants[random.gen_range(0..monster_strength_variants.len())];
+            let monster_race = &location_config.races[random.gen_range(0..location_config.races.len())];
+            let monster_level = random.gen_range(player_level..=(player_level+5));
+            let monster_gender = &monster_gender_variants[random.gen_range(0..monster_gender_variants.len())];
+            let monster = self.create_monster(deploy, monster_level, monster_race, monster_strength, monster_gender);
+            //create stuff for monster, fill inventory;
+    
+            scene.charactors.store(monster);
+        }
+
+        self.generate_positions_for_monsters(scene);
     }
 
     fn create_charactor(&mut self, deploy: &Deploy, race_type: &RaceType, gender: &GenderType, charactor_type: CharactorType) -> Charactor {
@@ -168,6 +186,19 @@ impl CharactorManager {
         }
         return charactor;
     }
+    fn generate_positions_for_monsters(&self, scene: &mut GameScene) {
+
+    }
+
+    fn initialize_character_after_creation(&self, charactor: &mut Charactor) {
+        //TODO:
+        for (stat, value) in charactor.stats.iter() {
+            let mut component: AttributesComponent = AttributesComponent { attributes: charactor.attributes.clone(), attributes_cache: charactor.attributes_cache.clone() };
+            do_stat_dependences(&mut charactor.resists, &mut charactor.ability, &mut component, stat, *value, 0);
+            charactor.attributes = component.attributes;
+            charactor.attributes_cache = component.attributes_cache;
+        }
+    }
 
     fn create_id(&mut self) -> usize {
         let id = self.id;
@@ -179,12 +210,3 @@ impl CharactorManager {
 
 
 
-pub fn initialize_character_after_creation(charactor: &mut Charactor) {
-    //TODO:
-    for (stat, value) in charactor.stats.iter() {
-        let mut component: AttributesComponent = AttributesComponent { attributes: charactor.attributes.clone(), attributes_cache: charactor.attributes_cache.clone() };
-        do_stat_dependences(&mut charactor.resists, &mut charactor.ability, &mut component, stat, *value, 0);
-        charactor.attributes = component.attributes;
-        charactor.attributes_cache = component.attributes_cache;
-    }
-}

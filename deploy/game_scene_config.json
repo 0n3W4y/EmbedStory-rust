@@ -7,7 +7,9 @@
         "dungeon_chance": 15,
         "dungeon_type": "PlainDungeon",
         "dungeon_floors_max": 4,
-        "races": ["Wolf", "Human"]
+        "races": ["Wolf", "Human"],
+        "monsters_min": 50,
+        "monsters_max": 150
     },
 
     "elven_forest": {
@@ -18,7 +20,9 @@
         "dungeon_chance": 15,
         "dungeon_type": "ForestDungeon",
         "dungeon_floors_max": 4,
-        "races": ["Wolf", "Human"]
+        "races": ["Wolf", "Human"],
+        "monsters_min": 50,
+        "monsters_max": 150
     },
 
     "forest_dungeon": {
@@ -29,7 +33,9 @@
         "dungeon_chance": 0,
         "dungeon_type": "ForestDungeon",
         "dungeon_floors_max": 0, 
-        "races": ["Skeleton"]
+        "races": ["Skeleton"],
+        "monsters_min": 25,
+        "monsters_max": 75
     },
 
     "plain_dungeon": {
@@ -40,6 +46,8 @@
         "dungeon_chance": 0,
         "dungeon_type": "PlainDungeon",
         "dungeon_floors_max": 0,
-        "races": ["Skeleton"]
+        "races": ["Skeleton"],
+        "monsters_min": 25,
+        "monsters_max": 75
     }
 }

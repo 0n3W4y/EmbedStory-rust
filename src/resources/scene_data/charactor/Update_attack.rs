@@ -267,7 +267,7 @@ fn attack(
 
     } else {
         if missed {                                                             // if missed we put text into target and return from the function - no need to do next;
-            target_text_component.text_upper.push(DamageTextInformer::new("MISSED".to_string(), false, None));
+            target_text_component.text_upper.push(DamageTextInformer::new(0, Some("MISSED".to_string()), false, None));
             return;
         }
 
@@ -276,7 +276,7 @@ fn attack(
                 if *v > 0 {
                     let random_evasion_number: u8 = rng.gen_range(0..=99);
                     if *v >= random_evasion_number as i16 {                     //target evaded shot, put text into target and return from the function;
-                        target_text_component.text_upper.push(DamageTextInformer::new("EVADED".to_string(), false, None)); 
+                        target_text_component.text_upper.push(DamageTextInformer::new(0, Some("EVADED".to_string()), false, None)); 
                         return;
                     }
                 }
@@ -339,7 +339,7 @@ fn attack(
                 false
             };
 
-            target_text_component.text_upper.push(DamageTextInformer::new(damage.to_string(), bold, Some(damage_type)));  //set damage to target informer;
+            target_text_component.text_upper.push(DamageTextInformer::new(damage, None, bold, Some(damage_type)));  //set damage to target informer;
         }
 
         for (effect_type, trigger_chance) in skill.effect.iter_mut() {          //set effects on target, if triggered;

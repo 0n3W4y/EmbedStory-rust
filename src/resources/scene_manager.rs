@@ -63,7 +63,7 @@ impl SceneManager {
                 0
             }
         };
-        charactor_manager.generate_charactors_for_scene(scene, deploy, player_level);
+        charactor_manager.generate_monsters_for_scene(scene, deploy, player_level);
 
         return scene;
     }

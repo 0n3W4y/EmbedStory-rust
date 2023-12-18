@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::deploy::game_scene_deploy::Location;
 use crate::resources::scene_data::charactor::Charactor;
+use crate::resources::scene_data::damage_text_informer;
 use crate::resources::scene_data::projectiles;
 use crate::resources::scene_data::scene_effect::SceneEffect;
 use crate::resources::scene_data::stuff::Stuff;
@@ -197,6 +198,8 @@ impl Plugin for GameScenePlugin {
             .with_system(charactor::update_effects::update_effects)
             .with_system(charactor::update_cooldowns::update_active_skills_cooldown)
             .with_system(charactor::update_effects::add_new_effect)
+            .with_run_criteria(FixedTimestep::step(0.25))
+            .with_system(damage_text_informer::update_damage_text_informer)
             //.with_system(charactor::update_attack::player_attacking)
         );
 
