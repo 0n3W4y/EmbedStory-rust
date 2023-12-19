@@ -290,9 +290,7 @@ pub fn create_projectile(
 ) {
     let arc: f32 = match *skill_direction {
         SkillDirectionType::Line => 0.0,
-        SkillDirectionType::Arc15 => 15.0,
         SkillDirectionType::Arc30 => 30.0,
-        SkillDirectionType::Arc45 => 45.0,
         SkillDirectionType::Arc60 => 60.0,
         SkillDirectionType::Arc90 => 90.0,
         SkillDirectionType::Arc180 => 180.0,

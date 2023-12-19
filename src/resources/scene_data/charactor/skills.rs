@@ -5,7 +5,7 @@ use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, proj
 
 use super::{effects::EffectType, StuffWearSlot, get_ability_type_from_damage_type};
 
-pub const MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL: f32 = 0.25;
+pub const MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL: f32 = 0.20;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum SkillType {
@@ -32,9 +32,7 @@ pub enum TargetType {
 pub enum SkillDirectionType {
     #[default]
     Line,
-    Arc15,
     Arc30,
-    Arc45,
     Arc60,
     Arc90,
     Arc180,
@@ -42,17 +40,28 @@ pub enum SkillDirectionType {
     Point,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
-pub struct Skill {
-    pub skill_type: SkillType,
-    pub skill_name: String,
-    pub stuff_id: Option<usize>, // link to stuff in wear slot;
-    pub is_passive_skill: bool,
+pub struct PassiveSkill {
+    pub skill_type: PassiveSkillType,
+    pub trigger_time_frequency: f32,
+    pub skill_life_time: f32,
+    pub current_time_duration: f32,
+    pub total_duration: f32,
 
-    //for active skill;
+    pub damage: HashMap<DamageType, i16>,
+    pub effect: HashMap<EffectType, u8>,
+
+    pub cast_cource: CastSource,
+    pub skill_direction: SkillDirectionType,
+
+
+}
+
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+pub struct ActiveSkill {
+    pub skill_type: ActiveSkillType,
     pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
     pub on_cooldown: bool, // can use this skill now;
-    pub cooldown_time: f32, // base;
+    pub cooldown_time: f32,
     pub current_time_duration: f32, // == 0.0;
     
 
@@ -75,7 +84,6 @@ pub struct Skill {
 
     pub damage: HashMap<DamageType, i16>,
     pub effect: HashMap<EffectType, u8>,
-    pub extra_skill: HashMap<SkillType, u8>,
 }
 
 impl Skill {
@@ -104,7 +112,6 @@ impl Skill {
             crit_multiplier: config.crit_multiplier,
             damage: config.damage.clone(),
             effect: config.effect.clone(),
-            extra_skill: config.extra_skill.clone(),
         }
     }
 }
@@ -136,7 +143,6 @@ pub struct SkillDeploy {
 
     pub damage: HashMap<DamageType, i16>,
     pub effect: HashMap<EffectType, u8>,
-    pub extra_skill: HashMap<SkillType, u8>,
 }
 
 
@@ -146,7 +152,6 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             //clear for new entries;
             skill.damage.clear();
             skill.effect.clear();
-            skill.extra_skill.clear();
             
             let critical_hit_chance_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {     //get critical hit chance from ability;
                 Some(v) => *v,
@@ -242,7 +247,6 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             }
 
             skill.effect = effects_from_weapon;
-            skill.extra_skill = extra_skills_from_weapon;
 
         },
         None => println!("Can not udapte basic skill, because basic skill not found"),

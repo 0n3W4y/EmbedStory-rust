@@ -15,6 +15,8 @@ pub enum EffectType{
     WaterDebuff,
     Freeze,
     Blind,
+    AccuracyDebuff,
+    AccuracyBuff,
     PoisonDebuff,
     MovementBuff,
     MovementDebuff,
