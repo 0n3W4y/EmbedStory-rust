@@ -6,7 +6,7 @@ use std::io::prelude::*;
 
 use crate::resources::scene_data::charactor::Charactor;
 
-#[derive(Serialize, Deserialize, Debug, Default, Resource)]
+#[derive(Serialize, Deserialize, Debug, Resource, Default)]
 pub struct Profile {
     pub last_save: String,
     pub playtime: i64,
@@ -22,7 +22,7 @@ pub struct Profile {
 }
 
 impl Profile {
-    fn default() -> Self {
+    pub fn default() -> Self {
         let start_time: DateTime<Local> = Local::now();
 
         return Profile {

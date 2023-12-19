@@ -2,7 +2,7 @@ use bevy::app::AppExit;
 use bevy::prelude::*;
 use std::slice::Iter;
 
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 use crate::resources::dictionary::Dictionary;
 use crate::materials::font::FontMaterials;
 use crate::materials::material_manager::MaterialManager;
@@ -39,9 +39,10 @@ pub struct MainMenuScenePlugin;
 
 impl Plugin for MainMenuScenePlugin{
     fn build( &self, app: &mut App ){
-        app.add_system_set(SystemSet::on_enter( SceneState::MainMenuScene ).with_system( setup ));
-        app.add_system_set( SystemSet::on_update( SceneState::MainMenuScene ).with_system( button_handle_system ));
-        app.add_system_set( SystemSet::on_exit( SceneState::MainMenuScene ).with_system( cleanup ));
+        app
+            .add_system(setup.in_schedule(OnEnter(AppState::MainMenuScene)))
+            .add_system(button_handle_system.in_set(OnUpdate(AppState::MainMenuScene)))
+            .add_system(cleanup.in_schedule(OnExit(AppState::MainMenuScene)));
     }
 }
 
@@ -55,7 +56,7 @@ fn setup( mut commands: Commands, dictionary: Res<Dictionary>, font: Res<FontMat
             },
             ..Default::default()
         },
-        UiImage( material_manager.main_menu_scene.background_image.clone() ),
+        UiImage::new(material_manager.main_menu_scene.background_image.clone()),
         ))
         .with_children(|parent|{
             create_buttons( parent, &font, dictionary );
@@ -120,10 +121,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 ),
                 ..Default::default()
             }
-            .with_text_alignment(TextAlignment {
-                vertical: VerticalAlign::Center,
-                horizontal: HorizontalAlign::Center,
-                })
+            .with_text_alignment(TextAlignment::Center)
             );
         });
     }
@@ -131,7 +129,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
 
 fn button_handle_system( 
     mut button_query: Query<( &Interaction, &ButtonComponent, &mut BackgroundColor ), ( Changed<Interaction>, With<Button> )>,
-    mut state: ResMut<State<SceneState>>,
+    mut state: ResMut<NextState<AppState>>,
     mut exit: EventWriter<AppExit>
 ){
     for( interaction, button, mut color ) in button_query.iter_mut(){
@@ -142,9 +140,9 @@ fn button_handle_system(
                 *color = BackgroundColor( Color::rgb(0.25, 0.75, 0.25));
                 match button{
                     //ButtonComponent::Play => state.set( SceneState::CreateCharScene).expect( "Could not load CreateCharacterScene"),
-                    ButtonComponent::Play => state.set( SceneState::CreateCharScene).expect( "Could not load GameGroundScene"),
-                    ButtonComponent::Load => state.set( SceneState::LoadPreviousGameScene ).expect( "Could not load LoadPreviousGameScene"),
-                    ButtonComponent::Options => state.set( SceneState::OptionsScene ).expect( "Could not load OptionsScene" ),
+                    ButtonComponent::Play => state.set( AppState::CreateCharScene),
+                    ButtonComponent::Load => state.set( AppState::LoadPreviousGameScene ),
+                    ButtonComponent::Options => state.set( AppState::OptionsScene ),
                     ButtonComponent::Quit => exit.send(AppExit),
                 }
             }

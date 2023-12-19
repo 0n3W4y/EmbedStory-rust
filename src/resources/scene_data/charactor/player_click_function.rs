@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 
 use crate::components::IdentificationComponent;
 use crate::components::ObjectType;
@@ -16,7 +17,7 @@ use crate::scenes::game_scenes::tilemap::tile::Position;
 use super::CharactorType;
 
 pub fn player_click(
-    windows: Res<Windows>,
+    primary_query: Query<&Window, With<PrimaryWindow>>,
     mouse_button_input: Res<Input<MouseButton>>,
     //scene_manager: Res<SceneManager>,
     mut player_query: Query<
@@ -30,7 +31,10 @@ pub fn player_click(
         mut player_target, 
         mut destination_component
     ) = player_query.single_mut();
-    let window = windows.get_primary().unwrap();
+    
+    let Ok(window) = primary_query.get_single() else {
+        return;
+    };
     //let scene = scene_manager.get_current_game_scene();
 
     if mouse_button_input.just_released(MouseButton::Left) {

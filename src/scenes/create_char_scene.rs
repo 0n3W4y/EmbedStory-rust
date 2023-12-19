@@ -11,7 +11,7 @@ use crate::resources::scene_data::charactor::{GenderType, RaceType};
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::stuff_manager::StuffManager;
 use crate::resources::thing_manager::ThingManager;
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 use crate::resources::deploy::Deploy;
 
 const BUTTON_HEIGHT: f32 = 40.0;
@@ -124,11 +124,10 @@ pub struct CreateCharScenePlugin;
 
 impl Plugin for CreateCharScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(SceneState::CreateCharScene).with_system(setup));
-        app.add_system_set(
-            SystemSet::on_update(SceneState::CreateCharScene).with_system(button_handle_system),
-        );
-        app.add_system_set(SystemSet::on_exit(SceneState::CreateCharScene).with_system(cleanup));
+        app
+            .add_system(setup.in_schedule(OnEnter(AppState::CreateCharScene)))
+            .add_system(button_handle_system.in_set(OnUpdate(AppState::CreateCharScene)))
+            .add_system(cleanup.in_schedule(OnExit(AppState::CreateCharScene)));
     }
 }
 
@@ -148,7 +147,7 @@ fn setup(
             },
             ..Default::default()
         },
-        UiImage(material_manager.create_char_scene.background_image.clone()),
+        UiImage::new(material_manager.create_char_scene.background_image.clone()),
         ))
         .with_children(|parent| {
             create_buttons(parent, &font, dictionary);
@@ -167,7 +166,7 @@ fn setup(
         &GenderType::Male,
     );
 
-    let mut profile: Profile = Default::default();
+    let mut profile = Profile::default();
     profile.charactor = Some(player);
 
     let mut scene_manager: SceneManager = Default::default();                   // Create new scene_manager;     
@@ -239,10 +238,7 @@ fn create_buttons(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary
                 ..Default::default()
             }
             .with_text_alignment(
-                TextAlignment { 
-                    vertical: VerticalAlign::Center,
-                    horizontal: HorizontalAlign::Center,
-                }
+                TextAlignment::Center
             )
         );
         });
@@ -333,7 +329,7 @@ fn button_handle_system(
         (&Interaction, &MainButtonComponent, &mut BackgroundColor),
         (Changed<Interaction>, With<Button>),
     >,
-    mut state: ResMut<State<SceneState>>,
+    mut state: ResMut<NextState<AppState>>,
     mut profile: ResMut<Profile>,
     //mut charactor_manager: ResMut<CharactorManager>,
     //deploy: Res<Deploy>,
@@ -350,8 +346,7 @@ fn button_handle_system(
                 Interaction::Clicked => {
                     *color = BackgroundColor(BUTTON_SELECT_COLOR);
                     state
-                        .set(SceneState::MainMenuScene)
-                        .expect("Couldn't switch state to Main Menu Scene");
+                        .set(AppState::MainMenuScene);
                 }
             },
             MainButtonComponent::Start => match *interaction {
@@ -368,8 +363,7 @@ fn button_handle_system(
                     profile.set_name("Test Player Name".to_string());
                     //TODO: start @new game intro@, then load loading_scene to load new global map and current ground scene;
                     state
-                        .set(SceneState::LoadingNewGameScene)
-                        .expect("Couldn't switch state to Loading New Game Scene");
+                        .set(AppState::LoadingNewGameScene);
                 }
             },
         }

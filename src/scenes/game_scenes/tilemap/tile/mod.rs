@@ -13,7 +13,6 @@ pub enum TilePermissions{
     Fog,
     PlaceEffect,
     RemoveEffect,
-    EndMovementPoint,
 }
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Default, Hash)]

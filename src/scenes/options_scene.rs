@@ -5,7 +5,7 @@ use crate::materials::font::FontMaterials;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::setting::Setting;
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 use crate::resources::language::Language;
 
 const OPTIONS_SCENE_RETURN_BUTTON_WIDTH: f32 = 150.0;
@@ -106,16 +106,20 @@ struct OptionsSceneData{
 
 impl Plugin for OptionsScenePlugin{
     fn build( &self, app: &mut App ){
-        app.add_system_set( SystemSet::on_enter( SceneState::OptionsScene ).with_system( setup ));
-        app.add_system_set( SystemSet::on_update( SceneState::OptionsScene )
-            .with_system( update_options_button )
-            .with_system( update_return_button )
-            .with_system( update_language_button )
-            .with_system( update_text )
-            .with_system( update_text_in_on_off_buttons )
-            .with_system( update_text_in_return_button )
-        );
-        app.add_system_set( SystemSet::on_exit( SceneState::OptionsScene ).with_system( cleanup ));
+        app
+            .add_system(setup.in_schedule(OnEnter(AppState::OptionsScene)))
+            .add_systems(
+                (
+                    update_options_button,
+                    update_return_button,
+                    update_language_button,
+                    update_text,
+                    update_text_in_on_off_buttons,
+                    update_text_in_return_button
+                )
+                .in_set(OnUpdate(AppState::OptionsScene))
+            )
+            .add_system(cleanup.in_schedule(OnExit(AppState::OptionsScene)));
     }
 }
 
@@ -134,7 +138,7 @@ fn setup(
                     },
                     ..Default::default()
                 },
-                UiImage(material_manager.options_scene.background_image.clone()),
+                UiImage::new(material_manager.options_scene.background_image.clone()),
             ))
             .with_children( |parent|{
                 texts( parent, &font, &dictionary );
@@ -224,10 +228,7 @@ fn texts( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary: 
             ),
             ..Default::default()
         }
-        .with_text_alignment(TextAlignment {
-            vertical: VerticalAlign::Center,
-            horizontal: HorizontalAlign::Center,
-            }),
+        .with_text_alignment(TextAlignment::Center),
         Name::new( component_name ),
         prevalue.clone()
         ));
@@ -300,10 +301,7 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
                 ),
                 ..Default::default()
             }
-            .with_text_alignment(TextAlignment {
-                vertical: VerticalAlign::Center,
-                horizontal: HorizontalAlign::Center,
-                })
+            .with_text_alignment(TextAlignment::Center)
             );
         },
         );
@@ -334,10 +332,7 @@ fn buttons( parent: &mut ChildBuilder, font_material: &FontMaterials, dictionary
                 ),
                 ..Default::default()
             }
-            .with_text_alignment(TextAlignment {
-                vertical: VerticalAlign::Center,
-                horizontal: HorizontalAlign::Center,
-                })
+            .with_text_alignment(TextAlignment::Center)
             );
         }
         );
@@ -386,7 +381,7 @@ fn language_buttons( parent: &mut ChildBuilder, material_manager: &MaterialManag
                 ..Default::default()
             },
             background_color: BackgroundColor( color ),
-            image: UiImage( handle_image ),
+            image: UiImage::new( handle_image ),
             ..Default::default()
         })
         .insert( Name::new( component_name ))
@@ -428,10 +423,7 @@ fn return_button( parent: &mut ChildBuilder, font_material: &FontMaterials, dict
             ),
             ..Default::default()
         }
-        .with_text_alignment(TextAlignment {
-            vertical: VerticalAlign::Center,
-            horizontal: HorizontalAlign::Center,
-            })
+        .with_text_alignment(TextAlignment::Center)
         );
     })
     .insert( Name::new( "Return" ))
@@ -537,7 +529,7 @@ fn update_options_button(
 
 fn update_return_button( 
     mut button_query: Query<( &Interaction, &ReturnButton, &mut BackgroundColor), ( Changed<Interaction>, With<Button> )>,
-    mut state: ResMut<State<SceneState>>,
+    mut state: ResMut<NextState<AppState>>,
 ){
     for( interaction, button, mut color ) in button_query.iter_mut(){
         if *button == ReturnButton{
@@ -546,8 +538,7 @@ fn update_return_button(
                 Interaction::Hovered => { *color = BackgroundColor( OPTIONS_SCENE_ON_OFF_BUTTON_HOVER )},
                 Interaction::Clicked => { 
                     *color = BackgroundColor( OPTIONS_SCENE_ON_OFF_BUTTON_SELECTED );
-                    state.set( SceneState::MainMenuScene )
-                        .expect( "Couldn't switch state to Main Menu Scene" );
+                    state.set( AppState::MainMenuScene );
                 },
             }
         }        

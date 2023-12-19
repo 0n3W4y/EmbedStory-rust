@@ -340,7 +340,7 @@ fn generate_spot(
                     continue;
                 };
 
-                let mut tile = tilemap.get_tile_by_index_mut(index);
+                let tile = tilemap.get_tile_by_index_mut(index);
                 match cover_type {
                     CoverType::None => {
                         tile.ground_type = ground_type.clone();
@@ -410,7 +410,7 @@ fn generate_spot(
                     continue;
                 };
 
-                let mut tile = tilemap.get_tile_by_index_mut(index);
+                let tile = tilemap.get_tile_by_index_mut(index);
                 match cover_type {
                     CoverType::None => {
                         tile.ground_type = ground_type.clone();
@@ -651,7 +651,7 @@ pub fn generate_environment_for_rock_ground(tilemap: &mut Tilemap, deploy: &Depl
                 };
 
                 let index: usize = new_y as usize * tilemap_height as usize + new_x as usize;
-                let mut environment_tile: &mut Tile = tilemap.get_tile_by_index_mut(index);
+                let environment_tile: &mut Tile = tilemap.get_tile_by_index_mut(index);
 
                 if environment_tile.ground_type == GroundType::Rock {
                     continue;                                                           //skip already rock environment or rock thing;
@@ -703,7 +703,7 @@ fn generate_environment_for_water_cover(
                 };
 
                 let index: usize = new_y as usize * tilemap_height as usize + new_x as usize;
-                let mut environment_tile: &mut Tile = tilemap.get_tile_by_index_mut(index);
+                let environment_tile: &mut Tile = tilemap.get_tile_by_index_mut(index);
 
                 match environment_tile.ground_type {
                     GroundType::Rock => {

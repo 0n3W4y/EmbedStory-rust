@@ -1,30 +1,21 @@
 {
-    "basic_melee_attack": {
-        "skill_type": "BasicWeaponAttack",
+    "base_skill": {
+        "skill_type": "BaseSkill",
         "skill_queue": 1,
         "passive_skill": false,
-
         "trigger_chanse": 0,
         "trigger_time": 0,
         "base_cooldown": 100,
-
         "projectiles": 0,
-        "range": 0,
+        "range": 1,
         "cast_source": "Itself",
-
         "base_crit_chance": 0,
-
         "base_damage": {},
-
         "base_crit_multiplier": 0,
-
         "stamina_cost": 0,
-
         "skill_direction": "Line",
-
-        "target": "Enemy",
+        "target": "Enemies",
         "max_target": 1,
-
         "effect": []
     }
 }

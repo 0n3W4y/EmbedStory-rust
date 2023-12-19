@@ -1,5 +1,7 @@
+use std::time::Duration;
+
 use bevy::prelude::*;
-use bevy::time::FixedTimestep;
+use bevy::time::common_conditions::on_timer;
 use serde::{Deserialize, Serialize};
 
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
@@ -15,7 +17,7 @@ use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::thing;
 use crate::resources::scene_data::charactor;
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 
 #[derive(Serialize, Deserialize, Clone, Default)]
 pub struct ThingsStorage {
@@ -175,42 +177,62 @@ pub struct GameScenePlugin;
 
 impl Plugin for GameScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(SystemSet::on_enter(SceneState::GameScene)
-            //draw playable ground tilemap;
-            .with_system(tilemap::draw::draw)
-            // draw things;
-            .with_system(thing::draw::draw)
-            //draw all charactor and player
-            .with_system(charactor::draw::draw)
-        );
+        app
+            .add_system(tilemap::draw::draw.in_schedule(OnEnter(AppState::GameScene)))
+            .add_system(thing::draw::draw.in_schedule(OnEnter(AppState::GameScene)))
+            .add_system(charactor::draw::draw.in_schedule(OnEnter(AppState::GameScene)))
 
-        app.add_system_set(SystemSet::on_update(SceneState::GameScene)
-            .with_system(thing::destroeyd_thing_handler::destroeyd_thing_handler)
-            .with_system(tilemap::change_cover_type_handler::change_cover_type_handler)
-            .with_system(charactor::update_move::move_charactor)
-            .with_system(charactor::killed_charactor_handler::killed_charactor_handler)
-            .with_system(charactor::player_click_function::player_click)
-            .with_system(charactor::update_passive_skills::update_passive_skills)
-            .with_system(charactor::active_skill_handler::active_skill_handler)
-            .with_system(projectiles::update_projectile::update_projectiles)
-            .with_system(charactor::update_attack::update_attack_from_basic_skill)
-            .with_run_criteria(FixedTimestep::step(0.1))
-            .with_system(charactor::update_effects::update_effects)
-            .with_system(charactor::update_cooldowns::update_active_skills_cooldown)
-            .with_system(charactor::update_effects::add_new_effect)
-            .with_run_criteria(FixedTimestep::step(0.25))
-            .with_system(damage_text_informer::update_damage_text_informer)
+            .add_systems(
+                (
+                    thing::destroeyd_thing_handler::destroeyd_thing_handler,
+                    tilemap::change_cover_type_handler::change_cover_type_handler,
+                    charactor::update_move::move_charactor,
+                    charactor::killed_charactor_handler::killed_charactor_handler,
+                    charactor::player_click_function::player_click,
+                    charactor::update_passive_skills::update_passive_skills,
+                    charactor::active_skill_handler::active_skill_handler,
+                    projectiles::update_projectile::update_projectiles,
+                    charactor::update_attack::update_attack_from_basic_skill
+                )
+                .in_set(OnUpdate(AppState::GameScene))
+            )
+
+            .add_system(
+                damage_text_informer::update_damage_text_informer
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.1)))
+            )
+            .add_system(
+                charactor::update_cooldowns::update_active_skills_cooldown
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.1)))
+            )
+            .add_system(
+                charactor::update_effects::add_new_effect
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.1)))
+            )
+            .add_system(
+                charactor::update_effects::update_effects
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.1)))
+            )
+
+            .add_system(
+                damage_text_informer::update_damage_text_informer
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.25))))
             //.with_system(charactor::update_attack::player_attacking)
-        );
 
-        app.add_system_set(SystemSet::on_exit(SceneState::GameScene)
-            //cleanup tilemap, all tiles and store them;
-            .with_system(tilemap::cleanup::cleanup)
-            //cleanup all things and store them;
-            .with_system(thing::cleanup::cleanup)
-            //cleanup charactors with player and store them;
-            .with_system(charactor::cleanup::cleanup)
-        );
+            //on exit
+            .add_systems(
+                (
+                    tilemap::cleanup::cleanup,
+                    thing::cleanup::cleanup,
+                    charactor::cleanup::cleanup
+                )
+                .in_schedule(OnExit(AppState::GameScene))
+            );
     }
 }
 

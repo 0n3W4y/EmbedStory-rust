@@ -3,7 +3,7 @@ use bevy::input::mouse::{ MouseButtonInput, MouseMotion, MouseWheel };
 
 use crate::components::charactor_component::PlayerComponent;
 //use crate::resources::scene_manager;
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 use crate::resources::scene_manager::SceneManager;
 
 #[derive( Component )]
@@ -21,9 +21,15 @@ impl Plugin for CameraPlugin{
     fn build( &self, app: &mut App ){
         //app.add_startup_system( spawn_ui_camera );
         app.add_startup_system( spawn_2d_camera );
-
-        app.add_system_set( SystemSet::on_update(SceneState::GameScene).with_system( camera_zoom ));
-        app.add_system_set( SystemSet::on_update(SceneState::GameScene).with_system( camera_move_by_left_button ));
+        app
+            .add_system(spawn_2d_camera.in_schedule(OnEnter(AppState::GameScene)))
+            .add_systems(
+                (
+                    camera_zoom,
+                    camera_move_by_left_button
+                )
+                .in_set(OnUpdate(AppState::GameScene))
+            );
         //app.add_syste_set( SystemSet::on_exit( SceneState::_).width_system(_));
     }
 }
@@ -45,9 +51,16 @@ fn spawn_2d_camera( mut commands: Commands ){
     //camera.orthographic_projection.left = -1.0 * RESOLUTION;
 
     commands
-        .spawn_bundle(camera)
-        .insert(Orthographic2DCamera{ cursor_position: Vec2::new( 0.0, 0.0 ), camera_on_player: false, })
-        .insert(Name::new("Orthographic2DCamera"));
+        .spawn((Camera2dBundle {
+            projection: OrthographicProjection {
+                scale: 2.0,
+                ..Default::default()
+                },
+            ..Default::default()
+            },
+            Orthographic2DCamera{ cursor_position: Vec2::new( 0.0, 0.0 ), camera_on_player: false, },
+            Name::new("Orthographic2DCamera"),
+        ));
 }
 
 fn camera_zoom( 

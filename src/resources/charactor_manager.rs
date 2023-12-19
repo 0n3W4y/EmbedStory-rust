@@ -10,7 +10,7 @@ use super::{
             GenderType, RaceType, do_stat_dependences, CharactorStrength, STATS_POINTS_EVERY_LEVEL
     }, Stat, AbilityType, ResistType},
 };
-use crate::{components::AttributesComponent, scenes::game_scenes::game_scene::GameScene};
+use crate::{components::AttributesComponent, scenes::game_scenes::{game_scene::GameScene, tilemap::tile::{TilePermissions, Position}}};
 
 #[derive(Default, Clone, Serialize, Deserialize, Resource)]
 pub struct CharactorManager {
@@ -187,6 +187,25 @@ impl CharactorManager {
         return charactor;
     }
     fn generate_positions_for_monsters(&self, scene: &mut GameScene) {
+        let mut random = rand::thread_rng();
+        let mut position_pool: Vec<Position<i32>> = vec![];
+        for tile in scene.tilemap.get_tilemap_tile_storage().iter() {
+            match tile.permissions.iter().find(|&x| *x == TilePermissions::Walk) {
+                Some(_) => position_pool.push(tile.position.clone()),
+                None => {},
+            }
+        }
+
+        if position_pool.len() <= scene.charactors.get_all_charactors().len() {
+            panic!("Positions pool is not enough for charactors positions");
+        }
+
+        for monster in scene.charactors.monster.iter_mut() {
+            let random_index = random.gen_range(0..position_pool.len());
+            let position = &position_pool[random_index];
+            monster.position = position.clone();
+            position_pool.remove(random_index);
+        }
 
     }
 

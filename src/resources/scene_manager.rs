@@ -42,7 +42,6 @@ impl SceneManager {
         }
 
         //here we need to generate dungeon scenes and generate enter and exit to\from dungeon; 
-        todo!();
         return scene;        
     }
 
@@ -64,7 +63,6 @@ impl SceneManager {
             }
         };
         charactor_manager.generate_monsters_for_scene(scene, deploy, player_level);
-
         return scene;
     }
 

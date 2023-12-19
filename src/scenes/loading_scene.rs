@@ -5,7 +5,7 @@ use crate::materials::font::FontMaterials;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::dictionary::Dictionary;
 use crate::resources::language::Language;
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 
 const LOADING_BORDER_WIDTH: f32 = 600.0;
 const LOADING_BORDER_HEIGHT: f32 = 60.0;
@@ -27,15 +27,16 @@ pub struct LoadingScenePlugin;
 
 impl Plugin for LoadingScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_enter(SceneState::LoadingScene)
-                .with_system(setup)
-                .with_system(load_images),
-        );
-        app.add_system_set(
-            SystemSet::on_update(SceneState::LoadingScene).with_system(update_loader),
-        );
-        app.add_system_set(SystemSet::on_exit(SceneState::LoadingScene).with_system(cleanup));
+        app
+        .add_systems(
+            (
+                setup, 
+                load_images
+            )
+            .in_schedule(OnEnter(AppState::LoadingScene))
+        )
+        .add_system(update_loader.in_set(OnUpdate(AppState::LoadingScene)))
+        .add_system(cleanup.in_schedule(OnExit(AppState::LoadingScene)));
     }
 }
 
@@ -137,10 +138,7 @@ fn loader_bundle(
                     ),
                     ..Default::default()
                 }
-                .with_text_alignment(TextAlignment {
-                    vertical: VerticalAlign::Center,
-                    horizontal: HorizontalAlign::Center,
-                    })
+                .with_text_alignment(TextAlignment::Center)
                 );
             });
     });
@@ -194,17 +192,14 @@ fn loading_text(
                 ),
                 ..Default::default()
             }
-            .with_text_alignment(TextAlignment {
-                vertical: VerticalAlign::Center,
-                horizontal: HorizontalAlign::Center,
-                })
+            .with_text_alignment(TextAlignment::Center)
             );
         });
 }
 
 fn update_loader(
     mut query: Query<(&mut LoaderComponent, &mut Style, &Children)>,
-    mut state: ResMut<State<SceneState>>,
+    mut state: ResMut<NextState<AppState>>,
     mut text_query: Query<&mut Text>,
 ) {
     for (mut loader, mut style, children) in query.iter_mut() {
@@ -219,8 +214,7 @@ fn update_loader(
             }
         } else {
             state
-                .set(SceneState::MainMenuScene)
-                .expect("Couldn't switch state to Main Menu Scene");
+                .set(AppState::MainMenuScene);
         }
     }
 }

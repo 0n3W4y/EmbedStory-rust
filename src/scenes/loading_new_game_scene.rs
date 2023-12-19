@@ -5,7 +5,7 @@ use crate::materials::{font::FontMaterials, material_manager::MaterialManager};
 use crate::resources::dictionary::Dictionary;
 use crate::resources::profile::Profile;
 use crate::resources::scene_manager::SceneManager;
-use crate::scenes::SceneState;
+use crate::scenes::AppState;
 
 const LOADING_BORDER_WIDTH: f32 = 600.0;
 const LOADING_BORDER_HEIGHT: f32 = 60.0;
@@ -28,17 +28,16 @@ pub struct LoadingNewGameScenePlugin;
 
 impl Plugin for LoadingNewGameScenePlugin {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_enter(SceneState::LoadingNewGameScene)
-                .with_system(setup)
-                .with_system(prepare_next_scene),
-        );
-        app.add_system_set(
-            SystemSet::on_update(SceneState::LoadingNewGameScene).with_system(update),
-        );
-        app.add_system_set(
-            SystemSet::on_exit(SceneState::LoadingNewGameScene).with_system(cleanup),
-        );
+        app
+            .add_systems(
+                (
+                    setup,
+                    prepare_next_scene
+                )
+                .in_schedule(OnEnter(AppState::LoadingNewGameScene))
+            )
+            .add_system(update.in_set(OnUpdate(AppState::LoadingNewGameScene)))
+            .add_system(cleanup.in_schedule(OnExit(AppState::LoadingNewGameScene)));
     }
 }
 
@@ -56,7 +55,7 @@ fn setup(
             },
             ..Default::default()
         },
-        UiImage(material_manager.loading_new_game_scene.background_image.clone()),
+        UiImage::new(material_manager.loading_new_game_scene.background_image.clone()),
         ))
         .with_children(|parent| {
             loading_text(parent, &font, &dictionary);
@@ -132,10 +131,7 @@ fn loader_bundle(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary:
                     ),
                     ..Default::default()
                 }
-                .with_text_alignment(TextAlignment {
-                    vertical: VerticalAlign::Center,
-                    horizontal: HorizontalAlign::Center,
-                })
+                .with_text_alignment(TextAlignment::Center)
                 );
             });
     });
@@ -180,17 +176,14 @@ fn loading_text(root: &mut ChildBuilder, font: &Res<FontMaterials>, dictionary: 
             ),
             ..Default::default()
         }
-        .with_text_alignment(TextAlignment {
-            vertical: VerticalAlign::Center,
-            horizontal: HorizontalAlign::Center,
-            })
+        .with_text_alignment(TextAlignment::Center)
         );
     });
 }
 
 fn update(
     mut query: Query<(&mut LoadingNewGameSceneComponent, &mut Style, &Children)>,
-    mut state: ResMut<State<SceneState>>,
+    mut state: ResMut<NextState<AppState>>,
     mut text_query: Query<&mut Text>,
 ) {
     for (mut loading_component, mut style, children) in query.iter_mut() {
@@ -206,8 +199,7 @@ fn update(
             }
         } else {
             state
-                .set(SceneState::GameScene)
-                .expect("Couldn't switch state to Game Ground Scene");
+                .set(AppState::GameScene);
         }
     }
 }
