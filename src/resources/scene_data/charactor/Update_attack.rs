@@ -18,7 +18,7 @@ use crate::resources::scene_data::projectiles::update_projectile::create_project
 use super::effects::{Effect, EffectStatus};
 use super::{get_ability_type_from_damage_type, change_attribute_points, get_attribute_from_damage_type};
 use super::update_move::calculate_direction;
-use super::{skills::Skill, CharactorStatus};
+use super::CharactorStatus;
 
 pub fn update_attack_from_basic_skill(
     mut commands: Commands,

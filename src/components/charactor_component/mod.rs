@@ -1,25 +1,24 @@
 use bevy::prelude::*;
 use std::collections::HashMap;
 
-use crate::resources::scene_data::AbilityType;
-use crate::resources::scene_data::charactor::CharactorStrength;
-use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::effects::Effect;
 use crate::resources::scene_data::charactor::effects::EffectStatus;
-use crate::resources::scene_data::charactor::skills::SkillType;
-use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::effects::EffectType;
-use crate::resources::scene_data::charactor::skills::Skill;
-use crate::resources::scene_data::stuff::Stuff;
+use crate::resources::scene_data::charactor::CharactorStrength;
+use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::StuffWearSlot;
-use crate::resources::scene_data::charactor::{CharactorType, RaceType, GenderType, CharactorStatus};
-
+use crate::resources::scene_data::charactor::{
+    CharactorStatus, CharactorType, GenderType, RaceType,
+};
+use crate::resources::scene_data::stuff::Stuff;
+use crate::resources::scene_data::AbilityType;
+use crate::scenes::game_scenes::tilemap::tile::Position;
 
 #[derive(Default, Eq, PartialEq, Debug)]
 pub enum ActionType {
     Attack,
     #[default]
-    None
+    None,
 }
 
 #[derive(Component, Default)]
@@ -29,8 +28,8 @@ pub struct CharactorAnimationComponent {
 }
 
 #[derive(Component, Default)]
-pub struct EffectComponent{
-    pub added_effect: Vec<EffectType>,
+pub struct EffectComponent {
+    pub added_effect: Vec<Effect>,
     pub effects: HashMap<EffectType, Effect>,
     pub effect_immunes: Vec<EffectType>,
     pub effect_status: Vec<EffectStatus>,
@@ -50,6 +49,7 @@ pub struct AbilityComponent {
 
 #[derive(Component, Default)]
 pub struct SkillComponent {
+    pub base_skill: Skill,
     pub skills: HashMap<SkillSlot, Skill>,
     pub passive_skills: HashMap<SkillType, Skill>,
 }
@@ -62,7 +62,7 @@ pub struct InventoryComponent {
 }
 
 #[derive(Component, Default)]
-pub struct CharactorComponent{
+pub struct CharactorComponent {
     pub charactor_type: CharactorType,
     pub race_type: RaceType,
     pub gender_type: GenderType,

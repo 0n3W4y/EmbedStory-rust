@@ -5,15 +5,13 @@ use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent,
     SkillComponent, InventoryComponent,
 };
-use crate::resources::deploy::Deploy;
-use crate::resources::scene_data::AbilityType;
+use crate::resources::scene_data::{AbilityType, get_resist_from_damage_type};
 use crate::resources::scene_data::charactor::{self, skills};
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
-use super::effects::{EffectType, Effect, EffectStatus};
-use super::{CharactorStatus, SkillSlot, change_stat_points};
+use super::effects::EffectType;
+use super::{CharactorStatus, change_stat_points};
 
 pub fn add_new_effect(
-    deploy: Res<Deploy>,
     mut charactor_query: Query<
     (
         &mut EffectComponent,
@@ -30,57 +28,46 @@ pub fn add_new_effect(
         attrbiutes,
         abilities
     ) in charactor_query.iter_mut() {
-        let mut effects_to_charactor: Vec<Effect> = vec![];
-        let mut effect_status_to_charactor: Vec<EffectStatus> = vec![];
-
-        for effect_type in effects.added_effect.iter(){
+        for effect in effects.added_effect.iter_mut(){
             for immune_effect_type in effects.effect_immunes.iter() {                                           //check immune for new added effect;
-                if effect_type == immune_effect_type {
+                if effect.effect_type == *immune_effect_type {
                     continue;
                 }
             }
-            let effect_config = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
-            let mut effect = Effect::new(effect_config);
-            let effect_time_reducing = match abilities.ability.get(&AbilityType::ReducingEffectTime) {
-                Some(v) => *v,
-                None => 0,
+
+            match abilities.ability.get(&AbilityType::ReducingEffectTime) {
+                Some(v) => {
+                    effect.effect_lifetime -= effect.effect_lifetime * *v as f32 / 100.0;
+                },
+                None => {},
             };
-            effect.effect_duration -= effect.effect_duration * effect_time_reducing as f32 / 100.0;
 
-            for (stat, value) in effect.change_stat.iter_mut() {
-                let stat_value = match stats.stats.get(stat) {
-                    Some(v) => *v,
-                    None => 0,
-                };
-                *value = *value * stat_value / 100;                                                 //convert percent to flat;
+            match effect.buff_debuff_effect {
+                Some(mut buff_debuff_effect) => {
+                    for (stat, value) in buff_debuff_effect.change_stat.iter_mut() {
+                        match stats.stats.get(stat) {                                                           //convert percent to flat;
+                            Some(v) => *value = *value * *v / 100,
+                            None => *value = 0,
+                        }
+                    }
+
+                    for (attribute, value) in buff_debuff_effect.change_attribute_cache.iter_mut() {
+                        match attrbiutes.attributes_cache.get(attribute) {                                      //convert percent to flat;
+                            Some(v) => *value = *value * *v / 100,
+                            None => *value = 0, 
+                        }                                                                    
+                    }
+
+
+                },
+                None => {},
             }
 
-            for (attribute, value) in effect.change_attributes.iter_mut() {
-                let attribute_value = match attrbiutes.attributes_cache.get(attribute) {
-                    Some(v) => *v,
-                    None => 0,
-                };
-                *value = *value * attribute_value / 100;                                            //convert percent to flat;
+            for effect_status in effect.effect_status.iter(){                               //store effect status to charactor effect status;
+                effects.effect_status.push(effect_status.clone());
             }
-
-            for effect_status in effect.effect_status.iter(){
-                match effect_status_to_charactor.iter().find(|&x| *x == *effect_status) {
-                    Some(_) => continue,
-                    None => effect_status_to_charactor.push(effect_status.clone()),
-                }
-            }
-            effects_to_charactor.push(effect); 
-        }
-
-        for effect in effects_to_charactor {
-            effects.effects.entry(effect.effect_type.clone()).and_modify(|x| x.effect_duration += effect.effect_duration).or_insert(effect);
-        }
-
-        for effect_status in effect_status_to_charactor {
-            match effects.effect_status.iter().find(|&x| *x == effect_status) {
-                Some(_) => continue,
-                None => effects.effect_status.push(effect_status)
-            }
+            
+            effects.effects.entry(effect.effect_type.clone()).and_modify(|x| x.effect_lifetime += effect.effect_lifetime).or_insert(effect.clone());
         }
 
         effects.added_effect.clear();
@@ -122,89 +109,126 @@ pub fn update_effects(
 
         let mut effects_to_remove:Vec<EffectType> = vec![];                                     //create vec of effects for deleting, which one ends at this moment;
 
-        for (effect_type, effect) in effects.effects.iter_mut() {                  //update  effects;
-            if effect.total_time_duration == 0.0 {                                                             //first run for effect;
-                for (stat, stat_damage) in effect.change_stat.iter() {
-                    change_stat_points(                    
-                        &mut stats,
-                        &mut resists.resists,
-                        &mut abilities.ability,
-                        &mut attributes,
-                        stat,
-                        *stat_damage,
-                    );
+        for (_, effect) in effects.effects.iter_mut() {                                     //update  effects;
+            if effect.time_duration == 0.0 {
+                match effect.buff_debuff_effect {
+                    Some(buff_debuff_effect) => {
+                        for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
+                            change_stat_points(                    
+                                &mut stats,
+                                &mut resists.resists,
+                                &mut abilities.ability,
+                                &mut attributes,
+                                stat,
+                                *stat_damage,
+                            );
+                        }
+
+                        for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
+                            charactor::change_attribute_points(&mut attributes, attribute_cache, *attribute_damage, true);
+                        }
+
+                        for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
+                            charactor::change_resist(&mut resists.resists, resist, *resists_damage);
+                        }
+
+                        for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
+                            charactor::change_ability(&mut abilities.ability, &ability, *ability_damage);
+                        }
+
+                        skills::update_basic_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                            &mut skills.base_skill,
+                            &abilities.ability, 
+                            &inventory.stuff_wear
+                            );
+
+                    },
+                    None => {},
                 }
 
-                for (attribute_cache, attribute_damage) in effect.change_attribute_cache.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute_cache, *attribute_damage, true);
+                match effect.over_time_effect {
+                    Some(over_time_effect) => {
+                        for (attribute, attribute_damage) in over_time_effect.change_attributes.iter() {
+                            let new_attribute_damage = match resists.resists.get(&get_resist_from_damage_type(&over_time_effect.effect_damage_type)) {
+                                Some(v) => *attribute_damage - *attribute_damage * *v / 100,
+                                None => *attribute_damage,
+                            };
+                            charactor::change_attribute_points(&mut attributes, attribute, new_attribute_damage, false);
+                            damage_text.text_upper.push(DamageTextInformer::new(new_attribute_damage, None, false, Some(&over_time_effect.effect_damage_type)));
+                        }
+                    },
+                    None => {},
                 }
+            } else if effect.time_duration >= effect.effect_lifetime {
+                match effect.buff_debuff_effect {
+                    Some(buff_debuff_effect) => {
+                        for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
+                            change_stat_points(                    
+                                &mut stats,
+                                &mut resists.resists,
+                                &mut abilities.ability,
+                                &mut attributes,
+                                stat,
+                                -(*stat_damage),
+                            );
+                        }
 
-                for (attribute, attribute_damage) in effect.change_attributes.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, false);
-                    damage_text.text_upper.push(DamageTextInformer::new(*attribute_damage, None, false, Some(&effect.damage_type())));
-                }
-                
-                for (resist, resists_damage) in effect.change_resist.iter() {                   //change resists;
-                    charactor::change_resist(&mut resists.resists, resist, *resists_damage);
-                }
+                        for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
+                            charactor::change_attribute_points(&mut attributes, attribute_cache, -(*attribute_damage), true);
+                        }
 
-                for (ability, ability_damage) in effect.change_ability .iter(){                 //change abilities;
-                    charactor::change_ability(&mut abilities.ability, &ability, *ability_damage);
-                }
+                        for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
+                            charactor::change_resist(&mut resists.resists, resist, -(*resists_damage));
+                        }
 
-                
-                skills::update_basic_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
-                    skills.skills.get_mut(&SkillSlot::Base),
-                     &abilities.ability, 
-                     &inventory.stuff_wear
-                    );
-                effect.total_time_duration += delta_time;
-                effect.current_time_duration += delta_time;
-            } else if effect.total_time_duration > effect.effect_duration || effect.effect_duration < 0.0 {                                 //effect is end; revert changes and remove effect
-                for (stat, stat_damage) in effect.change_stat.iter() {
-                    change_stat_points(
-                        &mut stats,
-                        &mut resists.resists,
-                        &mut abilities.ability,
-                        &mut attributes,
-                        stat,
-                        -stat_damage,                                                                           // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
-                    );
-                }
+                        for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
+                            charactor::change_ability(&mut abilities.ability, &ability, -(*ability_damage));
+                        }
 
-                for (attribute, attribute_damage) in effect.change_attribute_cache.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute, -attribute_damage, true);
-                }
+                        skills::update_basic_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                            &mut skills.base_skill,
+                            &abilities.ability, 
+                            &inventory.stuff_wear
+                            );
 
-                for (effect_resist, resist_damage) in effect.change_resist.iter() {
-                    charactor::change_resist(&mut resists.resists, effect_resist, -resist_damage);  // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
+                    },
+                    None => {},
                 }
-            
-                for (ability, ability_damage) in effect.change_ability.iter() {
-                    charactor::change_ability(&mut abilities.ability, ability, -ability_damage);    // WARNING use "-" to revert changes if it be "+" so we have "-", and if it "-" so we "+" stat;
+                if effect.effect_status.len() > 0 {
+                    for effect_status in effect.effect_status.iter() {
+                        let index = effect.effect_status.iter().position(|x| x == effect_status).unwrap();
+                        effect.effect_status.remove(index);
+                    }
                 }
-
-                skills::update_basic_skill_by_changes_in_ability(skills.skills.get_mut(&SkillSlot::Base), &abilities.ability, &inventory.stuff_wear);  
-
-                effects_to_remove.push(effect_type.clone());                                                            //fill vec for deleting effects ended by duration;
-            } else if effect.current_time_duration >= effect.trigger_time_effect {
-                effect.current_time_duration -= effect.trigger_time_effect;
-
-                for (attribute, attribute_damage) in effect.change_attributes.iter() {
-                    charactor::change_attribute_points(&mut attributes, attribute, *attribute_damage, false);
-                    damage_text.text_upper.push(DamageTextInformer::new(*attribute_damage, None, false, Some(&effect.damage_type())));
-                }
-                
+                effects_to_remove.push(effect.effect_type.clone());
             } else {
-                effect.total_time_duration += delta_time;
-                effect.current_time_duration += delta_time;
-            }          
+                effect.time_duration += delta_time;
+                match effect.over_time_effect {
+                    Some(mut over_time_effect) => {
+                        over_time_effect.time_duration += delta_time;
+                        if over_time_effect.time_duration < over_time_effect.trigger_time_effect {
+                            continue;
+                        } else {
+                            over_time_effect.time_duration -= over_time_effect.trigger_time_effect;
+                        }
+
+                        for (attribute, attribute_damage) in over_time_effect.change_attributes.iter() {
+                            let new_attribute_damage = match resists.resists.get(&get_resist_from_damage_type(&over_time_effect.effect_damage_type)) {
+                                Some(v) => *attribute_damage - *attribute_damage * *v / 100,
+                                None => *attribute_damage,
+                            };
+                            charactor::change_attribute_points(&mut attributes, attribute, new_attribute_damage, false);
+                            damage_text.text_upper.push(DamageTextInformer::new(new_attribute_damage, None, false, Some(&over_time_effect.effect_damage_type)));
+                        }
+                    },
+                    None => {},
+                }
+            }                   
         }
 
         for effect_type in effects_to_remove.iter() {
             effects.effects.remove(effect_type);
         }
-        effects_to_remove.clear();
     }
 }
 

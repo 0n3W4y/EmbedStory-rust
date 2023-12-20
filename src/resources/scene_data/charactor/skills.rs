@@ -3,14 +3,20 @@ use std::collections::HashMap;
 
 use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType, AbilityType};
 
-use super::{effects::EffectType, StuffWearSlot, get_ability_type_from_damage_type};
+use super::{effects::{EffectType, Effect}, StuffWearSlot, get_ability_type_from_damage_type};
 
-pub const MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL: f32 = 0.20;
+pub const MINIMAL_TIME_FOR_COOLDOWN_SKILL: f32 = 0.20;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
-pub enum SkillType {
+pub enum ActiveSkillType {
     #[default]
     BaseSkill
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
+pub enum PassiveSkillType {
+    #[default]
+    ChainLighting
 }
 
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
@@ -40,6 +46,7 @@ pub enum SkillDirectionType {
     Point,
 }
 
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct PassiveSkill {
     pub skill_type: PassiveSkillType,
     pub trigger_time_frequency: f32,
@@ -47,13 +54,19 @@ pub struct PassiveSkill {
     pub current_time_duration: f32,
     pub total_duration: f32,
 
-    pub damage: HashMap<DamageType, i16>,
-    pub effect: HashMap<EffectType, u8>,
+    pub crit_chance: i16,
+    pub crit_multiplier: i16,
 
+    pub damage: HashMap<DamageType, i16>,
+    pub effect: HashMap<EffectType, (Effect, u8)>,
+
+    pub skill_range: u8,
     pub cast_cource: CastSource,
     pub skill_direction: SkillDirectionType,
+    pub target_type: TargetType,
 
-
+    pub projectiles: u8,
+    pub projectile_type: ProjectileType,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -64,13 +77,6 @@ pub struct ActiveSkill {
     pub cooldown_time: f32,
     pub current_time_duration: f32, // == 0.0;
     
-
-    //for passive skills
-    pub trigger_chance: u8, // chanse to trigger that skill
-    pub trigger_time_frequency: f32, // 1 per second
-    pub life_time: f32, // full time to skill live;
-    pub total_time_duration: f32,
-
     pub projectiles: u8,
     pub projectile_type: ProjectileType,
     pub range: u8, // max range; min range = 1;
@@ -83,24 +89,18 @@ pub struct ActiveSkill {
     pub crit_multiplier: i16,
 
     pub damage: HashMap<DamageType, i16>,
-    pub effect: HashMap<EffectType, u8>,
+    pub effect: HashMap<EffectType, (Effect, u8)>,
+    pub passive_skills: HashMap<PassiveSkillType, (PassiveSkill, u8)>,
 }
 
-impl Skill {
-    pub fn new (config: &SkillDeploy) -> Self {
-        Skill {
+impl ActiveSkill {
+    pub fn new (config: &ActiveSkillDeploy) -> Self {
+        ActiveSkill {
             skill_type: config.skill_type.clone(),
-            skill_name: config.skill_name.clone(),
-            stuff_id: None,
             is_activated: false,
-            is_passive_skill: config.is_passive_skill,
-            trigger_chance: config.trigger_chance,
-            trigger_time_frequency: config.trigger_time_frequency as f32 / 10.0,
-            life_time: config.life_time as f32 / 10.0,
             cooldown_time: config.cooldown_time as f32 / 10.0,
             on_cooldown: false,
             current_time_duration: 0.0,
-            total_time_duration: 0.0,
             projectiles: config.projectiles,
             projectile_type: config.projectile_type.clone(),
             range: config.range,
@@ -112,12 +112,35 @@ impl Skill {
             crit_multiplier: config.crit_multiplier,
             damage: config.damage.clone(),
             effect: config.effect.clone(),
+            passive_skills: todo!(),
+        }
+    }
+}
+
+impl PassiveSkill {
+    pub fn new (config: &PassiveSkillDeploy) -> Self {
+        PassiveSkill {
+            skill_type: config.skill_type.clone(),
+            trigger_time_frequency: todo!(),
+            skill_life_time: todo!(),
+            current_time_duration: todo!(),
+            total_duration: todo!(),
+            crit_chance: todo!(),
+            crit_multiplier: todo!(),
+            damage: todo!(),
+            effect: todo!(),
+            skill_range: todo!(),
+            cast_cource: todo!(),
+            skill_direction: todo!(),
+            target_type: todo!(),
+            projectiles: todo!(),
+            projectile_type: todo!(),
         }
     }
 }
 
 #[derive(Deserialize, Debug)]
-pub struct SkillDeploy {
+pub struct PassiveSkillDeploy {
     pub skill_type: SkillType,
     pub skill_name: String,
     pub is_passive_skill: bool,
@@ -145,8 +168,13 @@ pub struct SkillDeploy {
     pub effect: HashMap<EffectType, u8>,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct ActiveSkillDeploy {
 
-pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, ability_storage: &HashMap<AbilityType, i16>, wear_stuff: &HashMap<StuffWearSlot, Option<Stuff>>) {
+}
+
+
+pub fn update_basic_skill_by_changes_in_ability(base_skill: &mut Skill, ability_storage: &HashMap<AbilityType, i16>, wear_stuff: &HashMap<StuffWearSlot, Option<Stuff>>) {
     match base_skill {
         Some(skill) => {
             //clear for new entries;
@@ -226,8 +254,8 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: Option<&mut Skill>, 
             }            
 
             let interim_cooldown = (skill_cooldown as f32 / 100.0) - ((skill_cooldown * attack_speed_from_ability) as f32 / 100.0);               //calculate cooldown value;
-            skill.cooldown_time = if interim_cooldown >= MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL {          //check for cooldown value;
-                MINIMAL_TIME_FOR_COOLDOWN_BASIC_SKILL
+            skill.cooldown_time = if interim_cooldown >= MINIMAL_TIME_FOR_COOLDOWN_SKILL {          //check for cooldown value;
+                MINIMAL_TIME_FOR_COOLDOWN_SKILL
             } else {
                 interim_cooldown
             };

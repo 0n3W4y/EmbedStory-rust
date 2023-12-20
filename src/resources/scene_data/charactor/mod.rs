@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use self::effects::{EffectType, Effect, EffectStatus};
-use self::skills::{Skill, SkillType};
 use crate::components::{StatsComponent, AttributesComponent};
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
@@ -22,6 +21,7 @@ pub mod update_passive_skills;
 pub mod update_attack;
 pub mod update_cooldowns;
 pub mod active_skill_handler;
+pub mod update_health_stamina_regen;
 
 pub const STATS_POINTS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;
