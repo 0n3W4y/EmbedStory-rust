@@ -7,11 +7,14 @@ use crate::resources::scene_data::charactor::effects::EffectType;
 use crate::resources::scene_data::charactor::CharactorStrength;
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::charactor::StuffWearSlot;
+use crate::resources::scene_data::charactor::skills::ActiveSkill;
+use crate::resources::scene_data::charactor::skills::PassiveSkill;
+use crate::resources::scene_data::charactor::skills::PassiveSkillType;
 use crate::resources::scene_data::charactor::{
     CharactorStatus, CharactorType, GenderType, RaceType,
 };
 use crate::resources::scene_data::stuff::Stuff;
-use crate::resources::scene_data::AbilityType;
+use crate::resources::scene_data::Ability;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 #[derive(Default, Eq, PartialEq, Debug)]
@@ -44,14 +47,14 @@ pub struct DestinationComponent {
 
 #[derive(Component, Default)]
 pub struct AbilityComponent {
-    pub ability: HashMap<AbilityType, i16>,
+    pub ability: HashMap<Ability, i16>,
 }
 
 #[derive(Component, Default)]
 pub struct SkillComponent {
-    pub base_skill: Skill,
-    pub skills: HashMap<SkillSlot, Skill>,
-    pub passive_skills: HashMap<SkillType, Skill>,
+    pub base_skill: ActiveSkill,
+    pub active_skills: HashMap<SkillSlot, ActiveSkill>,
+    pub passive_skills: HashMap<PassiveSkillType, PassiveSkill>,
 }
 
 #[derive(Component, Default)]

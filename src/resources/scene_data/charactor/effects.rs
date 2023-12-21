@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use crate::resources::scene_data::{Stat, AbilityType, Attribute, ResistType, stuff::damage_type::DamageType};
+use crate::resources::{scene_data::{Stat, Ability, Attribute, Resist, Damage}, deploy::Deploy};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
 pub enum EffectType{
@@ -20,7 +20,7 @@ pub enum EffectType{
     Myopia,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum OverTimeEffectType {
     AcidDamage,
     BleedDamage,
@@ -33,10 +33,11 @@ pub enum OverTimeEffectType {
     HealthDamage,
     HealthRegen,
     StaminaRegen,
+    #[default]
     None,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum BuffDebuffEffectType {
     AcidDebuff,
     BleedDebuff,
@@ -50,6 +51,7 @@ pub enum BuffDebuffEffectType {
     StaminaBuff,
     HealthBuff,
     AccuracyDebuff,
+    #[default]
     None,
 }
 
@@ -64,48 +66,48 @@ pub struct EffectDeploy {
     pub effect_type: EffectType,
     pub effect_lifetime: f32,
 
-    pub over_time_effect: OverTimeEffectDeploy,
-    pub buff_debuff_effect: BuffDebuffEffectDeploy,
+    pub over_time_effect: OverTimeEffectType,
+    pub buff_debuff_effect: BuffDebuffEffectType,
     pub effect_status: Vec<EffectStatus>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct OverTimeEffectDeploy {
     pub effect_type: OverTimeEffectType,
-    pub effect_damage_type: DamageType,
+    pub effect_damage_type: Damage,
     pub trigger_time_effect: f32,
     pub change_attributes: HashMap<Attribute, i16>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 pub struct BuffDebuffEffectDeploy {
     pub effect_type: BuffDebuffEffectType,
     pub change_stat: HashMap<Stat, i16>,
     pub change_attribute_cache: HashMap<Attribute, i16>,
-    pub change_resist: HashMap<ResistType, i16>,
-    pub change_ability: HashMap<AbilityType, i16>,
+    pub change_resist: HashMap<Resist, i16>,
+    pub change_ability: HashMap<Ability, i16>,
 }
 
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct OverTimeEffect {
     pub effect_type: OverTimeEffectType,
-    pub effect_damage_type: DamageType,
+    pub effect_damage_type: Damage,
     pub trigger_time_effect: f32,
     pub time_duration: f32,
     pub change_attributes: HashMap<Attribute, i16>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct BuffDebuffEffect {
     pub effect_type: BuffDebuffEffectType,
     pub change_stat: HashMap<Stat, i16>,
     pub change_attribute_cache: HashMap<Attribute, i16>,
-    pub change_resist: HashMap<ResistType, i16>,
-    pub change_ability: HashMap<AbilityType, i16>,
+    pub change_resist: HashMap<Resist, i16>,
+    pub change_ability: HashMap<Ability, i16>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Effect {
     pub effect_type: EffectType,
     pub effect_lifetime: f32,
@@ -117,42 +119,45 @@ pub struct Effect {
 }
 
 impl Effect {
-    pub fn new(config: &EffectDeploy) -> Self {
-        let over_time_effect = if config.over_time_effect.effect_type == OverTimeEffectType::None {
-            None
-        } else {
+    pub fn new(deploy: &Deploy, effect_type: &EffectType) -> Self {
+        let effect_config = deploy.charactor_deploy.effects_deploy.get_effect_config(effect_type);
+        let over_time_effect = if effect_config.over_time_effect != OverTimeEffectType::None {
+            let over_time_effect_config = deploy.charactor_deploy.effects_deploy.get_over_time_effect_config(&effect_config.over_time_effect);
             Some(
                 OverTimeEffect {
-                    effect_type: config.over_time_effect.effect_type.clone(),
-                    effect_damage_type: config.over_time_effect.effect_damage_type.clone(),
-                    trigger_time_effect: config.over_time_effect.trigger_time_effect,
+                    effect_type: over_time_effect_config.effect_type.clone(),
+                    effect_damage_type: over_time_effect_config.effect_damage_type.clone(),
+                    trigger_time_effect: over_time_effect_config.trigger_time_effect,
                     time_duration: 0.0,
-                    change_attributes: config.over_time_effect.change_attributes.clone(),
+                    change_attributes: over_time_effect_config.change_attributes.clone(),
                 }
             )
+        } else {
+            None
         };
 
-        let buff_debuff_effect = if config.buff_debuff_effect.effect_type == BuffDebuffEffectType::None {
+        let buff_debuff_effect = if effect_config.buff_debuff_effect == BuffDebuffEffectType::None {
             None
         } else {
+            let buff_debuff_effect_config = deploy.charactor_deploy.effects_deploy.get_buff_debuff_effect_config(&effect_config.buff_debuff_effect);
             Some(
                 BuffDebuffEffect {
-                    effect_type: config.buff_debuff_effect.effect_type.clone(),
-                    change_stat: config.buff_debuff_effect.change_stat.clone(),
-                    change_attribute_cache: config.buff_debuff_effect.change_attribute_cache.clone(),
-                    change_resist: config.buff_debuff_effect.change_resist.clone(),
-                    change_ability: config.buff_debuff_effect.change_ability.clone(),
+                    effect_type: buff_debuff_effect_config.effect_type.clone(),
+                    change_stat: buff_debuff_effect_config.change_stat.clone(),
+                    change_attribute_cache: buff_debuff_effect_config.change_attribute_cache.clone(),
+                    change_resist: buff_debuff_effect_config.change_resist.clone(),
+                    change_ability: buff_debuff_effect_config.change_ability.clone(),
                 }
             )
         };
 
         Effect {
-            effect_type: config.effect_type.clone(),
-            effect_lifetime: config.effect_lifetime,
+            effect_type: effect_config.effect_type.clone(),
+            effect_lifetime: effect_config.effect_lifetime,
             time_duration: 0.0,
             over_time_effect,
             buff_debuff_effect,
-            effect_status: config.effect_status.to_vec(),
+            effect_status: effect_config.effect_status.to_vec(),
         }
     }
 }

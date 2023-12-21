@@ -2,11 +2,22 @@ use std::{fs::File, io::Read};
 
 use serde::Deserialize;
 
-use crate::resources::{deploy::DEPLOY_SKILLS_PATH, scene_data::charactor::skills::{SkillType, SkillDeploy}};
+use crate::resources::{deploy::DEPLOY_SKILLS_PATH, scene_data::charactor::skills::{ActiveSkillDeploy, PassiveSkillDeploy, ActiveSkillType, PassiveSkillType}};
 
 #[derive(Deserialize, Debug)]
 pub struct SkillsDeploy{
-    pub base_skill: SkillDeploy,
+    pub active_skills: ActiveSkillsDeploy,
+    pub passive_skills: PassiveSkillsDeploy,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct ActiveSkillsDeploy {
+    pub base_skill: ActiveSkillDeploy,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PassiveSkillsDeploy {
+    pub chainlighting: PassiveSkillDeploy,
 }
 
 impl SkillsDeploy {
@@ -21,9 +32,15 @@ impl SkillsDeploy {
         };
         return skills_deploy;
     }
-    pub fn get_skill_deploy( &self, skill: &SkillType ) -> &SkillDeploy {
+    pub fn get_active_skill_deploy (&self, skill: &ActiveSkillType) -> &ActiveSkillDeploy {
         match *skill {
-            SkillType::BaseSkill => &self.base_skill,
+            ActiveSkillType::BaseSkill => &self.active_skills.base_skill,
+        }
+    }
+
+    pub fn get_passive_skill_deploy (&self, skill: &PassiveSkillType) -> &PassiveSkillDeploy {
+        match *skill {
+            PassiveSkillType::ChainLighting => &self.passive_skills.chainlighting,
         }
     }
 }

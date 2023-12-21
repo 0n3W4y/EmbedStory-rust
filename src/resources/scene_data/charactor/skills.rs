@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use crate::resources::scene_data::{stuff::{damage_type::DamageType, Stuff}, projectiles::ProjectileType, AbilityType};
+use crate::resources::{scene_data::{stuff::Stuff, projectiles::ProjectileType, Ability, Damage}, deploy::Deploy};
 
 use super::{effects::{EffectType, Effect}, StuffWearSlot, get_ability_type_from_damage_type};
 
@@ -19,13 +19,6 @@ pub enum PassiveSkillType {
     ChainLighting
 }
 
-#[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
-pub enum CastSource {
-    Mouse,
-    #[default]
-    Itself
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum TargetType {
     #[default]
@@ -37,16 +30,11 @@ pub enum TargetType {
 #[derive(Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub enum SkillDirectionType {
     #[default]
-    Line,
-    Arc30,
-    Arc60,
-    Arc90,
-    Arc180,
-    Arc360,
-    Point,
+    Itself,
+    Target,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct PassiveSkill {
     pub skill_type: PassiveSkillType,
     pub trigger_time_frequency: f32,
@@ -57,130 +45,166 @@ pub struct PassiveSkill {
     pub crit_chance: i16,
     pub crit_multiplier: i16,
 
-    pub damage: HashMap<DamageType, i16>,
+    pub damage: HashMap<Damage, i16>,
     pub effect: HashMap<EffectType, (Effect, u8)>,
 
     pub skill_range: u8,
-    pub cast_cource: CastSource,
     pub skill_direction: SkillDirectionType,
     pub target_type: TargetType,
+    pub target_quantity: u8,                                // max target quantity in skill range;
+    pub area_on_impact: u8,                                 //0 - only target, 1 - +1 position for all direction, 2 - +2 position for all direction;
 
     pub projectiles: u8,
     pub projectile_type: ProjectileType,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ActiveSkill {
     pub skill_type: ActiveSkillType,
-    pub is_activated: bool, // activeated skill will start logic to dealt damage to target;
-    pub on_cooldown: bool, // can use this skill now;
+    pub is_activated: bool,                                     // activeated skill will start logic to dealt damage to target;
+    pub on_cooldown: bool,                                  // can use this skill now;
     pub cooldown_time: f32,
-    pub current_time_duration: f32, // == 0.0;
+    pub current_time_duration: f32,                            // == 0.0;
+    pub stamina_cost: i16,
     
     pub projectiles: u8,
     pub projectile_type: ProjectileType,
-    pub range: u8, // max range; min range = 1;
-    pub cast_source: CastSource,
+    pub skill_range: u8,                                    // max range; min range = 1;
     pub skill_direction: SkillDirectionType,
-    pub stamina_cost: i16,
     pub target: TargetType,
+    pub target_quantity: u8,                                // max target quantity in skill range;
+    pub area_on_impact: u8,                                 //0 - only target, 1 - +1 position for all direction, 2 - +2 position for all direction;
 
     pub crit_chance: i16,
     pub crit_multiplier: i16,
 
-    pub damage: HashMap<DamageType, i16>,
+    pub damage: HashMap<Damage, i16>,
     pub effect: HashMap<EffectType, (Effect, u8)>,
     pub passive_skills: HashMap<PassiveSkillType, (PassiveSkill, u8)>,
 }
 
 impl ActiveSkill {
-    pub fn new (config: &ActiveSkillDeploy) -> Self {
+    pub fn new (deploy: &Deploy, skill_type: &ActiveSkillType) -> Self {
+        let mut effects: HashMap<EffectType, (Effect, u8)> = HashMap::new();
+        let mut passive_skills: HashMap<PassiveSkillType, (PassiveSkill, u8)> = HashMap::new();
+        let skill_config = deploy.charactor_deploy.skills_deploy.get_active_skill_deploy(skill_type);
+        for (effect_type, effect_chance) in skill_config.effect.iter() {
+            let effect = Effect::new(deploy, effect_type);
+            effects.insert(effect_type.clone(), (effect, *effect_chance));
+        }
+
+        for (passive_skill_type, skill_chance) in skill_config.passive_skills.iter() {
+            let passive_skill = PassiveSkill::new(deploy, passive_skill_type);
+            passive_skills.insert(passive_skill_type.clone(), (passive_skill, *skill_chance));
+        }
+
         ActiveSkill {
-            skill_type: config.skill_type.clone(),
+            skill_type: skill_type.clone(),
             is_activated: false,
-            cooldown_time: config.cooldown_time as f32 / 10.0,
+            cooldown_time: skill_config.cooldown_time as f32 / 10.0,
             on_cooldown: false,
             current_time_duration: 0.0,
-            projectiles: config.projectiles,
-            projectile_type: config.projectile_type.clone(),
-            range: config.range,
-            cast_source: config.cast_source.clone(),
-            skill_direction: config.skill_direction.clone(),
-            stamina_cost: config.stamina_cost,
-            target: config.target.clone(),
-            crit_chance: config.crit_chance,
-            crit_multiplier: config.crit_multiplier,
-            damage: config.damage.clone(),
-            effect: config.effect.clone(),
-            passive_skills: todo!(),
+            projectiles: skill_config.projectiles,
+            projectile_type: skill_config.projectile_type.clone(),
+            skill_direction: skill_config.skill_direction.clone(),
+            stamina_cost: skill_config.stamina_cost,
+            target: skill_config.target.clone(),
+            crit_chance: skill_config.crit_chance,
+            crit_multiplier: skill_config.crit_multiplier,
+            damage: skill_config.damage.clone(),
+            effect: effects,
+            passive_skills: passive_skills,
+            skill_range: skill_config.skill_range,
+            target_quantity: skill_config.target_quantity,
+            area_on_impact: skill_config.area_on_impact,
         }
     }
 }
 
 impl PassiveSkill {
-    pub fn new (config: &PassiveSkillDeploy) -> Self {
+    pub fn new (deploy: &Deploy, skill_type: &PassiveSkillType) -> Self {
+        let mut effects: HashMap<EffectType, (Effect, u8)> = HashMap::new();
+        let skill_config = deploy.charactor_deploy.skills_deploy.get_passive_skill_deploy(skill_type);
+        for (effect_type, effect_chance) in skill_config.effect.iter() {
+            let effect = Effect::new(deploy, effect_type);
+            effects.insert(effect_type.clone(), (effect, *effect_chance ));
+        }
+
         PassiveSkill {
-            skill_type: config.skill_type.clone(),
-            trigger_time_frequency: todo!(),
-            skill_life_time: todo!(),
-            current_time_duration: todo!(),
-            total_duration: todo!(),
-            crit_chance: todo!(),
-            crit_multiplier: todo!(),
-            damage: todo!(),
-            effect: todo!(),
-            skill_range: todo!(),
-            cast_cource: todo!(),
-            skill_direction: todo!(),
-            target_type: todo!(),
-            projectiles: todo!(),
-            projectile_type: todo!(),
+            skill_type: skill_type.clone(),
+            trigger_time_frequency: skill_config.trigger_time_frequency,
+            skill_life_time: skill_config.skill_life_time,
+            current_time_duration: 0.0,
+            total_duration: 0.0,
+            crit_chance: skill_config.crit_chance,
+            crit_multiplier: skill_config.crit_multiplier,
+            damage: skill_config.damage.clone(),
+            effect: effects,
+            skill_range: skill_config.skill_range,
+            skill_direction: skill_config.skill_direction.clone(),
+            target_type: skill_config.target_type.clone(),
+            projectiles: skill_config.projectiles,
+            projectile_type: skill_config.projectile_type.clone(),
+            target_quantity: skill_config.target_quantity,
+            area_on_impact: skill_config.area_on_impact,
         }
     }
 }
 
 #[derive(Deserialize, Debug)]
 pub struct PassiveSkillDeploy {
-    pub skill_type: SkillType,
-    pub skill_name: String,
-    pub is_passive_skill: bool,
-
-    //for active skill;
-    pub cooldown_time: i16, // base;    
-
-    //for passive skills
-    pub trigger_chance: u8, // chanse to trigger that skill
-    pub trigger_time_frequency: f32, // 1 per second
-    pub life_time: f32, // full time to skill live;
-
-    pub projectiles: u8,
-    pub projectile_type: ProjectileType,
-    pub range: u8, // max range; min range = 1;
-    pub cast_source: CastSource,
-    pub skill_direction: SkillDirectionType,
-    pub stamina_cost: i16,
-    pub target: TargetType,
+    pub skill_type: PassiveSkillType,
+    pub trigger_time_frequency: f32,
+    pub skill_life_time: f32,
 
     pub crit_chance: i16,
     pub crit_multiplier: i16,
 
-    pub damage: HashMap<DamageType, i16>,
+    pub damage: HashMap<Damage, i16>,
     pub effect: HashMap<EffectType, u8>,
+
+    pub skill_range: u8,
+    pub skill_direction: SkillDirectionType,
+    pub target_type: TargetType,
+    pub target_quantity: u8,
+    pub area_on_impact: u8, 
+
+    pub projectiles: u8,
+    pub projectile_type: ProjectileType,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ActiveSkillDeploy {
+    pub skill_type: ActiveSkillType,
+    pub cooldown_time: f32,
+    
+    pub projectiles: u8,
+    pub projectile_type: ProjectileType,
+    pub skill_range: u8, // max range; min range = 1;
+    pub skill_direction: SkillDirectionType,
+    pub stamina_cost: i16,
+    pub target: TargetType,
+    pub target_quantity: u8,
+    pub area_on_impact: u8, 
 
+    pub crit_chance: i16,
+    pub crit_multiplier: i16,
+
+    pub damage: HashMap<Damage, i16>,
+    pub effect: HashMap<EffectType, u8>,
+    pub passive_skills: HashMap<PassiveSkillType, u8>,
 }
 
 
-pub fn update_basic_skill_by_changes_in_ability(base_skill: &mut Skill, ability_storage: &HashMap<AbilityType, i16>, wear_stuff: &HashMap<StuffWearSlot, Option<Stuff>>) {
-    match base_skill {
-        Some(skill) => {
-            //clear for new entries;
-            skill.damage.clear();
-            skill.effect.clear();
-            
+pub fn update_base_skill_by_changes_in_ability(deploy: &Deploy, base_skill: &mut ActiveSkill, ability_storage: &HashMap<Ability, i16>, wear_stuff: &HashMap<StuffWearSlot, Option<Stuff>>) {
+    if base_skill.skill_type != ActiveSkillType::BaseSkill {
+        println!("Try to change not base skill!");
+        return;
+    }
+
+    
+
+    /* 
             let critical_hit_chance_from_ability = match ability_storage.get(&AbilityType::CriticalHitChanse) {     //get critical hit chance from ability;
                 Some(v) => *v,
                 None => {
@@ -275,8 +299,6 @@ pub fn update_basic_skill_by_changes_in_ability(base_skill: &mut Skill, ability_
             }
 
             skill.effect = effects_from_weapon;
-
-        },
-        None => println!("Can not udapte basic skill, because basic skill not found"),
-    }
+            */
 }
+

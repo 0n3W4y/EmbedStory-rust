@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
 
-use super::{Attribute, ResistType};
+use super::{Attribute, Resist};
 
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default )]
@@ -49,7 +49,7 @@ pub enum ThingType {
 pub struct ThingConfig {
     pub permissions: Vec<ThingPermissions>,
     pub attributes: HashMap<Attribute, i16>,
-    pub resists: HashMap<ResistType, i16>,
+    pub resists: HashMap<Resist, i16>,
     pub tile_allow_permissions: Vec<TilePermissions>,
     pub tile_deny_permissions: Vec<TilePermissions>,
     pub tile_movement_ratio: u16
@@ -63,7 +63,7 @@ pub struct Thing {
     pub graphic_index: u8, // get image from material_manager;
 
     pub permissions: Vec<ThingPermissions>,
-    pub resists: HashMap<ResistType, i16>,
+    pub resists: HashMap<Resist, i16>,
     pub attributes: HashMap<Attribute, i16>,
     pub attributes_cache: HashMap<Attribute, i16>,
 }

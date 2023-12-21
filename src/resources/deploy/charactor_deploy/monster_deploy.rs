@@ -2,7 +2,7 @@ use std::{fs::File, io::Read, collections::HashMap};
 
 use serde::Deserialize;
 
-use crate::resources::{scene_data::{AbilityType, charactor::CharactorStrength}, deploy::DEPLOY_MONSTER_STRENGTH_PATH};
+use crate::resources::{scene_data::{Ability, charactor::CharactorStrength}, deploy::DEPLOY_MONSTER_STRENGTH_PATH};
 
 
 
@@ -46,5 +46,5 @@ pub struct MonsterConfig {
     pub stats: i16,
     pub attributes: i16,
     pub resists: i16,
-    pub abilities: HashMap<AbilityType, i16>,
+    pub abilities: HashMap<Ability, i16>,
 }

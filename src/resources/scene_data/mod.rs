@@ -14,6 +14,7 @@ pub enum Stat{
     Strength,
     Dexterity,
     Wisdom,
+    Vitality,
     Luck,
 }
 
@@ -23,6 +24,7 @@ impl Stat {
             Stat::Strength,
             Stat::Dexterity,
             Stat::Wisdom,
+            Stat::Vitality,
             Stat::Luck
         ].into_iter()
     }
@@ -35,10 +37,8 @@ pub enum Attribute {
     Stamina,
 }
 
-use self::stuff::damage_type::DamageType;
-
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Default, Hash)]
-pub enum ResistType {
+pub enum Resist {
     FireDamage,
     ColdDamage,
     #[default]
@@ -47,42 +47,36 @@ pub enum ResistType {
     ElectricDamage,
     AcidDamage,
     PoisonDamage,
-    HealthDamage,
-    StaminaDamage
 }
 
-impl ResistType {
+impl Resist {
     pub fn all_values() -> impl Iterator<Item = Self> {
         vec![
-            ResistType::FireDamage,
-            ResistType::ColdDamage,
-            ResistType::PhisicalDamage,
-            ResistType::WaterDamage,
-            ResistType::ElectricDamage,
-            ResistType::AcidDamage,
-            ResistType::PoisonDamage,
-            ResistType::HealthDamage,
-            ResistType::StaminaDamage,
+            Resist::FireDamage,
+            Resist::ColdDamage,
+            Resist::PhisicalDamage,
+            Resist::WaterDamage,
+            Resist::ElectricDamage,
+            Resist::AcidDamage,
+            Resist::PoisonDamage,
         ].into_iter()
     }
 }
 
-pub fn get_resist_from_damage_type(damage_type: &DamageType) -> ResistType {
+pub fn get_resist_from_damage_type(damage_type: &Damage) -> Resist {
     return match *damage_type {
-        DamageType::Fire => ResistType::FireDamage,
-        DamageType::Cold => ResistType::ColdDamage,
-        DamageType::Electric => ResistType::ElectricDamage,
-        DamageType::Acid => ResistType::AcidDamage,
-        DamageType::Poison => ResistType::PoisonDamage,
-        DamageType::Health => ResistType::HealthDamage,
-        DamageType::Stamina => ResistType::StaminaDamage,
-        DamageType::Phisical => ResistType::PhisicalDamage,
-        DamageType::Water => ResistType::WaterDamage,
+        Damage::Fire => Resist::FireDamage,
+        Damage::Cold => Resist::ColdDamage,
+        Damage::Electric => Resist::ElectricDamage,
+        Damage::Acid => Resist::AcidDamage,
+        Damage::Poison => Resist::PoisonDamage,
+        Damage::Phisical => Resist::PhisicalDamage,
+        Damage::Water => Resist::WaterDamage,
     }
 }
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, Default, Deserialize, Serialize)]
-pub enum AbilityType{
+pub enum Ability{
     Evasion,
     #[default]
     MovementSpeed,
@@ -93,8 +87,6 @@ pub enum AbilityType{
     CriticalHitChanse,
     CriticalHitMultiplier,
     Accuracy,
-    StaminaRegen,
-    HealthRegen,
     ExperienceMultiplier,
     PhisicalDamage,
     FireDamage,
@@ -103,35 +95,41 @@ pub enum AbilityType{
     AcidDamage,
     PoisonDamage,
     ColdDamage,
-    HealthDamage,
-    StaminaDamage,
     ReducingEffectTime,
 }
 
-impl AbilityType {
+impl Ability {
     pub fn all_values() -> impl Iterator<Item = Self> {
         vec![
-            AbilityType::Evasion,
-            AbilityType::MovementSpeed,
-            AbilityType::AttackSpeed,
-            AbilityType::ActiveSkillsCoolDawn,
-            AbilityType::BlockAmount,
-            AbilityType::BlockChance,
-            AbilityType::CriticalHitChanse,
-            AbilityType::CriticalHitMultiplier,
-            AbilityType::Accuracy,
-            AbilityType::StaminaRegen,
-            AbilityType::HealthRegen,
-            AbilityType::ExperienceMultiplier,
-            AbilityType::PhisicalDamage,
-            AbilityType::FireDamage,
-            AbilityType::ElectricDamage,
-            AbilityType::WaterDamage,
-            AbilityType::AcidDamage,
-            AbilityType::PoisonDamage,
-            AbilityType::ColdDamage,
-            AbilityType::HealthDamage,
-            AbilityType::StaminaDamage,
+            Ability::Evasion,
+            Ability::MovementSpeed,
+            Ability::AttackSpeed,
+            Ability::ActiveSkillsCoolDawn,
+            Ability::BlockAmount,
+            Ability::BlockChance,
+            Ability::CriticalHitChanse,
+            Ability::CriticalHitMultiplier,
+            Ability::Accuracy,
+            Ability::ExperienceMultiplier,
+            Ability::PhisicalDamage,
+            Ability::FireDamage,
+            Ability::ElectricDamage,
+            Ability::WaterDamage,
+            Ability::AcidDamage,
+            Ability::PoisonDamage,
+            Ability::ColdDamage,
         ].into_iter()
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Default, Hash)]
+pub enum Damage {
+    Fire,
+    Cold,
+    Electric,
+    Acid,
+    Poison,
+    #[default]
+    Phisical,
+    Water,
 }

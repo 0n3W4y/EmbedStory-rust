@@ -14,10 +14,7 @@ use crate::{
                 change_attribute_points,
                 skills::SkillDirectionType,
             },
-            damage_text_informer::DamageTextInformer,
-            stuff::
-                damage_type::DamageType,
-            AbilityType, Attribute, get_resist_from_damage_type,
+            damage_text_informer::DamageTextInformer, Ability, get_resist_from_damage_type, Attribute,
         },
     scenes::game_scenes::tilemap::tile::Position,
 };
@@ -150,7 +147,7 @@ fn collision_with_charactor(
     damage_text: &mut DamageTextComponent,
 ) {
     let mut random = rand::thread_rng();
-    match abilities.ability.get(&AbilityType::Evasion) {
+    match abilities.ability.get(&Ability::Evasion) {
         //check for evade
         Some(v) => {
             let random_evade_chance: i16 = random.gen_range(0..=99);
@@ -169,13 +166,13 @@ fn collision_with_charactor(
         None => {}
     }
 
-    let block_amount_percent = match abilities.ability.get(&AbilityType::BlockChance) {
+    let block_amount_percent = match abilities.ability.get(&Ability::BlockChance) {
         //check for block and amount;
         Some(v) => {
             let random_block_chance: i16 = random.gen_range(0..=99);
             if *v > random_block_chance {
                 //blocked some damage;
-                match abilities.ability.get(&AbilityType::BlockAmount) {
+                match abilities.ability.get(&Ability::BlockAmount) {
                     Some(value) => *value,
                     None => 0,
                 }
@@ -197,13 +194,7 @@ fn collision_with_charactor(
         let total_damage =
             damage - damage * charactor_resist / 100 - damage * block_amount_percent / 100;
 
-        let attribute = if *damage_type == DamageType::Stamina {
-            Attribute::Stamina
-        } else {
-            Attribute::Health
-        };
-
-        change_attribute_points(attributes,  &attribute, total_damage, false);
+        change_attribute_points(attributes,  &Attribute::Health, total_damage, false);
     }
 
     for effect_type in projectile.effects.iter() {
@@ -242,9 +233,6 @@ fn collision_with_thing(
         {
             Some(v) => *v,
             None => 0,
-        };
-        if *damage_type == DamageType::Stamina {
-            continue;
         };
 
         let damage_with_resist = damage - damage * thing_resits / 100;

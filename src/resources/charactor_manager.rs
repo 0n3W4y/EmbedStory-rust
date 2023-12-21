@@ -8,7 +8,7 @@ use super::{
         charactor::{
             Charactor, CharactorType,
             GenderType, RaceType, do_stat_dependences, CharactorStrength, STATS_POINTS_EVERY_LEVEL
-    }, Stat, AbilityType, ResistType},
+    }, Stat, Ability, Resist},
 };
 use crate::{components::AttributesComponent, scenes::game_scenes::{game_scene::GameScene, tilemap::tile::{TilePermissions, Position}}};
 
@@ -160,7 +160,7 @@ impl CharactorManager {
             ..Default::default()
         };
 
-        for ability_type in AbilityType::all_values() {
+        for ability_type in Ability::all_values() {
             let ability_value = match race_config.ability.get(&ability_type) {
                 Some(v) => *v,
                 None => 0,
@@ -168,7 +168,7 @@ impl CharactorManager {
             charactor.ability.insert(ability_type.clone(), ability_value);
         }
 
-        for resist_type in ResistType::all_values() {
+        for resist_type in Resist::all_values() {
             let resist_value = match race_config.resists.get(&resist_type) {
                 Some(v) => *v,
                 None => 0,

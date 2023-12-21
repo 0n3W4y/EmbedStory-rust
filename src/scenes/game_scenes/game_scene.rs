@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::deploy::game_scene_deploy::Location;
 use crate::resources::scene_data::charactor::Charactor;
-use crate::resources::scene_data::charactor::update_health_stamina_regen::update_health_and_stamina_regen;
 use crate::resources::scene_data::damage_text_informer;
 use crate::resources::scene_data::projectiles;
 use crate::resources::scene_data::scene_effect::SceneEffect;
@@ -218,12 +217,6 @@ impl Plugin for GameScenePlugin {
                 damage_text_informer::update_damage_text_informer
                 .in_set(OnUpdate(AppState::GameScene))
                 .run_if(on_timer(Duration::from_secs_f32(0.25))))
-            //.with_system(charactor::update_attack::player_attacking)
-
-            .add_system(
-                update_health_and_stamina_regen
-                .in_set(OnUpdate(AppState::GameScene))
-                .run_if(on_timer(Duration::from_secs_f32(10.0))))
 
             //on exit
             .add_systems(

@@ -5,7 +5,7 @@ use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent,
     SkillComponent, InventoryComponent,
 };
-use crate::resources::scene_data::{AbilityType, get_resist_from_damage_type};
+use crate::resources::scene_data::{Ability, get_resist_from_damage_type};
 use crate::resources::scene_data::charactor::{self, skills};
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use super::effects::EffectType;
@@ -35,41 +35,26 @@ pub fn add_new_effect(
                 }
             }
 
-            match abilities.ability.get(&AbilityType::ReducingEffectTime) {
+            match abilities.ability.get(&Ability::ReducingEffectTime) {
                 Some(v) => {
                     effect.effect_lifetime -= effect.effect_lifetime * *v as f32 / 100.0;
                 },
                 None => {},
             };
-
-            match effect.buff_debuff_effect {
-                Some(mut buff_debuff_effect) => {
-                    for (stat, value) in buff_debuff_effect.change_stat.iter_mut() {
-                        match stats.stats.get(stat) {                                                           //convert percent to flat;
-                            Some(v) => *value = *value * *v / 100,
-                            None => *value = 0,
-                        }
-                    }
-
-                    for (attribute, value) in buff_debuff_effect.change_attribute_cache.iter_mut() {
-                        match attrbiutes.attributes_cache.get(attribute) {                                      //convert percent to flat;
-                            Some(v) => *value = *value * *v / 100,
-                            None => *value = 0, 
-                        }                                                                    
-                    }
-
-
-                },
-                None => {},
-            }
-
-            for effect_status in effect.effect_status.iter(){                               //store effect status to charactor effect status;
-                effects.effect_status.push(effect_status.clone());
-            }
             
-            effects.effects.entry(effect.effect_type.clone()).and_modify(|x| x.effect_lifetime += effect.effect_lifetime).or_insert(effect.clone());
+            match effects.effects.get_mut(&effect.effect_type) {                                           //get effect if it already in; prolong lifetime effect, and replace with new effect
+                Some(v) => {
+                    effect.effect_lifetime += v.effect_lifetime;
+                    *v = effect.clone();
+                },
+                None => {
+                    for effect_status in effect.effect_status.iter(){                               //store effect status to charactor effect status;
+                        effects.effect_status.push(effect_status.clone());
+                    }
+                    effects.effects.insert(effect.effect_type.clone(), effect.clone());
+                },
+            }
         }
-
         effects.added_effect.clear();
     }
 }
@@ -136,7 +121,7 @@ pub fn update_effects(
                             charactor::change_ability(&mut abilities.ability, &ability, *ability_damage);
                         }
 
-                        skills::update_basic_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                        skills::update_base_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
                             &mut skills.base_skill,
                             &abilities.ability, 
                             &inventory.stuff_wear
@@ -185,7 +170,7 @@ pub fn update_effects(
                             charactor::change_ability(&mut abilities.ability, &ability, -(*ability_damage));
                         }
 
-                        skills::update_basic_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                        skills::update_base_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
                             &mut skills.base_skill,
                             &abilities.ability, 
                             &inventory.stuff_wear

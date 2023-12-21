@@ -1,13 +1,15 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-use crate::{resources::scene_data::stuff::damage_type::DamageType, components::DamageTextComponent};
+use crate::components::DamageTextComponent;
+
+use super::Damage;
 
 
 const WHITE_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
 //const WHITERED_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
 const RED_DAMAGE_TEXT: Color = Color::Rgba{ red:( 255.0 / 255.0 ), green:( 255.0 / 255.0 ) , blue:( 255.0 / 255.0 ) , alpha: 1.0 };
-const GREEN_DAMAGE_TEXT: Color = Color::Rgba{ red:( 150.0 / 255.0 ), green:( 75.0 / 255.0 ), blue:( 45.0 / 255.0 ), alpha: 1.0 };
+const DARK_GREEN_DAMAGE_TEXT: Color = Color::Rgba{ red:( 50.0 / 255.0 ), green:( 250.0 / 255.0 ), blue:( 50.0 / 255.0 ), alpha: 1.0 };
 const BLUE_DAMAGE_TEXT: Color = Color::Rgba{ red:( 100.0 / 255.0 ), green:( 50.0 / 255.0 ) , blue:( 20.0 / 255.0 ) , alpha: 1.0 };
 const GRAY_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
 const ORANGE_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
@@ -24,7 +26,7 @@ pub struct DamageTextInformer {
 } 
 
 impl DamageTextInformer {
-    pub fn new (damage_value: i16, string: Option<String>, bold: bool, damage_type: Option<&DamageType>) -> Self {
+    pub fn new (damage_value: i16, string: Option<String>, bold: bool, damage_type: Option<&Damage>) -> Self {
         let text = match string {
             Some(v) => v,
             None => {
@@ -42,15 +44,13 @@ impl DamageTextInformer {
 
         let new_color: Color = match damage_type {
             Some(v) => { match *v {
-                DamageType::Fire => ORANGE_DAMAGE_TEXT,
-                DamageType::Cold => BLUE_DAMAGE_TEXT,
-                DamageType::Electric => PURPULE_DAMAGE_TEXT,
-                DamageType::Phisical => WHITE_DAMAGE_TEXT,
-                DamageType::Water => CYAN_DAMAGE_TEXT,
-                DamageType::Acid => LIGHTGREEN_DAMAGE_TEXT,
-                DamageType::Poison => GREEN_DAMAGE_TEXT,
-                DamageType::Health => RED_DAMAGE_TEXT,
-                DamageType::Stamina => GRAY_DAMAGE_TEXT,
+                Damage::Fire => ORANGE_DAMAGE_TEXT,
+                Damage::Cold => BLUE_DAMAGE_TEXT,
+                Damage::Electric => PURPULE_DAMAGE_TEXT,
+                Damage::Phisical => WHITE_DAMAGE_TEXT,
+                Damage::Water => CYAN_DAMAGE_TEXT,
+                Damage::Acid => LIGHTGREEN_DAMAGE_TEXT,
+                Damage::Poison => DARK_GREEN_DAMAGE_TEXT,
             }
 
             },

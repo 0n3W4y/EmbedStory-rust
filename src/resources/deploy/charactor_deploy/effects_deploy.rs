@@ -2,33 +2,61 @@ use std::{fs::File, io::Read};
 
 use serde::Deserialize;
 
-use crate::resources::{scene_data::charactor::effects::{EffectType, EffectDeploy}, deploy::DEPLOY_EFFECTS_PATH};
+use crate::resources::{scene_data::charactor::effects::{EffectType, EffectDeploy, OverTimeEffectDeploy, BuffDebuffEffectDeploy, OverTimeEffectType, BuffDebuffEffectType}, deploy::DEPLOY_EFFECTS_PATH};
 
 #[derive(Deserialize, Debug)]
 pub struct EffectsDeploy {
+    primary_effects: PrimaryEffects,
+    over_time_effects: OverTimeEffects,
+    buff_debuff_effects: BuffDebuffEffects,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PrimaryEffects {
     stun: EffectDeploy,
-    acid_debuff: EffectDeploy,
     moveless: EffectDeploy,
-    bleeding_debuff: EffectDeploy,
-    fire_debuff: EffectDeploy,
-    cold_debuff: EffectDeploy,
-    electric_debuff: EffectDeploy,
-    water_debuff: EffectDeploy,
     freeze: EffectDeploy,
     blind: EffectDeploy,
-    poison_debuff: EffectDeploy,
-    movement_buff: EffectDeploy,
-    movement_debuff: EffectDeploy,
-    acid_damage: EffectDeploy,
-    bleeding_damage: EffectDeploy,
-    cold_damage: EffectDeploy,
-    water_damage: EffectDeploy,
-    electric_damage: EffectDeploy,
-    fire_damage: EffectDeploy,
-    poison_damage: EffectDeploy,
-    stamina_damage: EffectDeploy,
-    health_regen: EffectDeploy,
-    stamina_regen: EffectDeploy,
+    burn: EffectDeploy,
+    acid: EffectDeploy,
+    bleeding: EffectDeploy,
+    cold: EffectDeploy,
+    electroshocke: EffectDeploy,
+    wet: EffectDeploy,
+    regeneration: EffectDeploy,
+    cheerfullness: EffectDeploy,
+    myopia: EffectDeploy,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct OverTimeEffects {
+    acid_damage: OverTimeEffectDeploy,
+    bleed_damage: OverTimeEffectDeploy,
+    cold_damage: OverTimeEffectDeploy,
+    fire_damage: OverTimeEffectDeploy,
+    electric_damage: OverTimeEffectDeploy,
+    water_damage: OverTimeEffectDeploy,
+    poison_damage: OverTimeEffectDeploy,
+    stamina_damage: OverTimeEffectDeploy,
+    health_damage: OverTimeEffectDeploy,
+    health_regen: OverTimeEffectDeploy,
+    stamina_regen: OverTimeEffectDeploy,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct BuffDebuffEffects {
+    fire_debuff: BuffDebuffEffectDeploy,
+    cold_debuff: BuffDebuffEffectDeploy,
+    acid_debuff: BuffDebuffEffectDeploy,
+    bleed_debuff: BuffDebuffEffectDeploy,
+    electric_debuff: BuffDebuffEffectDeploy,
+    water_debuff: BuffDebuffEffectDeploy,
+    poison_debuff: BuffDebuffEffectDeploy,
+    stamina_debuff: BuffDebuffEffectDeploy,
+    health_debuff: BuffDebuffEffectDeploy,
+    stamina_buff: BuffDebuffEffectDeploy,
+    health_buff: BuffDebuffEffectDeploy,
+    accuracy_debuff: BuffDebuffEffectDeploy,
 }
 
 impl EffectsDeploy {
@@ -46,29 +74,54 @@ impl EffectsDeploy {
     
     pub fn get_effect_config(&self, effect_type: &EffectType) -> &EffectDeploy {
         match *effect_type {
-            EffectType::Stun => &self.stun,
-            EffectType::Moveless => &self.moveless,
-            EffectType::Freeze => &self.freeze,
-            EffectType::Blind => &self.blind,
-            EffectType::AcidDebuff => &self.acid_debuff,
-            EffectType::BleedingDebuff => &self.bleeding_debuff,
-            EffectType::FireDebuff => &self.fire_debuff,
-            EffectType::ColdDebuff => &self.cold_debuff,
-            EffectType::ElectricDebuff => &self.electric_debuff,
-            EffectType::WaterDebuff => &self.water_debuff,
-            EffectType::PoisonDebuff => &self.poison_debuff,
-            EffectType::MovementBuff => &self.movement_buff,
-            EffectType::MovementDebuff => &self.movement_debuff,
-            EffectType::AcidDamage => &self.acid_damage,
-            EffectType::BleedingDamage => &self.bleeding_damage,
-            EffectType::ColdDamage => &self.cold_damage,
-            EffectType::FireDamage => &self.fire_damage,
-            EffectType::ElectricDamage => &self.electric_damage,
-            EffectType::WaterDamage => &self.water_damage,
-            EffectType::PoisonDamage => &self.poison_damage,
-            EffectType::StaminaDamage => &self.stamina_damage,
-            EffectType::StaminaRegen => &self.stamina_regen,
-            EffectType::HealthRegen => &self.health_regen,
+            EffectType::Stun => &self.primary_effects.stun,
+            EffectType::Moveless => &self.primary_effects.moveless,
+            EffectType::Freeze => &self.primary_effects.freeze,
+            EffectType::Blind => &self.primary_effects.blind,
+            EffectType::Burn => &self.primary_effects.burn,
+            EffectType::Acid => &self.primary_effects.acid,
+            EffectType::Bleeding => &self.primary_effects.bleeding,
+            EffectType::Cold => &self.primary_effects.cold,
+            EffectType::Electroshocke => &self.primary_effects.electroshocke,
+            EffectType::Wet => &self.primary_effects.wet,
+            EffectType::Regeneration => &self.primary_effects.regeneration,
+            EffectType::Cheerfullness => &self.primary_effects.cheerfullness,
+            EffectType::Myopia => &self.primary_effects.myopia,
+        }
+    }
+
+    pub fn get_over_time_effect_config (&self, effect_type: &OverTimeEffectType) -> &OverTimeEffectDeploy {
+        match *effect_type {
+            OverTimeEffectType::AcidDamage => &self.over_time_effects.acid_damage,
+            OverTimeEffectType::BleedDamage => &self.over_time_effects.bleed_damage,
+            OverTimeEffectType::ColdDamage => &self.over_time_effects.cold_damage,
+            OverTimeEffectType::FireDamage => &self.over_time_effects.fire_damage,
+            OverTimeEffectType::ElectricDamage => &self.over_time_effects.electric_damage,
+            OverTimeEffectType::WaterDamage => &self.over_time_effects.water_damage,
+            OverTimeEffectType::PoisonDamage => &self.over_time_effects.poison_damage,
+            OverTimeEffectType::StaminaDamage => &self.over_time_effects.stamina_damage,
+            OverTimeEffectType::HealthDamage => &self.over_time_effects.health_damage,
+            OverTimeEffectType::HealthRegen => &self.over_time_effects.health_regen,
+            OverTimeEffectType::StaminaRegen => &self.over_time_effects.stamina_regen,
+            OverTimeEffectType::None => &OverTimeEffectDeploy{..Default::default()},
+        }
+    }
+
+    pub fn get_buff_debuff_effect_config (&self, effect_type: &BuffDebuffEffectType) -> &BuffDebuffEffectDeploy {
+        match *effect_type {
+            BuffDebuffEffectType::AcidDebuff => todo!(),
+            BuffDebuffEffectType::BleedDebuff => todo!(),
+            BuffDebuffEffectType::ColdDebuff => todo!(),
+            BuffDebuffEffectType::FireDebuff => todo!(),
+            BuffDebuffEffectType::ElectricDebuff => todo!(),
+            BuffDebuffEffectType::WaterDebuff => todo!(),
+            BuffDebuffEffectType::PoisionDebuff => todo!(),
+            BuffDebuffEffectType::StaminaDebuff => todo!(),
+            BuffDebuffEffectType::HealthDebuff => todo!(),
+            BuffDebuffEffectType::StaminaBuff => todo!(),
+            BuffDebuffEffectType::HealthBuff => todo!(),
+            BuffDebuffEffectType::AccuracyDebuff => todo!(),
+            BuffDebuffEffectType::None => &BuffDebuffEffectDeploy{..Default::default()},
         }
     }
 }

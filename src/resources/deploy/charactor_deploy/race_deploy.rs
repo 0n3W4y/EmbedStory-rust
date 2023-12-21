@@ -2,7 +2,7 @@ use std::{fs::File, collections::HashMap, io::Read};
 
 use serde::Deserialize;
 
-use crate::resources::{deploy::DEPLOY_RACE_PATH, scene_data::{charactor::{RaceType, skills::SkillType}, Stat, Attribute, ResistType, AbilityType}};
+use crate::resources::{deploy::DEPLOY_RACE_PATH, scene_data::{charactor::{RaceType, skills::PassiveSkillType}, Stat, Attribute, Resist, Ability}};
 
 
 #[derive(Deserialize, Debug)]
@@ -93,7 +93,7 @@ impl RaceDeploy {
 pub struct RaceConfig {
     pub stats: HashMap<Stat, i16>,
     pub attributes: HashMap<Attribute, i16>,
-    pub resists: HashMap<ResistType, i16>,
-    pub ability: HashMap<AbilityType, i16>,
-    pub passive_skills: Vec<SkillType>,
+    pub resists: HashMap<Resist, i16>,
+    pub ability: HashMap<Ability, i16>,
+    pub passive_skills: Vec<PassiveSkillType>,
 }

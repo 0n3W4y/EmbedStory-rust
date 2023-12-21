@@ -190,7 +190,8 @@ pub fn copy_from_charactor_to_component(
 
     resist_component.resists = charactor.resists.clone();
 
-    skill_component.skills = charactor.skills.clone();
+    skill_component.base_skill = charactor.base_skill.clone();
+    skill_component.active_skills = charactor.active_skills.clone();
     skill_component.passive_skills = charactor.passive_skills.clone();
 
     position_component.position = charactor.position.clone();

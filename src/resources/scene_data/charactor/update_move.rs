@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::components::{PositionComponent, IdentificationComponent};
 use crate::config::TILE_SIZE;
 use crate::components::charactor_component::{CharactorComponent, AbilityComponent, DestinationComponent, EffectComponent};
-use crate::resources::scene_data::AbilityType;
+use crate::resources::scene_data::Ability;
 use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
@@ -123,7 +123,7 @@ pub fn moving(
 ){
     //get charactor movement multiplier
     // if we have -100% charactor can't move at all;
-    let movement_speed_multiplier = match ability.ability.get(&AbilityType::MovementSpeed){
+    let movement_speed_multiplier = match ability.ability.get(&Ability::MovementSpeed){
         Some(v) => *v,
         None => {
             println!(
