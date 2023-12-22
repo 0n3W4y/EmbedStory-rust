@@ -5,11 +5,12 @@ use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent,
     SkillComponent, InventoryComponent,
 };
+use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::{Ability, get_resist_from_damage_type};
 use crate::resources::scene_data::charactor::{self, skills};
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use super::effects::EffectType;
-use super::{CharactorStatus, change_stat_points};
+use super::{CharactorStatus, change_stat_points, StuffWearSlot};
 
 pub fn add_new_effect(
     mut charactor_query: Query<
@@ -72,8 +73,8 @@ pub fn update_effects(
             &InventoryComponent,
             &mut DamageTextComponent,
         ),
-        With<CharactorComponent>,
-    >
+        With<CharactorComponent>>,
+    deploy: Res<Deploy>,
 ) {
     let delta_time: f32 = 0.1;                                                              //this function running with criteria triggered by 0.1 sec;
     for (
@@ -121,10 +122,11 @@ pub fn update_effects(
                             charactor::change_ability(&mut abilities.ability, &ability, *ability_damage);
                         }
 
-                        skills::update_base_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                        skills::setup_base_skill(
+                            &deploy,
                             &mut skills.base_skill,
                             &abilities.ability, 
-                            &inventory.stuff_wear
+                            inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
                             );
 
                     },
@@ -170,10 +172,11 @@ pub fn update_effects(
                             charactor::change_ability(&mut abilities.ability, &ability, -(*ability_damage));
                         }
 
-                        skills::update_base_skill_by_changes_in_ability(                        //update base skill by changes in abilities and stats;
+                        skills::setup_base_skill(
+                            &deploy,
                             &mut skills.base_skill,
                             &abilities.ability, 
-                            &inventory.stuff_wear
+                            inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
                             );
 
                     },

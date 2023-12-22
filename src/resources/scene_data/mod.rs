@@ -47,6 +47,8 @@ pub enum Resist {
     ElectricDamage,
     AcidDamage,
     PoisonDamage,
+    HealthDamage,
+    StaminaDamage,
 }
 
 impl Resist {
@@ -72,6 +74,8 @@ pub fn get_resist_from_damage_type(damage_type: &Damage) -> Resist {
         Damage::Poison => Resist::PoisonDamage,
         Damage::Phisical => Resist::PhisicalDamage,
         Damage::Water => Resist::WaterDamage,
+        Damage::Health => Resist::HealthDamage,
+        Damage::Stamina => Resist::StaminaDamage,
     }
 }
 
@@ -96,6 +100,8 @@ pub enum Ability{
     PoisonDamage,
     ColdDamage,
     ReducingEffectTime,
+    HealthDamage,
+    StaminaDamage,
 }
 
 impl Ability {
@@ -132,4 +138,6 @@ pub enum Damage {
     #[default]
     Phisical,
     Water,
+    Health,
+    Stamina
 }

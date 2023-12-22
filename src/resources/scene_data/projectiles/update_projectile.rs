@@ -45,9 +45,9 @@ pub fn update_projectiles(
     let delta = time.delta_seconds();
     for (projectile_entity, mut projectile, mut transfrom) in projectile_query.iter_mut() {
         transfrom.translation.x +=
-            projectile.motion_coefficient.x * projectile.velocity as f32 * delta;
+            projectile.motion_coefficient.x * projectile.velocity as f32 * delta * projectile.direction.x;
         transfrom.translation.y +=
-            projectile.motion_coefficient.y * projectile.velocity as f32 * delta;
+            projectile.motion_coefficient.y * projectile.velocity as f32 * delta * projectile.direction.y;
         if try_grid_move(
             transfrom.translation.x,
             transfrom.translation.y,
@@ -96,6 +96,7 @@ pub fn check_for_collision(
     {
         let target_x = position.position.x;
         let target_y = position.position.y;
+        todo!();
         if projectile.current_position.x == target_x && projectile.current_position.y == target_y {
             //check for position and target;
             match identification.object_type {
@@ -197,24 +198,14 @@ fn collision_with_charactor(
         change_attribute_points(attributes,  &Attribute::Health, total_damage, false);
     }
 
-    for effect_type in projectile.effects.iter() {
-        effects.added_effect.push(effect_type.clone());   
+    for effect in projectile.effects.iter() {
+        effects.added_effect.push(effect.clone());
     }
 
     for skill in projectile.passive_skills.iter() {
-        let mut new_skill = skill.clone();
-        match skills.passive_skills.get_mut(&skill.skill_type) {
-            Some(v) => {
-                new_skill.life_time += v.life_time; // prolong time duration;
-                *v = new_skill;
-            }
-            None => {
-                skills
-                    .passive_skills
-                    .insert(skill.skill_type.clone(), new_skill);
-            }
-        }
+        skills.added_passive_skills.push(skill.clone());
     }
+
     commands.entity(projectile_entity).despawn_recursive();
 }
 
@@ -273,69 +264,44 @@ pub fn create_projectile(
     material_manager: &MaterialManager,
     projectile: Projectile,
     target_position: Position<i32>,
-    projectiles_value: u8,
-    skill_direction: &SkillDirectionType,
 ) {
-    let arc: f32 = match *skill_direction {
-        SkillDirectionType::Line => 0.0,
-        SkillDirectionType::Arc30 => 30.0,
-        SkillDirectionType::Arc60 => 60.0,
-        SkillDirectionType::Arc90 => 90.0,
-        SkillDirectionType::Arc180 => 180.0,
-        SkillDirectionType::Arc360 => 360.0,
-        SkillDirectionType::Point => {
-            println!("Can not create projectiles where skill direction type is 'POINT'");
-            return;
-        }
-    };
-    let starting_point_x = projectile.current_position.x;
-    let starting_point_y = projectile.current_position.y;
+    let starting_point_x = projectile.starting_position.x;
+    let starting_point_y = projectile.starting_position.y;
 
-    let half_arc_angle = arc / 2.0;
-    let angle_coefficient = if projectiles_value == 1 {
-        //each angle to cast projectile;
-        0.0
+    let delta_x = target_position.x - starting_point_x;
+    let delta_y = target_position.y - starting_point_y;
+
+    projectile.direction.x = if delta_x < 0 {
+        -1
+    } else if delta_x > 0 {
+        1
     } else {
-        arc / projectiles_value as f32
+        0
     };
-    let delta_x = starting_point_x as f32 - target_position.x as f32; //difference between target position and starting position;
-    let delta_y = starting_point_y as f32 - target_position.y as f32;
-    let angle_between_ab_and_y = (delta_x.atan2(delta_y)).to_degrees(); //angle between Y and line cast to target position;
-    let radius = (delta_x * delta_x + delta_y * delta_y).sqrt();
 
-    for i in 0..projectiles_value {
-        let mut new_projectile_component = projectile.clone();
-        let projectile_type = &new_projectile_component.projectile_type;
+    projectile.direction.y = if delta_y < 0 {
+        -1
+    } else if delta_y > 0 {
+        1
+    } else {
+        0
+    };
 
-        let x = starting_point_x as f32
-            + radius
-                * (angle_between_ab_and_y - half_arc_angle + angle_coefficient * i as f32)
-                    .to_radians()
-                    .sin();
-        let y = starting_point_y as f32
-            + radius
-                * (angle_between_ab_and_y - half_arc_angle + angle_coefficient * i as f32)
-                    .to_radians()
-                    .cos();
-        let new_delta_x = starting_point_x as f32 - x;
-        let new_delta_y = starting_point_y as f32 - y;
-        let distance = (new_delta_x.powf(2.0) + new_delta_y.powf(2.0)).sqrt();
-        new_projectile_component.motion_coefficient.x = new_delta_x / distance;
-        new_projectile_component.motion_coefficient.y = new_delta_y / distance;
-        
+    let distance = ((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0)).sqrt();
+    projectile.motion_coefficient.x = delta_x as f32 / distance;
+    projectile.motion_coefficient.y = delta_y as f32 / distance;
 
-        let new_z_position = Z_POSITION;
-        let transform = Transform::from_xyz(x, y, new_z_position);
-        let texture_atlas = material_manager
-            .game_scene
-            .projectiles
-            .get_texture_atlas(projectile_type);
-        commands.spawn((SpriteSheetBundle {
-            texture_atlas,
-            transform,
-            ..Default::default()
-        },
-        new_projectile_component,
-        ));
-    }
+    let new_z_position = Z_POSITION;
+    let transform = Transform::from_xyz(x, y, new_z_position);
+    let texture_atlas = material_manager
+        .game_scene
+        .projectiles
+        .get_texture_atlas(projectile_type);
+    commands.spawn((SpriteSheetBundle {
+        texture_atlas,
+        transform,
+        ..Default::default()
+    },
+    new_projectile_component,
+    ));
 }

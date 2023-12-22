@@ -11,34 +11,31 @@ use super::charactor::effects::EffectType;
 use super::charactor::skills::{ActiveSkillType, PassiveSkillType, PassiveSkill};
 use super::{Stat, Ability, Resist, Damage};
 
-#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Hash )]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
 pub enum StuffType{
-    Weapon(WeaponType),
+    Weapon(Weapon),
     Item,
     Armor,
     Ammo,
     Food,
 }
 
-#[derive( PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Hash )]
-pub enum StuffSubtype {
-    Bandage, // stop bleeding
-    HealthPack, // add health to part
-    DoctorsBag, // vs trauma
-    Painkillers, // vs pain
-    Antibiotic, //vs disease
-    Vitamins, // vs fatigue
-    Picklock,
-    // разные баффы, наркотики
-    // апгрейды для оружия
-    // апгрейды для брони
-    // собственно сама броня
-    // разные оружия
-}
-
-#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Hash)]
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
 pub enum WeaponType {
     Sword,
+}
+
+#[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
+pub struct Weapon {
+    pub weapon_type: WeaponType,
+    pub critical_hit_chance: i16,
+    pub critical_hit_multiplier: i16,
+    pub attack_cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
+    pub wear_slot: StuffWearSlot,
+    pub damage: HashMap<Damage, i16>,
+    pub effects: HashMap<EffectType, u8>,
+    pub active_skills: Vec<ActiveSkillType>,
+    pub passive_skills: HashMap<PassiveSkillType, u8>,
 }
 
 
@@ -51,22 +48,10 @@ pub struct Stuff{
     pub amount: usize,
 
     pub position: Option<Position<i32>>,
-    pub wear_slot: Option<StuffWearSlot>,
-
-    //pub weapon: Option<Weapon>,
-    //pub armor: Option<Armor>,
-    pub critical_hit_chance: i16,
-    pub critical_hit_multiplier: i16,
-    pub attack_cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
-
-    pub effects: HashMap<EffectType, u8>,
-    pub active_skills: Vec<ActiveSkillType>,
-    pub passive_skills: HashMap<PassiveSkillType, (PassiveSkill, u8)>,
-
-    pub damage: HashMap<Damage, i16>,
-    pub stats: HashMap<Stat, i16>,
-    pub resists: HashMap<Resist, i16>,
-    pub abilities: HashMap<Ability, i16>,
+    
+    //pub stats: HashMap<Stat, i16>,
+    //pub resists: HashMap<Resist, i16>,
+    //pub abilities: HashMap<Ability, i16>,
 
     pub price: u32,
 

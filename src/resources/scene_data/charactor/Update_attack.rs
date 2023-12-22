@@ -10,13 +10,13 @@ use crate::components::charactor_component::{
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
-use crate::resources::scene_data::{AbilityType, get_resist_from_damage_type};
+use crate::resources::scene_data::get_resist_from_damage_type;
 use crate::resources::scene_data::charactor::SkillSlot;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 
 use super::effects::{Effect, EffectStatus};
-use super::{get_ability_type_from_damage_type, change_attribute_points, get_attribute_from_damage_type};
+use super::{get_ability_type_from_damage_type, change_attribute_points};
 use super::update_move::calculate_direction;
 use super::CharactorStatus;
 

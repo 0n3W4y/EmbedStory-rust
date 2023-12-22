@@ -28,7 +28,6 @@ pub const STATS_MIN_VALUE: u8 = 1;
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug, Copy, Default, Hash)]
 pub enum SkillSlot {
     #[default]
-    Base,
     WeaponOne,
     WeaponTwo,
     WeaponThree,
@@ -99,13 +98,12 @@ pub enum StuffWearSlot {
     Pants,
     Gloves,
     Shoes,
-    LeftHand,
-    RightHand,
+    SecondaryHand,
+    PrimaryHand,
     Trinket,
     LeftRing,
     RightRing,
     Amulet,
-    RightAndLeftHand,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default, Eq, PartialEq)]
@@ -275,17 +273,17 @@ pub fn change_stat_points(
         },
     };
 
-    *cache_value += value;                           //set new value to cache;
-    let old_stat_value = *stat_value;           //storing old value to compare with new stat value;
-    *stat_value += value;                            //set new value to stat;
+    *cache_value += value;                                                                  //set new value to cache;
+    let old_stat_value = *stat_value;                                                  //storing old value to compare with new stat value;
+    *stat_value += value;                                                                   //set new value to stat;
 
-    if *cache_value < STATS_MIN_VALUE as i16{                   //check stat to minimal value;
+    if *cache_value < STATS_MIN_VALUE as i16{                                               //check stat to minimal value;
         *stat_value = STATS_MIN_VALUE as i16;
     } else {
         *stat_value = *cache_value;
     }   
     
-    if *stat_value != old_stat_value {                          //check for do dependences;
+    if *stat_value != old_stat_value {                                                      //check for do dependences;
         do_stat_dependences(resists, abilities, attributes, stat,*stat_value,old_stat_value);
     }
 }
@@ -333,9 +331,9 @@ pub fn get_values_of_resists_from_stat(stat: &Stat, value: i16) -> HashMap<Resis
     let mut result: HashMap<Resist, i16> = HashMap::new();
     match *stat {
         Stat::Strength => {
-            let new_value = value / 10;         //formula for all resists: STR / 10;
+            let new_value = value / 10;                                                 //formula for all resists: STR / 10;
             for resist_type in Resist::all_values() {
-                result.insert(resist_type.clone(), new_value);          //insert all values from ResistType enum;
+                result.insert(resist_type.clone(), new_value);                          //insert all values from ResistType enum;
             }
         },
         _ => {},
@@ -370,38 +368,38 @@ pub fn get_values_of_attributes_from_stat(stat: &Stat, value: i16) -> HashMap<At
 
     return result;
 }
-pub fn get_level_by_current_experience(experience: u32) -> u8 {         //formula to get new level;
-    ((experience as f64).sqrt() / 6.0) as u8
+pub fn get_level_by_current_experience(experience: u32) -> u8 {                             //formula to get new level;
+    ((experience as f64).sqrt() / 8.0) as u8
 }
 
 pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Ability, i16> {
     let mut result: HashMap<Ability, i16> = HashMap::new();
     match *stat {
         Stat::Dexterity => {
-            let evasion = value / 15;             //evasion:  dex/15
-            let movement_speed = value / 10;      //move speed: dex/10;
-            let attack_speed = value / 10;        //atk speed: dex/10;
+            let evasion = value / 15;                                                   //evasion:  dex/15
+            let movement_speed = value / 10;                                            //move speed: dex/10;
+            let attack_speed = value / 10;                                              //atk speed: dex/10;
             result.insert(Ability::Evasion, evasion);
             result.insert(Ability::MovementSpeed, movement_speed);
             result.insert(Ability::AttackSpeed, attack_speed);
         },
         Stat::Wisdom => {
-            let cooldown_active_skill = value / 10;           //cd of active skills: INT /10;
-            let critical_multiplier = value / 2;              // Crit Multi : INT / 5;
+            let cooldown_active_skill = value / 10;                                     //cd of active skills: INT /10;
+            let critical_multiplier = value / 2;                                        // Crit Multi : INT / 5;
             result.insert(Ability::ActiveSkillsCoolDawn, cooldown_active_skill);
             result.insert(Ability::CriticalHitMultiplier, critical_multiplier);
 
         },
         Stat::Luck => {
-            let critical_hit_chance = value / 10;               //crit chance: LCK / 10;
-            let block_chance = value / 10;                      //block chance: LCK /10;
-            let accuracy = value / 10;                      //accuracy: LCK / 10;
+            let critical_hit_chance = value / 10;                                       //crit chance: LCK / 10;
+            let block_chance = value / 10;                                              //block chance: LCK /10;
+            let accuracy = value / 10;                                                  //accuracy: LCK / 10;
             result.insert(Ability::CriticalHitChanse, critical_hit_chance);
             result.insert(Ability::BlockChance, block_chance);
             result.insert(Ability::Accuracy, accuracy);
         },
         Stat::Strength => {
-            let block_amount = value / 10;              //block amount: STR / 10;
+            let block_amount = value / 10;                                              //block amount: STR / 10;
             result.insert(Ability::BlockAmount, block_amount);
         }
         Stat::Vitality => todo!(),
@@ -417,6 +415,8 @@ pub fn get_ability_type_from_damage_type (damage_type: &Damage) -> Ability {
         Damage::Phisical => Ability::PhisicalDamage,
         Damage::Acid => Ability::AcidDamage,
         Damage::Poison => Ability::PoisonDamage,
-        Damage::Water => Ability::WaterDamage,     
+        Damage::Water => Ability::WaterDamage,
+        Damage::Health => Ability::HealthDamage,
+        Damage::Stamina => Ability::StaminaDamage,     
     }
 }

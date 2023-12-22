@@ -55,6 +55,7 @@ pub struct SkillComponent {
     pub base_skill: ActiveSkill,
     pub active_skills: HashMap<SkillSlot, ActiveSkill>,
     pub passive_skills: HashMap<PassiveSkillType, PassiveSkill>,
+    pub added_passive_skills: Vec<PassiveSkill>,
 }
 
 #[derive(Component, Default)]

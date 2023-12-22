@@ -18,7 +18,7 @@
             "effect_type": "Freeze",
             "effect_lifetime": 3.0,
             "buff_debuff_effect": "None",
-            "over_time_effect": "None",
+            "over_time_effect": "ColdDamage",
             "effect_status": ["CanNotMove", "CanNotAttack"]
         },
         "blind": {
@@ -27,22 +27,229 @@
             "buff_debuff_effect": "None",
             "over_time_effect": "None",
             "effect_status": ["CanNotAttack"]
+        },
+        "burn": {
+            "effect_type": "Burn",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "FireDebuff",
+            "over_time_effect": "FireDamage",
+            "effect_status": []
+        },
+        "acid": {
+            "effect_type": "Acid",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "AcidDebuff",
+            "over_time_effect": "AcidDamage",
+            "effect_status": []
+        },
+        "bleeding": {
+            "effect_type": "Bleeding",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "BleedDebuff",
+            "over_time_effect": "BleedDamage",
+            "effect_status": []
+        },
+        "cold": {
+            "effect_type": "Cold",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "ColdDebuff",
+            "over_time_effect": "ColdDamage",
+            "effect_status": []
+        },
+        "electroshocke": {
+            "effect_type": "Electroshocke",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "ElectricDebuff",
+            "over_time_effect": "ElectricDamage",
+            "effect_status": []
+        },
+        "wet": {
+            "effect_type": "Wet",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "Waterdebuff",
+            "over_time_effect": "WaterDamage",
+            "effect_status": []
+        },
+        "regeneration": {
+            "effect_type": "Regeneration",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "None",
+            "over_time_effect": "HealthRegen",
+            "effect_status": []
+        },
+        "cheerfullness" :{
+            "effect_type": "Cheerfullness",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": "None",
+            "over_time_effect": "StaminaRegen",
+            "effect_status": []
+        },
+        "myopia": {
+            "effect_type": "Miopia",
+            "effect_lifetime": 4.0,
+            "buff_debuff_effect": "AcccuracyDebuff",
+            "over_time_effect": "None",
+            "effect_status": []
         }
     },
     "over_time_effects": {
-        "None": {
-                "effect_type": "None",
-                "effect_damage_type": "Phisical",
-                "trigger_time_effect": 0.0,
-                "change_attributes": {}
-            }
+        "acid_damage": {
+            "effect_type": "AcidDamage",
+            "effect_damage_type": "Acid",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "bleed_damage": {
+            "effect_type": "BleedDamage",
+            "effect_damage_type": "Phisical",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "cold_damage": {
+            "effect_type": "ColdDamage",
+            "effect_damage_type": "Cold",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "fire_damage": {
+            "effect_type": "FireDamage",
+            "effect_damage_type": "Fire",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "electric_damage": {
+            "effect_type": "ElectricDamage",
+            "effect_damage_type": "Electric",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "water_damage": {
+            "effect_type": "WaterDamage",
+            "effect_damage_type": "Water",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "poison_damage": {
+            "effect_type": "PoisonDamage",
+            "effect_damage_type": "Poison",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5, "Stamina": -5}
+        },
+        "health_damage": {
+            "effect_type": "HealthDamage",
+            "effect_damage_type": "Health",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": -5}
+        },
+        "stamina_damage": {
+            "effect_type": "StaminaDamage",
+            "effect_damage_type": "Stamina",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Stamina": -5}
+        },
+        "health_regen": {
+            "effect_type": "HealthRegen",
+            "effect_damage_type": "Health",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Health": 5}
+        },
+        "stamina_regen": {
+            "effect_type": "Staminaregen",
+            "effect_damage_type": "Stamina",
+            "trigger_time_effect": 1.0,
+            "change_attributes": {"Stamina": 5}
+        }
     },
     "buff_debuff_effects": {
-        "None" : {
-            "effect_type": "None",
+        "acid_debuff" : {
+            "effect_type": "AcidDebuff",
+            "change_stat": {},
+            "change_attribute_cache": {},
+            "change_resist": {"PhisicalDamage": -50},
+            "change_ability": {"PhisicalDamage": -50, "BlockChance": -25, "BlockAmount": -25}
+        },
+        "bleed_debuff": {
+            "effect_type": "BleedDebuff",
+            "change_stat": {"Strength": -5},
+            "change_attribute_cache": {},
+            "change_resist": {"PhisicalDamage": -50},
+            "change_ability": {"Evasion": -25}
+        },
+        "cold_debuff": {
+            "effect_type": "ColdDebuff",
+            "change_stat": {"Dexterity": -5},
+            "change_attribute_cache": {},
+            "change_resist": {"FireDamage": 25, "WaterDamage": -25},
+            "change_ability": {"Evasion": -15, "MovementSpeed": -15, "AttackSpeed": -15}
+        },
+        "fire_debuff": {
+            "effect_type": "FireDebuff",
+            "change_stat": {"Wisdom": -5},
+            "change_attribute_cache": {},
+            "change_resist": {"ColdDamage": 25, "WaterDamage": -25},
+            "change_ability": {"Evasion": 15, "MovementSpeed": 15, "BlockChance": -50}
+        },
+        "electric_debuff": {
+            "effect_type": "ElectricDebuff",
+            "change_stat": {"Dexterity": 5},
+            "change_attribute_cache": {},
+            "change_resist": {"WaterDamage": -50},
+            "change_ability": {"Evasion": -10, "MovementSpeed": 10}
+        },
+        "water_debuff": {
+            "effect_type": "WaterDebuff",
+            "change_stat": {"Strength": -3, "Dexterity": -3},
+            "change_attribute_cache": {},
+            "change_resist": {"ColdDamage": -525, "FireDamage": 25, "ElectricDamage": -25},
+            "change_ability": {"Evasion": -5, "MovementSpeed": -15}
+        },
+        "poison_debuff": {
+            "effect_type": "PoisonDebuff",
+            "change_stat": {"Strength": -5, "Dexterity": -5, "Wisdom": -5, "Vitality": -5},
+            "change_attribute_cache": {},
+            "change_resist": {},
+            "change_ability": {"Evasion": -10, "MovementSpeed": -25}
+        },
+        "stamina_debuff": {
+            "effect_type": "StaminaDebuff",
+            "change_stat": {},
+            "change_attribute_cache": {"Stamina": -25},
+            "change_resist": {},
+            "change_ability": {}
+        },
+        "health_debuff": {
+            "effect_type": "HealthDebuff",
+            "change_stat": {},
+            "change_attribute_cache": {"Health": -25},
+            "change_resist": {},
+            "change_ability": {}
+        },
+        "stamina_buff": {
+            "effect_type": "StaminaBuff",
+            "change_stat": {},
+            "change_attribute_cache": {"Stamina": 25},
+            "change_resist": {},
+            "change_ability": {}
+        },
+        "health_buff": {
+            "effect_type": "HealthBuff",
+            "change_stat": {},
+            "change_attribute_cache": {"Health": 25},
+            "change_resist": {},
+            "change_ability": {}
+        },
+        "accuracy_debuff": {
+            "effect_type": "AccuracyDebuff",
             "change_stat": {},
             "change_attribute_cache": {},
             "change_resist": {},
+            "change_ability": {"Accuracy": -50}
+        },
+        "freeze_debuff": {
+            "effect_type": "FreezeDebuff",
+            "change_stat": {},
+            "change_attribute_cache": {},
+            "change_resist": {"PhisicalDamage": 85},
             "change_ability": {}
         }
     }
