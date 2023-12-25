@@ -3,11 +3,10 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use rand::Rng;
 
-use super::{change_attribute_points, get_attribute_from_damage_type};
+use super::change_attribute_points;
 use super::effects::EffectType;
-use super::skills::{TargetType, SkillType, Skill};
+use super::skills::TargetType;
 use super::{
-    skills::CastSource,
     CharactorType, CharactorStatus,
 };
 use crate::components::{PositionComponent, IdentificationComponent, ResistsComponent, AttributesComponent};
@@ -15,7 +14,6 @@ use crate::components::charactor_component::{DestinationComponent, AbilityCompon
 use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
-use crate::resources::scene_data::stuff::damage_type::DamageType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::{
     components::charactor_component::{
@@ -25,7 +23,16 @@ use crate::{
     resources::deploy::Deploy
 };
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
-use crate::resources::scene_data::{get_resist_from_damage_type, ResistType, AbilityType};
+use crate::resources::scene_data::{get_resist_from_damage_type, Resist, Ability};
+
+pub fn update_added_passive_skills(
+    mut charactors_query: Query<(
+        &mut SkillComponent,
+        &AbilityComponent
+    ), With<CharactorComponent>>
+){
+    
+}
 
 pub fn update_passive_skills(
     mut commands: Commands,

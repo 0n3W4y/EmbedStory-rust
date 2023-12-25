@@ -8,8 +8,8 @@ use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::resources::scene_data::charactor::StuffWearSlot;
 
 use super::charactor::effects::EffectType;
-use super::charactor::skills::{ActiveSkillType, PassiveSkillType, PassiveSkill};
-use super::{Stat, Ability, Resist, Damage};
+use super::charactor::skills::{ActiveSkillType, PassiveSkillType};
+use super::Damage;
 
 #[derive(PartialEq, Eq, Clone, Serialize, Deserialize, Debug)]
 pub enum StuffType{
@@ -32,6 +32,7 @@ pub struct Weapon {
     pub critical_hit_multiplier: i16,
     pub attack_cooldown: i16, // how often charactor may attack; per 100 from delta (100 == 1 sec);
     pub wear_slot: StuffWearSlot,
+    pub weapon_range: u8,
     pub damage: HashMap<Damage, i16>,
     pub effects: HashMap<EffectType, u8>,
     pub active_skills: Vec<ActiveSkillType>,

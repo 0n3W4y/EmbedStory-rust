@@ -10,11 +10,9 @@ use crate::{
     materials::material_manager::MaterialManager,
     resources::
         scene_data::{
-            charactor::{
+            charactor::
                 change_attribute_points,
-                skills::SkillDirectionType,
-            },
-            damage_text_informer::DamageTextInformer, Ability, get_resist_from_damage_type, Attribute,
+            damage_text_informer::{DamageTextInformer, TextDamageType}, Ability, get_resist_from_damage_type, Attribute,
         },
     scenes::game_scenes::tilemap::tile::Position,
 };
@@ -45,9 +43,9 @@ pub fn update_projectiles(
     let delta = time.delta_seconds();
     for (projectile_entity, mut projectile, mut transfrom) in projectile_query.iter_mut() {
         transfrom.translation.x +=
-            projectile.motion_coefficient.x * projectile.velocity as f32 * delta * projectile.direction.x;
+            projectile.motion_coefficient.x * projectile.velocity as f32 * delta * projectile.direction.x as f32;
         transfrom.translation.y +=
-            projectile.motion_coefficient.y * projectile.velocity as f32 * delta * projectile.direction.y;
+            projectile.motion_coefficient.y * projectile.velocity as f32 * delta * projectile.direction.y as f32;
         if try_grid_move(
             transfrom.translation.x,
             transfrom.translation.y,
@@ -96,7 +94,7 @@ pub fn check_for_collision(
     {
         let target_x = position.position.x;
         let target_y = position.position.y;
-        todo!();
+
         if projectile.current_position.x == target_x && projectile.current_position.y == target_y {
             //check for position and target;
             match identification.object_type {
@@ -114,6 +112,15 @@ pub fn check_for_collision(
                     );
                 }
                 ObjectType::Thing => {
+                    let starting_pos_x = projectile.starting_position.x;
+                    let starting_pos_y = projectile.starting_position.y;
+                    let delta_x: i32 = target_x - starting_pos_x;
+                    let delta_y: i32 = target_y - starting_pos_y;
+                    let distance: i32 = (((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0)).sqrt()).floor() as i32;
+
+                    if distance == 1 {                                                                          //ignoring any object at +-1 grid position ( thinking, charactor shooting from defense)
+                        continue;
+                    }
                     collision_with_thing(
                         commands,
                         projectile_entity,
@@ -156,7 +163,7 @@ fn collision_with_charactor(
                 //evaded
                 damage_text.text_upper.push(DamageTextInformer::new(
                     0,
-                    Some("Evaded".to_string()),
+                    Some(TextDamageType::Evaded),
                     false,
                     None,
                 ));
@@ -262,7 +269,7 @@ fn try_grid_move(x: f32, y: f32, position: &mut Position<i32>) -> bool {
 pub fn create_projectile(
     commands: &mut Commands,
     material_manager: &MaterialManager,
-    projectile: Projectile,
+    mut projectile: Projectile,
     target_position: Position<i32>,
 ) {
     let starting_point_x = projectile.starting_position.x;
@@ -290,18 +297,19 @@ pub fn create_projectile(
     let distance = ((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0)).sqrt();
     projectile.motion_coefficient.x = delta_x as f32 / distance;
     projectile.motion_coefficient.y = delta_y as f32 / distance;
-
+    let x = starting_point_x as f32 * TILE_SIZE as f32;
+    let y = starting_point_y as f32 * TILE_SIZE as f32;
     let new_z_position = Z_POSITION;
     let transform = Transform::from_xyz(x, y, new_z_position);
     let texture_atlas = material_manager
         .game_scene
         .projectiles
-        .get_texture_atlas(projectile_type);
+        .get_texture_atlas(&projectile.projectile_type);
     commands.spawn((SpriteSheetBundle {
         texture_atlas,
         transform,
         ..Default::default()
     },
-    new_projectile_component,
+    projectile,
     ));
 }

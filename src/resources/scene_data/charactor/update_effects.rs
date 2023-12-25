@@ -16,8 +16,6 @@ pub fn add_new_effect(
     mut charactor_query: Query<
     (
         &mut EffectComponent,
-        &StatsComponent,
-        &AttributesComponent,
         &AbilityComponent
     ),
     With<CharactorComponent>    
@@ -25,8 +23,6 @@ pub fn add_new_effect(
 ) {
     for (
         mut effects,
-        stats,
-        attrbiutes,
         abilities
     ) in charactor_query.iter_mut() {
         for effect in effects.added_effect.iter_mut(){

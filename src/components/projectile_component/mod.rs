@@ -9,7 +9,7 @@ pub struct Projectile {
     pub damage: HashMap<Damage, i16>,
     pub effects: Vec<Effect>,
     pub passive_skills: Vec<PassiveSkill>,
-
+    pub range: u8,
     pub starting_position: Position<i32>,
     pub current_position: Position<i32>,
     pub motion_coefficient: Position<f32>,

@@ -17,6 +17,11 @@ const CYAN_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 1
 const PURPULE_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
 const LIGHTGREEN_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
 
+#[derive(Clone, Deserialize, Debug)]
+pub enum TextDamageType {
+    Evaded,
+    Missed,
+}
 
 #[derive(Deserialize, Debug)]
 pub struct DamageTextInformer {
@@ -26,9 +31,14 @@ pub struct DamageTextInformer {
 } 
 
 impl DamageTextInformer {
-    pub fn new (damage_value: i16, string: Option<String>, bold: bool, damage_type: Option<&Damage>) -> Self {
+    pub fn new (damage_value: i16, string: Option<TextDamageType>, bold: bool, damage_type: Option<&Damage>) -> Self {
         let text = match string {
-            Some(v) => v,
+            Some(v) => {
+                match v {
+                    TextDamageType::Evaded => "Evaded".to_string(),
+                    TextDamageType::Missed => "Missed".to_string(),
+                }
+            },
             None => {
                 let mut new_text = if damage_value < 0 {
                     "+".to_string()
@@ -51,6 +61,8 @@ impl DamageTextInformer {
                 Damage::Water => CYAN_DAMAGE_TEXT,
                 Damage::Acid => LIGHTGREEN_DAMAGE_TEXT,
                 Damage::Poison => DARK_GREEN_DAMAGE_TEXT,
+                Damage::Health => RED_DAMAGE_TEXT,
+                Damage::Stamina => GRAY_DAMAGE_TEXT,
             }
 
             },

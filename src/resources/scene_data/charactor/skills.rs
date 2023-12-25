@@ -223,6 +223,7 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, ability_s
             match v.stuff_type {
                 StuffType::Weapon(val) => {
                     new_base_skill.crit_chance += val.critical_hit_chance;
+                    new_base_skill.skill_range = val.weapon_range;
                     new_base_skill.crit_multiplier += val.critical_hit_multiplier;
                     new_base_skill.damage.clear();                                                         //setting up new damage from weapon to skill;
                     let mut new_damage = val.damage.clone();
