@@ -1,60 +1,16 @@
 use bevy::prelude::*;
 
-use crate::components::{StatsComponent, ResistsComponent, AttributesComponent, DamageTextComponent};
+use crate::components::{StatsComponent, ResistsComponent, AttributesComponent, TakenDamageComponent, TakenDamage};
 use crate::components::charactor_component::{
     AbilityComponent, CharactorComponent, EffectComponent,
     SkillComponent, InventoryComponent,
 };
 use crate::resources::deploy::Deploy;
-use crate::resources::scene_data::{Ability, get_resist_from_damage_type};
+use crate::resources::scene_data::Damage;
 use crate::resources::scene_data::charactor::{self, skills};
-use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use super::effects::EffectType;
 use super::{CharactorStatus, change_stat_points, StuffWearSlot};
 
-pub fn add_new_effect(
-    mut charactor_query: Query<
-    (
-        &mut EffectComponent,
-        &AbilityComponent
-    ),
-    With<CharactorComponent>    
-    >
-) {
-    for (
-        mut effects,
-        abilities
-    ) in charactor_query.iter_mut() {
-        for effect in effects.added_effect.iter_mut(){
-            for immune_effect_type in effects.effect_immunes.iter() {                                           //check immune for new added effect;
-                if effect.effect_type == *immune_effect_type {
-                    continue;
-                }
-            }
-
-            match abilities.ability.get(&Ability::ReducingEffectTime) {
-                Some(v) => {
-                    effect.effect_lifetime -= effect.effect_lifetime * *v as f32 / 100.0;
-                },
-                None => {},
-            };
-            
-            match effects.effects.get_mut(&effect.effect_type) {                                           //get effect if it already in; prolong lifetime effect, and replace with new effect
-                Some(v) => {
-                    effect.effect_lifetime += v.effect_lifetime;
-                    *v = effect.clone();
-                },
-                None => {
-                    for effect_status in effect.effect_status.iter(){                               //store effect status to charactor effect status;
-                        effects.effect_status.push(effect_status.clone());
-                    }
-                    effects.effects.insert(effect.effect_type.clone(), effect.clone());
-                },
-            }
-        }
-        effects.added_effect.clear();
-    }
-}
 
 pub fn update_effects(
     mut charactors_query: Query<
@@ -67,7 +23,7 @@ pub fn update_effects(
             &mut AbilityComponent,
             &mut SkillComponent,
             &InventoryComponent,
-            &mut DamageTextComponent,
+            &mut TakenDamageComponent,
         ),
         With<CharactorComponent>>,
     deploy: Res<Deploy>,
@@ -82,7 +38,7 @@ pub fn update_effects(
         mut abilities, 
         mut skills,
         inventory,
-        mut damage_text,
+        mut damage_taken,
 
     ) in charactors_query.iter_mut() {
         if charactor_component.status == CharactorStatus::Dead {                            //check for dead
@@ -107,7 +63,7 @@ pub fn update_effects(
                         }
 
                         for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
-                            charactor::change_attribute_points(&mut attributes, attribute_cache, *attribute_damage, true);
+                            charactor::change_attribute_points(&mut attributes, &Damage::Health, *attribute_damage, true);
                         }
 
                         for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
@@ -131,14 +87,9 @@ pub fn update_effects(
 
                 match effect.over_time_effect {
                     Some(over_time_effect) => {
-                        for (attribute, attribute_damage) in over_time_effect.change_attributes.iter() {
-                            let new_attribute_damage = match resists.resists.get(&get_resist_from_damage_type(&over_time_effect.effect_damage_type)) {
-                                Some(v) => *attribute_damage - *attribute_damage * *v / 100,
-                                None => *attribute_damage,
-                            };
-                            charactor::change_attribute_points(&mut attributes, attribute, new_attribute_damage, false);
-                            damage_text.text_upper.push(DamageTextInformer::new(new_attribute_damage, None, false, Some(&over_time_effect.effect_damage_type)));
-                        }
+                        let mut damage: TakenDamage = Default::default();
+                        damage.damage.insert(over_time_effect.effect_damage_type.clone(), over_time_effect.effect_damage_value);
+                        damage_taken.damage.push(damage);
                     },
                     None => {},
                 }
@@ -157,7 +108,7 @@ pub fn update_effects(
                         }
 
                         for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
-                            charactor::change_attribute_points(&mut attributes, attribute_cache, -(*attribute_damage), true);
+                            charactor::change_attribute_points(&mut attributes, &Damage::Health, -(*attribute_damage), true);
                         }
 
                         for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
@@ -196,14 +147,9 @@ pub fn update_effects(
                             over_time_effect.time_duration -= over_time_effect.trigger_time_effect;
                         }
 
-                        for (attribute, attribute_damage) in over_time_effect.change_attributes.iter() {
-                            let new_attribute_damage = match resists.resists.get(&get_resist_from_damage_type(&over_time_effect.effect_damage_type)) {
-                                Some(v) => *attribute_damage - *attribute_damage * *v / 100,
-                                None => *attribute_damage,
-                            };
-                            charactor::change_attribute_points(&mut attributes, attribute, new_attribute_damage, false);
-                            damage_text.text_upper.push(DamageTextInformer::new(new_attribute_damage, None, false, Some(&over_time_effect.effect_damage_type)));
-                        }
+                        let mut damage: TakenDamage = Default::default();
+                        damage.damage.insert(over_time_effect.effect_damage_type.clone(), -over_time_effect.effect_damage_value);
+                        damage_taken.damage.push(damage);
                     },
                     None => {},
                 }

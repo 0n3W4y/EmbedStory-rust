@@ -13,6 +13,7 @@ use crate::resources::scene_data::scene_effect::SceneEffect;
 use crate::resources::scene_data::stuff::Stuff;
 use crate::resources::scene_data::thing::Thing;
 use crate::resources::scene_data::thing::ThingType;
+use crate::resources::scene_data::update_damage;
 use crate::scenes::game_scenes::tilemap::Tilemap;
 use crate::scenes::game_scenes::tilemap;
 use crate::resources::scene_data::thing;
@@ -203,7 +204,7 @@ impl Plugin for GameScenePlugin {
                 .run_if(on_timer(Duration::from_secs_f32(0.1)))
             )
             .add_system(
-                charactor::update_effects::add_new_effect
+                update_damage::update_damage
                 .in_set(OnUpdate(AppState::GameScene))
                 .run_if(on_timer(Duration::from_secs_f32(0.1)))
             )

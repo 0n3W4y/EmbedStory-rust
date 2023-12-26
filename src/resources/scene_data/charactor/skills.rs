@@ -38,6 +38,7 @@ pub enum SkillDirectionType {
 pub struct PassiveSkill {
     pub skill_type: PassiveSkillType,
     pub trigger_time_frequency: f32,
+    pub trigger_chance: u8,
     pub skill_life_time: f32,
     pub current_time_duration: f32,
     pub total_duration: f32,
@@ -54,7 +55,6 @@ pub struct PassiveSkill {
     pub target_quantity: u8,                                // max target quantity in skill range;
     pub area_on_impact: u8,                                 //0 - only target, 1 - +1 position for all direction, 2 - +2 position for all direction;
 
-    pub projectiles: u8,
     pub projectile_type: ProjectileType,
 }
 
@@ -67,7 +67,6 @@ pub struct ActiveSkill {
     pub current_time_duration: f32,                            // == 0.0;
     pub stamina_cost: i16,
     
-    pub projectiles: u8,
     pub projectile_type: ProjectileType,
     pub skill_range: u8,                                    // max range; min range = 1;
     pub skill_direction: SkillDirectionType,
@@ -104,7 +103,6 @@ impl ActiveSkill {
             cooldown_time: skill_config.cooldown_time as f32 / 10.0,
             on_cooldown: false,
             current_time_duration: 0.0,
-            projectiles: skill_config.projectiles,
             projectile_type: skill_config.projectile_type.clone(),
             skill_direction: skill_config.skill_direction.clone(),
             stamina_cost: skill_config.stamina_cost,
@@ -133,6 +131,7 @@ impl PassiveSkill {
         PassiveSkill {
             skill_type: skill_type.clone(),
             trigger_time_frequency: skill_config.trigger_time_frequency,
+            trigger_chance: skill_config.trigger_chance,
             skill_life_time: skill_config.skill_life_time,
             current_time_duration: 0.0,
             total_duration: 0.0,
@@ -143,7 +142,6 @@ impl PassiveSkill {
             skill_range: skill_config.skill_range,
             skill_direction: skill_config.skill_direction.clone(),
             target_type: skill_config.target_type.clone(),
-            projectiles: skill_config.projectiles,
             projectile_type: skill_config.projectile_type.clone(),
             target_quantity: skill_config.target_quantity,
             area_on_impact: skill_config.area_on_impact,
@@ -155,6 +153,7 @@ impl PassiveSkill {
 pub struct PassiveSkillDeploy {
     pub skill_type: PassiveSkillType,
     pub trigger_time_frequency: f32,
+    pub trigger_chance: u8,
     pub skill_life_time: f32,
 
     pub crit_chance: i16,
@@ -169,7 +168,6 @@ pub struct PassiveSkillDeploy {
     pub target_quantity: u8,
     pub area_on_impact: u8, 
 
-    pub projectiles: u8,
     pub projectile_type: ProjectileType,
 }
 
@@ -178,7 +176,6 @@ pub struct ActiveSkillDeploy {
     pub skill_type: ActiveSkillType,
     pub cooldown_time: f32,
     
-    pub projectiles: u8,
     pub projectile_type: ProjectileType,
     pub skill_range: u8, // max range; min range = 1;
     pub skill_direction: SkillDirectionType,
@@ -263,9 +260,7 @@ pub fn update_over_time_effect_damage_by_ability(effect: &mut Effect, ability_st
                 Some(v) => *v,
                 None => 0,
             };
-            for (_, attr_damage) in eff.change_attributes.iter_mut() {
-                *attr_damage += *attr_damage * damage_multiplier / 100;
-            }
+            eff.effect_damage_value += eff.effect_damage_value * damage_multiplier / 100;
         },
         None => {},
     }

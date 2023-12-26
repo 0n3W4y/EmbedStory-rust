@@ -6,6 +6,7 @@ pub mod thing;
 pub mod stuff;
 pub mod projectiles;
 pub mod damage_text_informer;
+pub mod update_damage;
 
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Default, Hash)]
@@ -72,19 +73,19 @@ impl Resist {
             Resist::PoisonDamage,
         ].into_iter()
     }
-}
 
-pub fn get_resist_from_damage_type(damage_type: &Damage) -> Resist {
-    return match *damage_type {
-        Damage::Fire => Resist::FireDamage,
-        Damage::Cold => Resist::ColdDamage,
-        Damage::Electric => Resist::ElectricDamage,
-        Damage::Acid => Resist::AcidDamage,
-        Damage::Poison => Resist::PoisonDamage,
-        Damage::Phisical => Resist::PhisicalDamage,
-        Damage::Water => Resist::WaterDamage,
-        Damage::Health => Resist::HealthDamage,
-        Damage::Stamina => Resist::StaminaDamage,
+    pub fn damage(damage: &Damage) -> Self {
+        match *damage {
+            Damage::Fire => Resist::FireDamage,
+            Damage::Cold => Resist::ColdDamage,
+            Damage::Electric => Resist::ElectricDamage,
+            Damage::Acid => Resist::AcidDamage,
+            Damage::Poison => Resist::PoisonDamage,
+            Damage::Phisical => Resist::PhisicalDamage,
+            Damage::Water => Resist::WaterDamage,
+            Damage::Health => Resist::HealthDamage,
+            Damage::Stamina => Resist::StaminaDamage,
+        }
     }
 }
 
@@ -149,4 +150,20 @@ pub enum Damage {
     Water,
     Health,
     Stamina
+}
+
+impl Damage {
+    pub fn get_attribute(&self) -> Attribute {
+        match *self {
+            Damage::Fire => Attribute::Health,
+            Damage::Cold => Attribute::Health,
+            Damage::Electric => Attribute::Health,
+            Damage::Acid => Attribute::Health,
+            Damage::Poison => Attribute::Health,
+            Damage::Phisical => Attribute::Health,
+            Damage::Water => Attribute::Health,
+            Damage::Health => Attribute::Health,
+            Damage::Stamina => Attribute::Stamina,
+        }
+    }
 }

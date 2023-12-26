@@ -3,21 +3,14 @@ use crate::{
         charactor_component::{AbilityComponent, EffectComponent, SkillComponent},
         projectile_component::Projectile,
         tile_component::TileComponent,
-        AttributesComponent, DamageTextComponent, IdentificationComponent, ObjectType,
-        PositionComponent, ResistsComponent,
+        AttributesComponent, IdentificationComponent, ObjectType, PositionComponent,
+        ResistsComponent, TakenDamage, TakenDamageComponent,
     },
     config::TILE_SIZE,
     materials::material_manager::MaterialManager,
-    resources::
-        scene_data::{
-            charactor::
-                change_attribute_points,
-            damage_text_informer::{DamageTextInformer, TextDamageType}, Ability, get_resist_from_damage_type, Attribute,
-        },
     scenes::game_scenes::tilemap::tile::Position,
 };
 use bevy::prelude::*;
-use rand::Rng;
 
 const Z_POSITION: f32 = 4.0; // fourth layer;
 
@@ -34,7 +27,7 @@ pub fn update_projectiles(
             &mut EffectComponent,
             &mut SkillComponent,
             &AbilityComponent,
-            &mut DamageTextComponent,
+            &mut TakenDamageComponent,
             //&mut Projectile,
         ),
         Without<TileComponent>,
@@ -42,10 +35,14 @@ pub fn update_projectiles(
 ) {
     let delta = time.delta_seconds();
     for (projectile_entity, mut projectile, mut transfrom) in projectile_query.iter_mut() {
-        transfrom.translation.x +=
-            projectile.motion_coefficient.x * projectile.velocity as f32 * delta * projectile.direction.x as f32;
-        transfrom.translation.y +=
-            projectile.motion_coefficient.y * projectile.velocity as f32 * delta * projectile.direction.y as f32;
+        transfrom.translation.x += projectile.motion_coefficient.x
+            * projectile.velocity as f32
+            * delta
+            * projectile.direction.x as f32;
+        transfrom.translation.y += projectile.motion_coefficient.y
+            * projectile.velocity as f32
+            * delta
+            * projectile.direction.y as f32;
         if try_grid_move(
             transfrom.translation.x,
             transfrom.translation.y,
@@ -74,7 +71,7 @@ pub fn check_for_collision(
             &mut EffectComponent,
             &mut SkillComponent,
             &AbilityComponent,
-            &mut DamageTextComponent,
+            &mut TakenDamageComponent,
             //&mut Projectile,
         ),
         Without<TileComponent>,
@@ -88,7 +85,7 @@ pub fn check_for_collision(
         mut effects_component,
         mut skills_component,
         abilities_component,
-        mut damage_text,
+        mut damage,
         //mut other_projectile
     ) in all_query.iter_mut()
     {
@@ -108,7 +105,7 @@ pub fn check_for_collision(
                         &mut effects_component,
                         &mut skills_component,
                         &abilities_component,
-                        &mut damage_text,
+                        &mut damage,
                     );
                 }
                 ObjectType::Thing => {
@@ -116,9 +113,12 @@ pub fn check_for_collision(
                     let starting_pos_y = projectile.starting_position.y;
                     let delta_x: i32 = target_x - starting_pos_x;
                     let delta_y: i32 = target_y - starting_pos_y;
-                    let distance: i32 = (((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0)).sqrt()).floor() as i32;
+                    let distance: i32 = (((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0))
+                        .sqrt())
+                    .floor() as i32;
 
-                    if distance == 1 {                                                                          //ignoring any object at +-1 grid position ( thinking, charactor shooting from defense)
+                    if distance == 1 {
+                        //ignoring any object at +-1 grid position ( thinking, charactor shooting from defense)
                         continue;
                     }
                     collision_with_thing(
@@ -127,7 +127,7 @@ pub fn check_for_collision(
                         projectile,
                         &mut attributes_component,
                         &resists_component,
-                        &mut damage_text,
+                        &mut damage,
                     );
                 }
                 ObjectType::Projectile => {
@@ -152,67 +152,23 @@ fn collision_with_charactor(
     effects: &mut EffectComponent,
     skills: &mut SkillComponent,
     abilities: &AbilityComponent,
-    damage_text: &mut DamageTextComponent,
+    damage: &mut TakenDamageComponent,
 ) {
-    let mut random = rand::thread_rng();
-    match abilities.ability.get(&Ability::Evasion) {
-        //check for evade
-        Some(v) => {
-            let random_evade_chance: i16 = random.gen_range(0..=99);
-            if *v > random_evade_chance {
-                //evaded
-                damage_text.text_upper.push(DamageTextInformer::new(
-                    0,
-                    Some(TextDamageType::Evaded),
-                    false,
-                    None,
-                ));
-                commands.entity(projectile_entity).despawn_recursive();
-                return;
-            }
-        }
-        None => {}
-    }
-
-    let block_amount_percent = match abilities.ability.get(&Ability::BlockChance) {
-        //check for block and amount;
-        Some(v) => {
-            let random_block_chance: i16 = random.gen_range(0..=99);
-            if *v > random_block_chance {
-                //blocked some damage;
-                match abilities.ability.get(&Ability::BlockAmount) {
-                    Some(value) => *value,
-                    None => 0,
-                }
-            } else {
-                0
-            }
-        }
-        None => 0,
-    };
+    let mut damage_taken: TakenDamage = Default::default();
+    damage_taken.is_critical_hit = projectile.is_critical_hit;
 
     for (damage_type, damage) in projectile.damage.iter() {
-        let charactor_resist = match resists
-            .resists
-            .get(&get_resist_from_damage_type(damage_type))
-        {
-            Some(v) => *v,
-            None => 0,
-        };
-        let total_damage =
-            damage - damage * charactor_resist / 100 - damage * block_amount_percent / 100;
-
-        change_attribute_points(attributes,  &Attribute::Health, total_damage, false);
+        damage_taken.damage.insert(damage_type.clone(), *damage);
     }
 
     for effect in projectile.effects.iter() {
-        effects.added_effect.push(effect.clone());
+        damage_taken.effects.push(effect.clone());
     }
 
     for skill in projectile.passive_skills.iter() {
-        skills.added_passive_skills.push(skill.clone());
+        damage_taken.passive_skills.push(skill.clone());
     }
-
+    damage.damage.push(damage_taken);
     commands.entity(projectile_entity).despawn_recursive();
 }
 
@@ -222,26 +178,14 @@ fn collision_with_thing(
     projectile: &Projectile,
     attributes_component: &mut AttributesComponent,
     resists_component: &ResistsComponent,
-    damage_text: &mut DamageTextComponent,
+    damage: &mut TakenDamageComponent,
 ) {
+    let mut damage_taken: TakenDamage = Default::default();
+    damage_taken.is_critical_hit = projectile.is_critical_hit;
     for (damage_type, damage) in projectile.damage.iter() {
-        let thing_resits = match resists_component
-            .resists
-            .get(&get_resist_from_damage_type(damage_type))
-        {
-            Some(v) => *v,
-            None => 0,
-        };
-
-        let damage_with_resist = damage - damage * thing_resits / 100;
-        match attributes_component.attributes.get_mut(&Attribute::Health) {
-            Some(v) => *v -= damage_with_resist,
-            None => {}
-        }
-        let text_damage =
-            DamageTextInformer::new(damage_with_resist, None, false, Some(damage_type));
-        damage_text.text_upper.push(text_damage);
+        damage_taken.damage.insert(damage_type.clone(), *damage);
     }
+    damage.damage.push(damage_taken);
     commands.entity(projectile_entity).despawn_recursive();
     return;
 }
@@ -305,11 +249,12 @@ pub fn create_projectile(
         .game_scene
         .projectiles
         .get_texture_atlas(&projectile.projectile_type);
-    commands.spawn((SpriteSheetBundle {
-        texture_atlas,
-        transform,
-        ..Default::default()
-    },
-    projectile,
+    commands.spawn((
+        SpriteSheetBundle {
+            texture_atlas,
+            transform,
+            ..Default::default()
+        },
+        projectile,
     ));
 }

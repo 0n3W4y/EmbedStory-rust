@@ -32,7 +32,6 @@ pub struct CharactorAnimationComponent {
 
 #[derive(Component, Default)]
 pub struct EffectComponent {
-    pub added_effect: Vec<Effect>,
     pub effects: HashMap<EffectType, Effect>,
     pub effect_immunes: Vec<EffectType>,
     pub effect_status: Vec<EffectStatus>,
@@ -55,7 +54,6 @@ pub struct SkillComponent {
     pub base_skill: ActiveSkill,
     pub active_skills: HashMap<SkillSlot, ActiveSkill>,
     pub passive_skills: HashMap<PassiveSkillType, PassiveSkill>,
-    pub added_passive_skills: Vec<PassiveSkill>,
 }
 
 #[derive(Component, Default)]

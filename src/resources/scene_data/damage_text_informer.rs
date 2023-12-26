@@ -1,8 +1,6 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 
-use crate::components::DamageTextComponent;
-
 use super::Damage;
 
 
@@ -18,7 +16,7 @@ const PURPULE_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: 
 const LIGHTGREEN_DAMAGE_TEXT: Color = Color::Rgba { red: ( 100.0 / 255.0 ), green: ( 100.0 / 255.0 ), blue: ( 100.0 / 255.0 ), alpha: 1.0 };
 
 #[derive(Clone, Deserialize, Debug)]
-pub enum TextDamageType {
+pub enum DamageIgnored {
     Evaded,
     Missed,
 }
@@ -31,27 +29,7 @@ pub struct DamageTextInformer {
 } 
 
 impl DamageTextInformer {
-    pub fn new (damage_value: i16, string: Option<TextDamageType>, bold: bool, damage_type: Option<&Damage>) -> Self {
-        let text = match string {
-            Some(v) => {
-                match v {
-                    TextDamageType::Evaded => "Evaded".to_string(),
-                    TextDamageType::Missed => "Missed".to_string(),
-                }
-            },
-            None => {
-                let mut new_text = if damage_value < 0 {
-                    "+".to_string()
-                } else {
-                    "-".to_string()
-                };
-                let damage_text = damage_value.to_string();
-                new_text.push_str(&damage_text);
-                new_text
-            }
-        };
-        
-
+    pub fn new (text: String, bold: bool, damage_type: Option<&Damage>) -> Self {     
         let new_color: Color = match damage_type {
             Some(v) => { match *v {
                 Damage::Fire => ORANGE_DAMAGE_TEXT,
@@ -77,8 +55,6 @@ impl DamageTextInformer {
     }
 }
 
-pub fn update_damage_text_informer(
-    objects_query: Query<&DamageTextComponent>
-){
-    
+pub fn update_damage_text_informer(){
+
 }

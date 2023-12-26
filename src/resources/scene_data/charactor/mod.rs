@@ -201,10 +201,11 @@ pub fn change_resist(
 
 pub fn change_attribute_points(
     attributes: &mut AttributesComponent,
-    attribute: &Attribute,
+    damage: &Damage,
     value: i16,
     change_cache: bool,
 ){
+    let attribute = damage.get_attribute();
     if change_cache {
         let cache_value = match attributes.attributes_cache.get_mut(&attribute) {
             Some(v) => {
@@ -322,7 +323,12 @@ pub fn do_stat_dependences(
     for(attribute, value) in new_values_for_attributes.iter() {
         let old_value_for_attribute = old_values_for_attributes.get(attribute).unwrap();
         let value_to_attribute = value - old_value_for_attribute;
-        change_attribute_points(attributes, attribute, value_to_attribute, true);
+        let damage = if *attribute == Attribute::Stamina {
+            Damage::Stamina
+        } else {
+            Damage::Health
+        };
+        change_attribute_points(attributes, &damage, value_to_attribute, true);
     }
 }
 

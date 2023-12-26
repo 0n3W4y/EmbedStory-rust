@@ -1,14 +1,25 @@
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
 pub mod draw;
 pub mod cleanup;
 pub mod destroeyd_thing_handler;
 
-use serde::{Deserialize, Serialize};
-
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
-
 use super::{Attribute, Resist};
+
+pub const WEAK_STRUCTURE_DEFENSE_TYPE: u8 = 15;
+pub const NORMAL_STRUCTURE_DEFENSE_TYPE: u8 = 30;
+pub const STRONG_STRUCTURE_DEFENSE_TYPE: u8 = 45;
+
+
+#[derive(Debug, Default, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub enum ThingDefenseType {
+    #[default]
+    Weak,
+    Normal,
+    Strong,
+}
 
 
 #[derive( Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Default )]
@@ -52,7 +63,8 @@ pub struct ThingConfig {
     pub resists: HashMap<Resist, i16>,
     pub tile_allow_permissions: Vec<TilePermissions>,
     pub tile_deny_permissions: Vec<TilePermissions>,
-    pub tile_movement_ratio: u16
+    pub tile_movement_ratio: u16,
+    pub thing_defense_type: ThingDefenseType,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
@@ -66,4 +78,5 @@ pub struct Thing {
     pub resists: HashMap<Resist, i16>,
     pub attributes: HashMap<Attribute, i16>,
     pub attributes_cache: HashMap<Attribute, i16>,
+    pub thing_defense_type: ThingDefenseType,
 }

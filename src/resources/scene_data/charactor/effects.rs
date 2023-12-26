@@ -76,7 +76,7 @@ pub struct OverTimeEffectDeploy {
     pub effect_type: OverTimeEffectType,
     pub effect_damage_type: Damage,
     pub trigger_time_effect: f32,
-    pub change_attributes: HashMap<Attribute, i16>,
+    pub effect_damage_value: i16,
 }
 
 #[derive(Deserialize, Debug, Clone, Default)]
@@ -95,7 +95,7 @@ pub struct OverTimeEffect {
     pub effect_damage_type: Damage,
     pub trigger_time_effect: f32,
     pub time_duration: f32,
-    pub change_attributes: HashMap<Attribute, i16>,
+    pub effect_damage_value: i16,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -129,7 +129,7 @@ impl Effect {
                     effect_damage_type: over_time_effect_config.effect_damage_type.clone(),
                     trigger_time_effect: over_time_effect_config.trigger_time_effect,
                     time_duration: 0.0,
-                    change_attributes: over_time_effect_config.change_attributes.clone(),
+                    effect_damage_value: over_time_effect_config.effect_damage_value,
                 }
             )
         } else {

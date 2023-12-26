@@ -45,6 +45,7 @@ pub fn copy_from_components_to_thing(
     thing.thing_type = thing_component.thing_type.clone();
     thing.id = identification_component.id;
     thing.graphic_index = thing_component.graphic_index;
+    thing.thing_defense_type = thing_component.thing_defense_type.clone();
 
     thing.position.x = position_component.position.x;
     thing.position.y = position_component.position.y;

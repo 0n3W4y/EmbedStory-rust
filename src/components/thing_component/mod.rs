@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
-pub mod thing_animation_component;
-
+use crate::resources::scene_data::thing::ThingDefenseType;
 use crate::resources::scene_data::thing::ThingType;
 use crate::resources::scene_data::thing::ThingPermissions;
 
@@ -9,6 +8,7 @@ use crate::resources::scene_data::thing::ThingPermissions;
 pub struct ThingComponent{
     pub thing_type: ThingType,
     pub graphic_index: u8,
+    pub thing_defense_type: ThingDefenseType,
 }
 
 #[derive(Component, Default)]

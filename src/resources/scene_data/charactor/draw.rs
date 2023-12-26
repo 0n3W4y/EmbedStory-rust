@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 
 use crate::components::charactor_component::{
-    AbilityComponent, CharactorAnimationComponent, CharactorComponent,
+    AbilityComponent, CharactorComponent,
     DestinationComponent, EffectComponent, InventoryComponent,
     SkillComponent, PlayerComponent, NPCComponent, MonsterComponent, CompanionComponent
 };
-use crate::components::{IdentificationComponent, ObjectType, PositionComponent, DamageTextComponent, AttributesComponent, StatsComponent, ResistsComponent};
+use crate::components::{IdentificationComponent, ObjectType, PositionComponent, AttributesComponent, StatsComponent, ResistsComponent, TakenDamageComponent, DamageTextInformerComponent};
 use crate::config::TILE_SIZE;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
@@ -35,15 +35,15 @@ pub fn draw(
         let mut charactor_component: CharactorComponent = Default::default();
         let mut resist_component: ResistsComponent = Default::default();
         let mut skill_component: SkillComponent = Default::default();
-        let text_component: DamageTextComponent = Default::default();
+        let damage_taken_component: TakenDamageComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
         let mut destination_component: DestinationComponent = Default::default();
         let mut effect_component: EffectComponent = Default::default();
-        let animation_component: CharactorAnimationComponent = Default::default();
         let mut stats_component: StatsComponent = Default::default();
         let mut attributes_component: AttributesComponent = Default::default();
         let mut ability_component: AbilityComponent = Default::default();
         let mut inventory_component: InventoryComponent = Default::default();
+        let damage_text_informer_component: DamageTextInformerComponent = Default::default();
         copy_from_charactor_to_component(
             charactor,
             &mut identefication_component,
@@ -76,15 +76,15 @@ pub fn draw(
                     charactor_component,
                     resist_component,
                     skill_component,
-                    text_component,
+                    damage_taken_component,
                     position_component,
                     destination_component,
                     effect_component,
-                    animation_component,
                     stats_component,
                     attributes_component,
                     ability_component,
                     inventory_component,
+                    damage_text_informer_component,
                     PlayerComponent,
                     ))
             },
@@ -99,15 +99,15 @@ pub fn draw(
                     charactor_component,
                     resist_component,
                     skill_component,
-                    text_component,
+                    damage_taken_component,
                     position_component,
                     destination_component,
                     effect_component,
-                    animation_component,
                     stats_component,
                     attributes_component,
                     ability_component,
                     inventory_component,
+                    damage_text_informer_component,
                     NPCComponent,
                     ))
             },
@@ -122,15 +122,15 @@ pub fn draw(
                     charactor_component,
                     resist_component,
                     skill_component,
-                    text_component,
+                    damage_taken_component,
                     position_component,
                     destination_component,
                     effect_component,
-                    animation_component,
                     stats_component,
                     attributes_component,
                     ability_component,
                     inventory_component,
+                    damage_text_informer_component,
                     MonsterComponent,
                     ))
             },
@@ -145,15 +145,15 @@ pub fn draw(
                     charactor_component,
                     resist_component,
                     skill_component,
-                    text_component,
+                    damage_taken_component,
                     position_component,
                     destination_component,
                     effect_component,
-                    animation_component,
                     stats_component,
                     attributes_component,
                     ability_component,
                     inventory_component,
+                    damage_text_informer_component,
                     CompanionComponent,
                     ))
             },

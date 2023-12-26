@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{IdentificationComponent, PositionComponent, DamageTextComponent, AttributesComponent};
+use crate::components::{IdentificationComponent, PositionComponent, TakenDamageComponent, AttributesComponent, DamageTextInformerComponent};
 use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -51,7 +51,8 @@ pub fn draw(
         let mut position_component: PositionComponent = Default::default();
         let mut attributes_component: AttributesComponent = Default::default();
         let mut permissions_component: ThingPermissionsComponent = Default::default();
-        let damage_text_component: DamageTextComponent = Default::default();
+        let taken_damage_component: TakenDamageComponent = Default::default();
+        let damage_text_informer_componen: DamageTextInformerComponent = Default::default();
 
         copy_from_thing_to_entity_component(
             &mut identification_component, 
@@ -73,8 +74,9 @@ pub fn draw(
         thing_component,
         position_component,
         permissions_component,
-        damage_text_component,
-        attributes_component
+        taken_damage_component,
+        attributes_component,
+        damage_text_informer_componen
         ));
     }    
 }
@@ -90,6 +92,7 @@ pub fn copy_from_thing_to_entity_component(
     thing_component.thing_type = thing.thing_type.clone();
     identification_component.id = thing.id; 
     thing_component.graphic_index = thing.graphic_index;
+    thing_component.thing_defense_type = thing.thing_defense_type.clone();
 
     position_component.position.x = thing.position.x;
     position_component.position.y = thing.position.y;
@@ -97,5 +100,6 @@ pub fn copy_from_thing_to_entity_component(
 
     attributes_component.attributes = thing.attributes.clone();
     attributes_component.attributes_cache = thing.attributes.clone();
+    
 
 }

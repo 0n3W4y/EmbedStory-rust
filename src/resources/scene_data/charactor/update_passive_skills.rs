@@ -25,15 +25,6 @@ use crate::{
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::resources::scene_data::{get_resist_from_damage_type, Resist, Ability};
 
-pub fn update_added_passive_skills(
-    mut charactors_query: Query<(
-        &mut SkillComponent,
-        &AbilityComponent
-    ), With<CharactorComponent>>
-){
-    
-}
-
 pub fn update_passive_skills(
     mut commands: Commands,
     mut skills_query: Query<(
@@ -75,29 +66,29 @@ pub fn update_passive_skills(
         mut effect_component
     ) in skills_query.iter_mut() {
 
-        if charactor_component.status == CharactorStatus::Dead {        //if char is dead we skip all passive skills;
+        if charactor_component.status == CharactorStatus::Dead {                             //if char is dead we skip all passive skills;
             continue;
         }
 
-        let mut skills_for_remove: Vec<SkillType> = vec![];              //skills for remove;
+        let mut skills_for_remove: Vec<PassiveSkill> = vec![];                              //skills for remove;
 
         for (skill_type, skill) in skill_component.passive_skills.iter_mut() {
-            let trigger_frequency = skill.trigger_time_frequency;                  // time to trigger skill;
-            let current_time = skill.current_time_duration;          // current tick time
-            let total_time = skill.total_time_duration;              //total time every tick
-            let life_time = skill.life_time;                        // full life time of skill before remove
+            let trigger_frequency = skill.trigger_time_frequency;                       // time to trigger skill;
+            let current_time = skill.current_time_duration;                             // current tick time
+            let total_duration = skill.total_duration;                                 //total time every tick
+            let life_time = skill.skill_life_time;                                     // full life time of skill before remove
 
-            if life_time <= total_time {                                    //check for passive skill ends;
-                skills_for_remove.push(skill_type.clone());             //store skill sub type for next remove;
+            if life_time <= total_time {                                                     //check for passive skill ends;
+                skills_for_remove.push(skill_type.clone());                                 //store skill sub type for next remove;
                 continue;
             }
 
-            if current_time >= trigger_frequency || total_time == 0.0 {      //first run or trigger by time;
-                if total_time > 0.0 {                                       //check for trigger time and substruct trigger time from current duration;
+            if current_time >= trigger_frequency || total_time == 0.0 {                     //first run or trigger by time;
+                if total_time > 0.0 {                                                       //check for trigger time and substruct trigger time from current duration;
                     skill.current_time_duration -= current_time;
                 }                
                 
-                let trigger_chance = skill.trigger_chance;              //check for trigger chance
+                let trigger_chance = skill.trigger_chance;                                  //check for trigger chance
                 if trigger_chance < 100 {
                     let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
                     if trigger_chance < trigger_chance_random_number {  

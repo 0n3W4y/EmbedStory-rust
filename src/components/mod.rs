@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::CharactorType, damage_text_informer::DamageTextInformer, Stat, Attribute, Resist}};
+use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::{CharactorType, skills::PassiveSkill, effects::Effect}, damage_text_informer::{DamageTextInformer, DamageIgnored}, Stat, Attribute, Resist, Damage}};
 
 pub mod tile_component;
 pub mod thing_component;
@@ -21,6 +21,15 @@ pub enum ObjectType{
     Tile,
 }
 
+#[derive(Debug, Default)]
+pub struct TakenDamage {
+    pub damage: HashMap<Damage, i16>,
+    pub effects: Vec<Effect>,
+    pub passive_skills: Vec<PassiveSkill>,
+    pub is_critical_hit: bool,
+    pub missed_or_evaded: Option<DamageIgnored>,
+}
+
 #[derive(Component, Default)]
 pub struct PositionComponent {
     pub position: Position<i32>
@@ -33,8 +42,8 @@ pub struct IdentificationComponent {
 }
 
 #[derive(Component, Default)]
-pub struct DamageTextComponent {
-    pub text_upper: Vec<DamageTextInformer>,
+pub struct TakenDamageComponent {
+    pub damage: Vec<TakenDamage>,
 }
 
 #[derive(Component, Default)]
@@ -52,4 +61,9 @@ pub struct AttributesComponent {
 #[derive(Component, Default)]
 pub struct ResistsComponent{
     pub resists: HashMap<Resist, i16>,
+}
+
+#[derive(Component, Default)]
+pub struct DamageTextInformerComponent {
+    pub text: Vec<DamageTextInformer>,
 }
