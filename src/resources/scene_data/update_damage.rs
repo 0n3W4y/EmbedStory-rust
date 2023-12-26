@@ -120,6 +120,7 @@ pub fn update_damage(
 
                     for passive_skill in taken_damage.passive_skills.iter() {
                         todo!();
+                        
                     }
                 }
                 damage.damage.clear();
