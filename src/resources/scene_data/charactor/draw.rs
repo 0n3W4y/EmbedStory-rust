@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 
 use crate::components::charactor_component::{
-    AbilityComponent, CharactorComponent,
-    DestinationComponent, EffectComponent, InventoryComponent,
-    SkillComponent, PlayerComponent, NPCComponent, MonsterComponent, CompanionComponent
+    CharactorComponent,
+    InventoryComponent,
+    PlayerComponent, NPCComponent, MonsterComponent, CompanionComponent, SkillAndEffectComponent
 };
-use crate::components::{IdentificationComponent, ObjectType, PositionComponent, AttributesComponent, StatsComponent, ResistsComponent, TakenDamageComponent, DamageTextInformerComponent};
+use crate::components::{IdentificationComponent, ObjectType, PositionComponent, StatsComponent, TakenDamageComponent};
 use crate::config::TILE_SIZE;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::{Charactor, CharactorType};
@@ -33,29 +33,18 @@ pub fn draw(
 
         let mut identefication_component: IdentificationComponent = Default::default();
         let mut charactor_component: CharactorComponent = Default::default();
-        let mut resist_component: ResistsComponent = Default::default();
-        let mut skill_component: SkillComponent = Default::default();
+        let mut skill_and_effect_component: SkillAndEffectComponent = Default::default();
         let damage_taken_component: TakenDamageComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
-        let mut destination_component: DestinationComponent = Default::default();
-        let mut effect_component: EffectComponent = Default::default();
         let mut stats_component: StatsComponent = Default::default();
-        let mut attributes_component: AttributesComponent = Default::default();
-        let mut ability_component: AbilityComponent = Default::default();
         let mut inventory_component: InventoryComponent = Default::default();
-        let damage_text_informer_component: DamageTextInformerComponent = Default::default();
         copy_from_charactor_to_component(
             charactor,
             &mut identefication_component,
             &mut charactor_component,
-            &mut resist_component,
-            &mut skill_component,
+            &mut skill_and_effect_component,
             &mut position_component,
-            &mut destination_component,
-            &mut effect_component,
             &mut stats_component,
-            &mut attributes_component,
-            &mut ability_component,
             &mut inventory_component,
         );
 
@@ -74,17 +63,11 @@ pub fn draw(
                     },
                     identefication_component,
                     charactor_component,
-                    resist_component,
-                    skill_component,
+                    skill_and_effect_component,
                     damage_taken_component,
                     position_component,
-                    destination_component,
-                    effect_component,
                     stats_component,
-                    attributes_component,
-                    ability_component,
                     inventory_component,
-                    damage_text_informer_component,
                     PlayerComponent,
                     ))
             },
@@ -97,17 +80,11 @@ pub fn draw(
                     },
                     identefication_component,
                     charactor_component,
-                    resist_component,
-                    skill_component,
+                    skill_and_effect_component,
                     damage_taken_component,
                     position_component,
-                    destination_component,
-                    effect_component,
                     stats_component,
-                    attributes_component,
-                    ability_component,
                     inventory_component,
-                    damage_text_informer_component,
                     NPCComponent,
                     ))
             },
@@ -120,17 +97,11 @@ pub fn draw(
                     },
                     identefication_component,
                     charactor_component,
-                    resist_component,
-                    skill_component,
+                    skill_and_effect_component,
                     damage_taken_component,
                     position_component,
-                    destination_component,
-                    effect_component,
                     stats_component,
-                    attributes_component,
-                    ability_component,
                     inventory_component,
-                    damage_text_informer_component,
                     MonsterComponent,
                     ))
             },
@@ -143,17 +114,11 @@ pub fn draw(
                     },
                     identefication_component,
                     charactor_component,
-                    resist_component,
-                    skill_component,
+                    skill_and_effect_component,
                     damage_taken_component,
                     position_component,
-                    destination_component,
-                    effect_component,
                     stats_component,
-                    attributes_component,
-                    ability_component,
                     inventory_component,
-                    damage_text_informer_component,
                     CompanionComponent,
                     ))
             },
@@ -166,14 +131,9 @@ pub fn copy_from_charactor_to_component(
     charactor: &Charactor,
     identefication_component: &mut IdentificationComponent,
     charactor_component: &mut CharactorComponent,
-    resist_component: &mut ResistsComponent,
-    skill_component: &mut SkillComponent,
+    skill_and_effect_component: &mut SkillAndEffectComponent,
     position_component: &mut PositionComponent,
-    destination_component: &mut DestinationComponent,
-    effect_component: &mut EffectComponent,
     stats_component: &mut StatsComponent,
-    attributes_component: &mut AttributesComponent,
-    ability_component: &mut AbilityComponent,
     inventory_component: &mut InventoryComponent,
 ) {
     identefication_component.id = charactor.id;
@@ -188,27 +148,27 @@ pub fn copy_from_charactor_to_component(
     charactor_component.level = charactor.level;
     charactor_component.experience = charactor.experience;
 
-    resist_component.resists = charactor.resists.clone();
+    stats_component.resists = charactor.resists.clone();
 
-    skill_component.base_skill = charactor.base_skill.clone();
-    skill_component.active_skills = charactor.active_skills.clone();
-    skill_component.passive_skills = charactor.passive_skills.clone();
+    skill_and_effect_component.base_skill = charactor.base_skill.clone();
+    skill_and_effect_component.active_skills = charactor.active_skills.clone();
+    skill_and_effect_component.passive_skills = charactor.passive_skills.clone();
 
     position_component.position = charactor.position.clone();
-    destination_component.destination_direction = charactor.destination_direction.clone();
-    destination_component.destination_path = charactor.destination_path.clone();
-    destination_component.destination_point = charactor.destination_point.clone();
+    position_component.destination_direction = charactor.destination_direction.clone();
+    position_component.destination_path = charactor.destination_path.clone();
+    position_component.destination_point = charactor.destination_point.clone();
 
-    effect_component.effects = charactor.effects.clone();
-    effect_component.effect_immunes = charactor.effects_immunes.clone();
+    skill_and_effect_component.effects = charactor.effects.clone();
+    skill_and_effect_component.effect_immunes = charactor.effects_immunes.clone();
 
     stats_component.stats = charactor.stats.clone();
     stats_component.stats_cache = charactor.stats_cache.clone();
 
-    attributes_component.attributes = charactor.attributes.clone();
-    attributes_component.attributes_cache = charactor.attributes.clone();
+    stats_component.attributes = charactor.attributes.clone();
+    stats_component.attributes_cache = charactor.attributes.clone();
 
-    ability_component.ability = charactor.ability.clone();
+    stats_component.ability = charactor.ability.clone();
 
     inventory_component.stuff_storage = charactor.stuff_storage.clone();
     inventory_component.stuff_wear = charactor.stuff_wear.clone();

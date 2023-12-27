@@ -1,10 +1,9 @@
 use bevy::prelude::*;
 
-use crate::components::charactor_component::SkillComponent;
+use crate::components::charactor_component::SkillAndEffectComponent;
 
-pub fn update_active_skills_cooldown(mut charactors_query: Query<&mut SkillComponent>) {
-    //this function running with criteria, triggered by 0.1 sec;
-    let delta_time = 0.1;
+pub fn update_active_skills_cooldown(mut charactors_query: Query<&mut SkillAndEffectComponent>) {
+    let delta_time = 0.1;                                                                                   //this function running with criteria, triggered by 0.1 sec;
     for mut skills in charactors_query.iter_mut() {
         for (_, skill) in skills.active_skills.iter_mut() {
             if skill.on_cooldown {
@@ -23,5 +22,16 @@ pub fn update_active_skills_cooldown(mut charactors_query: Query<&mut SkillCompo
                 skills.base_skill.current_time_duration = 0.0;
             }
         }
+        /* 
+        for(_, effect) in skills.effects.iter_mut() {
+            effect.time_duration += delta_time;
+            match effect.over_time_effect {
+                Some(mut v) => {
+                    v.time_duration += delta_time;
+                },
+                None => {},
+            }
+        }
+        */
     }
 }

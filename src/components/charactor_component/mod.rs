@@ -14,7 +14,6 @@ use crate::resources::scene_data::charactor::{
     CharactorStatus, CharactorType, GenderType, RaceType,
 };
 use crate::resources::scene_data::stuff::Stuff;
-use crate::resources::scene_data::Ability;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 #[derive(Default, Eq, PartialEq, Debug)]
@@ -25,35 +24,15 @@ pub enum ActionType {
 }
 
 #[derive(Component, Default)]
-pub struct CharactorAnimationComponent {
-    //pub animation_type: CharactorAnimationType,
-    pub duration: f32,
-}
-
-#[derive(Component, Default)]
-pub struct EffectComponent {
-    pub effects: HashMap<EffectType, Effect>,
-    pub effect_immunes: Vec<EffectType>,
-    pub effect_status: Vec<EffectStatus>,
-}
-
-#[derive(Component, Default)]
-pub struct DestinationComponent {
-    pub destination_point: Option<Position<i32>>,
-    pub destination_path: Vec<Position<i32>>,
-    pub destination_direction: Position<i8>,
-}
-
-#[derive(Component, Default)]
-pub struct AbilityComponent {
-    pub ability: HashMap<Ability, i16>,
-}
-
-#[derive(Component, Default)]
-pub struct SkillComponent {
+pub struct SkillAndEffectComponent {
     pub base_skill: ActiveSkill,
     pub active_skills: HashMap<SkillSlot, ActiveSkill>,
     pub passive_skills: HashMap<PassiveSkillType, PassiveSkill>,
+    pub effects: HashMap<EffectType, Effect>,
+    pub effect_immunes: Vec<EffectType>,
+    pub effect_status: Vec<EffectStatus>,
+    pub added_effect: Vec<Effect>,
+    pub added_passive_skill: Vec<PassiveSkill>,
 }
 
 #[derive(Component, Default)]

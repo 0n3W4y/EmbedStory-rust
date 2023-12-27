@@ -2,10 +2,9 @@ use bevy::prelude::*;
 use rand::Rng;
 
 use crate::components::tile_component::TileComponent;
-use crate::components::{PositionComponent, IdentificationComponent, TakenDamageComponent, TakenDamage, ObjectType};
+use crate::components::{PositionComponent, IdentificationComponent, TakenDamageComponent, TakenDamage, ObjectType, StatsComponent};
 use crate::components::charactor_component::{
-    AbilityComponent, ActionType, CharactorComponent, EffectComponent,
-    SkillComponent, CharactorTargetComponent,
+    ActionType, CharactorComponent, SkillAndEffectComponent, CharactorTargetComponent,
 };
 
 use crate::components::projectile_component::Projectile;
@@ -29,10 +28,9 @@ pub fn update_attack_from_basic_skill(
     mut charactor_query: Query<(
         &mut CharactorComponent,
         &PositionComponent,
-        &mut SkillComponent,
+        &mut SkillAndEffectComponent,
         &CharactorTargetComponent,
-        &AbilityComponent,
-        &EffectComponent,
+        &StatsComponent,
     ), With<CharactorComponent>>,
 
     mut target_query: Query<(
@@ -49,14 +47,13 @@ pub fn update_attack_from_basic_skill(
         charactor_position,
         mut charactor_skill, 
         charactor_target, 
-        charactor_ability,
-        charactor_effect
+        charactor_stats,
     ) in charactor_query.iter_mut() {
         if charactor_target.action != ActionType::Attack {              //check for target status; And skip all if not attacking;
             continue;
         }
 
-        match charactor_effect.effect_status.iter().find(|&x| *x == EffectStatus::CanNotAttack) {
+        match charactor_skill.effect_status.iter().find(|&x| *x == EffectStatus::CanNotAttack) {
             Some(_) => continue,
             None => {},
         }
@@ -125,7 +122,7 @@ pub fn update_attack_from_basic_skill(
                             &mut commands,
                             skill,
                             &mut charactor,
-                            charactor_ability,
+                            charactor_stats,
                             charactor_position,
                             target_position,
                             &mut target_taken_damage,
@@ -137,7 +134,7 @@ pub fn update_attack_from_basic_skill(
                 }
             }
         }
-        attack_multiply_targets(&mut commands, skill, &mut charactor, charactor_ability, charactor_position, &deploy,&material_manager,targets_in_skill_range)
+        attack_multiply_targets(&mut commands, skill, &mut charactor, charactor_stats, charactor_position, &deploy,&material_manager,targets_in_skill_range)
     }
 }
 
@@ -161,7 +158,7 @@ fn attack_multiply_targets(
     mut commands: &mut Commands,
     skill: &mut ActiveSkill,
     charactor: &mut CharactorComponent,
-    charactor_ability: &AbilityComponent,
+    charactor_ability: &StatsComponent,
     charactor_position: &PositionComponent,
     deploy: &Deploy,
     material_manager: &MaterialManager,
@@ -181,7 +178,7 @@ fn attack_single_target(
     mut commands: &mut Commands,
     skill: &mut ActiveSkill,
     charactor: &mut CharactorComponent,
-    charactor_ability: &AbilityComponent,
+    charactor_ability: &StatsComponent,
     charactor_position: &PositionComponent,
     target_position: &PositionComponent,
     target_taken_damage: &mut TakenDamageComponent,

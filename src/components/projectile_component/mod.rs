@@ -14,6 +14,7 @@ pub struct Projectile {
     pub current_position: Position<i32>,
     pub motion_coefficient: Position<f32>,
     pub direction: Position<i8>,
+    pub area_on_impact: u8,
     pub is_missed: bool,
     pub is_critical_hit: bool,
     pub velocity: u16,

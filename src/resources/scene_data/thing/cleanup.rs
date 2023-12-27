@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
-use crate::{components::{thing_component::{ThingComponent, ThingPermissionsComponent}, IdentificationComponent, PositionComponent, AttributesComponent}, resources::scene_manager::SceneManager};
+use crate::{components::{thing_component::{ThingComponent, ThingPermissionsComponent}, IdentificationComponent, PositionComponent, StatsComponent}, resources::scene_manager::SceneManager};
 
 use super::Thing;
 
 pub fn cleanup(
     mut commands: Commands,
-    mut things_query: Query<(Entity, &IdentificationComponent, &PositionComponent, &AttributesComponent, &ThingPermissionsComponent, &ThingComponent),  With<ThingComponent>>,
+    mut things_query: Query<(Entity, &IdentificationComponent, &PositionComponent, &StatsComponent, &ThingPermissionsComponent, &ThingComponent),  With<ThingComponent>>,
     mut scene_manager: ResMut<SceneManager>,
 ){
     let scene = scene_manager.get_current_game_scene_mut();
@@ -15,7 +15,7 @@ pub fn cleanup(
         entity, 
         identification, 
         position, 
-        attributes, 
+        stats, 
         permissions, 
         thing_component
     ) in things_query.iter_mut(){
@@ -24,7 +24,7 @@ pub fn cleanup(
             identification, 
             thing_component, 
             position, 
-            attributes, 
+            stats, 
             permissions, 
             &mut new_thing
         );
@@ -38,7 +38,7 @@ pub fn copy_from_components_to_thing(
     identification_component: &IdentificationComponent,
     thing_component: &ThingComponent, 
     position_component: &PositionComponent, 
-    attributes_component: &AttributesComponent, 
+    attributes_component: &StatsComponent, 
     permissions_component: &ThingPermissionsComponent,
     thing: &mut Thing,
 ) {

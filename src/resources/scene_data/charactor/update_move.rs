@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
-use crate::components::{PositionComponent, IdentificationComponent};
+use crate::components::{PositionComponent, IdentificationComponent, StatsComponent};
 use crate::config::TILE_SIZE;
-use crate::components::charactor_component::{CharactorComponent, AbilityComponent, DestinationComponent, EffectComponent};
+use crate::components::charactor_component::{CharactorComponent, SkillAndEffectComponent};
 use crate::resources::scene_data::Ability;
 use crate::resources::scene_data::charactor::CharactorStatus;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -25,9 +25,8 @@ pub fn move_charactor(
         &IdentificationComponent, 
         &mut CharactorComponent, 
         &mut PositionComponent, 
-        &mut DestinationComponent, 
-        &AbilityComponent, 
-        &EffectComponent,
+        &StatsComponent, 
+        &SkillAndEffectComponent,
         &mut Transform
     )>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
@@ -39,22 +38,20 @@ pub fn move_charactor(
         identification_component,
         mut charactor, 
         mut position, 
-        mut destination,
-        ability,
-        effects,
+        stats,
+        skills_and_effects,
         mut transform, 
     ) in charactor_query.iter_mut(){
-        match destination.destination_point {
+        match position.destination_point {
             Some(_) => {
-                match effects.effect_status.iter().find(|&x| *x == EffectStatus::CanNotMove) {
+                match skills_and_effects.effect_status.iter().find(|&x| *x == EffectStatus::CanNotMove) {
                     Some(_) => continue,                                                            //have status can't move, so we stop moving;
                     None => {
                         try_move(
                             identification_component,
                             &mut charactor, 
                             &mut position,
-                            &mut destination,
-                            ability,
+                            stats,
                             &mut transform.translation,
                             delta,
                             scene
@@ -86,25 +83,23 @@ pub fn try_move(
     identification_component: &IdentificationComponent, 
     charactor: &mut CharactorComponent, 
     position: &mut PositionComponent, 
-    destination: &mut DestinationComponent, 
-    ability: &AbilityComponent, 
+    stats: &StatsComponent, 
     translation: &mut Vec3, 
     delta: f32,
     scene: &GameScene
 ) {
-    if destination.destination_path.len() == 0 {                                        //first move after standing or reach his destination;
-        try_path(position, destination, scene);                                   //light pathfinding;
-    } else if destination.destination_path.len() == 1 {                                 //check for changing destination point;
-        if destination.destination_path[0] != destination.destination_point.unwrap() {  //safe unwrap;
-            try_path(position, destination, scene);
+    if position.destination_path.len() == 0 {                                        //first move after standing or reach his destination;
+        try_path(position, scene);                                   //light pathfinding;
+    } else if position.destination_path.len() == 1 {                                 //check for changing destination point;
+        if position.destination_path[0] != position.destination_point.unwrap() {  //safe unwrap;
+            try_path(position, scene);
         }      
     } else {
         moving(
             identification_component,
             charactor, 
             position,
-            destination,
-            ability,
+            stats,
             translation,
             delta
         );
@@ -116,14 +111,13 @@ pub fn moving(
     identification_component: &IdentificationComponent, 
     charactor: &mut CharactorComponent, 
     position: &mut PositionComponent, 
-    destination: &mut DestinationComponent, 
-    ability: &AbilityComponent, 
+    stats: &StatsComponent, 
     translation: &mut Vec3, 
     delta: f32
 ){
     //get charactor movement multiplier
     // if we have -100% charactor can't move at all;
-    let movement_speed_multiplier = match ability.ability.get(&Ability::MovementSpeed){
+    let movement_speed_multiplier = match stats.ability.get(&Ability::MovementSpeed){
         Some(v) => *v,
         None => {
             println!(
@@ -140,15 +134,15 @@ pub fn moving(
         movement_speed = 0.0;
     };
 
-    let new_x = destination.destination_direction.x as f32 * movement_speed as f32 * delta;
-    let new_y = destination.destination_direction.y as f32 * movement_speed as f32 * delta;
+    let new_x = position.destination_direction.x as f32 * movement_speed as f32 * delta;
+    let new_y = position.destination_direction.y as f32 * movement_speed as f32 * delta;
 
     translation.x += new_x;
     translation.y += new_y;
 
-    change_moving_status_by_direction(charactor, &destination.destination_direction);
+    change_moving_status_by_direction(charactor, &position.destination_direction);
 
-    try_grid_moving(charactor, position, destination, translation);
+    try_grid_moving(charactor, position, translation);
 }
 
 pub fn calculate_direction(position_x: i32, position_y: i32, target_x: i32, target_y: i32) -> Position<i8> {
@@ -192,19 +186,19 @@ fn change_sprite_by_direction(sprite: &mut Mut<TextureAtlasSprite>, direction: &
     };
 }
 */
-fn destination_reach(charactor: &mut CharactorComponent, destination: &mut DestinationComponent){
+fn destination_reach(charactor: &mut CharactorComponent, destination: &mut PositionComponent){
     charactor.status = CharactorStatus::Standing;
     destination.destination_direction = Position {x: 0 as i8, y: 0 as i8};
     destination.destination_point = None;
     destination.destination_path.clear();
 }
 
-fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionComponent, destination: &mut DestinationComponent, translation: &mut Vec3){
+fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionComponent, translation: &mut Vec3){
     let grid_x = translation.x / TILE_SIZE as f32;
     let grid_y = translation.y / TILE_SIZE as f32;
 
-    let dir_x = destination.destination_direction.x;
-    let dir_y = destination.destination_direction.y;
+    let dir_x = position.destination_direction.x;
+    let dir_y = position.destination_direction.y;
 
     let calculated_x = if dir_x > 0 {
         grid_x.floor() as i32
@@ -215,11 +209,11 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
     let calculated_y = if dir_y > 0 {
         grid_y.floor() as i32
     } else {
-        grid_x.ceil() as i32
+        grid_y.ceil() as i32
     };
 
-    let current_destination_x = destination.destination_path[0].x;
-    let current_destination_y = destination.destination_path[0].y;
+    let current_destination_x = position.destination_path[0].x;
+    let current_destination_y = position.destination_path[0].y;
 
     //reach destination point in path;
     if current_destination_x == calculated_x && current_destination_y == calculated_y {
@@ -227,17 +221,17 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
         position.position.x = current_destination_x;
         position.position.y = current_destination_y;
         //remove first path point;
-        destination.destination_path.remove(0);
+        position.destination_path.remove(0);
 
         //check for reach destination;
-        if destination.destination_path.len() == 0 {
-            destination_reach(charactor, destination);
+        if position.destination_path.len() == 0 {
+            destination_reach(charactor, position);
             //centering sprite ;
             translation.x = grid_x * TILE_SIZE as f32;
             translation.y = grid_y * TILE_SIZE as f32;
         } else {
-            let destination_position = &destination.destination_path[0];                     //get first destination point;
-            destination.destination_direction = calculate_direction(
+            let destination_position = &position.destination_path[0];                     //get first destination point;
+            position.destination_direction = calculate_direction(
                 current_destination_x, 
                 current_destination_y, 
                 destination_position.x, 
@@ -249,25 +243,25 @@ fn try_grid_moving(charactor: &mut CharactorComponent, position: &mut PositionCo
 
 
 
-fn try_path(position: &mut PositionComponent, destination: &mut DestinationComponent, scene: &GameScene) {
+fn try_path(position: &mut PositionComponent, scene: &GameScene) {
     //pathfinding need to be here;
     let starting_position_x = position.position.x;
     let starting_position_y = position.position.y;  
-    let destination_x = destination.destination_point.unwrap().x; //safe
-    let destination_y = destination.destination_point.unwrap().y; //safe
+    let destination_x = position.destination_point.unwrap().x; //safe
+    let destination_y = position.destination_point.unwrap().y; //safe
 
     //maximum tiles to reaach destination without pathfinding;
     let path_tiles = ((destination_x - starting_position_x).abs()).max((destination_y - starting_position_y).abs());
     for _ in 0..path_tiles{
-        let path_len = destination.destination_path.len();
+        let path_len = position.destination_path.len();
         let current_position = if path_len == 0 {
             //get start point;
             Position{x: starting_position_x, y: starting_position_y}
         } else {
             //get last point;
             Position{
-                x: destination.destination_path[path_len -1].x,
-                y: destination.destination_path[path_len -1].y
+                x: position.destination_path[path_len -1].x,
+                y: position.destination_path[path_len -1].y
             }
         };
         let dif_x = destination_x - current_position.x;
@@ -293,15 +287,15 @@ fn try_path(position: &mut PositionComponent, destination: &mut DestinationCompo
         let tile = scene.tilemap.get_tile_by_position(next_position.x, next_position.y);
 
         if check_tile_for_moving(tile) {
-            destination.destination_path.push(next_position);
+            position.destination_path.push(next_position);
         } else {
             //break circle;
             //break if tile can't walked, without pathfinding;
             if path_len == 0 {
-                destination.destination_point = None;
+                position.destination_point = None;
                 return;
             } else {
-                destination.destination_point = Some(destination.destination_path[path_len - 1]);
+                position.destination_point = Some(position.destination_path[path_len - 1]);
                 return;
             }            
         }

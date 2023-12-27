@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{PositionComponent, AttributesComponent};
+use crate::components::{PositionComponent, StatsComponent};
 use crate::components::thing_component::ThingComponent;
 use crate::resources::scene_data::Attribute;
 use crate::resources::scene_data::stuff::Stuff;
@@ -11,7 +11,7 @@ use super::ThingType;
 
 pub fn destroeyd_thing_handler(
     mut commands: Commands,
-    mut things_query: Query<(Entity, &ThingComponent, &AttributesComponent, &PositionComponent), (Changed<ThingComponent>, With<ThingComponent>)>,
+    mut things_query: Query<(Entity, &ThingComponent, &StatsComponent, &PositionComponent), (Changed<ThingComponent>, With<ThingComponent>)>,
     mut scene_manager: ResMut<SceneManager>,
     material_manager: Res<MaterialManager>,
 ){

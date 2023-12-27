@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::{CharactorType, skills::PassiveSkill, effects::Effect}, damage_text_informer::{DamageTextInformer, DamageIgnored}, Stat, Attribute, Resist, Damage}};
+use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::{skills::PassiveSkill, effects::Effect}, damage_text_informer::{DamageTextInformer, DamageIgnored}, Stat, Attribute, Resist, Damage, Ability}};
 
 pub mod tile_component;
 pub mod thing_component;
@@ -11,14 +11,19 @@ pub mod projectile_component;
 pub mod stuff_component;
 
 
-#[derive(Debug, Clone, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ObjectType{
-    Charactor(CharactorType),
-    Stuff,
-    Thing,
-    Projectile,
-    #[default]
-    Tile,
+    Charactor(usize),
+    Stuff(usize),
+    Thing(usize),
+    Projectile(usize),
+    Tile(usize),
+}
+
+impl Default for ObjectType {
+    fn default() -> Self {
+        Self::Tile(0)
+    }
 }
 
 #[derive(Debug, Default)]
@@ -32,38 +37,29 @@ pub struct TakenDamage {
 
 #[derive(Component, Default)]
 pub struct PositionComponent {
-    pub position: Position<i32>
+    pub position: Position<i32>,
+    pub destination_point: Option<Position<i32>>,
+    pub destination_path: Vec<Position<i32>>,
+    pub destination_direction: Position<i8>,
 }
 
 #[derive(Component, Default)]
 pub struct IdentificationComponent {
-    pub id: usize,
     pub object_type: ObjectType,
 }
 
 #[derive(Component, Default)]
 pub struct TakenDamageComponent {
     pub damage: Vec<TakenDamage>,
+    pub text: Vec<DamageTextInformer>,
 }
 
 #[derive(Component, Default)]
 pub struct StatsComponent {
     pub stats: HashMap<Stat, i16>,
     pub stats_cache: HashMap<Stat, i16>,
-}
-
-#[derive(Component, Default)]
-pub struct AttributesComponent {
     pub attributes: HashMap<Attribute, i16>,
     pub attributes_cache: HashMap<Attribute, i16>,
-}
-
-#[derive(Component, Default)]
-pub struct ResistsComponent{
     pub resists: HashMap<Resist, i16>,
-}
-
-#[derive(Component, Default)]
-pub struct DamageTextInformerComponent {
-    pub text: Vec<DamageTextInformer>,
+    pub ability: HashMap<Ability, i16>,
 }

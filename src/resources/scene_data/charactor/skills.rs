@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use crate::resources::{scene_data::{stuff::{Stuff, StuffType}, projectiles::ProjectileType, Ability, Damage}, deploy::Deploy};
+use crate::{resources::{scene_data::{stuff::{Stuff, StuffType}, projectiles::ProjectileType, Ability, Damage}, deploy::Deploy}, components::StatsComponent};
 
 use super::{effects::{EffectType, Effect}, get_ability_type_from_damage_type};
 
@@ -193,24 +193,24 @@ pub struct ActiveSkillDeploy {
 }
 
 
-pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, ability_storage: &HashMap<Ability, i16>, weapon: &Option<Stuff>) {
+pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &StatsComponent, weapon: &Option<Stuff>) {
     if base_skill.skill_type != ActiveSkillType::BaseSkill {
         println!("Try to change not base skill!");
         return;
     }
 
     let mut new_base_skill = ActiveSkill::new(deploy, &ActiveSkillType::BaseSkill);
-    match ability_storage.get(&Ability::CriticalHitChanse) {
+    match stats.ability.get(&Ability::CriticalHitChanse) {
         Some(v) => new_base_skill.crit_chance += *v,
         None => {},
     }
 
-    match ability_storage.get(&Ability::CriticalHitMultiplier) {
+    match stats.ability.get(&Ability::CriticalHitMultiplier) {
         Some(v) => new_base_skill.crit_multiplier += *v,
         None => {}
     }
 
-    let attack_speed_from_ability = match ability_storage.get(&Ability::AttackSpeed) {      
+    let attack_speed_from_ability = match stats.ability.get(&Ability::AttackSpeed) {      
         Some(v) => *v,
         None => 0,
     };
@@ -224,13 +224,13 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, ability_s
                     new_base_skill.crit_multiplier += val.critical_hit_multiplier;
                     new_base_skill.damage.clear();                                                         //setting up new damage from weapon to skill;
                     let mut new_damage = val.damage.clone();
-                    update_damage_by_ability(&mut new_damage, ability_storage);
+                    update_damage_by_ability(&mut new_damage, &stats.ability);
                     new_base_skill.damage = new_damage;
 
                     new_base_skill.effects.clear();                                                         //setting up new effects from weapon to skill;
                     for (effect_type, value) in val.effects.iter() {
                         let mut effect = Effect::new(deploy, effect_type);
-                        update_over_time_effect_damage_by_ability(&mut effect, ability_storage);
+                        update_over_time_effect_damage_by_ability(&mut effect, &stats.ability);
                         new_base_skill.effects.insert(effect_type.clone(), (effect, *value));
                     }
 
@@ -238,9 +238,9 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, ability_s
                     for (passive_skill_type, chance) in val.passive_skills.iter() {
                         let mut new_passive_skill = PassiveSkill::new(deploy, passive_skill_type);
                         for (_, (effect, _)) in new_passive_skill.effect.iter_mut() {
-                            update_over_time_effect_damage_by_ability(effect, ability_storage);
+                            update_over_time_effect_damage_by_ability(effect, &stats.ability);
                         }
-                        update_damage_by_ability(&mut new_passive_skill.damage, ability_storage);
+                        update_damage_by_ability(&mut new_passive_skill.damage, &stats.ability);
                         new_base_skill.passive_skills.insert(passive_skill_type.clone(), (new_passive_skill, *chance));
                     }
                 },

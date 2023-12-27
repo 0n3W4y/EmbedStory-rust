@@ -10,7 +10,7 @@ use super::{
             GenderType, RaceType, do_stat_dependences, CharactorStrength, STATS_POINTS_EVERY_LEVEL
     }, Stat, Ability, Resist},
 };
-use crate::{components::AttributesComponent, scenes::game_scenes::{game_scene::GameScene, tilemap::tile::{TilePermissions, Position}}};
+use crate::{scenes::game_scenes::{game_scene::GameScene, tilemap::tile::{TilePermissions, Position}}, components::StatsComponent};
 
 #[derive(Default, Clone, Serialize, Deserialize, Resource)]
 pub struct CharactorManager {
@@ -212,8 +212,8 @@ impl CharactorManager {
     fn initialize_character_after_creation(&self, charactor: &mut Charactor) {
         //TODO:
         for (stat, value) in charactor.stats.iter() {
-            let mut component: AttributesComponent = AttributesComponent { attributes: charactor.attributes.clone(), attributes_cache: charactor.attributes_cache.clone() };
-            do_stat_dependences(&mut charactor.resists, &mut charactor.ability, &mut component, stat, *value, 0);
+            let mut component: StatsComponent = StatsComponent { attributes: charactor.attributes.clone(), attributes_cache: charactor.attributes_cache.clone(), ..Default::default() };
+            do_stat_dependences(&mut component, stat, *value, 0);
             charactor.attributes = component.attributes;
             charactor.attributes_cache = component.attributes_cache;
         }

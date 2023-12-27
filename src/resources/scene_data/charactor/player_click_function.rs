@@ -6,7 +6,6 @@ use crate::components::ObjectType;
 use crate::components::PositionComponent;
 use crate::components::charactor_component::ActionType;
 use crate::components::charactor_component::CharactorTargetComponent;
-use crate::components::charactor_component::DestinationComponent;
 use crate::components::charactor_component::PlayerComponent;
 use crate::components::tile_component::TileComponent;
 use crate::config::{MONITOR_HALF_HEIGHT, MONITOR_HALF_WIDTH, TILE_SIZE};
@@ -21,7 +20,7 @@ pub fn player_click(
     mouse_button_input: Res<Input<MouseButton>>,
     //scene_manager: Res<SceneManager>,
     mut player_query: Query<
-        (&mut CharactorTargetComponent, &mut DestinationComponent),
+        (&mut CharactorTargetComponent, &mut PositionComponent),
         With<PlayerComponent>,
     >,
     target_query: Query<(&IdentificationComponent, &PositionComponent), Without<TileComponent>>,
@@ -111,7 +110,7 @@ pub fn player_click(
 }
 
 fn move_player_to_position(
-    destination: &mut DestinationComponent,
+    destination: &mut PositionComponent,
     x: i32,
     y: i32,
 ) {

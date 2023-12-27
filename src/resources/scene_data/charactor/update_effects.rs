@@ -1,14 +1,15 @@
 use bevy::prelude::*;
 
-use crate::components::{StatsComponent, ResistsComponent, AttributesComponent, TakenDamageComponent, TakenDamage};
+use crate::components::{StatsComponent,  TakenDamageComponent, TakenDamage};
 use crate::components::charactor_component::{
-    AbilityComponent, CharactorComponent, EffectComponent,
-    SkillComponent, InventoryComponent,
+    CharactorComponent,
+    InventoryComponent, SkillAndEffectComponent,
 };
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::Damage;
-use crate::resources::scene_data::charactor::{self, skills};
+use crate::resources::scene_data::charactor;
 use super::effects::EffectType;
+use super::skills::setup_base_skill;
 use super::{CharactorStatus, change_stat_points, StuffWearSlot};
 
 
@@ -16,27 +17,19 @@ pub fn update_effects(
     mut charactors_query: Query<
         (
             &CharactorComponent,
-            &mut EffectComponent,
             &mut StatsComponent,
-            &mut AttributesComponent,
-            &mut ResistsComponent,
-            &mut AbilityComponent,
-            &mut SkillComponent,
+            &mut SkillAndEffectComponent,
             &InventoryComponent,
             &mut TakenDamageComponent,
         ),
         With<CharactorComponent>>,
     deploy: Res<Deploy>,
 ) {
-    let delta_time: f32 = 0.1;                                                              //this function running with criteria triggered by 0.1 sec;
+    let delta_time = 0.1;
     for (
         charactor_component,
-        mut effects, 
         mut stats, 
-        mut attributes,
-        mut resists, 
-        mut abilities, 
-        mut skills,
+        mut skills_and_effects,
         inventory,
         mut damage_taken,
 
@@ -47,37 +40,34 @@ pub fn update_effects(
 
         let mut effects_to_remove:Vec<EffectType> = vec![];                                     //create vec of effects for deleting, which one ends at this moment;
 
-        for (_, effect) in effects.effects.iter_mut() {                                     //update  effects;
+        for (_, effect) in skills_and_effects.effects.iter_mut() {                                     //update  effects;
             if effect.time_duration == 0.0 {
                 match effect.buff_debuff_effect {
                     Some(buff_debuff_effect) => {
                         for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
                             change_stat_points(                    
                                 &mut stats,
-                                &mut resists.resists,
-                                &mut abilities.ability,
-                                &mut attributes,
                                 stat,
                                 *stat_damage,
                             );
                         }
 
                         for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
-                            charactor::change_attribute_points(&mut attributes, &Damage::Health, *attribute_damage, true);
+                            charactor::change_attribute_points(&mut stats, &Damage::Health, *attribute_damage, true);
                         }
 
                         for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
-                            charactor::change_resist(&mut resists.resists, resist, *resists_damage);
+                            charactor::change_resist(&mut stats, resist, *resists_damage);
                         }
 
                         for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
-                            charactor::change_ability(&mut abilities.ability, &ability, *ability_damage);
+                            charactor::change_ability(&mut stats, &ability, *ability_damage);
                         }
 
-                        skills::setup_base_skill(
+                        setup_base_skill(
                             &deploy,
-                            &mut skills.base_skill,
-                            &abilities.ability, 
+                            &mut skills_and_effects.base_skill,
+                            &stats, 
                             inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
                             );
 
@@ -99,30 +89,27 @@ pub fn update_effects(
                         for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
                             change_stat_points(                    
                                 &mut stats,
-                                &mut resists.resists,
-                                &mut abilities.ability,
-                                &mut attributes,
                                 stat,
                                 -(*stat_damage),
                             );
                         }
 
                         for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
-                            charactor::change_attribute_points(&mut attributes, &Damage::Health, -(*attribute_damage), true);
+                            charactor::change_attribute_points(&mut stats, &Damage::Health, -(*attribute_damage), true);
                         }
 
                         for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
-                            charactor::change_resist(&mut resists.resists, resist, -(*resists_damage));
+                            charactor::change_resist(&mut stats, resist, -(*resists_damage));
                         }
 
                         for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
-                            charactor::change_ability(&mut abilities.ability, &ability, -(*ability_damage));
+                            charactor::change_ability(&mut stats, &ability, -(*ability_damage));
                         }
 
-                        skills::setup_base_skill(
+                        setup_base_skill(
                             &deploy,
-                            &mut skills.base_skill,
-                            &abilities.ability, 
+                            &mut skills_and_effects.base_skill,
+                            &stats, 
                             inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
                             );
 
@@ -157,7 +144,7 @@ pub fn update_effects(
         }
 
         for effect_type in effects_to_remove.iter() {
-            effects.effects.remove(effect_type);
+            skills_and_effects.effects.remove(effect_type);
         }
     }
 }

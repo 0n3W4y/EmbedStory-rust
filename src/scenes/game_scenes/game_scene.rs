@@ -192,7 +192,6 @@ impl Plugin for GameScenePlugin {
                     charactor::player_click_function::player_click,
                     charactor::update_passive_skills::update_passive_skills,
                     charactor::active_skill_handler::active_skill_handler,
-                    projectiles::update_projectile::update_projectiles,
                     charactor::update_attack::update_attack_from_basic_skill
                 )
                 .in_set(OnUpdate(AppState::GameScene))
@@ -201,24 +200,27 @@ impl Plugin for GameScenePlugin {
             .add_system(
                 charactor::update_cooldowns::update_active_skills_cooldown
                 .in_set(OnUpdate(AppState::GameScene))
-                .run_if(on_timer(Duration::from_secs_f32(0.1)))
-            )
+                .run_if(on_timer(Duration::from_secs_f32(0.1))))
             .add_system(
                 update_damage::update_damage
                 .in_set(OnUpdate(AppState::GameScene))
-                .run_if(on_timer(Duration::from_secs_f32(0.1)))
-            )
+                .run_if(on_timer(Duration::from_secs_f32(0.1))))
             .add_system(
                 charactor::update_effects::update_effects
                 .in_set(OnUpdate(AppState::GameScene))
-                .run_if(on_timer(Duration::from_secs_f32(0.1)))
-            )
-
+                .run_if(on_timer(Duration::from_secs_f32(0.1))))
+            .add_system(
+                projectiles::update_projectile::update_projectiles
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.1))))
             .add_system(
                 damage_text_informer::update_damage_text_informer
                 .in_set(OnUpdate(AppState::GameScene))
                 .run_if(on_timer(Duration::from_secs_f32(0.25))))
-
+            .add_system(
+                charactor::update_target_position::update_target_position
+                .in_set(OnUpdate(AppState::GameScene))
+                .run_if(on_timer(Duration::from_secs_f32(0.5))))
             //on exit
             .add_systems(
                 (

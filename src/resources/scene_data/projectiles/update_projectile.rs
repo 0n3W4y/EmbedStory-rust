@@ -1,10 +1,9 @@
 use crate::{
     components::{
-        charactor_component::{AbilityComponent, EffectComponent, SkillComponent},
         projectile_component::Projectile,
         tile_component::TileComponent,
-        AttributesComponent, IdentificationComponent, ObjectType, PositionComponent,
-        ResistsComponent, TakenDamage, TakenDamageComponent,
+        IdentificationComponent, ObjectType, PositionComponent,
+        TakenDamage, TakenDamageComponent,
     },
     config::TILE_SIZE,
     materials::material_manager::MaterialManager,
@@ -22,11 +21,6 @@ pub fn update_projectiles(
         (
             &PositionComponent,
             &IdentificationComponent,
-            &mut AttributesComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-            &mut SkillComponent,
-            &AbilityComponent,
             &mut TakenDamageComponent,
             //&mut Projectile,
         ),
@@ -46,112 +40,84 @@ pub fn update_projectiles(
         if try_grid_move(
             transfrom.translation.x,
             transfrom.translation.y,
-            &mut projectile.current_position,
+            &mut projectile,
         ) {
-            check_for_collision(
-                &mut commands,
+            let targets_for_collision = check_for_collision(
                 &mut projectile,
-                projectile_entity,
                 &mut all_query,
             );
+
+            for (identification, damage) in targets_for_collision {
+                match identification.object_type {
+                    ObjectType::Charactor(_) => collision_with_charactor(&mut projectile, damage),
+                    ObjectType::Stuff => println!("Can not collisiion with stuff!!"),
+                    ObjectType::Thing => collision_with_thing(&mut projectile, damage),
+                    ObjectType::Projectile => collision_with_projectile(),
+                    _ => {},
+                }
+            }
+            commands.entity(projectile_entity).despawn_recursive();
         }
     }
 }
 
 pub fn check_for_collision(
-    commands: &mut Commands,
     projectile: &mut Projectile,
-    projectile_entity: Entity,
     all_query: &mut Query<
         (
             &PositionComponent,
             &IdentificationComponent,
-            &mut AttributesComponent,
-            &ResistsComponent,
-            &mut EffectComponent,
-            &mut SkillComponent,
-            &AbilityComponent,
             &mut TakenDamageComponent,
             //&mut Projectile,
         ),
         Without<TileComponent>,
     >,
-) -> Option<(ObjectType, usize)> {
-    for (
-        position,
-        identification,
-        mut attributes_component,
-        resists_component,
-        mut effects_component,
-        mut skills_component,
-        abilities_component,
-        mut damage,
-        //mut other_projectile
-    ) in all_query.iter_mut()
-    {
+) -> Vec<(&'static IdentificationComponent, &'static mut TakenDamageComponent)> {
+    let projectile_x = projectile.current_position.x;
+    let projectile_y = projectile.current_position.y;
+    let area_on_impact = projectile.area_on_impact as i32;
+    let mut targets: Vec<(&IdentificationComponent, &mut TakenDamageComponent)>;
+
+    for (position, identification, mut damage) in all_query.iter_mut() {
         let target_x = position.position.x;
         let target_y = position.position.y;
 
-        if projectile.current_position.x == target_x && projectile.current_position.y == target_y {
-            //check for position and target;
-            match identification.object_type {
-                ObjectType::Charactor(_) => {
-                    collision_with_charactor(
-                        commands,
-                        projectile,
-                        projectile_entity,
-                        &mut attributes_component,
-                        &resists_component,
-                        &mut effects_component,
-                        &mut skills_component,
-                        &abilities_component,
-                        &mut damage,
-                    );
-                }
-                ObjectType::Thing => {
-                    let starting_pos_x = projectile.starting_position.x;
-                    let starting_pos_y = projectile.starting_position.y;
-                    let delta_x: i32 = target_x - starting_pos_x;
-                    let delta_y: i32 = target_y - starting_pos_y;
-                    let distance: i32 = (((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0))
-                        .sqrt())
-                    .floor() as i32;
-
-                    if distance == 1 {
-                        //ignoring any object at +-1 grid position ( thinking, charactor shooting from defense)
-                        continue;
-                    }
-                    collision_with_thing(
-                        commands,
-                        projectile_entity,
-                        projectile,
-                        &mut attributes_component,
-                        &resists_component,
-                        &mut damage,
-                    );
-                }
-                ObjectType::Projectile => {
-                    collision_with_projectile();
-                }
-                _ => continue,
-            }
-            break;
-        } else {
+        if identification.object_type == ObjectType::Stuff {
             continue;
         }
+
+        if area_on_impact > 0 {
+            let projectile_position_min_x = projectile_x - area_on_impact;
+            let projectile_position_max_x = projectile_x + area_on_impact;
+            let projectile_position_max_y = projectile_y + area_on_impact;
+            let projectile_position_min_y = projectile_y - area_on_impact;
+
+            if target_x == projectile_x && target_y == projectile_y {
+                if identification.object_type == ObjectType::Thing {
+                    if (projectile.starting_position.x - target_x).abs() == 1 
+                    && (projectile.starting_position.y - target_y).abs() == 1 {
+                        continue;
+                    }
+                }
+                targets.insert(0, (&identification, &mut damage));
+            } else if (target_x >= projectile_position_min_x && target_x <= projectile_position_max_x) 
+                    && (target_y >= projectile_position_min_y && target_y <= projectile_position_max_y) {
+                targets.push((&identification, &mut damage));
+            } else {
+                continue;
+            }            
+        } else {
+            if target_x == projectile_x && target_y == projectile_y {
+                targets.push((&identification, &mut damage));
+                break;
+            }
+        }
     }
-    None
+    targets
 }
 
 fn collision_with_charactor(
-    commands: &mut Commands,
     projectile: &Projectile,
-    projectile_entity: Entity,
-    attributes: &mut AttributesComponent,
-    resists: &ResistsComponent,
-    effects: &mut EffectComponent,
-    skills: &mut SkillComponent,
-    abilities: &AbilityComponent,
     damage: &mut TakenDamageComponent,
 ) {
     let mut damage_taken: TakenDamage = Default::default();
@@ -169,15 +135,10 @@ fn collision_with_charactor(
         damage_taken.passive_skills.push(skill.clone());
     }
     damage.damage.push(damage_taken);
-    commands.entity(projectile_entity).despawn_recursive();
 }
 
 fn collision_with_thing(
-    commands: &mut Commands,
-    projectile_entity: Entity,
     projectile: &Projectile,
-    attributes_component: &mut AttributesComponent,
-    resists_component: &ResistsComponent,
     damage: &mut TakenDamageComponent,
 ) {
     let mut damage_taken: TakenDamage = Default::default();
@@ -186,24 +147,38 @@ fn collision_with_thing(
         damage_taken.damage.insert(damage_type.clone(), *damage);
     }
     damage.damage.push(damage_taken);
-    commands.entity(projectile_entity).despawn_recursive();
-    return;
 }
 
-fn collision_with_projectile() {}
+fn collision_with_projectile() {
+    todo!();
+}
 
-fn try_grid_move(x: f32, y: f32, position: &mut Position<i32>) -> bool {
-    let projectile_grid_x = (x / TILE_SIZE as f32).round() as i32;
-    let projectile_grid_y = (y / TILE_SIZE as f32).round() as i32;
+fn try_grid_move(x: f32, y: f32, projectile: &mut Projectile) -> bool {
+    let direction_x = projectile.direction.x;
+    let direction_y = projectile.direction.y;
+    let projectile_grid_x = x / TILE_SIZE as f32;
+    let projectile_grid_y = y / TILE_SIZE as f32;
+
+    let new_grid_x = if direction_x < 0 {
+        projectile_grid_x.ceil() as i32
+    } else {
+        projectile_grid_x.floor() as i32
+    };
+
+    let new_grid_y = if direction_y < 0 {
+        projectile_grid_y.ceil() as i32
+    } else {
+        projectile_grid_y.floor() as i32
+    };
 
     let mut bool = false;
-    if position.x != projectile_grid_x {
-        position.x = projectile_grid_x;
+    if projectile.current_position.x != new_grid_x {
+        projectile.current_position.x = new_grid_x;
         bool = true;
     };
 
-    if position.y != projectile_grid_y {
-        position.y = projectile_grid_y;
+    if projectile.current_position.y != new_grid_y {
+        projectile.current_position.y = new_grid_y;
         bool = true;
     }
 

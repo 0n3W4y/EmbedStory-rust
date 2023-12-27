@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{IdentificationComponent, PositionComponent, TakenDamageComponent, AttributesComponent, DamageTextInformerComponent};
+use crate::components::{IdentificationComponent, PositionComponent, TakenDamageComponent, StatsComponent};
 use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -49,16 +49,15 @@ pub fn draw(
         let mut identification_component: IdentificationComponent = Default::default();
         let mut thing_component: ThingComponent = Default::default();
         let mut position_component: PositionComponent = Default::default();
-        let mut attributes_component: AttributesComponent = Default::default();
+        let mut stats_component: StatsComponent = Default::default();
         let mut permissions_component: ThingPermissionsComponent = Default::default();
         let taken_damage_component: TakenDamageComponent = Default::default();
-        let damage_text_informer_componen: DamageTextInformerComponent = Default::default();
 
         copy_from_thing_to_entity_component(
             &mut identification_component, 
             &mut thing_component, 
             &mut position_component, 
-            &mut attributes_component, 
+            &mut stats_component, 
             &mut permissions_component, 
             thing
         );
@@ -75,8 +74,7 @@ pub fn draw(
         position_component,
         permissions_component,
         taken_damage_component,
-        attributes_component,
-        damage_text_informer_componen
+        stats_component,
         ));
     }    
 }
@@ -85,7 +83,7 @@ pub fn copy_from_thing_to_entity_component(
     identification_component: &mut IdentificationComponent,
     thing_component: &mut ThingComponent, 
     position_component: &mut PositionComponent, 
-    attributes_component: &mut AttributesComponent, 
+    stats_component: &mut StatsComponent, 
     permissions_component: &mut ThingPermissionsComponent,
     thing: &Thing,
 ) {
@@ -98,8 +96,8 @@ pub fn copy_from_thing_to_entity_component(
     position_component.position.y = thing.position.y;
     permissions_component.permissions = thing.permissions.to_vec();
 
-    attributes_component.attributes = thing.attributes.clone();
-    attributes_component.attributes_cache = thing.attributes.clone();
+    stats_component.attributes = thing.attributes.clone();
+    stats_component.attributes_cache = thing.attributes.clone();
     
 
 }

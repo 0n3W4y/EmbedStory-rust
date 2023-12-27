@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use self::effects::{EffectType, Effect, EffectStatus};
 use self::skills::{ActiveSkill, PassiveSkillType, PassiveSkill};
-use crate::components::{StatsComponent, AttributesComponent};
+use crate::components::StatsComponent;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::{Stat, Attribute, Ability, Resist, Damage};
@@ -21,6 +21,7 @@ pub mod update_passive_skills;
 pub mod update_attack;
 pub mod update_cooldowns;
 pub mod active_skill_handler;
+pub mod update_target_position;
 
 pub const STATS_POINTS_EVERY_LEVEL: u8 = 2;
 pub const STATS_MIN_VALUE: u8 = 1;
@@ -178,36 +179,36 @@ pub struct Charactor {
 
 //by default: if we have positive value -> we do damage; if we have negative value -> we add value (cure);
 pub fn change_ability(
-    ability_storage: &mut HashMap<Ability, i16>, 
+    stats: &mut StatsComponent, 
     ability: &Ability,
     value: i16
 ) {
-    ability_storage
+    stats.ability
         .entry(ability.clone())
         .and_modify(|old_value| *old_value += value)
         .or_insert(value);
 }
 
 pub fn change_resist(
-    resists: &mut HashMap<Resist, i16>,
+    stats: &mut StatsComponent,
     resist_type: &Resist,
     value: i16,
 ) {
-    resists
+    stats.resists
         .entry(resist_type.clone())
         .and_modify(|old_value| *old_value += value)
         .or_insert(value);
 }
 
 pub fn change_attribute_points(
-    attributes: &mut AttributesComponent,
+    stats: &mut StatsComponent,
     damage: &Damage,
     value: i16,
     change_cache: bool,
 ){
     let attribute = damage.get_attribute();
     if change_cache {
-        let cache_value = match attributes.attributes_cache.get_mut(&attribute) {
+        let cache_value = match stats.attributes_cache.get_mut(&attribute) {
             Some(v) => {
                 *v += value;
                 *v
@@ -218,7 +219,7 @@ pub fn change_attribute_points(
             },
         };
 
-        match attributes.attributes.get_mut(&attribute) {
+        match stats.attributes.get_mut(&attribute) {
             Some(v) => {
                 let new_value = *v - value;
                 if new_value < 1 {
@@ -234,7 +235,7 @@ pub fn change_attribute_points(
             }
         }; 
     } else {
-        match attributes.attributes.get_mut(&attribute) {
+        match stats.attributes.get_mut(&attribute) {
             Some(v) => {
                 *v += value;
             },
@@ -247,9 +248,6 @@ pub fn change_attribute_points(
 
 pub fn change_stat_points(
     stats: &mut StatsComponent,
-    resists: &mut HashMap<Resist, i16>,
-    abilities: &mut HashMap<Ability, i16>,
-    attributes: &mut AttributesComponent,
     stat: &Stat,
     value: i16,
 ){
@@ -285,35 +283,33 @@ pub fn change_stat_points(
     }   
     
     if *stat_value != old_stat_value {                                                      //check for do dependences;
-        do_stat_dependences(resists, abilities, attributes, stat,*stat_value,old_stat_value);
+        do_stat_dependences(stats, stat,*stat_value,old_stat_value);
     }
 }
 
 pub fn do_stat_dependences(
-    resists: &mut HashMap<Resist, i16>,
-    abilities: &mut HashMap<Ability, i16>,
-    attributes: &mut AttributesComponent,
+    stats: &mut StatsComponent,
     stat: &Stat,
     new_value: i16,
     old_value: i16,
 ) {
-    if resists.len() != 0 {
+    if stats.resists.len() != 0 {
         let old_values_for_abilities: HashMap<Ability, i16> = get_values_of_abilities_from_stat(stat, old_value);
         let new_values_for_abilities: HashMap<Ability, i16> = get_values_of_abilities_from_stat(stat, new_value);
         for (ability_type, value) in new_values_for_abilities.iter() {
             let old_value_for_abilities =  old_values_for_abilities.get(ability_type).unwrap();         //safe call;
             let value_to_ability = value - old_value_for_abilities;                                 // if new value is lower, negative value will add, positive will be substruct;
-            change_ability(abilities, ability_type, value_to_ability);
+            change_ability(stats, ability_type, value_to_ability);
         };
     }    
 
-    if abilities.len() != 0 {
+    if stats.ability.len() != 0 {
         let old_values_for_resist: HashMap<Resist, i16> = get_values_of_resists_from_stat(stat, old_value);
         let new_values_for_resist: HashMap<Resist, i16> = get_values_of_resists_from_stat(stat, new_value);
         for (resist_type, value) in new_values_for_resist.iter() {
             let old_value_for_resist = old_values_for_resist.get(resist_type).unwrap();                 //safe call;
             let value_to_resist = value - old_value_for_resist;                                     // if new value is bigger, negative value will add, positive will be substruct;
-            change_resist(resists, resist_type, value_to_resist);
+            change_resist(stats, resist_type, value_to_resist);
         };
     }
 
@@ -328,7 +324,7 @@ pub fn do_stat_dependences(
         } else {
             Damage::Health
         };
-        change_attribute_points(attributes, &damage, value_to_attribute, true);
+        change_attribute_points(stats, &damage, value_to_attribute, true);
     }
 }
 
