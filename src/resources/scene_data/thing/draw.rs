@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{IdentificationComponent, PositionComponent, TakenDamageComponent, StatsComponent};
+use crate::components::{IdentificationComponent, PositionComponent, TakenDamageComponent, StatsComponent, ObjectType};
 use crate::config::TILE_SIZE;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
@@ -88,7 +88,7 @@ pub fn copy_from_thing_to_entity_component(
     thing: &Thing,
 ) {
     thing_component.thing_type = thing.thing_type.clone();
-    identification_component.id = thing.id; 
+    identification_component.object_type = ObjectType::Thing(thing.id);
     thing_component.graphic_index = thing.graphic_index;
     thing_component.thing_defense_type = thing.thing_defense_type.clone();
 

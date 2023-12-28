@@ -59,21 +59,22 @@ pub fn player_click(
                 let target_y = target_position.position.y;
                 if target_x == position_x && target_y == position_y {
                     match target_identification.object_type {
-                        ObjectType::Charactor(v) => {
-                            match v {
+                        ObjectType::Charactor(k, v) => {
+                            match k {
                                 CharactorType::Player => {
                                     println!("Clicked on Player");
-                                    move_player_to_position(&mut destination_component, position_x, position_y);
+                                    //move_player_to_position(&mut destination_component, position_x, position_y);
                                     return;
                                 },
                                 CharactorType::NPC => {
                                     println!("Clicked on NPC");
+                                    move_player_to_position(&mut destination_component, position_x, position_y);
                                     //select_target_to_talk(&mut palyer_target, charactor_component.id, position_x, position_y);
                                     return;
                                 },
                                 CharactorType::Monster => {
-                                    println!("Clicked on Monstger");
-                                    select_target_to_attack(&mut player_target, target_identification.id, position_x, position_y);
+                                    println!("Clicked on Monster");
+                                    select_target_to_attack(&mut player_target, v, position_x, position_y);
                                     return;
                                 },
                                 CharactorType::Companion => {
@@ -83,18 +84,42 @@ pub fn player_click(
                                 },
                             }
                         },
-                        ObjectType::Stuff => {
+                        ObjectType::Stuff(v) => {
                             move_player_to_position(&mut destination_component, position_x, position_y);
                             return;
                         },
-                        ObjectType::Thing => {
-                            println!("Clicked on Tile or Prijectile");
-                            //TODO: for thing we need to set target and action type;
-                            move_player_to_position(&mut destination_component, position_x, position_y);
-                            return;
+                        ObjectType::Thing(_) => {
+                            /*
+                            match k {
+                                ThingType::Tree => todo!(),
+                                ThingType::FertileTree => todo!(),
+                                ThingType::Bush => todo!(),
+                                ThingType::FertileBush => todo!(),
+                                ThingType::Rock => todo!(),
+                                ThingType::Boulder => todo!(),
+                                ThingType::Log => todo!(),
+                                ThingType::CopperOre => todo!(),
+                                ThingType::IronOre => todo!(),
+                                ThingType::WoodenWall => todo!(),
+                                ThingType::StoneWall => todo!(),
+                                ThingType::IronWall => todo!(),
+                                ThingType::SteelWall => todo!(),
+                                ThingType::WoodenDoor => todo!(),
+                                ThingType::ReinforcedWoodenDoor => todo!(),
+                                ThingType::IronDoor => todo!(),
+                                ThingType::ReinforcedIronDoor => todo!(),
+                                ThingType::SteelDoor => todo!(),
+                                ThingType::ReinforcedSteelDoor => todo!(),
+                                ThingType::DungeonEnter(_) => todo!(),
+                                ThingType::DungeonExit(_) => todo!(),
+                                _ => */ 
+                                    println!("Clicked on Tile or Prijectile");
+                                    //TODO: for thing we need to set target and action type;
+                                    move_player_to_position(&mut destination_component, position_x, position_y);
+                                    return;
                         },
-                        ObjectType::Projectile | ObjectType::Tile => {
-                            println!("Clicked on Prijectile");
+                        ObjectType::Projectile(_) | ObjectType::Tile(_) => {
+                            println!("Clicked on Projectile");
                             move_player_to_position(&mut destination_component, position_x, position_y);
                             return;
                         },

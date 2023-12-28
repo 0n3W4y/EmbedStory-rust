@@ -15,6 +15,7 @@ use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
+use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::{
     components::charactor_component::{
@@ -81,49 +82,71 @@ pub fn update_passive_skills(
                         continue;                                                                                       //not triggered
                     }
                 }
-                todo!();
                 match skill.skill_direction {
-                    SkillDirectionType::Itself => {
-                            do_damage(skill, &mut taken_damage);                                                        //take damage to self;
-                            let targets = find_targets_on_range(
-                                &charactor_component.charactor_type,
-                                &position_component.position, 
-                                &mut charactors_query, 
-                                skill.area_on_impact, 
-                                &skill.target_type
-                            );
-                            for taken_damage_component in targets {
-                                do_direct_damage(skill, taken_damage_component);                                                //do damage to others;
-                            }
-                    },
-                    SkillDirectionType::Target => {
-                        let target_position = match target_component.target_position {
-                            Some(v) => &v,
-                            None => continue,
-                        };
-                        let delta = (target_position.x - position_component.position.x).abs().max((target_position.y - position_component.position.y).abs());
-                        if skill.skill_range as i32 <= delta {
-                            set_up_damage_in_projectile(skill, );
+                    SkillDirectionType::Itself => {                                                                     //for itself no matter skill range and have no projectiles;
+                        do_direct_damage(skill, &mut taken_damage);                                                        //take damage to self;
+                        let targets = find_targets_on_range(
+                            &charactor_component.charactor_type,
+                            &position_component.position, 
+                            &mut charactors_query, 
+                            skill.area_on_impact, 
+                            &skill.target_type
+                        );
+                        for (_, taken_damage_component) in targets {
+                            do_direct_damage(skill, taken_damage_component);                                                //do damage to others;
                         }
                     },
+                    SkillDirectionType::Target => {
+                        if skill.target_quantity == 1 {
+                            let target_position = match target_component.target_position {
+                                Some(v) => &v,
+                                None => continue,
+                            };
+                            let delta_position = (target_position.x - position_component.position.x).abs().max((target_position.y - position_component.position.y).abs());
+                            if skill.skill_range as i32 >= delta_position {
+                                if skill.projectile_type == ProjectileType::None {                                                  //do direct damage to targets;
+                                    let targets = find_targets_on_range(
+                                        &charactor_component.charactor_type, 
+                                        &target_component.target_position.unwrap(), 
+                                        &mut charactors_query, 
+                                        skill.area_on_impact, 
+                                        &skill.target_type
+                                    );
+                                    for (_,taken_damage) in targets {
+                                        do_direct_damage(skill, taken_damage);
+                                    }
+                                } else {
+                                    setup_projectile(
+                                        &mut commands, 
+                                        &material_manager, 
+                                        skill, 
+                                        &position_component.position, 
+                                        &target_component.target_position.unwrap()
+                                    );
+                                }
+                            };
+                        } else {
+                            todo!();
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-fn find_targets_on_range(
+fn find_targets_on_range<'a>(
     charactor_type: &CharactorType,
     position: &Position<i32>, 
-    charactors: &mut Query<(
+    charactors: &'a mut Query<(
         &CharactorComponent,
         &PositionComponent,
         &mut TakenDamageComponent,
     ), With<CharactorComponent>>,
     area_on_impact: u8, 
     skill_target: &TargetType
-) -> Vec<&'static mut TakenDamageComponent> {
-    let mut targets: Vec<&mut TakenDamageComponent> = vec![];
+) -> Vec<(&'a PositionComponent, &'a mut TakenDamageComponent)> {
+    let mut targets: Vec<(&PositionComponent, &mut TakenDamageComponent)> = vec![];
     let position_x = position.x;
     let position_y = position.y;
     let position_x_min = position_x - area_on_impact as i32;
@@ -136,7 +159,7 @@ fn find_targets_on_range(
         } else {
             if position_component.position.x == position_x && position_component.position.y == position_y {
                 if check_for_condition(charactor_type, &charactor_component.charactor_type, skill_target) {
-                    targets.push(&mut taken_damage_component);
+                    targets.push((&position_component, &mut taken_damage_component));
                 }
             }
         }
@@ -237,4 +260,25 @@ fn do_direct_damage(skill: &mut PassiveSkill, taken_damage: &mut TakenDamageComp
 
     taken_damage.damage.push(damage);
 
+}
+
+fn setup_projectile( 
+    commands: &mut Commands, 
+    material_manager: &MaterialManager,
+    skill: &PassiveSkill, 
+    source_position: &Position<i32>,
+    target_position: &Position<i32>,
+){
+    let mut random = rand::thread_rng();
+    let mut projectile = Projectile::new(&skill.projectile_type);
+    
+    let crit_chance = skill.crit_chance;
+    let crit_chance_random_number: i16 = random.gen_range(0..100);
+    let crit_multiplier = if crit_chance >= crit_chance_random_number {
+        skill.crit_multiplier
+    } else {
+        0
+    };
+
+    //create_projectile(commands, material_manager, projectile, target_position)
 }

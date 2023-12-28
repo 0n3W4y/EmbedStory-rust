@@ -42,7 +42,7 @@ pub fn update_effects(
 
         for (_, effect) in skills_and_effects.effects.iter_mut() {                                     //update  effects;
             if effect.time_duration == 0.0 {
-                match effect.buff_debuff_effect {
+                match effect.buff_debuff_effect.as_mut() {
                     Some(buff_debuff_effect) => {
                         for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
                             change_stat_points(                    
@@ -52,7 +52,7 @@ pub fn update_effects(
                             );
                         }
 
-                        for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
+                        for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
                             charactor::change_attribute_points(&mut stats, &Damage::Health, *attribute_damage, true);
                         }
 
@@ -63,19 +63,11 @@ pub fn update_effects(
                         for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
                             charactor::change_ability(&mut stats, &ability, *ability_damage);
                         }
-
-                        setup_base_skill(
-                            &deploy,
-                            &mut skills_and_effects.base_skill,
-                            &stats, 
-                            inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
-                            );
-
                     },
                     None => {},
                 }
 
-                match effect.over_time_effect {
+                match effect.over_time_effect.as_mut() {
                     Some(over_time_effect) => {
                         let mut damage: TakenDamage = Default::default();
                         damage.damage.insert(over_time_effect.effect_damage_type.clone(), over_time_effect.effect_damage_value);
@@ -84,7 +76,7 @@ pub fn update_effects(
                     None => {},
                 }
             } else if effect.time_duration >= effect.effect_lifetime {
-                match effect.buff_debuff_effect {
+                match effect.buff_debuff_effect.as_mut() {
                     Some(buff_debuff_effect) => {
                         for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
                             change_stat_points(                    
@@ -105,14 +97,6 @@ pub fn update_effects(
                         for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
                             charactor::change_ability(&mut stats, &ability, -(*ability_damage));
                         }
-
-                        setup_base_skill(
-                            &deploy,
-                            &mut skills_and_effects.base_skill,
-                            &stats, 
-                            inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
-                            );
-
                     },
                     None => {},
                 }
@@ -142,6 +126,13 @@ pub fn update_effects(
                 }
             }                   
         }
+
+        setup_base_skill(
+            &deploy,
+            &mut skills_and_effects.base_skill,
+            &stats, 
+            inventory.stuff_wear.get(&StuffWearSlot::PrimaryHand).unwrap()
+        );
 
         for effect_type in effects_to_remove.iter() {
             skills_and_effects.effects.remove(effect_type);

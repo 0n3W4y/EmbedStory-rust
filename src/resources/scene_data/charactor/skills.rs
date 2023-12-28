@@ -217,7 +217,7 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &S
 
     match weapon {
         Some(v) => {
-            match v.stuff_type {
+            match &v.stuff_type {
                 StuffType::Weapon(val) => {
                     new_base_skill.crit_chance += val.critical_hit_chance;
                     new_base_skill.skill_range = val.weapon_range;
@@ -254,8 +254,8 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &S
 }
 
 pub fn update_over_time_effect_damage_by_ability(effect: &mut Effect, ability_storage: &HashMap<Ability, i16>) {
-    match effect.over_time_effect {
-        Some(mut eff) => {
+    match effect.over_time_effect.as_mut() {
+        Some(eff) => {
             let damage_multiplier = match ability_storage.get(&get_ability_type_from_damage_type(&eff.effect_damage_type)) {
                 Some(v) => *v,
                 None => 0,

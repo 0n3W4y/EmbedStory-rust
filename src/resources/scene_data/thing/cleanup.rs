@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{components::{thing_component::{ThingComponent, ThingPermissionsComponent}, IdentificationComponent, PositionComponent, StatsComponent}, resources::scene_manager::SceneManager};
+use crate::{components::{thing_component::{ThingComponent, ThingPermissionsComponent}, IdentificationComponent, PositionComponent, StatsComponent, ObjectType}, resources::scene_manager::SceneManager};
 
 use super::Thing;
 
@@ -42,8 +42,13 @@ pub fn copy_from_components_to_thing(
     permissions_component: &ThingPermissionsComponent,
     thing: &mut Thing,
 ) {
+    let id = match identification_component.object_type {
+        ObjectType::Thing(v) => v,
+        _ => 0
+
+    };
     thing.thing_type = thing_component.thing_type.clone();
-    thing.id = identification_component.id;
+    thing.id = id;
     thing.graphic_index = thing_component.graphic_index;
     thing.thing_defense_type = thing_component.thing_defense_type.clone();
 

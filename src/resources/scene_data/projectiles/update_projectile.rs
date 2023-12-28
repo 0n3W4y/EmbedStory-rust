@@ -1,15 +1,15 @@
 use crate::{
     components::{
         projectile_component::Projectile,
-        tile_component::TileComponent,
         IdentificationComponent, ObjectType, PositionComponent,
-        TakenDamage, TakenDamageComponent,
+        TakenDamage, TakenDamageComponent, thing_component::ThingComponent,
     },
     config::TILE_SIZE,
     materials::material_manager::MaterialManager,
     scenes::game_scenes::tilemap::tile::Position,
 };
 use bevy::prelude::*;
+use rand::Rng;
 
 const Z_POSITION: f32 = 4.0; // fourth layer;
 
@@ -22,40 +22,33 @@ pub fn update_projectiles(
             &PositionComponent,
             &IdentificationComponent,
             &mut TakenDamageComponent,
-            //&mut Projectile,
+            Option<&ThingComponent>,
         ),
-        Without<TileComponent>,
     >,
 ) {
     let delta = time.delta_seconds();
-    for (projectile_entity, mut projectile, mut transfrom) in projectile_query.iter_mut() {
-        transfrom.translation.x += projectile.motion_coefficient.x
+    for (projectile_entity, mut projectile, mut transform) in projectile_query.iter_mut() {
+        transform.translation.x += projectile.motion_coefficient.x
             * projectile.velocity as f32
             * delta
             * projectile.direction.x as f32;
-        transfrom.translation.y += projectile.motion_coefficient.y
+            transform.translation.y += projectile.motion_coefficient.y
             * projectile.velocity as f32
             * delta
             * projectile.direction.y as f32;
         if try_grid_move(
-            transfrom.translation.x,
-            transfrom.translation.y,
+            transform.translation.x,
+            transform.translation.y,
             &mut projectile,
         ) {
+            if !projectile.ignore_collision {
+                continue;
+            }
+
             let targets_for_collision = check_for_collision(
                 &mut projectile,
                 &mut all_query,
-            );
-
-            for (identification, damage) in targets_for_collision {
-                match identification.object_type {
-                    ObjectType::Charactor(_) => collision_with_charactor(&mut projectile, damage),
-                    ObjectType::Stuff => println!("Can not collisiion with stuff!!"),
-                    ObjectType::Thing => collision_with_thing(&mut projectile, damage),
-                    ObjectType::Projectile => collision_with_projectile(),
-                    _ => {},
-                }
-            }
+            );            
             commands.entity(projectile_entity).despawn_recursive();
         }
     }
@@ -65,26 +58,22 @@ pub fn check_for_collision(
     projectile: &mut Projectile,
     all_query: &mut Query<
         (
-            &PositionComponent,
+            & PositionComponent,
             &IdentificationComponent,
             &mut TakenDamageComponent,
-            //&mut Projectile,
-        ),
-        Without<TileComponent>,
+            Option<&ThingComponent>,
+        )
     >,
-) -> Vec<(&'static IdentificationComponent, &'static mut TakenDamageComponent)> {
+) {
+    let mut random = rand::thread_rng();
     let projectile_x = projectile.current_position.x;
     let projectile_y = projectile.current_position.y;
     let area_on_impact = projectile.area_on_impact as i32;
-    let mut targets: Vec<(&IdentificationComponent, &mut TakenDamageComponent)>;
+    let mut targets: Vec<(&IdentificationComponent, &mut TakenDamageComponent)> = vec![];
 
-    for (position, identification, mut damage) in all_query.iter_mut() {
+    for (position, identification, mut damage, thing_component) in all_query.iter_mut() {
         let target_x = position.position.x;
         let target_y = position.position.y;
-
-        if identification.object_type == ObjectType::Stuff {
-            continue;
-        }
 
         if area_on_impact > 0 {
             let projectile_position_min_x = projectile_x - area_on_impact;
@@ -93,27 +82,51 @@ pub fn check_for_collision(
             let projectile_position_min_y = projectile_y - area_on_impact;
 
             if target_x == projectile_x && target_y == projectile_y {
-                if identification.object_type == ObjectType::Thing {
-                    if (projectile.starting_position.x - target_x).abs() == 1 
-                    && (projectile.starting_position.y - target_y).abs() == 1 {
-                        continue;
-                    }
+                match identification.object_type {
+                    ObjectType::Thing(_) => {
+                        if (projectile.starting_position.x - target_x).abs() <= 1 
+                        && (projectile.starting_position.y - target_y).abs() <= 1 {
+                            projectile.ignore_collision = true;
+                            continue;
+                        }
+
+                        match thing_component {
+                            Some(component) => {
+                                let random_number_for_checking_collision: u8 = random.gen_range(0..100);
+                                if random_number_for_checking_collision <= component.thing_defense_type.collision_chance() {
+                                    projectile.ignore_collision = true;
+                                    continue;
+                                }
+                            },
+                            None => {},
+                        }
+                        
+                    },
+                    _ => {},
                 }
-                targets.insert(0, (&identification, &mut damage));
+                targets.insert(0, (identification, &mut damage));
             } else if (target_x >= projectile_position_min_x && target_x <= projectile_position_max_x) 
                     && (target_y >= projectile_position_min_y && target_y <= projectile_position_max_y) {
-                targets.push((&identification, &mut damage));
+                targets.push((identification, &mut damage));
             } else {
                 continue;
             }            
         } else {
             if target_x == projectile_x && target_y == projectile_y {
-                targets.push((&identification, &mut damage));
+                targets.push((identification, &mut damage));
                 break;
             }
         }
     }
-    targets
+
+    for (identification, damage) in targets {
+        match identification.object_type {
+            ObjectType::Charactor(_, _) => collision_with_charactor(projectile, damage),
+            ObjectType::Thing(_) => collision_with_thing(projectile, damage),
+            //ObjectType::Projectile(_) => collision_with_projectile(),
+            _ => {},
+        }
+    }
 }
 
 fn collision_with_charactor(
@@ -149,10 +162,6 @@ fn collision_with_thing(
     damage.damage.push(damage_taken);
 }
 
-fn collision_with_projectile() {
-    todo!();
-}
-
 fn try_grid_move(x: f32, y: f32, projectile: &mut Projectile) -> bool {
     let direction_x = projectile.direction.x;
     let direction_y = projectile.direction.y;
@@ -175,11 +184,13 @@ fn try_grid_move(x: f32, y: f32, projectile: &mut Projectile) -> bool {
     if projectile.current_position.x != new_grid_x {
         projectile.current_position.x = new_grid_x;
         bool = true;
+        projectile.ignore_collision = false;
     };
 
     if projectile.current_position.y != new_grid_y {
         projectile.current_position.y = new_grid_y;
         bool = true;
+        projectile.ignore_collision = false;
     }
 
     return bool;

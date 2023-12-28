@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 
-use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::{skills::PassiveSkill, effects::Effect}, damage_text_informer::{DamageTextInformer, DamageIgnored}, Stat, Attribute, Resist, Damage, Ability}};
+use crate::{scenes::game_scenes::tilemap::tile::Position, resources::scene_data::{charactor::{skills::PassiveSkill, effects::Effect, CharactorType}, damage_text_informer::{DamageTextInformer, DamageIgnored}, Stat, Attribute, Resist, Damage, Ability}};
 
 pub mod tile_component;
 pub mod thing_component;
@@ -13,7 +13,7 @@ pub mod stuff_component;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ObjectType{
-    Charactor(usize),
+    Charactor(CharactorType, usize),
     Stuff(usize),
     Thing(usize),
     Projectile(usize),

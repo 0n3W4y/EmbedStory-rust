@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::components::tile_component::TileComponent;
 use crate::components::{PositionComponent, IdentificationComponent, TakenDamageComponent, TakenDamage, ObjectType, StatsComponent};
 use crate::components::charactor_component::{
     ActionType, CharactorComponent, SkillAndEffectComponent, CharactorTargetComponent,
@@ -12,6 +11,7 @@ use crate::materials::material_manager::MaterialManager;
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::Ability;
 use crate::resources::scene_data::damage_text_informer::DamageIgnored;
+use crate::resources::scene_data::projectiles::ProjectileType;
 use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
@@ -31,17 +31,14 @@ pub fn update_attack_from_basic_skill(
         &mut SkillAndEffectComponent,
         &CharactorTargetComponent,
         &StatsComponent,
-    ), With<CharactorComponent>>,
+    )>,
 
     mut target_query: Query<(
-        &CharactorComponent,
         &IdentificationComponent,
         &PositionComponent,
         &mut TakenDamageComponent,
-    ), Without<TileComponent>>,
+    )>,
 ) {
-    
-
     for (
         mut charactor, 
         charactor_position,
@@ -78,20 +75,19 @@ pub fn update_attack_from_basic_skill(
 
         let mut targets_in_skill_range: Vec<(&PositionComponent, &mut TakenDamageComponent)> = vec![];
         for (
-            target_component,
             target_identification,
             target_position,
             mut target_taken_damage,
         ) in target_query.iter_mut() {
             if skill.target_quantity > 1 {
                 if try_to_attack(&charactor_position.position, &target_position.position, skill.skill_range) {
-                    if target_identification.id == target_id {
-                        targets_in_skill_range.insert(0, (&target_position, &mut target_taken_damage));
-                        continue;
-                    } else {
-                        match target_identification.object_type {
-                            ObjectType::Charactor(val) => {
-                                match val {
+                    match target_identification.object_type {
+                        ObjectType::Charactor(charactor_type, id) => {
+                            if id == target_id {
+                                targets_in_skill_range.insert(0, (&target_position, &mut target_taken_damage));
+                                continue;
+                            } else {
+                                match charactor_type {
                                     CharactorType::Player => {
                                         if charactor.charactor_type == CharactorType::Monster {
                                             targets_in_skill_range.push((&target_position, &mut target_taken_damage));
@@ -109,28 +105,38 @@ pub fn update_attack_from_basic_skill(
                                         }
                                     },
                                 }
-                                
-                            },
-                            _ => continue,
-                        }                        
+                            }
+                        },
+                        ObjectType::Thing(_) => {
+
+                        },
+                        _ => {},
                     }
                 };
             } else {
-                if target_identification.id == target_id {
-                    if try_to_attack(&charactor_position.position, &target_position.position, skill.skill_range) {      //try to attack;
-                        attack_single_target(
-                            &mut commands,
-                            skill,
-                            &mut charactor,
-                            charactor_stats,
-                            charactor_position,
-                            target_position,
-                            &mut target_taken_damage,
-                            &deploy,
-                            &material_manager,
-                        );
-                        return;
-                    }
+                match target_identification.object_type  {
+                    ObjectType::Charactor(_, id) => {
+                        if id == target_id {
+                            if try_to_attack(&charactor_position.position, &target_position.position, skill.skill_range) {      //try to attack;
+                                attack_single_target(
+                                    &mut commands,
+                                    skill,
+                                    &mut charactor,
+                                    charactor_stats,
+                                    charactor_position,
+                                    target_position,
+                                    &mut target_taken_damage,
+                                    &deploy,
+                                    &material_manager,
+                                );
+                                return;
+                            }
+                        }
+                    },
+                    ObjectType::Stuff(_) => todo!(),
+                    ObjectType::Thing(_) => todo!(),
+                    ObjectType::Projectile(_) => todo!(),
+                    ObjectType::Tile(_) => todo!(),
                 }
             }
         }
@@ -214,34 +220,7 @@ fn attack_single_target(
 
     charactor.status = charactor_status;
 
-    if skill.skill_range > 1 {                                              //if range > 1 - we create projectiles ( magic or ranged atack type ). For melee we non eed projectiles;
-        let mut projectile_component = Projectile {             //create default projectile component;
-            projectile_type: skill.projectile_type.clone(),
-            starting_position: charactor_position.position.clone(),
-            range: skill.skill_range,
-            ..Default::default()
-        };
-
-        let random_accuracy_number: u8 = rng.gen_range(0..=99);
-        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
-            projectile_component.is_missed = true;
-            create_projectile(
-                &mut commands,
-                material_manager,
-                projectile_component,
-                target_position.position.clone(),
-            );
-            return;
-        };
-
-        setup_projectile(&mut projectile_component, skill);
-        create_projectile(
-            &mut commands,
-            material_manager,
-            projectile_component.clone(),
-            target_position.position.clone(),
-        );
-    } else {
+    if skill.projectile_type == ProjectileType::None {                                             //if None = melee, or ranged without projectile => instant direct damage;
         let random_accuracy_number: u8 = rng.gen_range(0..=99);
         if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
             let damage = TakenDamage {missed_or_evaded: Some(DamageIgnored::Missed),..Default::default()};
@@ -287,6 +266,30 @@ fn attack_single_target(
         }
 
         target_taken_damage.damage.push(damage);
+    } else {                                                                                        //if have a projectile type, create projectile
+        let mut projectile_component = Projectile::new(&skill.projectile_type);         //create default projectile component;
+        projectile_component.starting_position = charactor_position.position.clone();
+        projectile_component.range = skill.skill_range;
+
+        let random_accuracy_number: u8 = rng.gen_range(0..=99);
+        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
+            projectile_component.is_missed = true;
+            create_projectile(
+                &mut commands,
+                material_manager,
+                projectile_component,
+                target_position.position.clone(),
+            );
+            return;
+        };
+
+        setup_projectile(&mut projectile_component, skill);
+        create_projectile(
+            &mut commands,
+            material_manager,
+            projectile_component.clone(),
+            target_position.position.clone(),
+        );
     }
 }
 

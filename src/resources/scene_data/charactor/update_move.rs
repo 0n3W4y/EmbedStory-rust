@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{PositionComponent, IdentificationComponent, StatsComponent};
+use crate::components::{PositionComponent, StatsComponent};
 use crate::config::TILE_SIZE;
 use crate::components::charactor_component::{CharactorComponent, SkillAndEffectComponent};
 use crate::resources::scene_data::Ability;
@@ -22,20 +22,18 @@ const DEFAULT_MOVEMENT_SPEED: f32 = 100.0;
 pub fn move_charactor(
     time: Res<Time>,
     mut charactor_query: Query<(
-        &IdentificationComponent, 
         &mut CharactorComponent, 
         &mut PositionComponent, 
         &StatsComponent, 
         &SkillAndEffectComponent,
         &mut Transform
-    )>,
+    ), With<CharactorComponent>>,
     //mut camera: Query<(&mut Transform, &mut Orthographic2DCamera, &OrthographicProjection), With<Orthographic2DCamera>>,
     scene_manager: Res<SceneManager>,
 ){
     let delta = time.delta_seconds();
     let scene = scene_manager.get_current_game_scene();
     for (
-        identification_component,
         mut charactor, 
         mut position, 
         stats,
@@ -48,7 +46,6 @@ pub fn move_charactor(
                     Some(_) => continue,                                                            //have status can't move, so we stop moving;
                     None => {
                         try_move(
-                            identification_component,
                             &mut charactor, 
                             &mut position,
                             stats,
@@ -80,7 +77,6 @@ pub fn move_charactor(
 
 //first click on ground;
 pub fn try_move(
-    identification_component: &IdentificationComponent, 
     charactor: &mut CharactorComponent, 
     position: &mut PositionComponent, 
     stats: &StatsComponent, 
@@ -96,7 +92,6 @@ pub fn try_move(
         }      
     } else {
         moving(
-            identification_component,
             charactor, 
             position,
             stats,
@@ -108,7 +103,6 @@ pub fn try_move(
 }
 
 pub fn moving(
-    identification_component: &IdentificationComponent, 
     charactor: &mut CharactorComponent, 
     position: &mut PositionComponent, 
     stats: &StatsComponent, 
@@ -121,9 +115,8 @@ pub fn moving(
         Some(v) => *v,
         None => {
             println!(
-                "Can't get movement speed ability on charactor {:?}, {:?} . Use default 0",
+                "Can't get movement speed ability on charactor {:?}. Use default 0",
                 charactor.charactor_type,
-                identification_component.id,
             );
             0
         }

@@ -72,8 +72,7 @@ pub fn copy_from_tile_to_component(
 
     position_component.position = tile.position.clone();
 
-    identification_component.id = tile.id;
-    identification_component.object_type = ObjectType::Tile;
+    identification_component.object_type = ObjectType::Tile(tile.id);
 
     permissions_component.permissions = tile.permissions.clone();
     permissions_component.momevement_ratio = tile.movement_ratio;

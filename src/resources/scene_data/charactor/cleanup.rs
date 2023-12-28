@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::components::{IdentificationComponent, PositionComponent, StatsComponent};
+use crate::components::{IdentificationComponent, PositionComponent, StatsComponent, ObjectType};
 use crate::components::charactor_component::{CharactorComponent, SkillAndEffectComponent, InventoryComponent};
 use crate::resources::scene_manager::SceneManager;
 use crate::resources::profile::Profile;
@@ -69,7 +69,14 @@ pub fn copy_from_component_to_charactor(
     stats_component: &StatsComponent,
     inventory_component: &InventoryComponent,
 ){
-    charactor.id = identification_component.id;
+    let id = match identification_component.object_type {
+        ObjectType::Charactor(_, v) => v,
+        _ => {
+            println!("Try to copy identification component to charactor, and object type, not a charactor!");
+            0
+        }
+    };
+    charactor.id = id;
     charactor.charactor_type = charactor_component.charactor_type.clone();
     charactor.race_type = charactor_component.race_type.clone();
     charactor.gender_type = charactor_component.gender_type.clone();

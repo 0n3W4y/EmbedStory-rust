@@ -136,8 +136,7 @@ pub fn copy_from_charactor_to_component(
     stats_component: &mut StatsComponent,
     inventory_component: &mut InventoryComponent,
 ) {
-    identefication_component.id = charactor.id;
-    identefication_component.object_type = ObjectType::Charactor(charactor.charactor_type.clone());
+    identefication_component.object_type = ObjectType::Charactor(charactor.charactor_type.clone() , charactor.id);
 
     charactor_component.charactor_type = charactor.charactor_type.clone();
     charactor_component.race_type = charactor.race_type.clone();

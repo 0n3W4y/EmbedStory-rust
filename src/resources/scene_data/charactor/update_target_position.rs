@@ -11,8 +11,8 @@ pub fn update_target_position(
             Some(target_id) => {
                 for (target_identification, target_position) in target_query.iter() {
                     match target_identification.object_type {
-                        ObjectType::Charactor(v) => {
-                            if v == target_id {
+                        ObjectType::Charactor(_, id) => {
+                            if id == target_id {
                                 source_target.target_position = Some(target_position.position.clone());
                             }
                         },
