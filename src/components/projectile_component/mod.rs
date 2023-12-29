@@ -18,7 +18,6 @@ pub struct Projectile {
     pub is_missed: bool,
     pub is_critical_hit: bool,
     pub velocity: u16,
-    pub ignore_collision: bool,
 }
 
 impl Projectile {
@@ -44,7 +43,6 @@ impl Projectile {
             is_missed: false,
             is_critical_hit: false,
             velocity,
-            ignore_collision: true,
         }
     }
 }

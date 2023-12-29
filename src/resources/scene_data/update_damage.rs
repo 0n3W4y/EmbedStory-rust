@@ -3,7 +3,7 @@ use rand::Rng;
 
 use crate::{components::{
     charactor_component::SkillAndEffectComponent,
-    IdentificationComponent, ObjectType, TakenDamageComponent, StatsComponent,
+    IdentificationComponent, ObjectType, TakenDamageComponent, StatsComponent, PositionComponent,
 }, resources::scene_data::Ability};
 
 use super::{damage_text_informer::DamageTextInformer, Resist, charactor};
@@ -17,6 +17,11 @@ pub fn update_damage(
             &mut TakenDamageComponent,
         )
     >,
+    mut all_query: Query<(
+        &PositionComponent,
+        &IdentificationComponent,
+        &mut TakenDamageComponent,
+    )>,
 ) {
     for (
         identification, 
@@ -25,6 +30,7 @@ pub fn update_damage(
         mut damage,
         ) in objects_query.iter_mut()
     {
+        todo!();
         let mut random = rand::thread_rng();
         match identification.object_type {
             ObjectType::Charactor(_, _) => {
@@ -137,7 +143,7 @@ pub fn update_damage(
                 }
             },
             ObjectType::Thing(_) => {
-                let mut vec_of_text_damage: Vec<DamageTextInformer> = vec![];
+                let mut vec_of_text_damage: Vec<DamageTextInformer> = vec![];                
                 for taken_damage in damage.damage.iter(){ 
                     for (damage_type, value) in taken_damage.damage.iter() {
                         charactor::change_attribute_points(&mut stats, damage_type, *value, false);

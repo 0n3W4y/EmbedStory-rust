@@ -33,6 +33,7 @@ pub struct TakenDamage {
     pub passive_skills: Vec<PassiveSkill>,
     pub is_critical_hit: bool,
     pub missed_or_evaded: Option<DamageIgnored>,
+    pub area_of_impact: u8,
 }
 
 #[derive(Component, Default)]

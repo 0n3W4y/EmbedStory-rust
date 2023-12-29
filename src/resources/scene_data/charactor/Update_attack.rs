@@ -46,7 +46,7 @@ pub fn update_attack_from_basic_skill(
         charactor_target, 
         charactor_stats,
     ) in charactor_query.iter_mut() {
-        if charactor_target.action != ActionType::Attack {              //check for target status; And skip all if not attacking;
+        if charactor_target.action != ActionType::Attack {                                                      //check for target status; And skip all if not attacking;
             continue;
         }
 
@@ -55,7 +55,7 @@ pub fn update_attack_from_basic_skill(
             None => {},
         }
 
-        let target_id = match charactor_target.target {             //checking for target id;
+        let target_id = match charactor_target.target {                                                    //checking for target id;
             Some(v) => v,
             None => {
                 println!(
@@ -73,12 +73,14 @@ pub fn update_attack_from_basic_skill(
             continue;                                                   //go to next charactor;
         }
 
-        let mut targets_in_skill_range: Vec<(&PositionComponent, &mut TakenDamageComponent)> = vec![];
+        let mut elapsed_target_quantity = skill.target_quantity;    //for multiply targets;
         for (
             target_identification,
             target_position,
             mut target_taken_damage,
         ) in target_query.iter_mut() {
+            todo!();
+            /*
             if skill.target_quantity > 1 {
                 if try_to_attack(&charactor_position.position, &target_position.position, skill.skill_range) {
                     match target_identification.object_type {
@@ -139,8 +141,8 @@ pub fn update_attack_from_basic_skill(
                     ObjectType::Tile(_) => todo!(),
                 }
             }
+            */
         }
-        attack_multiply_targets(&mut commands, skill, &mut charactor, charactor_stats, charactor_position, &deploy,&material_manager,targets_in_skill_range)
     }
 }
 
@@ -157,26 +159,6 @@ fn try_to_attack(
         return true;
     } else {
         return false;
-    }
-}
-
-fn attack_multiply_targets(
-    mut commands: &mut Commands,
-    skill: &mut ActiveSkill,
-    charactor: &mut CharactorComponent,
-    charactor_ability: &StatsComponent,
-    charactor_position: &PositionComponent,
-    deploy: &Deploy,
-    material_manager: &MaterialManager,
-    targets_in_skill_range: Vec<(&PositionComponent, &mut TakenDamageComponent)>,
-){
-    for i in 0..skill.target_quantity {
-        if targets_in_skill_range.len() == 0 {
-            return;
-        }
-
-        let (target_position, target_taken_damage) = targets_in_skill_range[i as usize];
-        attack_single_target(commands, skill, charactor, charactor_ability, charactor_position, target_position, target_taken_damage, deploy, material_manager);
     }
 }
 

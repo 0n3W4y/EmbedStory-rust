@@ -211,12 +211,25 @@ impl CharactorManager {
 
     fn initialize_character_after_creation(&self, charactor: &mut Charactor) {
         //TODO:
+        let mut stats = StatsComponent{
+            stats: charactor.stats.clone(),
+            stats_cache: charactor.stats_cache.clone(),
+            attributes: charactor.attributes.clone(),
+            attributes_cache: charactor.attributes_cache.clone(),
+            resists: charactor.resists.clone(),
+            ability: charactor.ability.clone()
+        };
+
         for (stat, value) in charactor.stats.iter() {
-            let mut component: StatsComponent = StatsComponent { attributes: charactor.attributes.clone(), attributes_cache: charactor.attributes_cache.clone(), ..Default::default() };
-            do_stat_dependences(&mut component, stat, *value, 0);
-            charactor.attributes = component.attributes;
-            charactor.attributes_cache = component.attributes_cache;
+            do_stat_dependences(&mut stats, stat, *value, 0);
         }
+
+        charactor.stats = stats.stats;
+        charactor.stats_cache = stats.stats_cache;
+        charactor.attributes = stats.attributes;
+        charactor.attributes_cache = stats.attributes_cache;
+        charactor.resists = stats.resists;
+        charactor.ability = stats.ability;
     }
 
     fn create_id(&mut self) -> usize {

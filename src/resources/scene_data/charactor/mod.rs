@@ -190,7 +190,7 @@ pub fn change_ability(
 }
 
 pub fn change_resist(
-    stats: &mut StatsComponent,
+    stats: &mut StatsComponent, 
     resist_type: &Resist,
     value: i16,
 ) {
@@ -247,10 +247,10 @@ pub fn change_attribute_points(
 }
 
 pub fn change_stat_points(
-    stats: &mut StatsComponent,
+    stats: &mut StatsComponent, 
     stat: &Stat,
     value: i16,
-){
+) -> Option<(i16, i16)>{
     let cache_value = match stats.stats_cache.get_mut(stat) {             //get cache value;
         Some(v) => v,
         _ => {
@@ -258,7 +258,7 @@ pub fn change_stat_points(
                 "Can not change stat: '{:?}', because stat is not in cache storage. Returning",
                 stat,
             );
-            return;
+            return None;
         }
     };
     let stat_value = match stats.stats.get_mut(stat) {            //get stat;
@@ -268,7 +268,7 @@ pub fn change_stat_points(
                 "Can not change stat: '{:?}', because stat is not in storage. Returning from the function",
                 stat,
             );
-            return;
+            return None;
         },
     };
 
@@ -283,7 +283,9 @@ pub fn change_stat_points(
     }   
     
     if *stat_value != old_stat_value {                                                      //check for do dependences;
-        do_stat_dependences(stats, stat,*stat_value,old_stat_value);
+        return Some((*stat_value, old_stat_value));
+    } else {
+        return None;
     }
 }
 

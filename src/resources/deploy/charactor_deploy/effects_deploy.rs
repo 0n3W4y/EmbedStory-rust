@@ -41,6 +41,7 @@ pub struct OverTimeEffects {
     health_damage: OverTimeEffectDeploy,
     health_regen: OverTimeEffectDeploy,
     stamina_regen: OverTimeEffectDeploy,
+    none: OverTimeEffectDeploy,
 }
 
 #[derive(Deserialize, Debug)]
@@ -57,6 +58,7 @@ pub struct BuffDebuffEffects {
     stamina_buff: BuffDebuffEffectDeploy,
     health_buff: BuffDebuffEffectDeploy,
     accuracy_debuff: BuffDebuffEffectDeploy,
+    none: BuffDebuffEffectDeploy,
 }
 
 impl EffectsDeploy {
@@ -103,25 +105,25 @@ impl EffectsDeploy {
             OverTimeEffectType::HealthDamage => &self.over_time_effects.health_damage,
             OverTimeEffectType::HealthRegen => &self.over_time_effects.health_regen,
             OverTimeEffectType::StaminaRegen => &self.over_time_effects.stamina_regen,
-            OverTimeEffectType::None => &OverTimeEffectDeploy{..Default::default()},
+            OverTimeEffectType::None =>  &self.over_time_effects.none,
         }
     }
 
     pub fn get_buff_debuff_effect_config (&self, effect_type: &BuffDebuffEffectType) -> &BuffDebuffEffectDeploy {
         match *effect_type {
-            BuffDebuffEffectType::AcidDebuff => todo!(),
-            BuffDebuffEffectType::BleedDebuff => todo!(),
-            BuffDebuffEffectType::ColdDebuff => todo!(),
-            BuffDebuffEffectType::FireDebuff => todo!(),
-            BuffDebuffEffectType::ElectricDebuff => todo!(),
-            BuffDebuffEffectType::WaterDebuff => todo!(),
-            BuffDebuffEffectType::PoisionDebuff => todo!(),
-            BuffDebuffEffectType::StaminaDebuff => todo!(),
-            BuffDebuffEffectType::HealthDebuff => todo!(),
-            BuffDebuffEffectType::StaminaBuff => todo!(),
-            BuffDebuffEffectType::HealthBuff => todo!(),
-            BuffDebuffEffectType::AccuracyDebuff => todo!(),
-            BuffDebuffEffectType::None => &BuffDebuffEffectDeploy{..Default::default()},
+            BuffDebuffEffectType::AcidDebuff => &self.buff_debuff_effects.acid_debuff,
+            BuffDebuffEffectType::BleedDebuff => &self.buff_debuff_effects.bleed_debuff,
+            BuffDebuffEffectType::ColdDebuff => &self.buff_debuff_effects.cold_debuff,
+            BuffDebuffEffectType::FireDebuff => &self.buff_debuff_effects.fire_debuff,
+            BuffDebuffEffectType::ElectricDebuff => &self.buff_debuff_effects.electric_debuff,
+            BuffDebuffEffectType::WaterDebuff => &self.buff_debuff_effects.water_debuff,
+            BuffDebuffEffectType::PoisionDebuff => &self.buff_debuff_effects.poison_debuff,
+            BuffDebuffEffectType::StaminaDebuff => &self.buff_debuff_effects.stamina_debuff,
+            BuffDebuffEffectType::HealthDebuff => &self.buff_debuff_effects.health_debuff,
+            BuffDebuffEffectType::StaminaBuff => &self.buff_debuff_effects.stamina_buff,
+            BuffDebuffEffectType::HealthBuff => &self.buff_debuff_effects.health_buff,
+            BuffDebuffEffectType::AccuracyDebuff => &self.buff_debuff_effects.acid_debuff,
+            BuffDebuffEffectType::None => &self.buff_debuff_effects.none,
         }
     }
 }

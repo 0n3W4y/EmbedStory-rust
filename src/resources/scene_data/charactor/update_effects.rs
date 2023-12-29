@@ -8,9 +8,9 @@ use crate::components::charactor_component::{
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::Damage;
 use crate::resources::scene_data::charactor;
-use super::effects::EffectType;
+use super::effects::{EffectType, EffectStatus};
 use super::skills::setup_base_skill;
-use super::{CharactorStatus, change_stat_points, StuffWearSlot};
+use super::{CharactorStatus, change_stat_points, StuffWearSlot, do_stat_dependences};
 
 
 pub fn update_effects(
@@ -39,17 +39,16 @@ pub fn update_effects(
         };
 
         let mut effects_to_remove:Vec<EffectType> = vec![];                                     //create vec of effects for deleting, which one ends at this moment;
+        let mut effect_status_to_remove: Vec<EffectStatus> = vec![];
 
         for (_, effect) in skills_and_effects.effects.iter_mut() {                                     //update  effects;
             if effect.time_duration == 0.0 {
                 match effect.buff_debuff_effect.as_mut() {
                     Some(buff_debuff_effect) => {
                         for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
-                            change_stat_points(                    
-                                &mut stats,
-                                stat,
-                                *stat_damage,
-                            );
+                            if let Some((new_value, old_value)) = change_stat_points(&mut stats,  stat, *stat_damage) {
+                                do_stat_dependences(&mut stats, stat, new_value, old_value);
+                            }
                         }
 
                         for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
@@ -79,14 +78,12 @@ pub fn update_effects(
                 match effect.buff_debuff_effect.as_mut() {
                     Some(buff_debuff_effect) => {
                         for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
-                            change_stat_points(                    
-                                &mut stats,
-                                stat,
-                                -(*stat_damage),
-                            );
+                            if let Some((old_value, new_value)) = change_stat_points(&mut stats,  stat, -(*stat_damage)) {
+                                do_stat_dependences(&mut stats, stat, new_value, old_value);
+                            }
                         }
 
-                        for (attribute_cache, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
+                        for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
                             charactor::change_attribute_points(&mut stats, &Damage::Health, -(*attribute_damage), true);
                         }
 
@@ -100,17 +97,14 @@ pub fn update_effects(
                     },
                     None => {},
                 }
-                if effect.effect_status.len() > 0 {
-                    for effect_status in effect.effect_status.iter() {
-                        let index = effect.effect_status.iter().position(|x| x == effect_status).unwrap();
-                        effect.effect_status.remove(index);
-                    }
+                for effect_status in effect.effect_status.iter() {
+                    effect_status_to_remove.push(effect_status.clone());
                 }
                 effects_to_remove.push(effect.effect_type.clone());
             } else {
                 effect.time_duration += delta_time;
-                match effect.over_time_effect {
-                    Some(mut over_time_effect) => {
+                match effect.over_time_effect.as_mut() {
+                    Some(over_time_effect) => {
                         over_time_effect.time_duration += delta_time;
                         if over_time_effect.time_duration < over_time_effect.trigger_time_effect {
                             continue;
@@ -136,6 +130,12 @@ pub fn update_effects(
 
         for effect_type in effects_to_remove.iter() {
             skills_and_effects.effects.remove(effect_type);
+        }
+
+        for effect_status in effect_status_to_remove.iter() {
+            if let Some(index) = skills_and_effects.effect_status.iter().position(|x| x == effect_status) {
+                skills_and_effects.effect_status.remove(index);
+            }
         }
     }
 }
