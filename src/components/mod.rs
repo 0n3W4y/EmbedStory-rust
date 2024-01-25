@@ -34,6 +34,8 @@ pub struct TakenDamage {
     pub is_critical_hit: bool,
     pub missed_or_evaded: Option<DamageIgnored>,
     pub area_of_impact: u8,
+    pub no_evade: bool,
+    pub no_block: bool,
 }
 
 #[derive(Component, Default)]

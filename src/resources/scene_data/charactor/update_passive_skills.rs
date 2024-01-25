@@ -115,6 +115,7 @@ fn find_targets(
 
     let position_x = position.x;
     let position_y = position.y;
+    
     let position_x_min = position_x - skill_range as i32;
     let position_x_max = position_x + skill_range as i32;
     let position_y_min = position_y - skill_range as i32;
