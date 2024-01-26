@@ -8,31 +8,35 @@ use crate::{components::{
 use super::{damage_text_informer::DamageTextInformer, Resist, charactor};
 
 pub fn update_damage(
-    mut objects_query: Query<
+    mut source_query: Query<
         (
             &IdentificationComponent,
+            &PositionComponent,
             Option<&mut SkillAndEffectComponent>,
             &mut StatsComponent,
             &mut TakenDamageComponent,
         )
     >,
-    mut all_query: Query<(
-        &PositionComponent,
-        &IdentificationComponent,
-        &mut TakenDamageComponent,
-    )>,
+    mut target_query: Query<
+        (
+            &IdentificationComponent,
+            &PositionComponent,
+            &mut TakenDamageComponent,
+        )
+    >,
 ) {
     for (
         identification, 
+        position,
         mut skills_and_effects_component, 
         mut stats,
         mut damage,
-        ) in objects_query.iter_mut()
+        ) in source_query.iter_mut()
     {
         let mut vec_of_text_damage: Vec<DamageTextInformer> = vec![];
         for taken_damage in damage.damage.iter_mut() {
             let area_of_impact = taken_damage.area_of_impact;
-            if area_of_impact == 0 {                                                                                                   //damage only self;
+            if area_of_impact == 0 {                                                                                                            //damage only self;
                 match identification.object_type {
                     ObjectType::Charactor(_, _) => {
                         match skills_and_effects_component.as_mut() {
@@ -43,19 +47,56 @@ pub fn update_damage(
                         }
                     },
                     ObjectType::Thing(_) => {
-                        do_damage_to_thing();
+                        do_damage_to_thing(taken_damage, &mut stats, &mut vec_of_text_damage);
                     },
                     _ => panic!("There is no {:?} in damage taken function", identification.object_type)
                 }
             }else {
                 match identification.object_type {
                     ObjectType::Charactor(_, _) => {
-
+                        match skills_and_effects_component.as_mut() {
+                            Some(mut skills_and_effects) => {
+                                do_damage_to_charactor(taken_damage, &mut stats, &mut skills_and_effects, &mut vec_of_text_damage);         //damage to self;
+                            },
+                            None => {},
+                        }
                     },
                     ObjectType::Thing(_) => {
-
+                        do_damage_to_thing(taken_damage, &mut stats, &mut vec_of_text_damage);
                     },
                     _ => panic!("There is no {:?} in damage taken function", identification.object_type)
+                }
+
+                let source_position_x = position.position.x;
+                let source_position_y = position.position.y;
+                let skill_x_min = source_position_x - area_of_impact as i32;
+                let skill_x_max = source_position_x + area_of_impact as i32;
+                let skill_y_min = source_position_y - area_of_impact as i32;
+                let skill_y_max = source_position_y + area_of_impact as i32;
+
+                for (
+                    target_identification, 
+                    target_position,
+                    mut target_damage,
+                    ) in target_query.iter_mut() 
+                {
+                    let target_position_x = target_position.position.x;
+                    let target_position_y = target_position.position.y;
+                    if source_position_x == target_position_x && source_position_y == target_position_y {
+                        continue;
+                    };
+
+                    if (target_position_x >= skill_x_min && target_position_x <= skill_x_max) && (target_position_y >= skill_y_min && target_position_y <= skill_y_max) {
+                        let mut new_taken_damage = taken_damage.clone();
+                        new_taken_damage.area_of_impact = 0;                                                                                                            //change this to prevent circle of damage reaction;
+                        match target_identification.object_type {
+                            ObjectType::Charactor(_, _) => target_damage.damage.push(new_taken_damage),
+                            ObjectType::Thing(_) => target_damage.damage.push(new_taken_damage),
+                            _ => panic!("There is no {:?} in damage taken function", identification.object_type)
+                        }
+                    } else {
+                        continue;
+                    }
                 }
             }
         }

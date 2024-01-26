@@ -2,10 +2,7 @@ use crate::{
     components::{
         projectile_component::Projectile, thing_component::ThingComponent, IdentificationComponent,
         ObjectType, PositionComponent, TakenDamage, TakenDamageComponent,
-    },
-    config::TILE_SIZE,
-    materials::material_manager::MaterialManager,
-    scenes::game_scenes::tilemap::tile::Position,
+    }, config::TILE_SIZE, materials::material_manager::MaterialManager, resources::scene_manager::SceneManager
 };
 use bevy::prelude::*;
 use rand::Rng;
@@ -25,6 +22,11 @@ pub fn update_projectiles(
 ) {
     let delta = time.delta_seconds();
     for (projectile_entity, mut projectile, mut transform) in projectile_query.iter_mut() {
+        if projectile.range == 0 {
+            commands.entity(projectile_entity).despawn_recursive();
+            continue;
+        }
+
         transform.translation.x += projectile.motion_coefficient.x
             * projectile.velocity as f32
             * delta
@@ -165,61 +167,39 @@ fn try_grid_move(x: f32, y: f32, projectile: &mut Projectile) -> bool {
     if projectile.current_position.x != new_grid_x {
         projectile.current_position.x = new_grid_x;
         bool = true;
+        projectile.range -= 1;
     };
 
     if projectile.current_position.y != new_grid_y {
         projectile.current_position.y = new_grid_y;
         bool = true;
+        projectile.range -= 1;
     }
 
     return bool;
 }
 
-pub fn create_projectile(
+pub fn create_projectiles(
     commands: &mut Commands,
     material_manager: &MaterialManager,
-    mut projectile: Projectile,
-    target_position: Position<i32>,
+    mut scene_manager: ResMut<SceneManager>,
 ) {
-    let starting_point_x = projectile.starting_position.x;
-    let starting_point_y = projectile.starting_position.y;
-
-    let delta_x = target_position.x - starting_point_x;
-    let delta_y = target_position.y - starting_point_y;
-
-    projectile.direction.x = if delta_x < 0 {
-        -1
-    } else if delta_x > 0 {
-        1
-    } else {
-        0
-    };
-
-    projectile.direction.y = if delta_y < 0 {
-        -1
-    } else if delta_y > 0 {
-        1
-    } else {
-        0
-    };
-
-    let distance = ((delta_x as f32).powf(2.0) + (delta_y as f32).powf(2.0)).sqrt();
-    projectile.motion_coefficient.x = delta_x as f32 / distance;
-    projectile.motion_coefficient.y = delta_y as f32 / distance;
-    let x = starting_point_x as f32 * TILE_SIZE as f32;
-    let y = starting_point_y as f32 * TILE_SIZE as f32;
-    let new_z_position = Z_POSITION;
-    let transform = Transform::from_xyz(x, y, new_z_position);
-    let texture_atlas = material_manager
-        .game_scene
-        .projectiles
-        .get_texture_atlas(&projectile.projectile_type);
-    commands.spawn((
-        SpriteSheetBundle {
-            texture_atlas,
-            transform,
-            ..Default::default()
-        },
-        projectile,
-    ));
+    for projectile in scene_manager.get_current_game_scene_mut().projectiles {
+        let x = projectile.starting_position.x as f32 * TILE_SIZE as f32;
+        let y = projectile.starting_position.y as f32 * TILE_SIZE as f32;
+        let new_z_position = Z_POSITION;
+        let transform = Transform::from_xyz(x, y, new_z_position);
+        let texture_atlas = material_manager
+            .game_scene
+            .projectiles
+            .get_texture_atlas(&projectile.projectile_type);
+        commands.spawn((
+            SpriteSheetBundle {
+                texture_atlas,
+                transform,
+                ..Default::default()
+            },
+            projectile,
+        ));
+    } 
 }

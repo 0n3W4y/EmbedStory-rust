@@ -8,9 +8,10 @@ use super::DEPLOY_PROJECTILE_PATH;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ProjectileDeploy {
-    pub arrow: ProjectileConfig,
-    pub bullet: ProjectileConfig,
-    pub fire_sphere: ProjectileConfig,
+    pub arrows: ArrowsDeploy,
+    pub bullets: BulletsDeploy,
+    pub spheres: SpheresDeploy,
+    pub none: ProjectileConfig,
 }
 
 impl ProjectileDeploy {
@@ -29,10 +30,25 @@ impl ProjectileDeploy {
 
     pub fn get_config(&self, projectile_type: &ProjectileType) -> &ProjectileConfig {
         match *projectile_type {
-            ProjectileType::Arrow => &self.arrow,
-            ProjectileType::Bullet => &self.bullet,
-            ProjectileType::FireSphere => &self.fire_sphere,
+            ProjectileType::Arrow => &self.arrows.arrow,
+            ProjectileType::Bullet => &self.bullets.bullet,
+            ProjectileType::FireSphere => &self.spheres.fire_sphere,
             ProjectileType::None => panic!("Try to get empty projectileconfig!!!"),
         }
     }
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct ArrowsDeploy {
+    pub arrow: ProjectileConfig,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct BulletsDeploy {
+    pub bullet: ProjectileConfig,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct SpheresDeploy {
+    pub fire_sphere: ProjectileConfig,
 }

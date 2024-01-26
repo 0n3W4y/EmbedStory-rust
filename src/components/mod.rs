@@ -26,7 +26,7 @@ impl Default for ObjectType {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct TakenDamage {
     pub damage: HashMap<Damage, i16>,
     pub effects: Vec<Effect>,

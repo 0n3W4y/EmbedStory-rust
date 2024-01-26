@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use bevy::time::common_conditions::on_timer;
 use serde::{Deserialize, Serialize};
 
+use crate::components::projectile_component::Projectile;
 use crate::resources::deploy::game_scene_biome_deploy::BiomeType;
 use crate::resources::deploy::game_scene_deploy::Location;
 use crate::resources::scene_data::charactor::Charactor;
@@ -172,6 +173,7 @@ pub struct GameScene {
     pub stuff: Vec<Stuff>,
     pub charactors: CharactorStorage,
     pub effects: Vec<SceneEffect>,
+    pub projectiles: Vec<Projectile>,
 }
 
 pub struct GameScenePlugin;
@@ -192,7 +194,8 @@ impl Plugin for GameScenePlugin {
                     charactor::player_click_function::player_click,
                     charactor::update_passive_skills::update_passive_skills,
                     charactor::active_skill_handler::active_skill_handler,
-                    charactor::update_attack::update_attack_from_basic_skill
+                    charactor::update_attack::update_attack_from_basic_skill,
+                    projectiles::update_projectile::create_projectiles
                 )
                 .in_set(OnUpdate(AppState::GameScene))
             )

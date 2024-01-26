@@ -1,9 +1,10 @@
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::{resources::scene_data::{charactor::{effects::Effect, skills::PassiveSkill}, projectiles::ProjectileType, Damage}, scenes::game_scenes::tilemap::tile::Position};
+use crate::{resources::scene_data::{charactor::{effects::Effect, skills::PassiveSkill}, projectiles::{ProjectileConfig, ProjectileType}, Damage}, scenes::game_scenes::tilemap::tile::Position};
 
-#[derive(Default, Debug, Component, Clone)]
+#[derive(Default, Debug, Component, Clone, Deserialize, Serialize)]
 pub struct Projectile {
     pub projectile_type: ProjectileType,
     pub damage: HashMap<Damage, i16>,
@@ -21,16 +22,9 @@ pub struct Projectile {
 }
 
 impl Projectile {
-    pub fn new(projectile_type: &ProjectileType) -> Self {
-        let velocity = match *projectile_type {
-            ProjectileType::Arrow => 120,
-            ProjectileType::Bullet => 300,
-            ProjectileType::FireSphere => 150,
-            ProjectileType::None => 1000,
-        };
-
+    pub fn new(projectile_config: &ProjectileConfig) -> Self {
         Projectile {
-            projectile_type: projectile_type.clone(),
+            projectile_type: projectile_config.projectile_type.clone(),
             damage: HashMap::new(),
             effects: vec![],
             passive_skills: vec![],
@@ -42,7 +36,7 @@ impl Projectile {
             area_on_impact: 0,
             is_missed: false,
             is_critical_hit: false,
-            velocity,
+            velocity: projectile_config.velocity,
         }
     }
 }

@@ -15,7 +15,9 @@ use crate::components::projectile_component::Projectile;
 use crate::materials::material_manager::MaterialManager;
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
-use crate::resources::scene_data::projectiles::ProjectileType;
+use crate::resources::scene_data::projectiles::{setup_projectile, ProjectileType};
+use crate::resources::scene_manager::SceneManager;
+use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 use crate::{
     components::charactor_component::{
@@ -40,7 +42,7 @@ pub fn update_passive_skills(
         &mut TakenDamageComponent,
     ), With<CharactorComponent>>,
     deploy: Res<Deploy>,
-    material_manager: Res<MaterialManager>,
+    mut scene_manager: ResMut<SceneManager>,
 ) {
     let delta: f32 = 0.1;
     let mut random = rand::thread_rng();
@@ -89,9 +91,12 @@ pub fn update_passive_skills(
 
                 find_targets(
                     &charactor_component.charactor_type, 
-                    &target_component.target_position.unwrap(), 
+                    &position_component.position,
+                    &target_component.target_position, 
                     &mut charactors_query, 
-                    skill
+                    skill,
+                    scene_manager.get_current_game_scene_mut(),
+                    &deploy,
                 );
             }
         }
@@ -100,43 +105,82 @@ pub fn update_passive_skills(
 
 fn find_targets(
     charactor_type: &CharactorType,
-    position: &Position<i32>, 
+    source_position: &Position<i32>, 
+    target_position: &Option<Position<i32>>,
     charactors: &mut Query<(
         &CharactorComponent,
         &PositionComponent,
         &mut TakenDamageComponent,
     ), With<CharactorComponent>>,
     skill: &mut PassiveSkill,
+    scene: &mut GameScene,
+    deploy: &Deploy,
 ) {
     let skill_range = skill.skill_range;
     let skill_target = skill.target_type.clone();
-    let skill_target_quantity = skill.target_quantity;
+    let mut skill_target_quantity = skill.target_quantity;
     let skill_projectile_type = skill.projectile_type.clone();
 
-    let position_x = position.x;
-    let position_y = position.y;
-    
-    let position_x_min = position_x - skill_range as i32;
-    let position_x_max = position_x + skill_range as i32;
-    let position_y_min = position_y - skill_range as i32;
-    let position_y_max = position_y + skill_range as i32;
-    for (charactor_component, position_component, mut taken_damage_component) in charactors.iter_mut() {
-        if position_component.position.x == position_x && position_component.position.y == position_y {
-            if check_for_condition(charactor_type, &charactor_component.charactor_type, &skill_target) {
-                do_direct_damage(skill, &mut taken_damage_component);
+    let source_position_x = source_position.x;
+    let source_position_y = source_position.y;
+
+    let mut have_target_position:bool = false;
+
+    let source_target_position = match target_position.as_ref() {
+        Some(v) => {
+            have_target_position = true;
+            v.clone()
+        },
+        None => {
+            Position{x: 0, y: 0}
+        },
+    };
+
+    let target_position_x_min = source_position_x - skill_range as i32;
+    let target_position_x_max = source_position_x + skill_range as i32;
+    let target_position_y_min = source_position_y - skill_range as i32;
+    let target_position_y_max = source_position_y + skill_range as i32;
+
+    for (
+        target_charactor_component, 
+        target_position, 
+        mut target_taken_damage
+    ) in charactors.iter_mut() {
+        let target_position_x = target_position.position.x;
+        let target_position_y = target_position.position.y;
+        if target_position_x == source_position_x && target_position_y == source_position_y {
+            continue;                                                                                                                           //ignore self (passive skill caster);
+        }
+
+        if have_target_position {
+            if target_position_x == source_target_position.x && target_position_x == source_target_position.y {
+                if skill_projectile_type == ProjectileType::None {
+                    do_direct_damage(skill, &mut target_taken_damage);
+                } else {
+                    setup_projectile(scene, skill, source_position, &target_position.position, deploy);
+                }
+
+                have_target_position = false;                                                                                                   //
+                if skill_target_quantity == 0 {
+                    return;
+                }
+            }
+        } 
+
+        if skill_target_quantity > 0 {
+            if (target_position_x >= target_position_x_min && target_position_x <= target_position_x_max) 
+            && (target_position_y >= target_position_y_min && target_position_y <= target_position_y_max) {
+                //do_direct_damage(skill, &mut target_taken_damage); 
+                +++
+                skill_target_quantity -= 1;
+            }
+        } else {
+            if !have_target_position {
+                return;
             }
         }
+        
     }
-
-    /*
-    setup_projectile(
-        &mut commands, 
-        &material_manager, 
-        skill, 
-        &position_component.position, 
-        &target_component.target_position.unwrap()
-    );
-*/
 }
 
 fn check_for_condition(charactor_type: &CharactorType, target_type: &CharactorType, skill_target: &TargetType) -> bool {
@@ -233,25 +277,4 @@ fn do_direct_damage(skill: &mut PassiveSkill, taken_damage: &mut TakenDamageComp
 
     taken_damage.damage.push(damage);
 
-}
-
-fn setup_projectile( 
-    commands: &mut Commands, 
-    material_manager: &MaterialManager,
-    skill: &PassiveSkill, 
-    source_position: &Position<i32>,
-    target_position: &Position<i32>,
-){
-    let mut random = rand::thread_rng();
-    let mut projectile = Projectile::new(&skill.projectile_type);
-    
-    let crit_chance = skill.crit_chance;
-    let crit_chance_random_number: i16 = random.gen_range(0..100);
-    let crit_multiplier = if crit_chance >= crit_chance_random_number {
-        skill.crit_multiplier
-    } else {
-        0
-    };
-
-    //create_projectile(commands, material_manager, projectile, target_position)
 }

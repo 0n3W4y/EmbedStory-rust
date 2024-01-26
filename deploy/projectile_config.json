@@ -1,0 +1,22 @@
+{
+    "arrows": {
+        "Arrow": {
+            "velocity": 150
+        }
+    },
+    "bullets": {
+        "Bullet": {
+            "velocity": 500
+        }
+    },
+    "spheres": {
+        "FireSphere": {
+            "velocity": 300
+        }
+    },
+    "none": {
+        "None": {
+            "velocity": 1000
+        }
+    }
+}
