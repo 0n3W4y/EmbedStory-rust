@@ -1,29 +1,27 @@
 use bevy::prelude::*;
 use rand::Rng;
 
-use crate::components::{PositionComponent, IdentificationComponent, TakenDamageComponent, TakenDamage, ObjectType, StatsComponent};
+use crate::components::{IdentificationComponent, ObjectType, PositionComponent, StatsComponent, TakenDamage, TakenDamageComponent};
 use crate::components::charactor_component::{
     ActionType, CharactorComponent, SkillAndEffectComponent, CharactorTargetComponent,
 };
 
-use crate::components::projectile_component::Projectile;
-use crate::materials::material_manager::MaterialManager;
+
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::Ability;
 use crate::resources::scene_data::damage_text_informer::DamageIgnored;
-use crate::resources::scene_data::projectiles::ProjectileType;
-use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
+use crate::resources::scene_data::projectiles::{setup_projectile_with_active_skill, ProjectileType};
+use crate::resources::scene_manager::SceneManager;
+use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::Position;
 
 use super::effects::EffectStatus;
 use super::skills::ActiveSkill;
-use super::CharactorType;
 use super::update_move::calculate_direction;
 use super::CharactorStatus;
 
 pub fn update_attack_from_basic_skill(
-    mut commands: Commands,
-    material_manager: Res<MaterialManager>,
+    mut scene_manager: ResMut<SceneManager>,
     deploy: Res<Deploy>,
     mut charactor_query: Query<(
         &mut CharactorComponent,
@@ -39,6 +37,7 @@ pub fn update_attack_from_basic_skill(
         &mut TakenDamageComponent,
     )>,
 ) {
+    let scene = scene_manager.get_current_game_scene_mut();
     for (
         mut charactor, 
         charactor_position,
@@ -72,108 +71,77 @@ pub fn update_attack_from_basic_skill(
         if skill.on_cooldown {                                          //check for cooldown
             continue;                                                   //go to next charactor;
         }
-
-        let mut elapsed_target_quantity = skill.target_quantity;    //for multiply targets;
+        
         for (
-            target_identification,
+            target,
             target_position,
             mut target_taken_damage,
         ) in target_query.iter_mut() {
-            todo!();
-            /*
-            if skill.target_quantity > 1 {
-                if try_to_attack(&charactor_position.position, &target_position.position, skill.skill_range) {
-                    match target_identification.object_type {
-                        ObjectType::Charactor(charactor_type, id) => {
-                            if id == target_id {
-                                targets_in_skill_range.insert(0, (&target_position, &mut target_taken_damage));
-                                continue;
-                            } else {
-                                match charactor_type {
-                                    CharactorType::Player => {
-                                        if charactor.charactor_type == CharactorType::Monster {
-                                            targets_in_skill_range.push((&target_position, &mut target_taken_damage));
-                                        }
-                                    },
-                                    CharactorType::NPC => {},
-                                    CharactorType::Monster => {
-                                        if charactor.charactor_type != CharactorType::Monster {
-                                            targets_in_skill_range.push((&target_position, &mut target_taken_damage));
-                                        }
-                                    },
-                                    CharactorType::Companion => {
-                                        if charactor.charactor_type == CharactorType::Monster {
-                                            targets_in_skill_range.push((&target_position, &mut target_taken_damage));
-                                        }
-                                    },
-                                }
-                            }
-                        },
-                        ObjectType::Thing(_) => {
-
-                        },
-                        _ => {},
+            match target.object_type {
+                ObjectType::Charactor(_, id) => {
+                    if id == target_id {
+                        try_to_attack(
+                            &mut charactor,
+                            charactor_stats, 
+                            &charactor_position.position, 
+                            &target_position.position, 
+                            skill,
+                            &mut target_taken_damage,
+                            &deploy,
+                            scene,
+                        );
+                    } else {
+                        continue;
                     }
-                };
-            } else {
-                match target_identification.object_type  {
-                    ObjectType::Charactor(_, id) => {
-                        if id == target_id {
-                            if try_to_attack(&charactor_position.position, &target_position.position, skill.skill_range) {      //try to attack;
-                                attack_single_target(
-                                    &mut commands,
-                                    skill,
-                                    &mut charactor,
-                                    charactor_stats,
-                                    charactor_position,
-                                    target_position,
-                                    &mut target_taken_damage,
-                                    &deploy,
-                                    &material_manager,
-                                );
-                                return;
-                            }
-                        }
-                    },
-                    ObjectType::Stuff(_) => todo!(),
-                    ObjectType::Thing(_) => todo!(),
-                    ObjectType::Projectile(_) => todo!(),
-                    ObjectType::Tile(_) => todo!(),
-                }
+                },
+                _ => continue,
             }
-            */
         }
     }
 }
 
 fn try_to_attack(
+    charactor: &mut CharactorComponent,
+    charactor_ability: &StatsComponent,
     charactor_position: &Position<i32>,
     target_position: &Position<i32>,
-    skill_range: u8,
-) -> bool {                                                                     //check for target position;
+    skill: &mut ActiveSkill,
+    target_taken_damage: &mut TakenDamageComponent,
+    deploy: &Deploy,
+    scene: &mut GameScene,
+
+) {                                                                     //check for target position;
     let diff_x = (target_position.x - charactor_position.x).abs();         // always positive value;
     let diff_y = (target_position.y - charactor_position.y).abs();         // always positive value;
     let diff = diff_x.max(diff_y);
 
-    if skill_range as i32 >= diff {                                             //check for skill range;
-        return true;
+    if skill.skill_range as i32 >= diff {                                             //check for skill range;
+        attack(
+            skill,
+            charactor,
+            charactor_ability,
+            charactor_position,
+            target_position,
+            target_taken_damage,
+            deploy,
+            scene
+        );
     } else {
-        return false;
+        return;
     }
 }
 
-fn attack_single_target(
-    mut commands: &mut Commands,
+fn attack(
     skill: &mut ActiveSkill,
     charactor: &mut CharactorComponent,
     charactor_ability: &StatsComponent,
-    charactor_position: &PositionComponent,
-    target_position: &PositionComponent,
+    charactor_position: &Position<i32>,
+    target_position: &Position<i32>,
     target_taken_damage: &mut TakenDamageComponent,
     deploy: &Deploy,
-    material_manager: &MaterialManager,
+    scene: &mut GameScene,
 ) {
-    let mut rng = rand::thread_rng();
+    let mut random = rand::thread_rng();
     skill.on_cooldown = true;                                                                    //set skill on cooldown;
     let accuracy = match charactor_ability.ability.get(&Ability::Accuracy) {                //get accuracy
         Some(v) => *v,
@@ -184,10 +152,10 @@ fn attack_single_target(
     };
     //need more calculating for use properly angle from Y;
     let direction = calculate_direction(                                            //get direction to set ccorrectly sprite position for sprite;
-        charactor_position.position.x, 
-        charactor_position.position.y, 
-        target_position.position.x,
-        target_position.position.y
+        charactor_position.x, 
+        charactor_position.y, 
+        target_position.x,
+        target_position.y
     );
 
     let charactor_status = if direction.x < 0 {
@@ -201,109 +169,67 @@ fn attack_single_target(
     };
 
     charactor.status = charactor_status;
+    let random_accuracy_number: u8 = random.gen_range(0..100);
+    let is_missed = if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
+        true
+    } else {
+        false
+    };
 
-    if skill.projectile_type == ProjectileType::None {                                             //if None = melee, or ranged without projectile => instant direct damage;
-        let random_accuracy_number: u8 = rng.gen_range(0..=99);
-        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
-            let damage = TakenDamage {missed_or_evaded: Some(DamageIgnored::Missed),..Default::default()};
-            target_taken_damage.damage.push(damage);
-            return;
-        };
-
-        let critical_hit_random_number = rng.gen_range(0..=99);
-        let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {                                                       //calculating critical multiplier;
-            skill.crit_multiplier
-        } else {
-            0
-        };
-
-        let mut damage: TakenDamage = Default::default();
-        for (damage_type, value) in skill.damage.iter() {                                                                           //create and apply damage to target;       
-            let value_with_multiplier = *value +  *value * critical_hit_multiplier / 100;                                                               //calculating new damage value with multiplier from critical hit;
-
-            let critical_hit: bool = if critical_hit_multiplier > 0 {                                                                                               //check for bigger text or not for inform to ui;
-                true
-            } else {
-                false
-            };
-            damage.damage.insert(damage_type.clone(), value_with_multiplier);
-            damage.is_critical_hit = critical_hit;
-        }
-
-        for (effect_type, (effect, trigger_chance)) in skill.effects.iter() {                                                                                      //set effects on target, if triggered;
-            let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
-            if *trigger_chance < trigger_chance_random_number {
-                continue;                                                                                                                                   //skip effect, because not triggered;
-            };
-
-            damage.effects.push(effect.clone());
-        }
-
-        for (skill_type, (passive_skill, trigger_chance)) in skill.passive_skills.iter() {
-            let skill_trigger_chance_random_number: u8 = rng.gen_range(0..=99);
-            if *trigger_chance < skill_trigger_chance_random_number {
-                continue;                                                                                                                                       // skip passive skill, not triggered;
-            }
-            damage.passive_skills.push(passive_skill.clone());
-        }
-
-        target_taken_damage.damage.push(damage);
-    } else {                                                                                        //if have a projectile type, create projectile
-        let mut projectile_component = Projectile::new(&skill.projectile_type);         //create default projectile component;
-        projectile_component.starting_position = charactor_position.position.clone();
-        projectile_component.range = skill.skill_range;
-
-        let random_accuracy_number: u8 = rng.gen_range(0..=99);
-        if accuracy <= 0 || accuracy < random_accuracy_number as i16 {
-            projectile_component.is_missed = true;
-            create_projectile(
-                &mut commands,
-                material_manager,
-                projectile_component,
-                target_position.position.clone(),
-            );
-            return;
-        };
-
-        setup_projectile(&mut projectile_component, skill);
-        create_projectile(
-            &mut commands,
-            material_manager,
-            projectile_component.clone(),
-            target_position.position.clone(),
-        );
+    if skill.projectile_type == ProjectileType::None {                                                                                          //if None = melee, or ranged without projectile => instant direct damage;
+        do_direct_damage(is_missed, target_taken_damage, skill);
+    } else {
+        setup_projectile_with_active_skill(scene, skill, charactor_position, target_position, deploy, is_missed);
     }
 }
 
-
-fn setup_projectile(projectile_component: &mut Projectile, skill: &mut ActiveSkill){
-    let mut rng = rand::thread_rng();
-    let critical_hit_random_number = rng.gen_range(0..=99);
-    let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {                                                                           //calculating critical multiplier;
+fn do_direct_damage(
+    is_missed: bool,
+    target_taken_damage: &mut TakenDamageComponent,
+    skill: &mut ActiveSkill,
+){
+    if is_missed {
+        let damage = TakenDamage {missed_or_evaded: Some(DamageIgnored::Missed),..Default::default()};
+        target_taken_damage.damage.push(damage);
+        return;
+    };
+    let mut random = rand::thread_rng();
+    let critical_hit_random_number = random.gen_range(0..=99);
+    let critical_hit_multiplier = if skill.crit_chance > critical_hit_random_number {                                                   //calculating critical multiplier;
         skill.crit_multiplier
     } else {
-        0
+        100
     };
 
-    for (damage, value) in skill.damage.iter() {
-        let new_value = *value + *value * critical_hit_multiplier / 100;
-        projectile_component.damage.insert(damage.clone(), new_value);
+    let mut damage: TakenDamage = Default::default();
+    for (damage_type, value) in skill.damage.iter() {                                                                          //create and apply damage to target;       
+        let value_with_multiplier = *value * critical_hit_multiplier / 100;                                                              //calculating new damage value with multiplier from critical hit;
+
+        let critical_hit: bool = if critical_hit_multiplier > 0 {                                                                             //check for bigger text or not for inform to ui;
+            true
+        } else {
+            false
+        };
+        damage.damage.insert(damage_type.clone(), value_with_multiplier);
+        damage.is_critical_hit = critical_hit;
     }
 
-    for (effect_type, (effect, trigger_chance)) in skill.effects.iter() {                                                   //check for triggered effects;
-        let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
+    for (_, (effect, trigger_chance)) in skill.effects.iter() {                                                                                      //set effects on target, if triggered;
+        let trigger_chance_random_number: u8 = random.gen_range(0..=99);
         if *trigger_chance < trigger_chance_random_number {
-            continue;                                                                                                                                   //not triggered;
-        }
-        projectile_component.effects.push(effect.clone());                                                                                              //store triggered effects to projectile;
+            continue;                                                                                                                          //skip effect, because not triggered;
+        };
+
+        damage.effects.push(effect.clone());
     }
 
-    for (skill_type, (passive_skill, trigger_chance)) in skill.passive_skills.iter() {
-        let trigger_chance_random_number: u8 = rng.gen_range(0..=99);
-        if *trigger_chance < trigger_chance_random_number {
-            continue;                                                                                                                                   //not triggered;
+    for (_, (passive_skill, trigger_chance)) in skill.passive_skills.iter() {
+        let skill_trigger_chance_random_number: u8 = random.gen_range(0..=99);
+        if *trigger_chance < skill_trigger_chance_random_number {
+            continue;                                                                                                                           // skip passive skill, not triggered;
         }
-
-        projectile_component.passive_skills.push(passive_skill.clone());
+        damage.passive_skills.push(passive_skill.clone());
     }
+
+    target_taken_damage.damage.push(damage);
 }

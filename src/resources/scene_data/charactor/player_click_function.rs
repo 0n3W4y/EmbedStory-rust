@@ -151,6 +151,17 @@ fn select_target_to_attack(
     x: i32,
     y: i32,
 ) {
+    match player_target.target {
+        Some(v) => {
+            if v == id {                                                                            //deselect target;
+                player_target.target = None;
+                player_target.action = ActionType::None;
+                player_target.target_position = None;
+                return;
+            }
+        },
+        None => {}
+    }
     player_target.target = Some(id);
     player_target.action = ActionType::Attack;
     player_target.target_position = Some(Position{ x, y });

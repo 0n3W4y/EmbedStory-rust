@@ -1,21 +1,15 @@
-use std::collections::HashMap;
-
 use bevy::prelude::*;
 use rand::Rng;
 
-use super::change_attribute_points;
-use super::effects::EffectType;
 use super::skills::{TargetType, PassiveSkill, PassiveSkillType};
 use super::{
     CharactorType, CharactorStatus,
 };
 use crate::components::charactor_component::SkillAndEffectComponent;
-use crate::components::{PositionComponent, IdentificationComponent, StatsComponent, TakenDamageComponent, TakenDamage};
-use crate::components::projectile_component::Projectile;
-use crate::materials::material_manager::MaterialManager;
+use crate::components::{PositionComponent, IdentificationComponent, TakenDamageComponent, TakenDamage};
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
-use crate::resources::scene_data::projectiles::{setup_projectile, ProjectileType};
+use crate::resources::scene_data::projectiles::{setup_projectile_with_passive_skill, ProjectileType};
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::Position;
@@ -24,7 +18,6 @@ use crate::{
         CharactorComponent, CharactorTargetComponent},
     resources::deploy::Deploy
 };
-use crate::resources::scene_data::projectiles::update_projectile::create_projectile;
 
 pub fn update_passive_skills(
     mut commands: Commands,
@@ -157,10 +150,10 @@ fn find_targets(
                 if skill_projectile_type == ProjectileType::None {
                     do_direct_damage(skill, &mut target_taken_damage);
                 } else {
-                    setup_projectile(scene, skill, source_position, &target_position.position, deploy);
+                    setup_projectile_with_passive_skill(scene, skill, source_position, &target_position.position, deploy);
                 }
 
-                have_target_position = false;                                                                                                   //
+                have_target_position = false;                                                                                                   //This flag for next iteration, if targets quantity > 1
                 if skill_target_quantity == 0 {
                     return;
                 }
@@ -170,8 +163,11 @@ fn find_targets(
         if skill_target_quantity > 0 {
             if (target_position_x >= target_position_x_min && target_position_x <= target_position_x_max) 
             && (target_position_y >= target_position_y_min && target_position_y <= target_position_y_max) {
-                //do_direct_damage(skill, &mut target_taken_damage); 
-                +++
+                if skill_projectile_type == ProjectileType::None {
+                    do_direct_damage(skill, &mut target_taken_damage);
+                } else {
+                    setup_projectile_with_passive_skill(scene, skill, source_position, &target_position.position, deploy);
+                }
                 skill_target_quantity -= 1;
             }
         } else {
@@ -268,7 +264,7 @@ fn do_direct_damage(skill: &mut PassiveSkill, taken_damage: &mut TakenDamageComp
        taken_damage.text.push(damage_text);
     }
 
-    for (effect_type, (effect, chance)) in skill.effect.iter() {
+    for (effect_type, (effect, chance)) in skill.effects.iter() {
         let random_number_for_effect_trigger_chance: u8 = random.gen_range(0..100);
         if *chance > random_number_for_effect_trigger_chance {
             damage.effects.push(effect.clone());

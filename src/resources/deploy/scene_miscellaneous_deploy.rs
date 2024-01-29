@@ -1,4 +1,4 @@
-use serde::{ Deserialize };
+use serde::Deserialize;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -8,7 +8,7 @@ pub struct SceneMiscellaneousDeploy{
     //TODO: include all scenes into;
     //loading:,
     //main_menu:,
-    create_char: CreateCharSceneDeploy,
+    pub create_char: CreateCharSceneDeploy,
     //options:,
     //ground_scene:,
 }

@@ -180,11 +180,11 @@ fn try_grid_move(x: f32, y: f32, projectile: &mut Projectile) -> bool {
 }
 
 pub fn create_projectiles(
-    commands: &mut Commands,
-    material_manager: &MaterialManager,
+    mut commands: Commands,
+    material_manager: Res<MaterialManager>,
     mut scene_manager: ResMut<SceneManager>,
 ) {
-    for projectile in scene_manager.get_current_game_scene_mut().projectiles {
+    for projectile in scene_manager.get_current_game_scene_mut().projectiles.iter() {
         let x = projectile.starting_position.x as f32 * TILE_SIZE as f32;
         let y = projectile.starting_position.y as f32 * TILE_SIZE as f32;
         let new_z_position = Z_POSITION;
@@ -199,7 +199,8 @@ pub fn create_projectiles(
                 transform,
                 ..Default::default()
             },
-            projectile,
+            projectile.clone(),
         ));
     } 
+    scene_manager.get_current_game_scene_mut().projectiles.clear();
 }

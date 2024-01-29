@@ -122,7 +122,7 @@ impl EffectsDeploy {
             BuffDebuffEffectType::HealthDebuff => &self.buff_debuff_effects.health_debuff,
             BuffDebuffEffectType::StaminaBuff => &self.buff_debuff_effects.stamina_buff,
             BuffDebuffEffectType::HealthBuff => &self.buff_debuff_effects.health_buff,
-            BuffDebuffEffectType::AccuracyDebuff => &self.buff_debuff_effects.acid_debuff,
+            BuffDebuffEffectType::AccuracyDebuff => &self.buff_debuff_effects.accuracy_debuff,
             BuffDebuffEffectType::None => &self.buff_debuff_effects.none,
         }
     }

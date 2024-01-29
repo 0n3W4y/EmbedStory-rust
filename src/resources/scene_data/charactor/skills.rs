@@ -47,7 +47,7 @@ pub struct PassiveSkill {
     pub crit_multiplier: i16,
 
     pub damage: HashMap<Damage, i16>,
-    pub effect: HashMap<EffectType, (Effect, u8)>,
+    pub effects: HashMap<EffectType, (Effect, u8)>,
 
     pub skill_range: u8,
     pub skill_direction: SkillDirectionType,
@@ -87,7 +87,7 @@ impl ActiveSkill {
         let mut effects: HashMap<EffectType, (Effect, u8)> = HashMap::new();
         let mut passive_skills: HashMap<PassiveSkillType, (PassiveSkill, u8)> = HashMap::new();
         let skill_config = deploy.charactor_deploy.skills_deploy.get_active_skill_deploy(skill_type);
-        for (effect_type, effect_chance) in skill_config.effect.iter() {
+        for (effect_type, effect_chance) in skill_config.effects.iter() {
             let effect = Effect::new(deploy, effect_type);
             effects.insert(effect_type.clone(), (effect, *effect_chance));
         }
@@ -123,7 +123,7 @@ impl PassiveSkill {
     pub fn new (deploy: &Deploy, skill_type: &PassiveSkillType) -> Self {
         let mut effects: HashMap<EffectType, (Effect, u8)> = HashMap::new();
         let skill_config = deploy.charactor_deploy.skills_deploy.get_passive_skill_deploy(skill_type);
-        for (effect_type, effect_chance) in skill_config.effect.iter() {
+        for (effect_type, effect_chance) in skill_config.effects.iter() {
             let effect = Effect::new(deploy, effect_type);
             effects.insert(effect_type.clone(), (effect, *effect_chance ));
         }
@@ -138,7 +138,7 @@ impl PassiveSkill {
             crit_chance: skill_config.crit_chance,
             crit_multiplier: skill_config.crit_multiplier,
             damage: skill_config.damage.clone(),
-            effect: effects,
+            effects: effects,
             skill_range: skill_config.skill_range,
             skill_direction: skill_config.skill_direction.clone(),
             target_type: skill_config.target_type.clone(),
@@ -160,7 +160,7 @@ pub struct PassiveSkillDeploy {
     pub crit_multiplier: i16,
 
     pub damage: HashMap<Damage, i16>,
-    pub effect: HashMap<EffectType, u8>,
+    pub effects: HashMap<EffectType, u8>,
 
     pub skill_range: u8,
     pub skill_direction: SkillDirectionType,
@@ -188,7 +188,7 @@ pub struct ActiveSkillDeploy {
     pub crit_multiplier: i16,
 
     pub damage: HashMap<Damage, i16>,
-    pub effect: HashMap<EffectType, u8>,
+    pub effects: HashMap<EffectType, u8>,
     pub passive_skills: HashMap<PassiveSkillType, u8>,
 }
 
@@ -212,7 +212,7 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &S
 
     let attack_speed_from_ability = match stats.ability.get(&Ability::AttackSpeed) {      
         Some(v) => *v,
-        None => 0,
+        None => 100,
     };
 
     match weapon {
@@ -237,12 +237,18 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &S
                     new_base_skill.passive_skills.clear();                                                  //setting up new passive skills from weapon to skill;
                     for (passive_skill_type, chance) in val.passive_skills.iter() {
                         let mut new_passive_skill = PassiveSkill::new(deploy, passive_skill_type);
-                        for (_, (effect, _)) in new_passive_skill.effect.iter_mut() {
+                        for (_, (effect, _)) in new_passive_skill.effects.iter_mut() {
                             update_over_time_effect_damage_by_ability(effect, &stats.ability);
                         }
                         update_damage_by_ability(&mut new_passive_skill.damage, &stats.ability);
                         new_base_skill.passive_skills.insert(passive_skill_type.clone(), (new_passive_skill, *chance));
                     }
+                    let new_cooldown = (val.attack_cooldown - val.attack_cooldown * attack_speed_from_ability / 100) as f32;
+                    new_base_skill.cooldown_time = if new_cooldown < MINIMAL_TIME_FOR_COOLDOWN_SKILL {
+                        MINIMAL_TIME_FOR_COOLDOWN_SKILL
+                    } else {
+                        new_cooldown
+                    };
                 },
                 _ => {
                     println!("Wrong weapon! Stuff type is '{:#?}'", v.stuff_type);
