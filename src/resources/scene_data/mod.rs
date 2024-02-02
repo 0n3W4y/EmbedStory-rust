@@ -38,15 +38,6 @@ pub enum Attribute {
     Stamina,
 }
 
-impl Attribute {
-    pub fn new(damage: &Damage) -> Self {
-        match *damage {
-            Damage::Stamina => Attribute::Stamina,
-            _ => Attribute::Health
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, Eq, PartialEq, Default, Hash)]
 pub enum Resist {
     FireDamage,

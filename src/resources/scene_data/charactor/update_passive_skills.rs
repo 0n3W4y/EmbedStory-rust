@@ -6,7 +6,7 @@ use super::{
     CharactorType, CharactorStatus,
 };
 use crate::components::charactor_component::SkillAndEffectComponent;
-use crate::components::{PositionComponent, IdentificationComponent, TakenDamageComponent, TakenDamage};
+use crate::components::{PositionComponent, TakenDamageComponent, TakenDamage};
 use crate::resources::scene_data::charactor::skills::SkillDirectionType;
 use crate::resources::scene_data::damage_text_informer::DamageTextInformer;
 use crate::resources::scene_data::projectiles::{setup_projectile_with_passive_skill, ProjectileType};
@@ -20,9 +20,7 @@ use crate::{
 };
 
 pub fn update_passive_skills(
-    mut commands: Commands,
     mut skills_query: Query<(
-        &IdentificationComponent,
         &CharactorComponent,
         &mut SkillAndEffectComponent,
         &PositionComponent,
@@ -37,10 +35,8 @@ pub fn update_passive_skills(
     deploy: Res<Deploy>,
     mut scene_manager: ResMut<SceneManager>,
 ) {
-    let delta: f32 = 0.1;
     let mut random = rand::thread_rng();
     for (
-        identification_component,
         charactor_component, 
         mut skill_and_effect_component, 
         position_component, 
@@ -93,6 +89,10 @@ pub fn update_passive_skills(
                 );
             }
         }
+
+        for skill in skills_for_remove.iter() {
+            skill_and_effect_component.passive_skills.remove(skill);
+        }
     }
 }
 
@@ -143,6 +143,10 @@ fn find_targets(
         let target_position_y = target_position.position.y;
         if target_position_x == source_position_x && target_position_y == source_position_y {
             continue;                                                                                                                           //ignore self (passive skill caster);
+        }
+        
+        if !check_for_condition(charactor_type, &target_charactor_component.charactor_type, &skill_target) {
+            continue;
         }
 
         if have_target_position {
@@ -264,7 +268,7 @@ fn do_direct_damage(skill: &mut PassiveSkill, taken_damage: &mut TakenDamageComp
        taken_damage.text.push(damage_text);
     }
 
-    for (effect_type, (effect, chance)) in skill.effects.iter() {
+    for (_, (effect, chance)) in skill.effects.iter() {
         let random_number_for_effect_trigger_chance: u8 = random.gen_range(0..100);
         if *chance > random_number_for_effect_trigger_chance {
             damage.effects.push(effect.clone());

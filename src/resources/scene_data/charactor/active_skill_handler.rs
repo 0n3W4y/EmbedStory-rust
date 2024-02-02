@@ -6,5 +6,5 @@ use crate::components::{charactor_component::{SkillAndEffectComponent, Charactor
 pub fn active_skill_handler (
     charactors_query: Query<(&mut SkillAndEffectComponent, &mut StatsComponent, &mut CharactorTargetComponent), With<CharactorComponent>>
 ){
-
+    todo!();
 }

@@ -11,6 +11,6 @@ pub fn killed_charactor_handler(
 ){
     //TODO: change sprite to dead, run timer to despawn creature;
     for (mut component, mut sprite) in charactor_query.iter_mut(){
-
+        todo!();
     }
 }
