@@ -8,10 +8,10 @@ pub mod destroeyd_thing_handler;
 use crate::scenes::game_scenes::tilemap::tile::{Position, TilePermissions};
 use super::{Attribute, Resist};
 
-pub const WEAK_STRUCTURE_DEFENSE_TYPE: u8 = 8;
-pub const NORMAL_STRUCTURE_DEFENSE_TYPE: u8 = 16;
-pub const STRONG_STRUCTURE_DEFENSE_TYPE: u8 = 24;
-
+pub const WEAK_STRUCTURE_DEFENSE_TYPE: u8 = 10;
+pub const NORMAL_STRUCTURE_DEFENSE_TYPE: u8 = 20;
+pub const STRONG_STRUCTURE_DEFENSE_TYPE: u8 = 30;
+pub const POTENT_STRUCTURE_DEFENSE_TYPE: u8 = 100;
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum ThingDefenseType {
@@ -19,6 +19,7 @@ pub enum ThingDefenseType {
     Weak,
     Normal,
     Strong,
+    Potent,
 }
 
 impl ThingDefenseType {
@@ -27,6 +28,7 @@ impl ThingDefenseType {
             ThingDefenseType::Weak => WEAK_STRUCTURE_DEFENSE_TYPE,
             ThingDefenseType::Normal => NORMAL_STRUCTURE_DEFENSE_TYPE,
             ThingDefenseType::Strong => STRONG_STRUCTURE_DEFENSE_TYPE,
+            ThingDefenseType::Potent => POTENT_STRUCTURE_DEFENSE_TYPE,
         }
     } 
 }

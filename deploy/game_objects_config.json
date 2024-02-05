@@ -24,7 +24,8 @@
             "PlaceThing",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
 
     "tree":{
@@ -52,7 +53,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 500
+        "tile_movement_ratio": 500,
+        "thing_defense_type": "Normal"
     },
     "fertile_tree":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -79,7 +81,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 500
+        "tile_movement_ratio": 500,
+        "thing_defense_type": "Normal"
     },
     "bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -106,7 +109,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 400
+        "tile_movement_ratio": 400,
+        "thing_defense_type": "Weak"
     },
     "fertile_bush":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -133,7 +137,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 400
+        "tile_movement_ratio": 400,
+        "thing_defense_type": "Weak"
     },
     "boulder":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -160,7 +165,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 500
+        "tile_movement_ratio": 500,
+        "thing_defense_type": "Normal"
     },
     "log":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -187,7 +193,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 600
+        "tile_movement_ratio": 600,
+        "thing_defense_type": "Normal"
     },
     "copper_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -214,7 +221,8 @@
             "PlaceStuff",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "iron_ore":{
         "permissions": ["CanHarvested", "CanBeDestroyed"],
@@ -241,7 +249,8 @@
             "PlaceStuff",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "wooden_wall":{
         "permissions": ["CanBeDestroyed"],
@@ -268,7 +277,8 @@
             "PlaceStuff",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Strong"
     },
     "stone_wall":{
         "permissions": ["CanBeDestroyed"],
@@ -295,7 +305,8 @@
             "PlaceStuff",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "iron_wall":{
         "permissions": ["CanBeDestroyed"],
@@ -321,7 +332,8 @@
             "PlaceStuff",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "steel_wall":{
         "permissions": ["CanBeDestroyed"],
@@ -347,7 +359,8 @@
             "PlaceStuff",
             "Walk"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "wooden_door":{
         "permissions": ["CanBeDestroyed"],
@@ -374,7 +387,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Strong"
     },
     "reinforced_wooden_door":{
         "permissions": ["CanBeDestroyed"],
@@ -401,7 +415,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Normal"
     },
     "iron_door":{
         "permissions": ["CanBeDestroyed"],
@@ -428,7 +443,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "reinforced_iron_door":{
         "permissions": ["CanBeDestroyed"],
@@ -455,7 +471,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "steel_door":{
         "permissions": ["CanBeDestroyed"],
@@ -482,7 +499,8 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     },
     "reinforced_steel_door":{
         "permissions": ["CanBeDestroyed"],
@@ -509,6 +527,7 @@
             "PlaceStuff",
             "Roof"
         ],
-        "tile_movement_ratio": 0
+        "tile_movement_ratio": 0,
+        "thing_defense_type": "Potent"
     }
 }

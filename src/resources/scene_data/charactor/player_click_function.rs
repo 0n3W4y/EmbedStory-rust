@@ -84,7 +84,7 @@ pub fn player_click(
                                 },
                             }
                         },
-                        ObjectType::Stuff(v) => {
+                        ObjectType::Stuff(_) => {
                             move_player_to_position(&mut destination_component, position_x, position_y);
                             return;
                         },
