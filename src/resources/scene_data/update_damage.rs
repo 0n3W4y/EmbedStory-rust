@@ -171,17 +171,11 @@ fn do_damage_to_charactor(
                 match skills_and_effects.effects.get_mut(&effect.effect_type) {                                           //get effect if it already in; prolong lifetime effect, and replace with new effect
                     Some(v) => {
                         effect.effect_lifetime += v.effect_lifetime;
-                        match v.over_time_effect.as_mut() {
-                            Some(over_time_effect) => {
-                                let time_duration = over_time_effect.time_duration;
-                                match effect.over_time_effect.as_mut() {
-                                    Some(val) => {
-                                        val.time_duration += time_duration;
-                                    },
-                                    None => {},
-                                }
-                            },
-                            None => {},
+                        for over_time_effect in v.over_time_effect.iter_mut() {
+                            let time_duration = over_time_effect.time_duration;
+                            for over_time_effect_in_target in effect.over_time_effect.iter_mut() {
+                                over_time_effect_in_target.time_duration += time_duration;
+                            } 
                         }
                         *v = effect.clone();
                     },

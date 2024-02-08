@@ -1,21 +1,39 @@
 {
-    "base_skill": {
-        "skill_type": "BaseSkill",
-        "skill_queue": 1,
-        "passive_skill": false,
-        "trigger_chanse": 0,
-        "trigger_time": 0,
-        "base_cooldown": 100,
-        "projectiles": 0,
-        "range": 1,
-        "cast_source": "Itself",
-        "base_crit_chance": 0,
-        "base_damage": {},
-        "base_crit_multiplier": 0,
-        "stamina_cost": 0,
-        "skill_direction": "Line",
-        "target": "Enemies",
-        "max_target": 1,
-        "effect": []
+    "active_skills": {
+        "base_skill": {
+            "skill_type": "BaseSkill",
+            "cooldown_time": 1.0,
+            "projectile_type": null,
+            "skill_range": 1,
+            "skill_direction": "Target",
+            "stamina_cost": 0,
+            "target": "Enemies",
+            "target_quantity": 1,
+            "area_on_impact": 0, 
+            "crit_chance": 0,
+            "crit_multiplier": 0,
+            "damage": {},
+            "effects": {},
+            "passive_skills": {}
+        }
+    },
+    "passive_skills": {
+        "chainlighting": {
+            "skill_type": "ChainlightingPassive",
+            "trigger_time_frequency": 1.0,
+            "trigger_chance": 100,
+            "skill_life_time": 1.0,
+            "crit_chance": 0,
+            "crit_multiplier": 0,
+            "damage": {"Electric": 10},
+            "effects": {"Electroshocke": 5},
+            "skill_range": 3,
+            "skill_direction": "Target",
+            "target_type": "All",
+            "target_quantity": 1,
+            "area_on_impact": 0, 
+            "projectile_type": null
+        }
     }
+    
 }

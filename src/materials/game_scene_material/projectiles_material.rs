@@ -22,7 +22,6 @@ impl ProjectilesMaterial {
             ProjectileType::Arrow => self.arrow_atlas.clone_weak(),
             ProjectileType::Bullet => self.bullet_atlas.clone_weak(),
             ProjectileType::FireSphere => self.sphere_atlas.clone_weak(),
-            ProjectileType::None => panic!("Try to get projectile texture without projectile type"),
         }
     }
 }

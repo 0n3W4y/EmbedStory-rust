@@ -7,7 +7,7 @@ use crate::components::PositionComponent;
 use crate::components::charactor_component::ActionType;
 use crate::components::charactor_component::CharactorTargetComponent;
 use crate::components::charactor_component::PlayerComponent;
-use crate::components::tile_component::TileComponent;
+use crate::components::StatsComponent;
 use crate::config::{MONITOR_HALF_HEIGHT, MONITOR_HALF_WIDTH, TILE_SIZE};
 use crate::plugins::camera::Orthographic2DCamera;
 //use crate::resources::scene_manager::SceneManager;
@@ -21,9 +21,9 @@ pub fn player_click(
     //scene_manager: Res<SceneManager>,
     mut player_query: Query<
         (&mut CharactorTargetComponent, &mut PositionComponent),
-        With<PlayerComponent>,
+        With<PlayerComponent>
     >,
-    target_query: Query<(&IdentificationComponent, &PositionComponent), Without<TileComponent>>,
+    target_query: Query<(&IdentificationComponent, &PositionComponent), (With<StatsComponent>, Without<PlayerComponent>)>,
     camera: Query<(&Transform, &OrthographicProjection), With<Orthographic2DCamera>>,
 ) {
     let (

@@ -37,7 +37,7 @@ fn main(){
         .init_resource::<resources::dictionary::Dictionary>()
         .init_resource::<resources::deploy::Deploy>()
         .add_state::<AppState>()
-        .add_plugins(DefaultPlugins)
+        //.add_plugins(DefaultPlugins)
         //.add_plugin(AudioPlugin)
         .add_plugin(plugins::camera::CameraPlugin)
         .add_plugin(scenes::loading_scene::LoadingScenePlugin)

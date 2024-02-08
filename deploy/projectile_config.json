@@ -1,22 +1,26 @@
 {
     "arrows": {
-        "Arrow": {
-            "velocity": 150
+        "arrow": {
+            "velocity": 150,
+            "projectile_type": "Arrow",
+            "can_pierce": false,
+            "pierce_chance": 0
         }
     },
     "bullets": {
-        "Bullet": {
-            "velocity": 500
+        "bullet": {
+            "velocity": 500,
+            "projectile_type": "Bullet",
+            "can_pierce": false,
+            "pierce_chance": 0
         }
     },
     "spheres": {
-        "FireSphere": {
-            "velocity": 300
-        }
-    },
-    "none": {
-        "None": {
-            "velocity": 1000
+        "fire_sphere": {
+            "velocity": 300,
+            "projectile_type": "FireSphere",
+            "can_pierce": false,
+            "pierce_chance": 0
         }
     }
 }

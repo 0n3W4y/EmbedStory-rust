@@ -10,7 +10,7 @@ use crate::components::charactor_component::{
 use crate::resources::deploy::Deploy;
 use crate::resources::scene_data::Ability;
 use crate::resources::scene_data::damage_text_informer::DamageIgnored;
-use crate::resources::scene_data::projectiles::{setup_projectile_with_active_skill, ProjectileType};
+use crate::resources::scene_data::projectiles::setup_projectile_with_active_skill;
 use crate::resources::scene_manager::SceneManager;
 use crate::scenes::game_scenes::game_scene::GameScene;
 use crate::scenes::game_scenes::tilemap::tile::Position;
@@ -176,10 +176,13 @@ fn attack(
         false
     };
 
-    if skill.projectile_type == ProjectileType::None {                                                                                          //if None = melee, or ranged without projectile => instant direct damage;
-        do_direct_damage(is_missed, target_taken_damage, skill);
-    } else {
-        setup_projectile_with_active_skill(scene, skill, charactor_position, target_position, deploy, is_missed);
+    match skill.projectile_type.as_ref() {
+        Some(_) => {
+            setup_projectile_with_active_skill(scene, skill, charactor_position, target_position, deploy, is_missed);
+        },
+        None => {
+            do_direct_damage(is_missed, target_taken_damage, skill);
+        }
     }
 }
 

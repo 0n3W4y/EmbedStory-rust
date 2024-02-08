@@ -16,7 +16,7 @@ pub enum ActiveSkillType {
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
 pub enum PassiveSkillType {
     #[default]
-    ChainLighting
+    ChainlightingPassive
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, PartialEq, Hash, Default)]
@@ -55,7 +55,7 @@ pub struct PassiveSkill {
     pub target_quantity: u8,                                // max target quantity in skill range;
     pub area_on_impact: u8,                                 //0 - only target, 1 - +1 position for all direction, 2 - +2 position for all direction;
 
-    pub projectile_type: ProjectileType,
+    pub projectile_type: Option<ProjectileType>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq)]
@@ -67,7 +67,7 @@ pub struct ActiveSkill {
     pub current_time_duration: f32,                            // == 0.0;
     pub stamina_cost: i16,
     
-    pub projectile_type: ProjectileType,
+    pub projectile_type: Option<ProjectileType>,
     pub skill_range: u8,                                    // max range; min range = 1;
     pub skill_direction: SkillDirectionType,
     pub target: TargetType,
@@ -168,7 +168,7 @@ pub struct PassiveSkillDeploy {
     pub target_quantity: u8,
     pub area_on_impact: u8, 
 
-    pub projectile_type: ProjectileType,
+    pub projectile_type: Option<ProjectileType>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -176,7 +176,7 @@ pub struct ActiveSkillDeploy {
     pub skill_type: ActiveSkillType,
     pub cooldown_time: f32,
     
-    pub projectile_type: ProjectileType,
+    pub projectile_type: Option<ProjectileType>,
     pub skill_range: u8, // max range; min range = 1;
     pub skill_direction: SkillDirectionType,
     pub stamina_cost: i16,
@@ -200,7 +200,7 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &S
     }
 
     let mut new_base_skill = ActiveSkill::new(deploy, &ActiveSkillType::BaseSkill);
-    match stats.ability.get(&Ability::CriticalHitChanse) {
+    match stats.ability.get(&Ability::CriticalHitChance) {
         Some(v) => new_base_skill.crit_chance += *v,
         None => {},
     }
@@ -260,15 +260,12 @@ pub fn setup_base_skill(deploy: &Deploy, base_skill: &mut ActiveSkill, stats: &S
 }
 
 pub fn update_over_time_effect_damage_by_ability(effect: &mut Effect, ability_storage: &HashMap<Ability, i16>) {
-    match effect.over_time_effect.as_mut() {
-        Some(eff) => {
-            let damage_multiplier = match ability_storage.get(&get_ability_type_from_damage_type(&eff.effect_damage_type)) {
-                Some(v) => *v,
-                None => 0,
-            };
-            eff.effect_damage_value += eff.effect_damage_value * damage_multiplier / 100;
-        },
-        None => {},
+    for over_time_effect in effect.over_time_effect.iter_mut() {
+        let damage_multiplier = match ability_storage.get(&get_ability_type_from_damage_type(&over_time_effect.effect_damage_type)) {
+            Some(v) => *v,
+            None => 0,
+        };
+        over_time_effect.effect_damage_value += over_time_effect.effect_damage_value * damage_multiplier / 100;
     }
 }
 

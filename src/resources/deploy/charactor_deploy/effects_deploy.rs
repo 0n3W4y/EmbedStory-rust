@@ -26,6 +26,8 @@ pub struct PrimaryEffects {
     regeneration: EffectDeploy,
     cheerfullness: EffectDeploy,
     myopia: EffectDeploy,
+    poison: EffectDeploy,
+    restoration: EffectDeploy,
 }
 
 #[derive(Deserialize, Debug)]
@@ -36,12 +38,14 @@ pub struct OverTimeEffects {
     fire_damage: OverTimeEffectDeploy,
     electric_damage: OverTimeEffectDeploy,
     water_damage: OverTimeEffectDeploy,
-    poison_damage: OverTimeEffectDeploy,
+    poison_damage_health: OverTimeEffectDeploy,
+    poison_damage_stamina: OverTimeEffectDeploy,
     stamina_damage: OverTimeEffectDeploy,
     health_damage: OverTimeEffectDeploy,
     health_regen: OverTimeEffectDeploy,
     stamina_regen: OverTimeEffectDeploy,
-    none: OverTimeEffectDeploy,
+    health_restoration: OverTimeEffectDeploy,
+    stamina_restoration: OverTimeEffectDeploy,
 }
 
 #[derive(Deserialize, Debug)]
@@ -58,7 +62,6 @@ pub struct BuffDebuffEffects {
     stamina_buff: BuffDebuffEffectDeploy,
     health_buff: BuffDebuffEffectDeploy,
     accuracy_debuff: BuffDebuffEffectDeploy,
-    none: BuffDebuffEffectDeploy,
 }
 
 impl EffectsDeploy {
@@ -88,7 +91,9 @@ impl EffectsDeploy {
             EffectType::Wet => &self.primary_effects.wet,
             EffectType::Regeneration => &self.primary_effects.regeneration,
             EffectType::Cheerfullness => &self.primary_effects.cheerfullness,
+            EffectType::Restoration => &self.primary_effects.restoration,
             EffectType::Myopia => &self.primary_effects.myopia,
+            EffectType::Poison => &self.primary_effects.poison,
         }
     }
 
@@ -100,12 +105,14 @@ impl EffectsDeploy {
             OverTimeEffectType::FireDamage => &self.over_time_effects.fire_damage,
             OverTimeEffectType::ElectricDamage => &self.over_time_effects.electric_damage,
             OverTimeEffectType::WaterDamage => &self.over_time_effects.water_damage,
-            OverTimeEffectType::PoisonDamage => &self.over_time_effects.poison_damage,
+            OverTimeEffectType::PoisonDamageHealth => &self.over_time_effects.poison_damage_health,
+            OverTimeEffectType::PoisonDamageStamina => &self.over_time_effects.poison_damage_stamina,
             OverTimeEffectType::StaminaDamage => &self.over_time_effects.stamina_damage,
             OverTimeEffectType::HealthDamage => &self.over_time_effects.health_damage,
             OverTimeEffectType::HealthRegen => &self.over_time_effects.health_regen,
+            OverTimeEffectType::HealthRestoration => &self.over_time_effects.health_restoration,
+            OverTimeEffectType::StaminaRestoration => &self.over_time_effects.stamina_restoration,
             OverTimeEffectType::StaminaRegen => &self.over_time_effects.stamina_regen,
-            OverTimeEffectType::None =>  &self.over_time_effects.none,
         }
     }
 
@@ -117,13 +124,12 @@ impl EffectsDeploy {
             BuffDebuffEffectType::FireDebuff => &self.buff_debuff_effects.fire_debuff,
             BuffDebuffEffectType::ElectricDebuff => &self.buff_debuff_effects.electric_debuff,
             BuffDebuffEffectType::WaterDebuff => &self.buff_debuff_effects.water_debuff,
-            BuffDebuffEffectType::PoisionDebuff => &self.buff_debuff_effects.poison_debuff,
+            BuffDebuffEffectType::PoisonDebuff => &self.buff_debuff_effects.poison_debuff,
             BuffDebuffEffectType::StaminaDebuff => &self.buff_debuff_effects.stamina_debuff,
             BuffDebuffEffectType::HealthDebuff => &self.buff_debuff_effects.health_debuff,
             BuffDebuffEffectType::StaminaBuff => &self.buff_debuff_effects.stamina_buff,
             BuffDebuffEffectType::HealthBuff => &self.buff_debuff_effects.health_buff,
             BuffDebuffEffectType::AccuracyDebuff => &self.buff_debuff_effects.accuracy_debuff,
-            BuffDebuffEffectType::None => &self.buff_debuff_effects.none,
         }
     }
 }

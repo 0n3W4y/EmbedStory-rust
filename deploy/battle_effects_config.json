@@ -3,92 +3,106 @@
         "stun":{
             "effect_type": "Stun",
             "effect_lifetime": 3.0,
-            "buff_debuff_effect": "None",
-            "over_time_effect": "None",
+            "buff_debuff_effect": [],
+            "over_time_effect": [],
             "effect_status": ["CanNotMove", "CanNotAttack"]
         },
         "moveless": {
             "effect_type": "Moveless",
             "effect_lifetime": 3.0,
-            "buff_debuff_effect": "None",
-            "over_time_effect": "None",
+            "buff_debuff_effect": [],
+            "over_time_effect": [],
             "effect_status": ["CanNotMove"]
         },
         "freeze": {
             "effect_type": "Freeze",
             "effect_lifetime": 3.0,
-            "buff_debuff_effect": "None",
-            "over_time_effect": "ColdDamage",
+            "buff_debuff_effect": [],
+            "over_time_effect": ["ColdDamage"],
             "effect_status": ["CanNotMove", "CanNotAttack"]
         },
         "blind": {
             "effect_type": "Blind",
             "effect_lifetime": 3.0,
-            "buff_debuff_effect": "None",
-            "over_time_effect": "None",
+            "buff_debuff_effect": [],
+            "over_time_effect": [],
             "effect_status": ["CanNotAttack"]
         },
         "burn": {
             "effect_type": "Burn",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "FireDebuff",
-            "over_time_effect": "FireDamage",
+            "buff_debuff_effect": ["FireDebuff"],
+            "over_time_effect": ["FireDamage"],
             "effect_status": []
         },
         "acid": {
             "effect_type": "Acid",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "AcidDebuff",
-            "over_time_effect": "AcidDamage",
+            "buff_debuff_effect": ["AcidDebuff"],
+            "over_time_effect": ["AcidDamage"],
             "effect_status": []
         },
         "bleeding": {
             "effect_type": "Bleeding",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "BleedDebuff",
-            "over_time_effect": "BleedDamage",
+            "buff_debuff_effect": ["BleedDebuff"],
+            "over_time_effect": ["BleedDamage"],
             "effect_status": []
         },
         "cold": {
             "effect_type": "Cold",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "ColdDebuff",
-            "over_time_effect": "ColdDamage",
+            "buff_debuff_effect": ["ColdDebuff"],
+            "over_time_effect": ["ColdDamage"],
             "effect_status": []
         },
         "electroshocke": {
             "effect_type": "Electroshocke",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "ElectricDebuff",
-            "over_time_effect": "ElectricDamage",
+            "buff_debuff_effect": ["ElectricDebuff"],
+            "over_time_effect": ["ElectricDamage"],
             "effect_status": []
         },
         "wet": {
             "effect_type": "Wet",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "Waterdebuff",
-            "over_time_effect": "WaterDamage",
+            "buff_debuff_effect": ["WaterDebuff"],
+            "over_time_effect": ["WaterDamage"],
+            "effect_status": []
+        },
+        "restoration": {
+            "effect_type": "Restoration",
+            "effect_lifetime": 5.0,
+            "buff_debuff_effect": [],
+            "over_time_effect": ["HealthRestoration", "StaminaRestoration"],
             "effect_status": []
         },
         "regeneration": {
             "effect_type": "Regeneration",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "None",
-            "over_time_effect": "HealthRegen",
+            "buff_debuff_effect": [],
+            "over_time_effect": ["HealthRegen"],
             "effect_status": []
         },
         "cheerfullness" :{
             "effect_type": "Cheerfullness",
             "effect_lifetime": 5.0,
-            "buff_debuff_effect": "None",
-            "over_time_effect": "StaminaRegen",
+            "buff_debuff_effect": [],
+            "over_time_effect": ["StaminaRegen"],
             "effect_status": []
         },
         "myopia": {
-            "effect_type": "Miopia",
+            "effect_type": "Myopia",
             "effect_lifetime": 4.0,
-            "buff_debuff_effect": "AcccuracyDebuff",
-            "over_time_effect": "None",
+            "buff_debuff_effect": ["AccuracyDebuff"],
+            "over_time_effect": [],
+            "effect_status": []
+        },
+        "poison": {
+            "effect_type": "Poison",
+            "effect_lifetime": 6.0,
+            "buff_debuff_effect": ["PoisonDebuff"],
+            "over_time_effect": ["PoisonDamageHealth", "PoisonDamageStamina"],
             "effect_status": []
         }
     },
@@ -97,67 +111,85 @@
             "effect_type": "AcidDamage",
             "effect_damage_type": "Acid",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
         "bleed_damage": {
             "effect_type": "BleedDamage",
             "effect_damage_type": "Phisical",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
         "cold_damage": {
             "effect_type": "ColdDamage",
             "effect_damage_type": "Cold",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
         "fire_damage": {
             "effect_type": "FireDamage",
             "effect_damage_type": "Fire",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
         "electric_damage": {
             "effect_type": "ElectricDamage",
             "effect_damage_type": "Electric",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
         "water_damage": {
             "effect_type": "WaterDamage",
             "effect_damage_type": "Water",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
-        "poison_damage": {
-            "effect_type": "PoisonDamage",
+        "poison_damage_health": {
+            "effect_type": "PoisonDamageHealth",
             "effect_damage_type": "Poison",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5, "Stamina": -5}
+            "effect_damage_value": -5
+        },
+        "poison_damage_stamina": {
+            "effect_type": "PoisonDamageStamina",
+            "effect_damage_type": "Stamina",
+            "trigger_time_effect": 1.0,
+            "effect_damage_value": -4
         },
         "health_damage": {
             "effect_type": "HealthDamage",
             "effect_damage_type": "Health",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": -5}
+            "effect_damage_value": -5
         },
         "stamina_damage": {
             "effect_type": "StaminaDamage",
             "effect_damage_type": "Stamina",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Stamina": -5}
+            "effect_damage_value": -5
         },
         "health_regen": {
             "effect_type": "HealthRegen",
             "effect_damage_type": "Health",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Health": 5}
+            "effect_damage_value": 5
         },
         "stamina_regen": {
-            "effect_type": "Staminaregen",
+            "effect_type": "StaminaRegen",
             "effect_damage_type": "Stamina",
             "trigger_time_effect": 1.0,
-            "change_attributes": {"Stamina": 5}
+            "effect_damage_value": 5
+        },
+        "health_restoration": {
+            "effect_type": "HealthRestoration",
+            "effect_damage_type": "Health",
+            "trigger_time_effect": 1.0,
+            "effect_damage_value": 2
+        },
+        "stamina_restoration": {
+            "effect_type": "StaminaRestoration",
+            "effect_damage_type": "Stamina",
+            "trigger_time_effect": 1.0,
+            "effect_damage_value": 2
         }
     },
     "buff_debuff_effects": {
@@ -200,12 +232,12 @@
             "effect_type": "WaterDebuff",
             "change_stat": {"Strength": -3, "Dexterity": -3},
             "change_attribute_cache": {},
-            "change_resist": {"ColdDamage": -525, "FireDamage": 25, "ElectricDamage": -25},
+            "change_resist": {"ColdDamage": -25, "FireDamage": 25, "ElectricDamage": -25},
             "change_ability": {"Evasion": -5, "MovementSpeed": -15}
         },
         "poison_debuff": {
             "effect_type": "PoisonDebuff",
-            "change_stat": {"Strength": -5, "Dexterity": -5, "Wisdom": -5, "Vitality": -5},
+            "change_stat": {"Strength": -5, "Dexterity": -5, "Wisdom": -5},
             "change_attribute_cache": {},
             "change_resist": {},
             "change_ability": {"Evasion": -10, "MovementSpeed": -25}

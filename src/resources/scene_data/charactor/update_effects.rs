@@ -43,69 +43,59 @@ pub fn update_effects(
 
         for (_, effect) in skills_and_effects.effects.iter_mut() {                                     //update  effects;
             if effect.time_duration == 0.0 {
-                match effect.buff_debuff_effect.as_mut() {
-                    Some(buff_debuff_effect) => {
-                        for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
-                            if let Some((new_value, old_value)) = change_stat_points(&mut stats,  stat, *stat_damage) {
-                                do_stat_dependences(&mut stats, stat, new_value, old_value);
-                            }
+                for buff_debuff_effect in effect.buff_debuff_effect.iter_mut() {
+                    for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
+                        if let Some((new_value, old_value)) = change_stat_points(&mut stats,  stat, *stat_damage) {
+                            do_stat_dependences(&mut stats, stat, new_value, old_value);
                         }
+                    }
+                    for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
+                        charactor::change_attribute_points(&mut stats, &Damage::Health, *attribute_damage, true);
+                    }
 
-                        for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
-                            charactor::change_attribute_points(&mut stats, &Damage::Health, *attribute_damage, true);
-                        }
+                    for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
+                        charactor::change_resist(&mut stats, resist, *resists_damage);
+                    }
 
-                        for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
-                            charactor::change_resist(&mut stats, resist, *resists_damage);
-                        }
-
-                        for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
-                            charactor::change_ability(&mut stats, &ability, *ability_damage);
-                        }
-                    },
-                    None => {},
+                    for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
+                        charactor::change_ability(&mut stats, &ability, *ability_damage);
+                    }
                 }
 
-                match effect.over_time_effect.as_mut() {
-                    Some(over_time_effect) => {
-                        let mut damage: TakenDamage = Default::default();
+                for over_time_effect in effect.over_time_effect.iter_mut() {
+                    let mut damage: TakenDamage = Default::default();
                         damage.damage.insert(over_time_effect.effect_damage_type.clone(), over_time_effect.effect_damage_value);
                         damage_taken.damage.push(damage);
-                    },
-                    None => {},
                 }
             } else if effect.time_duration >= effect.effect_lifetime {
-                match effect.buff_debuff_effect.as_mut() {
-                    Some(buff_debuff_effect) => {
-                        for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
-                            if let Some((old_value, new_value)) = change_stat_points(&mut stats,  stat, -(*stat_damage)) {
-                                do_stat_dependences(&mut stats, stat, new_value, old_value);
-                            }
+                for buff_debuff_effect in effect.buff_debuff_effect.iter_mut() {
+                    for (stat, stat_damage) in buff_debuff_effect.change_stat.iter() {
+                        if let Some((old_value, new_value)) = change_stat_points(&mut stats,  stat, -(*stat_damage)) {
+                            do_stat_dependences(&mut stats, stat, new_value, old_value);
                         }
+                    }
 
-                        for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
-                            charactor::change_attribute_points(&mut stats, &Damage::Health, -(*attribute_damage), true);
-                        }
+                    for (_, attribute_damage) in buff_debuff_effect.change_attribute_cache.iter() {
+                        charactor::change_attribute_points(&mut stats, &Damage::Health, -(*attribute_damage), true);
+                    }
 
-                        for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
-                            charactor::change_resist(&mut stats, resist, -(*resists_damage));
-                        }
+                    for (resist, resists_damage) in buff_debuff_effect.change_resist.iter() {
+                        charactor::change_resist(&mut stats, resist, -(*resists_damage));
+                    }
 
-                        for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
-                            charactor::change_ability(&mut stats, &ability, -(*ability_damage));
-                        }
-                    },
-                    None => {},
+                    for (ability, ability_damage) in buff_debuff_effect.change_ability .iter(){
+                        charactor::change_ability(&mut stats, &ability, -(*ability_damage));
+                    }
                 }
+
                 for effect_status in effect.effect_status.iter() {
                     effect_status_to_remove.push(effect_status.clone());
                 }
                 effects_to_remove.push(effect.effect_type.clone());
             } else {
                 effect.time_duration += delta_time;
-                match effect.over_time_effect.as_mut() {
-                    Some(over_time_effect) => {
-                        over_time_effect.time_duration += delta_time;
+                for over_time_effect in effect.over_time_effect.iter_mut() {
+                    over_time_effect.time_duration += delta_time;
                         if over_time_effect.time_duration < over_time_effect.trigger_time_effect {
                             continue;
                         } else {
@@ -115,8 +105,6 @@ pub fn update_effects(
                         let mut damage: TakenDamage = Default::default();
                         damage.damage.insert(over_time_effect.effect_damage_type.clone(), -over_time_effect.effect_damage_value);
                         damage_taken.damage.push(damage);
-                    },
-                    None => {},
                 }
             }                   
         }

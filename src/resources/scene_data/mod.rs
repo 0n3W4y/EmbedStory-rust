@@ -15,7 +15,6 @@ pub enum Stat{
     Strength,
     Dexterity,
     Wisdom,
-    Vitality,
     Luck,
 }
 
@@ -25,7 +24,6 @@ impl Stat {
             Stat::Strength,
             Stat::Dexterity,
             Stat::Wisdom,
-            Stat::Vitality,
             Stat::Luck
         ].into_iter()
     }
@@ -48,8 +46,8 @@ pub enum Resist {
     ElectricDamage,
     AcidDamage,
     PoisonDamage,
-    HealthDamage,
     StaminaDamage,
+    HealthDamage,
 }
 
 impl Resist {
@@ -62,6 +60,8 @@ impl Resist {
             Resist::ElectricDamage,
             Resist::AcidDamage,
             Resist::PoisonDamage,
+            Resist::StaminaDamage,
+            Resist::HealthDamage,
         ].into_iter()
     }
 
@@ -74,8 +74,8 @@ impl Resist {
             Damage::Poison => Resist::PoisonDamage,
             Damage::Phisical => Resist::PhisicalDamage,
             Damage::Water => Resist::WaterDamage,
-            Damage::Health => Resist::HealthDamage,
             Damage::Stamina => Resist::StaminaDamage,
+            Damage::Health => Resist::HealthDamage,
         }
     }
 }
@@ -89,7 +89,7 @@ pub enum Ability{
     ActiveSkillsCoolDawn,
     BlockChance,
     BlockAmount,
-    CriticalHitChanse,
+    CriticalHitChance,
     CriticalHitMultiplier,
     Accuracy,
     ExperienceMultiplier,
@@ -114,7 +114,7 @@ impl Ability {
             Ability::ActiveSkillsCoolDawn,
             Ability::BlockAmount,
             Ability::BlockChance,
-            Ability::CriticalHitChanse,
+            Ability::CriticalHitChance,
             Ability::CriticalHitMultiplier,
             Ability::Accuracy,
             Ability::ExperienceMultiplier,
@@ -139,8 +139,8 @@ pub enum Damage {
     #[default]
     Phisical,
     Water,
+    Stamina,
     Health,
-    Stamina
 }
 
 impl Damage {

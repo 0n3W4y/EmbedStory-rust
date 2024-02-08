@@ -15,7 +15,6 @@ pub enum ProjectileType {
     Arrow,
     Bullet,
     FireSphere,
-    None,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -34,12 +33,19 @@ pub fn setup_projectile_with_active_skill(
     deploy: &Deploy,
     is_missed: bool,
 ) {
+    let projectile_type = match skill.projectile_type.as_ref() {
+        Some(v) => v,
+        None => {
+            println!("Can't create projectile without PROJECTILE_TYPE");
+            return;
+        }
+    };
     let projectile = setup_projectile(
         deploy,
         skill.crit_chance,
         skill.crit_multiplier,
         skill.skill_range,
-        &skill.projectile_type,
+        projectile_type,
         &skill.damage,
         &skill.effects,
         Some(&skill.passive_skills),
@@ -58,12 +64,19 @@ pub fn setup_projectile_with_passive_skill(
     target_position: &Position<i32>,
     deploy: &Deploy,
 ) {
+    let projectile_type = match skill.projectile_type.as_ref() {
+        Some(v) => v,
+        None => {
+            println!("Can't create projectile without PROJECTILE_TYPE");
+            return;
+        }
+    };
     let projectile = setup_projectile(
         deploy,
         skill.crit_chance,
         skill.crit_multiplier,
         skill.skill_range,
-        &skill.projectile_type,
+        projectile_type,
         &skill.damage,
         &skill.effects,
         None,

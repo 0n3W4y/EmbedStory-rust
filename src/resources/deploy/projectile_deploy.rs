@@ -11,7 +11,6 @@ pub struct ProjectileDeploy {
     pub arrows: ArrowsDeploy,
     pub bullets: BulletsDeploy,
     pub spheres: SpheresDeploy,
-    pub none: ProjectileConfig,
 }
 
 impl ProjectileDeploy {
@@ -33,7 +32,6 @@ impl ProjectileDeploy {
             ProjectileType::Arrow => &self.arrows.arrow,
             ProjectileType::Bullet => &self.bullets.bullet,
             ProjectileType::FireSphere => &self.spheres.fire_sphere,
-            ProjectileType::None => panic!("Try to get empty projectileconfig!!!"),
         }
     }
 }

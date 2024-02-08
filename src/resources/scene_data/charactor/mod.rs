@@ -364,10 +364,6 @@ pub fn get_values_of_attributes_from_stat(stat: &Stat, value: i16) -> HashMap<At
             result.insert(Attribute::Stamina, value / 2);
         },
         Stat::Luck => {},
-        Stat::Vitality => {
-            result.insert(Attribute::Health, value * 4);
-            result.insert(Attribute::Stamina, value * 4);
-        },
     }
 
     return result;
@@ -398,7 +394,7 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
             let critical_hit_chance = value / 10;                                       //crit chance: LCK / 10;
             let block_chance = value / 10;                                              //block chance: LCK /10;
             let accuracy = value / 10;                                                  //accuracy: LCK / 10;
-            result.insert(Ability::CriticalHitChanse, critical_hit_chance);
+            result.insert(Ability::CriticalHitChance, critical_hit_chance);
             result.insert(Ability::BlockChance, block_chance);
             result.insert(Ability::Accuracy, accuracy);
         },
@@ -406,7 +402,6 @@ pub fn get_values_of_abilities_from_stat(stat: &Stat, value: i16) -> HashMap<Abi
             let block_amount = value / 10;                                              //block amount: STR / 10;
             result.insert(Ability::BlockAmount, block_amount);
         }
-        Stat::Vitality => todo!(),
     }
     return result;
 }

@@ -40,7 +40,7 @@ impl SkillsDeploy {
 
     pub fn get_passive_skill_deploy (&self, skill: &PassiveSkillType) -> &PassiveSkillDeploy {
         match *skill {
-            PassiveSkillType::ChainLighting => &self.passive_skills.chainlighting,
+            PassiveSkillType::ChainlightingPassive => &self.passive_skills.chainlighting,
         }
     }
 }
